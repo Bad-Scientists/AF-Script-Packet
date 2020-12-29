@@ -176,6 +176,10 @@ func void _HOOK_NPC_UNEQUIPITEM ()
 	};
 };
 
-// To be hooked in Startup.d
-HookEngine (oCNpc__EquipWeapon, 5, "_HOOK_NPC_EQUIPWEAPON");
-HookEngine (oCNPC__UnequipItem, 7, "_HOOK_NPC_UNEQUIPITEM");
+/*
+ * Initialization function for weapon stacking
+ */
+func void WS_Init() {
+	HookEngine (oCNpc__EquipWeapon, 5, "_HOOK_NPC_EQUIPWEAPON");
+	HookEngine (oCNPC__UnequipItem, 7, "_HOOK_NPC_UNEQUIPITEM");
+};
