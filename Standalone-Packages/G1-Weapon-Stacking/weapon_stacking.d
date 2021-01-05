@@ -1,13 +1,11 @@
-/***
-	2021-01-04 Weapon Stacking v0.01
-	Authors: Auronen & Fawkes
-	This little package allows you to use ITEM_MULTI flag with melee weapons in Gothic 1.
-	Hooked functions oCNpc::EquipWeapon & oCNPC::UnequipItem will emulate same behaviour as you can see in G2A. If you have 10 weapons in 1 item slot, when equipped 1 weapon will move to it's own slot.
-	You can then sell 9 unequipped items without additional hassle of well ... unequipping :)
-***/
-
-//0062A050  .text     Debug data           ?RemoveWeapon2@oCAniCtrl_Human@@QAEHXZ
-const int oCAniCtrl_Human__RemoveWeapon2 = 6463568;
+/*
+ *	2021-01-05 Weapon Stacking v0.01 for Gothic 1
+ *
+ *	Authors: Auronen & Fawkes
+ *	This little package allows you to use ITEM_MULTI flag with melee weapons in Gothic 1.
+ *	Hooked functions oCNpc::EquipWeapon & oCNPC::UnequipItem will emulate same behaviour as you can see in G2A. If you have 10 weapons in 1 item slot, when equipped 1 weapon will move to it's own slot.
+ *	You can then sell 9 unequipped items without additional hassle of well ... unequipping :)
+ */
 
 //oCAniCtrl_Human__RemoveWeapon1 is called when removing melee weapon
 //HookEngine (oCAniCtrl_Human__RemoveWeapon1, 6, "_hook_oCAniCtrl_Human_RemoveWeapon1__weaponStacking");
@@ -22,9 +20,6 @@ func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 	};
 };
 
-//006BB0A0  .text     Debug data           ?OpenInventory@oCNPC@@QAEXXZ
-//Already defined in LeGo
-//const int oCNPC__OpenInventory = 7057568;
 func void _hook_oCNPC_OpenInventory__weaponStacking () {
 	if (!ECX) { return; };
 	var oCNPC slf; slf = _^ (ECX);
@@ -34,141 +29,6 @@ func void _hook_oCNPC_OpenInventory__weaponStacking () {
 	};
 };
 
-//NEW INV_WEAPON sorting
-
-/*
-	Sorting logic -->	ITEM_KAT_NF > damageTotal > value > Hlp_GetInstanceID (in case of items with same instance ID item without ITEM_MULTI flag is sorted on top)
-				ITEM_KAT_FF > damageTotal > value > Hlp_GetInstanceID (in case of items with same instance ID item without ITEM_MULTI flag is sorted on top)
-				ITEM_KAT_MUN > value > Hlp_GetInstanceID
-*/
-
-//0066B3D0  .text     Debug data           ??0oCNpcInventory@@QAE@XZ
-//inventory2_inventory1_Compare int(_cdecl*)(oCItem*, OCItem*)	66B510	6731024
-const int inventory2_inventory1_Compare = 6731024;
-
-//itm1 > itm2 returns -1
-//itm1 < itm2 returns 1
-func void inventory2_inventory1_Compare__weaponStacking () {
-	var int itmPtr1; itmPtr1 = MEM_ReadInt (ESP + 4);
-	var int itmPtr2; itmPtr2 = MEM_ReadInt (ESP + 8);
-
-	var oCItem itm1; itm1 = _^ (itmPtr1);
-	var oCItem itm2; itm2 = _^ (itmPtr2);
-
-	//Melee > Ranged > Ammo
-	if (itm1.mainflag & ITEM_KAT_NF){
-		//Melee
-		if (itm2.mainflag & ITEM_KAT_NF){
-			if (itm1.damageTotal > itm2.damageTotal) {
-				EAX = -1; return;
-			};
-
-			if (itm1.damageTotal < itm2.damageTotal) {
-				EAX = 1; return;
-			};
-
-			if (itm1.damageTotal == itm2.damageTotal) {
-				if (itm1.value > itm2.value) {
-					EAX = -1; return;
-				};
-
-				if (itm1.value < itm2.value) {
-					EAX = 1; return;
-				};
-
-				if (itm1.value == itm2.value) {
-					if (Hlp_GetInstanceID (itm1) > Hlp_GetInstanceID (itm2)) {
-						EAX = -1; return;
-					};
-
-					//Same instance ID - put equipped item first (equipped will not have ITEM_MULTI flag)
-					if (Hlp_GetInstanceID (itm1) == Hlp_GetInstanceID (itm2)) {
-						if (itm1.flags & ITEM_MULTI) {
-							EAX = 1; return;
-						};
-
-						if (itm2.flags & ITEM_MULTI) {
-							EAX = -1; return;
-						};
-					};
-
-					EAX = 1; return;
-				};
-			};
-		};
-
-		//Ranged
-		if (itm2.mainflag & ITEM_KAT_FF){
-			EAX = -1; return;
-		};
-
-		//Ammo
-		if (itm2.mainflag & ITEM_KAT_MUN){
-			EAX = -1; return;
-		};
-	};
-
-	//Ranged < Melee
-	//Ranged > Ammo
-	if (itm1.mainflag & ITEM_KAT_FF){
-		//Ranged
-		if (itm2.mainflag & ITEM_KAT_FF){
-			if (itm1.damageTotal > itm2.damageTotal) {
-				EAX = -1; return;
-			};
-
-			if (itm1.damageTotal < itm2.damageTotal) {
-				EAX = 1; return;
-			};
-
-			if (itm1.damageTotal == itm2.damageTotal) {
-				if (itm1.value > itm2.value) {
-					EAX = -1; return;
-				};
-
-				if (itm1.value < itm2.value) {
-					EAX = 1; return;
-				};
-
-				if (itm1.value == itm2.value) {
-					if (Hlp_GetInstanceID (itm1) > Hlp_GetInstanceID (itm2)) {
-						EAX = -1; return;
-					};
-
-					//Same instance ID - put equipped item first (equipped will not have ITEM_MULTI flag)
-					if (Hlp_GetInstanceID (itm1) == Hlp_GetInstanceID (itm2)) {
-						if (itm1.flags & ITEM_MULTI) {
-							EAX = 1; return;
-						};
-
-						if (itm2.flags & ITEM_MULTI) {
-							EAX = -1; return;
-						};
-					};
-
-					EAX = 1; return;
-				};
-			};
-		};
-
-		//Melee
-		if (itm2.mainflag & ITEM_KAT_NF){
-			EAX = 1; return;
-		};
-
-		//Ammo
-		if (itm2.mainflag & ITEM_KAT_MUN){
-			EAX = -1; return;
-		};
-	};
-
-	//Ammo
-	EAX = 1;
-};
-
-//006968F0  .text     Debug data           ?Equip@oCNPC@@QAEXPAVoCItem@@@Z
-//Already defined in LeGo
-//const int oCNPC__Equip = 6908144;
 func void _hook_oCNPC_Equip__weaponStacking (){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!ECX) || (!itemPtr)) { return; };
@@ -191,7 +51,7 @@ func void _hook_oCNPC_Equip__weaponStacking (){
 				NPC_WeaponInstanceRemoveAddFlags (slf, itemInstance, ITEM_ACTIVE_LEGO, ITEM_MULTI);
 				
 				//We have to get new pointer using itemInstance
-				itemPtr = NPC_GetWeaponPtrByInstance (slf, itemInstance);
+				itemPtr = NPC_GetItemPtrByInstance (slf, INV_WEAPON, itemInstance);
 
 				//Remove from inventory 1 item, remove flag ITEM_MULTI and put it back to inventory (this will put it to its own slot)
 				itemPtr = oCNpc_RemoveFromInvByPtr (slf, itemPtr, 1);
@@ -206,9 +66,6 @@ func void _hook_oCNPC_Equip__weaponStacking (){
 	};
 };
 
-//0068FBC0  .text     Debug data           ?UnequipItem@oCNPC@@QAEXPAVoCItem@@@Z
-//Already defined in LeGo
-//const int oCNPC__UnequipItem = 6880192;
 func void _hook_oCNPC_UnequipItem__weaponStacking (){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 
@@ -233,8 +90,6 @@ func void _hook_oCNPC_UnequipItem__weaponStacking (){
 	};
 };
 
-//006A0D10  .text     Debug data           ?DoTakeVob@oCNPC@@UAEHPAVzCVob@@@Z
-const int oCNPC__DoTakeVob = 6950160;
 func void _hook_oCNPC_DoTakeVob__weaponStacking (){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!ECX) || (!itemPtr)) { return; };
@@ -250,6 +105,11 @@ func void _hook_oCNPC_DoTakeVob__weaponStacking (){
 			};
 		};
 	};
+};
+
+func void _hook_weaponSorting__weaponStacking (){
+	//Do we want to change anything? probably not
+	inventory2_inventory1_Compare_SortingLogic ();
 };
 
 func void G1_WeaponStacking_Init (){
@@ -275,7 +135,7 @@ func void G1_WeaponStacking_Init (){
 		//It is probably not required. We can rethink this later if needed.
 
 		//Custom sorting function. Makes sure that weapons inventory is sorted consistently.
-		ReplaceEngineFunc (inventory2_inventory1_Compare, 0, "inventory2_inventory1_Compare__weaponStacking");
+		ReplaceEngineFunc (inventory2_inventory1_Compare, 0, "_hook_weaponSorting__weaponStacking");
 		
 		once = 1;
 	};
