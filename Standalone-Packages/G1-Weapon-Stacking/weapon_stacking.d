@@ -56,7 +56,7 @@ func void _hook_oCNPC_Equip__weaponStacking (){
 				//Remove from inventory 1 item, remove flag ITEM_MULTI and put it back to inventory (this will put it to its own slot)
 				itemPtr = oCNpc_RemoveFromInvByPtr (slf, itemPtr, 1);
 				oCItem_RemoveFlags (itemPtr, ITEM_MULTI);
-				itemPtr = oCNpc_PutInInv (slf, itemPtr);
+				itemPtr = oCNpc_PutInInvPtr (slf, itemPtr);
 
 				//override pointer! This will make sure that our item without ITEM_MULTI flag will be equipped
 				MEM_WriteInt (ESP + 4, itemPtr);
@@ -80,7 +80,7 @@ func void _hook_oCNPC_UnequipItem__weaponStacking (){
 				if ((itm.flags & ITEM_ACTIVE_LEGO) == ITEM_ACTIVE_LEGO){
 					itemPtr = oCNpc_RemoveFromInvByPtr (slf, itemPtr, itm.amount);
 					oCItem_AddFlags (itemPtr, ITEM_MULTI);
-					itemPtr = oCNpc_PutInInv (slf, itemPtr);
+					itemPtr = oCNpc_PutInInvPtr (slf, itemPtr);
 				} else {
 					var int itemInstance; itemInstance = Hlp_GetInstanceID (itm);
 					NPC_WeaponInstanceRemoveAddFlags (slf, itemInstance, ITEM_ACTIVE_LEGO, ITEM_MULTI);

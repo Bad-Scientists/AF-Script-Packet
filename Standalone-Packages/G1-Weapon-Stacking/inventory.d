@@ -115,7 +115,7 @@ func void NPC_WeaponInstanceRemoveAddFlags (var int slfInstance, var int itemIns
 
 					//Re-insert to inventory
 					itemPtr = oCNpc_RemoveFromInvByPtr (slf, itemPtr, itm.amount);
-					itemPtr = oCNpc_PutInInv (slf, itemPtr);
+					itemPtr = oCNpc_PutInInvPtr (slf, itemPtr);
 
 					//Reset pointer for next loop
 					ptr = slf.inventory2_inventory1_next;
@@ -125,7 +125,7 @@ func void NPC_WeaponInstanceRemoveAddFlags (var int slfInstance, var int itemIns
 
 						//Re-insert to inventory
 						itemPtr = oCNpc_RemoveFromInvByPtr (slf, itemPtr, itm.amount);
-						itemPtr = oCNpc_PutInInv (slf, itemPtr);
+						itemPtr = oCNpc_PutInInvPtr (slf, itemPtr);
 
 						//Reset pointer for next loop
 						ptr = slf.inventory2_inventory1_next;

@@ -1,3 +1,4 @@
-# AF (Auronen & Fawkes) script bundle
-This is a AF (Auronen & Fawkes) script bundle description.
-Test
+# AF Script Packet status: WIP
+
+Authors: [Auronen](https://github.com/auronen) & [Fawkes](https://github.com/Fawkes-dev)
+
