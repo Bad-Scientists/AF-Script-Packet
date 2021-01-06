@@ -53,7 +53,7 @@ func void NPC_SplitMultipleEquippedWeapons (var int slfInstance){
 			
 			//Check equipped weapons
 			if ((itm.mainflag & ITEM_KAT_NF) || (itm.mainflag & ITEM_KAT_FF))
-			&& ((itm.flags & ITEM_ACTIVE_G1) == ITEM_ACTIVE_G1){
+			&& ((itm.flags & ITEM_ACTIVE_LEGO) == ITEM_ACTIVE_LEGO){
 				//Is there more than 1 piece equipped? Re-equip!
 				if (itm.amount > 1){
 					//pointers will be scrambled when oCNPC_EquipPtr and oCNPC_UnequipItemPtr are used! (because of hooked oCNPC_Equip, oCNPC_Unequip functions)

@@ -34,5 +34,6 @@ func void G1_Barrier_Everlooming_Init (){
 		Barrier_FadeStateMin = Hlp_Random (15) + 1; //Random minimal fadeState 1 - 15
 		//Hook makes sure that Barrier will never disappear completely
 		HookEngine (oCBarrier__Render, 6, "_hook_oCBarrier_Render");
+		once = 1;
 	};
 };
