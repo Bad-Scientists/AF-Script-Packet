@@ -33,6 +33,8 @@ func void oCItem_AddFlags (var int itemPtr, var int addFlags) {
  *		itemInstance		item instance
  */
 func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int itemInstance){
+	if (invCat < 0) || (invCat >= INV_CAT_MAX) { return 0; };
+
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -56,24 +58,24 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 
 		/*
 		G1 oCNPC - inventory offset
-			var int    inventory2_inventory0_next;                 // 0x05F8 zCListSort<oCItem>*
-			var int    inventory2_inventory1_next;                 // 0x0604 zCListSort<oCItem>*
-			var int    inventory2_inventory2_next;                 // 0x0610 zCListSort<oCItem>*
-			var int    inventory2_inventory3_next;                 // 0x061C zCListSort<oCItem>*
-			var int    inventory2_inventory4_next;                 // 0x0628 zCListSort<oCItem>*
-			var int    inventory2_inventory5_next;                 // 0x0634 zCListSort<oCItem>*
-			var int    inventory2_inventory6_next;                 // 0x0640 zCListSort<oCItem>*
-			var int    inventory2_inventory7_next;                 // 0x064C zCListSort<oCItem>*
-			var int    inventory2_inventory8_next;                 // 0x0658 zCListSort<oCItem>*
+			var int    inventory2_inventory0_next;		// 0x05F8 zCListSort<oCItem>*
+			var int    inventory2_inventory1_next;		// 0x0604 zCListSort<oCItem>*
+			var int    inventory2_inventory2_next;		// 0x0610 zCListSort<oCItem>*
+			var int    inventory2_inventory3_next;		// 0x061C zCListSort<oCItem>*
+			var int    inventory2_inventory4_next;		// 0x0628 zCListSort<oCItem>*
+			var int    inventory2_inventory5_next;		// 0x0634 zCListSort<oCItem>*
+			var int    inventory2_inventory6_next;		// 0x0640 zCListSort<oCItem>*
+			var int    inventory2_inventory7_next;		// 0x064C zCListSort<oCItem>*
+			var int    inventory2_inventory8_next;		// 0x0658 zCListSort<oCItem>*
 		*/
-		ptr = MEM_ReadInt (_@ (slf) + 1528 + (12 * invCat)); //0x05F8
+		ptr = MEM_ReadInt (_@ (slf) + 1528 + (12 * invCat));	// 0x05F8
 	} else {
 		/*
 		G2A oCNPC - inventory offset
-			var int    inventory2_inventory_next;                                 // 0x0718 zCListSort<oCItem>*
+			var int    inventory2_inventory_next;		// 0x0718 zCListSort<oCItem>*
 		*/
 		//G2A has single inventory
-		ptr = MEM_ReadInt (_@ (slf) + 1816); //0x0718
+		ptr = MEM_ReadInt (_@ (slf) + 1816);			// 0x0718
 	};
 	//
 	while (ptr);

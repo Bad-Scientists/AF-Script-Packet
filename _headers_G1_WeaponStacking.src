@@ -1,4 +1,5 @@
 engine_addresses_G1.d
+engine_classes_G1.d
 inventory_sorting_logic_G1.d
 inventory_oCNPC_engine.d
 inventory_oCNPC.d

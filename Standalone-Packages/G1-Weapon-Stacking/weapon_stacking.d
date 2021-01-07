@@ -1,5 +1,5 @@
 /*
- *	2021-01-05 Weapon Stacking v0.01 for Gothic 1
+ *	2021-01-07 Weapon Stacking v0.01 for Gothic 1
  *
  *	Authors: Auronen & Fawkes
  *	This little package allows you to use ITEM_MULTI flag with melee weapons in Gothic 1.
@@ -20,13 +20,10 @@ func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 	};
 };
 
-func void _hook_oCNPC_OpenInventory__weaponStacking () {
-	if (!ECX) { return; };
-	var oCNPC slf; slf = _^ (ECX);
-
-	if (NPC_IsPlayer (slf)) {
-		NPC_SplitMultipleEquippedWeapons (slf);
-	};
+func void _hook_oCItemContainer__Activate__weaponStacking () {
+	//We cannot get oCItemContainer owner this address oCItemContainer.inventory2_oCItemContainer_npc == 0
+	//So let's call it on hero
+	NPC_SplitMultipleEquippedWeapons (hero);
 };
 
 func void _hook_oCNPC_Equip__weaponStacking (){
@@ -116,19 +113,30 @@ func void G1_WeaponStacking_Init (){
 	const int once = 0;
 
 	if (!once){
-		//Splits equipped weapons when opening inventory
-		HookEngine (oCNPC__OpenInventory, 6, "_hook_oCNPC_OpenInventory__weaponStacking");
-		
 		//Splits equipped weapons on weapon removal.
 		//I didn't find better hook but this one - function is being called all the time during weapon removal - even when weapon is unequipped - which is ideal for calling 'NPC_SplitMultipleEquippedWeapons'.
 		HookEngine (oCAniCtrl_Human__RemoveWeapon2, 6, "_hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking");
 
+		//Splits equipped weapons when opening inventory
+		HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer__Activate__weaponStacking");
+
+		//Not good enough - splits weapons on second run only
+		//0066BDE0  .text     Debug data           ?Open@oCNpcInventory@@QAEXHH@Z
+		//const int oCNpcInventory__Open = 6733280;
+		//HookEngine (oCNpcInventory__Open, 7, "_hook_oCNpcInventory_Open__weaponStacking");
+
+		//Not good enough - splits weapons on second run only
+		//006BB0A0  .text     Debug data           ?OpenInventory@oCNPC@@QAEXXZ
+		//const int oCNPC__OpenInventory_G1 = 7057568;
+		//HookEngine (oCNPC__OpenInventory, 6, "_hook_oCNPC_OpenInventory__weaponStacking");
+
 		//Splits weapons on equipping. Removes ITEM_MULTI flag and re-inserts to inventory
 		HookEngine (oCNPC__Equip, 5, "_hook_oCNPC_Equip__weaponStacking");
+
 		//'Merges' weapons on unequipping. Applies ITEM_MULTI flag and re-inserts to inventory
 		HookEngine (oCNPC__UnequipItem, 7, "_hook_oCNPC_UnequipItem__weaponStacking");
 
-		//Applies ITEM_MULTI flag when taking weapons from world.
+		//Applies ITEM_MULTI flag when picking items
 		HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNPC_DoTakeVob__weaponStacking");
 		
 		//Hook on oCNpc__DoDropVob applying back on weapons ITEM_MULTI when dropping is not supported. (When weapon was equipped it messed up oCNPC__UnequipItem hook)
