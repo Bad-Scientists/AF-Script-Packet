@@ -2,26 +2,36 @@ var int Barrier_FadeStateMin;	//Min alpha value (cannot be 0! otherwise Barrier 
 
 /*
  *	Function will start Barriers fade in effect
+ *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState.
  */
-func void oCBarrier_FadeIn (){
+func void oCBarrier_FadeIn (var int fadeState){
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
 
 	//Start fade in
 	MEM_SkyController.bFadeInOut = TRUE;
 	b.fadeIn = TRUE;
 	b.fadeOut = FALSE;
+
+	if (fadeState >= 0) {
+		b.fadeState = fadeState;
+	};
 };
 
 /*
  *	Function will start Barriers fade out effect
+ *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState.
  */
-func void oCBarrier_FadeOut (){
+func void oCBarrier_FadeOut (var int fadeState){
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
 
 	//Start fade out
 	MEM_SkyController.bFadeInOut = TRUE;
 	b.fadeIn = FALSE;
 	b.fadeOut = TRUE;
+
+	if (fadeState >= 0) {
+		b.fadeState = fadeState;
+	};
 };
 
 /*
