@@ -7,7 +7,28 @@ func void oCBarrier_FadeIn (){
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
 
 	//Start fade in
+	MEM_SkyController.bFadeInOut = TRUE;
 	b.fadeIn = TRUE;
+	b.fadeOut = FALSE;
+};
+
+/*
+ *	Function will start Barriers fade out effect
+ */
+func void oCBarrier_FadeOut (){
+	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
+
+	//Start fade out
+	MEM_SkyController.bFadeInOut = TRUE;
+	b.fadeIn = FALSE;
+	b.fadeOut = TRUE;
+};
+
+/*
+ *	Function will hide Barrier. Barrier will re-appear after a while.
+ */
+func void oCBarrier_Hide (){
+	MEM_SkyController.bFadeInOut = FALSE;
 };
 
 func void _hook_oCBarrier_Render (){
