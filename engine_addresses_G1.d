@@ -1,3 +1,9 @@
+/*
+ *
+ *	Weapon stacking
+ *
+ */
+
 //0062A050  .text     Debug data           ?RemoveWeapon2@oCAniCtrl_Human@@QAEHXZ
 const int oCAniCtrl_Human__RemoveWeapon2	= 6463568;
 
@@ -44,3 +50,20 @@ const int inventory2_inventory8_Compare		= 6731648;	//66B780	INV_MISC
  */
 //006307C0  .text     Debug data           ?Render@oCBarrier@@QAEHAAUzTRenderContext@@HH@Z
 const int oCBarrier__Render			= 6490048;
+
+/*
+ *
+ *	Enhanced InfoManager
+ *
+ */
+
+//00758A60  .text     Debug data           ?HandleEvent@zCViewDialogChoice@@UAEHH@Z
+const int zCViewDialogChoice__HandleEvent_G1	= 7703136;
+
+//0x0068EBA0 public: virtual int __thiscall zCViewDialogChoice::HandleEvent(int)
+const int zCViewDialogChoice__HandleEvent_G2	= 6876064;
+
+//0072BE90  .text     Debug data           ?Update@oCInformationManager@@QAIXXZ
+const int oCInformationManager__Update_G1	= 7519888;
+//0x00660BB0 public: void __fastcall oCInformationManager::Update(void)
+const int oCInformationManager__Update_G2	= 6687664;

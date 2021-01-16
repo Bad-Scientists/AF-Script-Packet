@@ -2,7 +2,7 @@ var int Barrier_FadeStateMin;	//Min alpha value (cannot be 0! otherwise Barrier 
 
 /*
  *	Function will start Barriers fade in effect
- *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState.
+ *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState. Max fadeState value == 120
  */
 func void oCBarrier_FadeIn (var int fadeState){
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
@@ -19,7 +19,7 @@ func void oCBarrier_FadeIn (var int fadeState){
 
 /*
  *	Function will start Barriers fade out effect
- *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState.
+ *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState. Max fadeState value == 120
  */
 func void oCBarrier_FadeOut (var int fadeState){
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
@@ -43,7 +43,7 @@ func void oCBarrier_Hide (){
 
 func void _hook_oCBarrier_Render (){
 	var oCBarrier b; b = _^ (ECX);
-
+	
 	if (b.fadeOut) {
 		//If Barrier.fadeState == 0 then Barrier disappears completely
 		//We don't want that, set our minimal acceptable value Barrier_FadeStateMin = 1
