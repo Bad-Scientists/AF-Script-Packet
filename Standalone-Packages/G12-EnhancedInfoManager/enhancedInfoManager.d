@@ -6,7 +6,7 @@
  *
  *	func void Init_Global () {
  *		...
-		InfoManagerNumKeys = TRUE;
+ *		InfoManagerNumKeys = TRUE;
  *		InfoManagerSpinnerIndicatorAnimation = TRUE;
  *		G12_EnhancedInfoManager_Init ();
  *	};
@@ -360,16 +360,19 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				cancel = TRUE;
 			};
 			
-			if (key == KEY_LEFTARROW) {
+			if (key == KEY_LEFTARROW) || (key == KEY_A) {
 				InfoManagerSpinnerValue -= 1;
 				cancel = TRUE;
 			};
 
-			if (key == KEY_RIGHTARROW) {
+			if (key == KEY_RIGHTARROW) || (key == KEY_D) {
 				InfoManagerSpinnerValue += 1;
 				cancel = TRUE; //Cancel input (just in case)
 			};
 			
+			//G2A tweak - dialog confirmation with SPACE
+			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
+
 			if (cancel) {
 				//Min/Max values
 				if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) {
