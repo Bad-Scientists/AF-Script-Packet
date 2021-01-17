@@ -370,9 +370,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				cancel = TRUE; //Cancel input (just in case)
 			};
 			
-			//G2A tweak - dialog confirmation with SPACE
-			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
-
 			if (cancel) {
 				//Min/Max values
 				if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) {
@@ -402,9 +399,10 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				if (key == KEY_8) { key = KEY_7; update = TRUE; };
 				if (key == KEY_9) { key = KEY_8; update = TRUE; };
 			};
+		};
 
 //--- Additional tweaks -->
-
+		if (!InfoManagerAnswerPossible) {
 			//G2A tweak - dialog confirmation with SPACE
 			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
 		};
