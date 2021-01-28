@@ -48,6 +48,7 @@ const int inventory2_inventory8_Compare		= 6731648;	//66B780	INV_MISC
  *	Barrier - ever looming threat
  *
  */
+
 //006307C0  .text     Debug data           ?Render@oCBarrier@@QAEHAAUzTRenderContext@@HH@Z
 const int oCBarrier__Render			= 6490048;
 
@@ -67,3 +68,24 @@ const int zCViewDialogChoice__HandleEvent_G2	= 6876064;
 const int oCInformationManager__Update_G1	= 7519888;
 //0x00660BB0 public: void __fastcall oCInformationManager::Update(void)
 const int oCInformationManager__Update_G2	= 6687664;
+
+/*
+ *
+ *	Enhanced Trading
+ *
+ */
+
+//0072A2B0  .text     Debug data           ?OnTransferLeft@oCViewDialogTrade@@IAIHH@Z
+const int oCViewDialogTrade__OnTransferLeft	= 7512752;
+
+//0072A530  .text     Debug data           ?OnTransferRight@oCViewDialogTrade@@IAIHH@Z
+const int oCViewDialogTrade__OnTransferRight	= 7513392;
+
+//0072A870  .text     Debug data           ?OnAccept@oCViewDialogTrade@@IAIXXZ
+const int oCViewDialogTrade__OnAccept		= 7514224;
+
+//0072AAB0  .text     Debug data           ?OnExit@oCViewDialogTrade@@IAIXXZ
+const int oCViewDialogTrade__OnExit		= 7514800;
+
+//007299A0  .text     Debug data           ?HandleEvent@oCViewDialogTrade@@UAEHH@Z
+const int oCViewDialogTrade__HandleEvent	= 7510432;

@@ -1,0 +1,8 @@
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+EngineClasses_G1\zCViewDialog.d
+
+infoManager_engine.d
+strings.d
+Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
