@@ -27,6 +27,8 @@ class zCEventManager {
 	var int hostVob;		//60	zCVob*
 };
 
+const int sizeof_zCEventMessage = 44;
+
 class zCEventMessage {
 	var int _vtbl;			//0
 	var int refctr;			//4
@@ -35,9 +37,11 @@ class zCEventMessage {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 };
+
+const int sizeof_zCEventCore = 72; //?
 
 class zCEventCore {
 	var int _vtbl;			//0
@@ -47,8 +51,8 @@ class zCEventCore {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
 /*
     enum zTEventCoreSubType {
@@ -62,12 +66,12 @@ class zCEventCore {
     };
 */
 
-	var int otherVob;		//28 zCVob* 
-	var int vobInstigator;		//32 zCVob* 
-	var int damage;			//26 float
-	var int damageType;
-	var int inflictorVob;		//zCVob*
-	var int hitLocation;		//zVEC3
+	var int otherVob;		//44 zCVob* 
+	var int vobInstigator;		//48 zCVob* 
+	var int damage;			//52 float
+	var int damageType;		//56
+	var int inflictorVob;		//60 zCVob*
+	var int hitLocation;		//64 zVEC3
 };
 
 class oCNpcMessage {
@@ -376,6 +380,8 @@ class oCMsgManipulate {
 
 };
 
+const int sizeof_oCMsgConversation = 136;
+
 class oCMsgConversation {
 	var int _vtbl;			//0
 	var int refctr;			//4
@@ -384,13 +390,13 @@ class oCMsgConversation {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+	var int highPriority;		//64
+	var int deleted;		//68
+	var int inUse;			//72
 
 /*
     enum TConversationSubType {
@@ -417,11 +423,11 @@ class oCMsgConversation {
     };
 */
 
-	var string text;		//zSTRING
-	var string name;		//zSTRING
-	var int target;			//zCVob*
-	var int targetPos;		//zVEC3
-	var int ani;
+	var string text;		//76	zSTRING
+	var string name;		//96	zSTRING
+	var int target;			//116	zCVob*
+	var int targetPos[3];		//120	zVEC3
+	var int ani;			//132
 /*
     union {
       zCModelAni* cAni;
