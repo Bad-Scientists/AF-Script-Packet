@@ -67,10 +67,10 @@ func void _hook_zCTrigger_OnTrigger () {
 
 	if (!ECX) { return; };
 
-	if (MEM_ReadInt (ECX) == oCTriggerScript_vtbl) {
+	if (Hlp_Is_oCTriggerScript (ECX)) {
 		var string funcName; 
 		var oCTriggerScript ts; ts = _^ (ECX);
-
+		
 		//reactOnContact
 		if (ts._zCTrigger_bitfield & zCTrigger_bitfield_reactToOnContact) {
 			//Default _zCTrigger_fireDelaySec (cannot be 0 for OnContact event!)
@@ -145,7 +145,7 @@ func void _hook_zCTrigger_OnTouch () {
 
 	if (!vobPtr) { return; };
 
-	if (MEM_ReadInt (ECX) == oCTriggerScript_vtbl) {
+	if (Hlp_Is_oCTriggerScript (ECX)) {
 		var string funcName; 
 		var oCTriggerScript ts; ts = _^ (ECX);
 
@@ -225,7 +225,7 @@ func void _hook_zCTrigger_OnUntouch () {
 
 	if (!vobPtr) { return; };
 
-	if (MEM_ReadInt (ECX) == oCTriggerScript_vtbl) {
+	if (Hlp_Is_oCTriggerScript (ECX)) {
 		var string funcName; 
 		var oCTriggerScript ts; ts = _^ (ECX);
 

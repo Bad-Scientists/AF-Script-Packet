@@ -96,3 +96,12 @@ const int zCTrigger__OnTouch = 6174672;
 //005E37F0  .text     Debug data           ?OnUntouch@zCTrigger@@UAEXPAVzCVob@@@Z
 const int zCTrigger__OnUntouch = 6174704;
 
+func int Hlp_Is_zCTrigger (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == zCTrigger_vtbl);
+};
+
+func int Hlp_Is_oCTriggerScript (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
+};

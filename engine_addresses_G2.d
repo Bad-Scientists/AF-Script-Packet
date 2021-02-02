@@ -17,8 +17,8 @@ const int oCInformationManager__Update		= 6687664;
 const int zCTrigger_vtbl = 8627196;
 
 //0x0082F404 const oCTriggerScript::`vftable'
-//Already defined in Ikarus
-//const int oCTriggerScript_vtbl = 8582148;
+//Not defined in Ikarus for G2A!
+const int oCTriggerScript_vtbl = 8582148;
 
 //0x006105E0 public: virtual void __thiscall zCTrigger::OnTrigger(class zCVob *,class zCVob *)
 const int zCTrigger__OnTrigger = 6358496;
