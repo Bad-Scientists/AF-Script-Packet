@@ -1,4 +1,10 @@
+ScriptBin\insertAnything.d
+ScriptBin\searchVobs.d
+
 engine_addresses_G2.d
+AI_Functions.d
+vobFunctions.d
+
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceFireDamage.d
