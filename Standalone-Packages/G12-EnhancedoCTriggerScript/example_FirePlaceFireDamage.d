@@ -1,4 +1,16 @@
 /*
+ *	This example demonstrates usage of new oCTriggerScript feature: _OnContact event 
+ *
+ *	Script uses 2 effects: VOB_BURN_LEFTFOOT & VOB_BURN_RIGHTFOOT which you have to add to your mod manually.
+ *	You can find them in folder:
+ *		Resources\Scripts\system\VISUALFX\visualFX_VOB_BURN_LEFTFOOT.d
+ *		Resources\Scripts\system\VISUALFX\visualFX_VOB_BURN_RIGHTFOOT.d
+ *
+ *	+ You need to add to your PFX this effect:
+ *		Resources\Scripts\system\PFX\pfx_MFX_FIRESPELL_HUMANBURN_TINY.d
+ */
+
+/*
  *	Example for _OnTouch event function
  *		this one will not be called, because in this example I am using flag zCTrigger_bitfield_reactToOnContact (replaces both _OnTouch and _OnTrigger event functions)
  */
