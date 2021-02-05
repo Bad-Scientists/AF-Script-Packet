@@ -3,6 +3,8 @@ ScriptBin\convert.d
 
 EngineClasses_G2\zCViewDialog.d
 
+engine_addresses_G2.d
+
 infoManager_engine.d
 strings.d
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d

@@ -988,3 +988,164 @@ func int zCVob_GetEM (var int vobPtr) {
 
 	return CALL_RetValAsPtr ();
 };
+
+/*
+ *
+ */
+
+func void zCEventManager_OnTouch (var int eMgr, var int vobPtr) {
+	//006DE5D0  .text     Debug data           ?OnTouch@zCEventManager@@UAEXPAVzCVob@@@Z
+	const int zCEventManager__OnTouch_G1 = 7202256;
+	
+	//0x00787860 public: virtual void __thiscall zCEventManager::OnTouch(class zCVob *)
+	const int zCEventManager__OnTouch_G2 = 7895136;
+
+	if (!eMgr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PutRetValTo(0);
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTouch_G1, zCEventManager__OnTouch_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
+	//006DE690  .text     Debug data           ?OnUntouch@zCEventManager@@UAEXPAVzCVob@@@Z
+	const int zCEventManager__OnUntouch_G1 = 7202448;
+	
+	//0x00787920 public: virtual void __thiscall zCEventManager::OnUntouch(class zCVob *)
+	const int zCEventManager__OnUntouch_G2 = 7895328;
+
+	if (!eMgr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PutRetValTo(0);
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUntouch_G1, zCEventManager__OnUntouch_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
+	//006DE760  .text     Debug data           ?OnTrigger@zCEventManager@@UAEXPAVzCVob@@0@Z
+	const int zCEventManager__OnTrigger_G1 = 7202256;
+	
+	//0x007879F0 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
+	const int zCEventManager__OnTrigger_G2 = 7895136;
+
+	if (!eMgr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PutRetValTo(0);
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTrigger_G1, zCEventManager__OnTrigger_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
+	//006DE820  .text     Debug data           ?OnUntrigger@zCEventManager@@UAEXPAVzCVob@@0@Z
+	const int zCEventManager__OnUnTrigger_G1 = 7202848;
+	
+	//0x00787AB0 public: virtual void __thiscall zCEventManager::OnUntrigger(class zCVob *,class zCVob *)
+	const int zCEventManager__OnUnTrigger_G2 = 7895728;
+
+	if (!eMgr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PutRetValTo(0);
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUnTrigger_G1, zCEventManager__OnUnTrigger_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_DoFrameActivity (var int eMgr) {
+	//006DCC80  .text     Debug data           ?DoFrameActivity@zCEventManager@@SAXXZ
+	const int zCEventManager__DoFrameActivity_G1 = 7195776;
+	
+	//0x00785F70 public: static void __cdecl zCEventManager::DoFrameActivity(void)
+	const int zCEventManager__DoFrameActivity_G2 = 7888752;
+
+	if (!eMgr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__DoFrameActivity_G1, zCEventManager__DoFrameActivity_G2));
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) {
+	//006DD090  .text     Debug data           ?OnMessage@zCEventManager@@UAEXPAVzCEventMessage@@PAVzCVob@@@Z
+	const int zCEventManager__OnMessage_G1 = 7196816;
+	
+	//0x00786380 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
+	const int zCEventManager__OnMessage_G2 = 7889792;
+
+	if (!eMgr) { return; };
+	if (!eMsg) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(vobPtr));
+		CALL_PtrParam(_@(eMsg));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnMessage_G1, zCEventManager__OnMessage_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_RemoveFromList (var int eMgr, var int eMsg) {
+	//006DDFE0  .text     Debug data           ?RemoveFromList@zCEventManager@@MAEXPAVzCEventMessage@@@Z
+	const int zCEventManager__RemoveFromList_G1 = 7200736;
+	
+	//0x007872B0 protected: virtual void __thiscall zCEventManager::RemoveFromList(class zCEventMessage *)
+	const int zCEventManager__RemoveFromList_G2 = 7893680;
+
+	if (!eMgr) { return; };
+	if (!eMsg) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(eMsg));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__RemoveFromList_G1, zCEventManager__RemoveFromList_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_InsertInList (var int eMgr, var int eMsg) {
+	//006DE030  .text     Debug data           ?InsertInList@zCEventManager@@MAEXPAVzCEventMessage@@@Z
+	const int zCEventManager__InsertInList_G1 = 7200816;
+	
+	//0x00787300 protected: virtual void __thiscall zCEventManager::InsertInList(class zCEventMessage *)
+	const int zCEventManager__InsertInList_G2 = 7893760;
+
+	if (!eMgr) { return; };
+	if (!eMsg) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(eMsg));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__InsertInList_G1, zCEventManager__InsertInList_G2));
+
+		call = CALL_End();
+	};
+};

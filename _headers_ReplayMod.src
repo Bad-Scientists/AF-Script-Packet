@@ -1,4 +1,15 @@
-EngineClasses_G1
+EngineClasses_G1\oInventory.d
+EngineClasses_G1\zEventMan.d
+EngineClasses_G1\zCCsCutscene.d
+EngineClasses_G1\zCViewDialog.d
+EngineClasses_G1\zModel.d
+
+vobFunctions.d
+
+ScriptBin\strings.d
+ScriptBin\convert.d
+ScriptBin\insertAnything.d
+ScriptBin\searchVobs.d
 
 engine_addresses_G1.d
 inventory_sorting_logic_G1.d
@@ -7,3 +18,6 @@ inventory_oCMob.d
 inventory_oCNPC_engine.d
 inventory_oCNPC.d
 functions_oCNpc.d
+vectors.d
+
+AI_Functions.d

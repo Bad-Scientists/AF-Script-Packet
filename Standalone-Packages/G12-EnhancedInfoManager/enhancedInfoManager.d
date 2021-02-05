@@ -992,8 +992,8 @@ MEM_InformationMan.LastMethod:
 func void G12_EnhancedInfoManager_Init () {
 	const int once = 0;
 	if (!once) {
-		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__Update_G1, oCInformationManager__Update_G2), 5, "_hook_oCInformationManager_Update_EnhancedInfoManager");
-		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HandleEvent_G1, zCViewDialogChoice__HandleEvent_G2), 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
+		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
+		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EnhancedInfoManager");
 		once = 1;
 	};
 };

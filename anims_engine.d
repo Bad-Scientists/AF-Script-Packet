@@ -235,19 +235,17 @@ func void zCModelAniActive_SetDirection (var int zCModelAniActivePtr, var int di
  *    @param zCModel     zCModelptr
  *	  @param aniName	 animation name	 
  */
-func int zCModelAniActive_GetProgressPercent(var int zCModelAniActivePtr) // float 
-{
-    //checks
+func int zCModelAniActive_GetProgressPercent (var int zCModelAniActivePtr) { // float 
 	if (!zCModelAniActivePtr) { return 0; };
 	
 	//0055D4D0  .text     Debug data           ?GetProgressPercent@zCModelAniActive@@QBEMXZ
 	const int zCModelAniActive__GetProgressPercent_G1 = 5625040;
-    MEM_Info("AniAct");
+
 	//0x00576C60 public: float __thiscall zCModelAniActive::GetProgressPercent(void)const 
-    const int zCModelAniActive__GetProgressPercent_G2 = 5729376;
+	const int zCModelAniActive__GetProgressPercent_G2 = 5729376;
     
-    CALL__thiscall (zCModelAniActivePtr, MEMINT_SwitchG1G2 (zCModelAniActive__GetProgressPercent_G1, zCModelAniActive__GetProgressPercent_G2));   
-    return CALL_RetValAsFloat();
+	CALL__thiscall (zCModelAniActivePtr, MEMINT_SwitchG1G2 (zCModelAniActive__GetProgressPercent_G1, zCModelAniActive__GetProgressPercent_G2));   
+	return CALL_RetValAsFloat();
 };
 
 /*
@@ -536,7 +534,7 @@ func string NPC_StartAniWithOffset(var int npcInstance, var string aniName, var 
 	aniPtr = zCModel_GetAniFromAniID(zCModel, aniId);
 
 	// start animation to make it AniActive
-	zCModel_StartAniByAniID(zCModel, aniId,1);
+	zCModel_StartAniByAniID(zCModel, aniId, 1);
 	
 	// get AniActivePtr of our, now running, animation
 	var int AniActivePtr;
@@ -590,7 +588,7 @@ func string NPC_StartAniWithFrameOffset(var int npcInstance, var string aniName,
 	aniPtr = zCModel_GetAniFromAniID(zCModel, aniId);
 
 	// start animation to make it AniActive
-	zCModel_StartAniByAniID(zCModel, aniId,1);
+	zCModel_StartAniByAniID(zCModel, aniId, 1);
 
 	// get AniActivePtr of our, now running, animation
 	var int AniActivePtr;
