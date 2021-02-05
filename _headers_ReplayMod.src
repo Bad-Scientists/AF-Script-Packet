@@ -2,6 +2,7 @@ EngineClasses_G1\oInventory.d
 EngineClasses_G1\zEventMan.d
 EngineClasses_G1\zCCsCutscene.d
 EngineClasses_G1\zCViewDialog.d
+EngineClasses_G1\zModel.d
 
 vobFunctions.d
 

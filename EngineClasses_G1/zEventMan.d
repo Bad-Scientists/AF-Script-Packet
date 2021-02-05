@@ -35,7 +35,7 @@ class zCEventMessage {
 	var int hashindex;		//8
 	var int hashNext;		//12
 
-	var string objectName;		//16
+	var string objectName;		//16	8193786
 
 	var int subType;		//36
 	var int inCutscene;		//40
@@ -82,13 +82,15 @@ class oCNpcMessage {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 };
 
 class oCMsgDamage  {
@@ -99,13 +101,15 @@ class oCMsgDamage  {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
     enum TDamageSubType {
@@ -114,7 +118,7 @@ class oCMsgDamage  {
       EV_DAMAGE_MAX
     };
 */
-	var int damageDescriptor;	//60	oSDamageDescriptor
+	var int damageDescriptor;	//76	oSDamageDescriptor
 };
 
 class oCMsgWeapon {
@@ -125,13 +129,15 @@ class oCMsgWeapon {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
     enum TWeaponSubType {
@@ -154,11 +160,12 @@ class oCMsgWeapon {
 */
 
 	var int targetMode;
-	var int duringRun;
-	var int initDone;
-	var int firstTime;
-	var int useFist;
-	var int showMagicCircle;
+	//int duringRun       : 1;
+	//int initDone        : 1;
+	//int firstTime       : 1;
+	//int useFist         : 1;
+	//int showMagicCircle : 1;
+	var int bitfield_oCMsgWeapon;
 	var int ani;
 };
 
@@ -170,13 +177,15 @@ class oCMsgMovement {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
     enum TMovementSubType {
@@ -220,14 +229,20 @@ class oCMsgAttack {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+//class zCEventMessage
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var int subType;		//36
+	var int inCutscene;		//40
 
+//class oCNpcMessage
+	var string targetVobName;	//44	zString_vtbl 8193768;
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
+
+//class oCMsgAttack
 /*
     enum TAttackSubType {
       EV_ATTACKFORWARD,
@@ -246,12 +261,14 @@ class oCMsgAttack {
     };
 */
 
-	var int combo;
-	var int target;			//zCVob*
-	var int hitAni;
-	var int startFrame;		//float
-	var int enableNextHit;
-	var int reachedTarget;
+	var int combo;			//76			aniID ?
+	var int target;			//80	zCVob*		0
+	var int hitAni;			//84			0
+	var int startFrame;		//88	float		#
+
+	//int enableNextHit : 1;
+	//int reachedTarget : 1;
+	var int bitfield_oCMsgAttack;
 };
 
 class oCMsgUseItem {
@@ -262,13 +279,15 @@ class oCMsgUseItem {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
 
@@ -293,13 +312,15 @@ class oCMsgState {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
 
@@ -320,8 +341,10 @@ class oCMsgState {
 	var int timer;			//float
 	var int other;			//oCNpc*
 	var int victim;			//oCNpc*
-	var int endOldState;
-	var int inRoutine;
+
+	//int endOldState : 1;
+	//int inRoutine   : 1; 
+	var int bitfield_oCMsgState;
 };
 
 class oCMsgManipulate {
@@ -332,13 +355,15 @@ class oCMsgManipulate {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
     enum TManipulateSubType {
@@ -394,9 +419,11 @@ class oCMsgConversation {
 	var int inCutscene;		//40
 
 	var string targetVobName;	//44	zSTRING
-	var int highPriority;		//64
-	var int deleted;		//68
-	var int inUse;			//72
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
     enum TConversationSubType {
@@ -452,13 +479,15 @@ class oCMsgMagic {
 
 	var string objectName;		//16
 
-	var int subType;		//20
-	var int inCutscene;		//24
+	var int subType;		//36
+	var int inCutscene;		//40
 
-	var string targetVobName;	//28	zSTRING
-	var int highPriority;		//48
-	var int deleted;		//52
-	var int inUse;			//56
+	var string targetVobName;	//44	zSTRING
+
+	//int highPriority : 1;
+	//int deleted      : 1;
+	//int inUse        : 1; 
+	var int bitfield_oCNpcMessage;
 
 /*
 

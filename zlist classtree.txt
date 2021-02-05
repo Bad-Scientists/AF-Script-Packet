@@ -1,0 +1,170 @@
+-4-	00:38 Info:  1 D: *** Enumerating class Hierarchy (#168) *** .... <zObject.cpp,#210>
+-4-	00:38 Info:  1 D:  - zCObject .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - oCNpcTalent [objs 2571] [ctor 2571] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - oCSavegameInfo [objs 17] [ctor 17] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - oCSpell [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCAIBase [objs 1] [ctor 3] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCAICamera .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCAIHuman_Stand .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCAISound .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCAIArrowBase .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                  - oCAIArrow .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCAIDrop .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCAIVobMove .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                  - oCAIVobMoveTorch .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCAIBaseSound .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCAICamera [objs 1] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCAIPlayer .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCAniCtrl_Human .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                  - oCAIHuman [objs 2] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCArchiver .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCArchiverBinSafe [ctor 2] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCArchiverGeneric [ctor 823] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSBlockBase .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCCSAtomicBlock [objs 13179] [ctor 13179] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCCSBlock [objs 13180] [ctor 13180] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - zCCSSyncBlock .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - zCCutscene .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                  - zCCSCutsceneContext [ctor 6] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSLib [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSManager .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCCSManager [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSPlayer .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCCSPlayer [objs 1] [ctor 4] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSPoolItem .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSProps [ctor 6] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCCSProps .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCCSRole .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCEventManager [objs 508] [ctor 628] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCNetEventManager .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCEventMessage .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCMobMsg .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCNpcMessage .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgAttack .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgConversation [objs 13185] [ctor 13221] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgDamage .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgMagic .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgManipulate [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgMovement [objs 2] [ctor 17] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgState [objs 1] [ctor 3] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgUseItem .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - oCMsgWeapon .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCCSCamera_EventMsg [ctor 6] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCCSCamera_EventMsgActivate [ctor 81] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEvMsgCutscene [ctor 12] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEventCommon .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEventCore [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEventMover .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEventMusicControler .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCEventScreenFX [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCLensFlareFX [objs 7] [ctor 7] [hash 0.006836] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCLightMap [objs 1910] [ctor 1910] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCMaterial [objs 3633] [ctor 3660] [hash 0.9648] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCModelAni [objs 1577] [ctor 1577] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCModelMeshLib [objs 2] [ctor 2] [hash 0.001953] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCNetManager .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCNetVobControl .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCObjectFactory [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - oCObjectFactory [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCResource .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCSoundFX [objs 19] [ctor 26] [hash 0] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCTexture [objs 1269] [ctor 1277] [hash 0.6719] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCSkyControler .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCSkyControler_Mid .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - zCSkyControler_Indoor [objs 1] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - zCSkyControler_Outdoor [objs 1] [ctor 3] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCTextureFileFormat .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCTextureFileFormatInternal [ctor 188] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCTextureFileFormatTGA .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCVertexBuffer [objs 190] [ctor 190] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCViewObject .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCViewDraw [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:              - zCViewFX .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                  - zCViewPrint .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                      - zCViewDialog .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - oCViewDialogInventory [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - oCViewDialogItem .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - oCViewDialogItemContainer [objs 2] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - oCViewDialogStealContainer [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - oCViewDialogTrade [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:                          - zCViewDialogChoice [objs 3] [ctor 3] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:      - zCVisual .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCDecal [objs 523] [ctor 523] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCMesh [objs 24] [ctor 41] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCParticleFX [objs 339] [ctor 339] .... <zObject.cpp,#244>
+-4-	00:38 Info:  1 D:          - zCPolyStrip [ctor 16] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCProgMeshProto [objs 699] [ctor 700] [hash 0.4131] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCMeshSoftSkin [objs 7] [ctor 7] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCQuadMark [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVisualAnimate .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCModel [objs 1664] [ctor 1664] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCMorphMesh [objs 305] [ctor 307] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:      - zCVob [objs 9563] [ctor 9564] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - oCDummyVobGenerator .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - oCVob .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - oCItem [objs 4275] [ctor 4303] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - oCMOB [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCMobInter [objs 534] [ctor 534] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobBed [objs 10] [ctor 10] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobFire [objs 238] [ctor 238] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobItemSlot .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobLadder [objs 73] [ctor 73] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobLockable .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                          - oCMobContainer [objs 325] [ctor 325] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                          - oCMobDoor [objs 305] [ctor 305] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobSwitch [objs 9] [ctor 9] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                      - oCMobWheel [objs 10] [ctor 10] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - oCNpc [objs 1194] [ctor 1194] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCCSCamera [objs 8] [ctor 48] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCCamTrj_KeyFrame [objs 16] [ctor 96] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCEffect .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - oCVisualFX [objs 1] [ctor 3] [hash 0] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCVisFX_Lightning .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCVisFX_MultiTarget .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCEarthquake .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCMusicControler .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCPFXControler [objs 2] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCTouchAnimate .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCTouchAnimateSound .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCTouchDamage .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCTouchDamage .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCVobAnimate [objs 164] [ctor 164] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCVobLensFlare [objs 178] [ctor 178] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCVobScreenFX [objs 9] [ctor 9] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCTriggerBase .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCCodeMaster .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCMessageFilter .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCMoverControler .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCTrigger .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCCSTrigger [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCTriggerChangeLevel [objs 6] [ctor 6] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCTriggerScript [objs 25] [ctor 25] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCMover [objs 41] [ctor 41] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCTriggerList [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCTriggerTeleport .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCTriggerUntouch .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCTriggerWorldStart .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobLevelCompo [ctor 6] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobLight [objs 965] [ctor 965] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobSpot [objs 2240] [ctor 2240] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobStair [objs 11] [ctor 11] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobStartpoint [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCVobWaypoint .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - zCZone .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - oCZoneMusic [objs 39] [ctor 39] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - oCZoneMusicDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCVobSound [objs 518] [ctor 518] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCVobSoundDaytime [objs 92] [ctor 92] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCZoneMusic .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCZoneReverb .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCZoneReverbDefault .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCZoneVobFarPlane [objs 2] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCZoneVobFarPlaneDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:              - zCZoneZFog [objs 2] [ctor 2] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:                  - zCZoneZFogDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:      - zCVobLightPreset [objs 10] [ctor 10] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:      - zCWayNet [objs 1] [ctor 6] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:      - zCWaypoint [objs 3537] [ctor 3537] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:      - zCWorld [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D:          - oCWorld [objs 1] [ctor 1] .... <zObject.cpp,#244>
+-4-	00:39 Info:  1 D: *********************************** .... <zObject.cpp,#254>

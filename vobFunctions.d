@@ -42,7 +42,7 @@ func string zCVob_GetVisualName (var int vobPtr) {
 	
 	return visualObj.objectName;
 };
-
+	
 func string Vob_GetVisualName (var int vobPtr){
 	if (!vobPtr) { return ""; };
 

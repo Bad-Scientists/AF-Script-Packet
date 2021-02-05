@@ -88,6 +88,9 @@ const int zCTrigger_vtbl = 8240940;
 //005E3770  .text     Debug data           ?OnTrigger@zCTrigger@@UAEXPAVzCVob@@0@Z
 const int zCTrigger__OnTrigger = 6174576;
 
+//0x007D4214 const zCParticleFX::`vftable' 
+const int zCParticleFX_vtbl = 8208916;
+
 
 //005E37D0  .text     Debug data           ?OnTouch@zCTrigger@@UAEXPAVzCVob@@@Z
 const int zCTrigger__OnTouch = 6174672;
@@ -104,4 +107,9 @@ func int Hlp_Is_zCTrigger (var int ptr) {
 func int Hlp_Is_oCTriggerScript (var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
+};
+
+func int Hlp_Is_zCParticleFX (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
 };

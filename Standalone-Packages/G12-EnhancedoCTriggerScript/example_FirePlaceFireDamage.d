@@ -29,6 +29,8 @@ func void FirePlace_FireDamage_ApplyDamage_OnTrigger (var int triggerPtr) {
  *		this function will be called in a loop with delay of oCTriggerScript._zCTrigger_fireDelaySec every time an object touches trigger
  */
 func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
+	MEM_Info ("FirePlace_FireDamage_ApplyDamage_OnContact");
+
 	if (!triggerPtr) {
 		return;
 	};
@@ -116,6 +118,7 @@ func void FirePlace_FireDamage_ApplyDamage () {
  *		};
  *
  */
+ //FIREPLACE_TRIGGERFIREDAMAGE
 func void FirePlace_AddFireDamageTriggers () {
 	var int vobPtr;
 	
@@ -126,63 +129,87 @@ func void FirePlace_AddFireDamageTriggers () {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	//Fill array with oCMobFire objects
-	if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
-		MEM_Info ("No oCMobFire objects found.");
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
+			MEM_Info ("No oCMobFire objects found.");
+			return;
+		};
 	} else {
-		var int counter; counter = 0;
-		var zCArray vobList; vobList = _^ (vobListPtr);
+		//Search by zCVisual or zCParticleFX does not work
+		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
+			MEM_Info ("No zCVisual objects found.");
+			return;
+		};
+	};
 	
-		var string triggerName;
-		var int ptr;
-		var oCTriggerScript ts;
+	var int counter; counter = 0;
+	var zCArray vobList; vobList = _^ (vobListPtr);
 
-		//Loop through all oCMobFire objects
-		var int i; i = 0;
-		var int count; count = vobList.numInArray;
-		
-		//we have to use separate variable here for count
-		while(i < count);
-			//Read vobPtr from vobList array
-			vobPtr = MEM_ArrayRead (vobListPtr, i);
+	var string triggerName;
+	var int ptr;
+	var oCTriggerScript ts;
 
-			//Get visual name
-			mobVisualName = Vob_GetVisualName (vobPtr);
+	//Loop through all objects
+	var int i; i = 0;
+	var int count; count = vobList.numInArray;
 
-			//In this example we will add oCTriggerScript objects only onto oCMobFire objects
+	var int flagFound;
+	
+	//we have to use separate variable here for count
+	while(i < count);
+		//Read vobPtr from vobList array
+		vobPtr = MEM_ArrayRead (vobListPtr, i);
+
+		//Get visual name
+		mobVisualName = Vob_GetVisualName (vobPtr);
+
+		flagFound = FALSE;
+		if (MEMINT_SwitchG1G2 (1, 0)) {
+			//G1 example
 			if (Hlp_StrCmp (mobVisualName, "FIREPLACE_GROUND.ASC"))		//oCMobFire
 			|| (Hlp_StrCmp (mobVisualName, "FIREPLACE_GROUND2.ASC"))	//oCMobFire
 			//|| (Hlp_StrCmp (mobVisualName, "BARBQ_SCAV.MDS"))		//oCMobInter!
 			{
-				counter += 1;
-				
-				mob = _^ (vobPtr);
-				
-				triggerName = ConcatStrings ("FIREPLACE_TRIGGERFIREDAMAGE", IntToString (counter));
-				ptr = InsertTriggerScript (triggerName, _@ (mob._zCVob_trafoObjToWorld));
-
-				ts = _^ (ptr);
-
-				ts._zCTrigger_numCanBeActivated = -1;
-				ts._zCTrigger_countCanBeActivated = -1;
-
-				//Coby BBox from oCMobFire
-				MEM_CopyBytes(vobPtr + 124, ptr + 124, 12);	//_zCVob_bbox3D_mins
-				MEM_CopyBytes(vobPtr + 136, ptr + 136, 12);	//_zCVob_bbox3D_maxs
-
-				//Enable BBox - only for visual demonstration :)
-				ts._zCVob_bitfield[0] = ts._zCVob_bitfield[0] | zCVob_bitfield0_drawBBox3D;
-				
-				ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_reactToOnContact | zCTrigger_bitfield_callEventFuncs;
-				
-				ts._zCTrigger_fireDelaySec = divf(mkf(8), mkf(10));
-				ts._zCTrigger_retriggerWaitSec = divf(mkf(8), mkf(10));
-
-				ts.scriptFunc = "FirePlace_FireDamage_ApplyDamage";
+				flagFound = TRUE;
 			};
+		} else {
+			//G2A example
+			if (Hlp_StrCmp (mobVisualName, "NW_MISC_FIREPLACE_01.3DS"))	//zCVob
+			{
+				flagFound = TRUE;
+			};
+		};
 
-			i += 1;
-		end;
-	};
+		if (flagFound) {
+			counter += 1;
+			
+			mob = _^ (vobPtr);
+			
+			triggerName = ConcatStrings ("FIREPLACE_TRIGGERFIREDAMAGE", IntToString (counter));
+			ptr = InsertTriggerScript (triggerName, _@ (mob._zCVob_trafoObjToWorld));
+
+			ts = _^ (ptr);
+
+			ts._zCTrigger_numCanBeActivated = -1;
+			ts._zCTrigger_countCanBeActivated = -1;
+
+			//Coby BBox from oCMobFire
+			MEM_CopyBytes(vobPtr + 124, ptr + 124, 12);	//_zCVob_bbox3D_mins
+			MEM_CopyBytes(vobPtr + 136, ptr + 136, 12);	//_zCVob_bbox3D_maxs
+
+			//Enable BBox - only for visual demonstration :)
+			ts._zCVob_bitfield[0] = ts._zCVob_bitfield[0] | zCVob_bitfield0_drawBBox3D;
+			
+			ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_reactToOnContact | zCTrigger_bitfield_callEventFuncs;
+			
+			ts._zCTrigger_fireDelaySec = divf(mkf(8), mkf(10));
+			ts._zCTrigger_retriggerWaitSec = divf(mkf(8), mkf(10));
+
+			ts.scriptFunc = "FirePlace_FireDamage_ApplyDamage";
+		};
+
+		i += 1;
+	end;
 
 	//Free array
 	MEM_ArrayFree (vobListPtr);

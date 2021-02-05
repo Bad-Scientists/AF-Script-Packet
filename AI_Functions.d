@@ -130,7 +130,7 @@ func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 };
 
 func void _AI_TeleportKeepQueue (var string vobName) {
-	self = _^ (ECX);
+	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
 
 	var int pos[3];
 
