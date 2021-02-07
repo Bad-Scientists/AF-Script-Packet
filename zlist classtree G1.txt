@@ -1,0 +1,170 @@
+*** Enumerating class Hierarchy (#168) *** .... <zObject.cpp,#210>
+ - zCObject .... <zObject.cpp,#244>
+     - oCNpcTalent [objs 2571] [ctor 2571] .... <zObject.cpp,#244>
+     - oCSavegameInfo [objs 17] [ctor 17] .... <zObject.cpp,#244>
+     - oCSpell [objs 1] [ctor 1] .... <zObject.cpp,#244>
+     - zCAIBase [objs 1] [ctor 3] .... <zObject.cpp,#244>
+         - oCAICamera .... <zObject.cpp,#244>
+         - oCAIHuman_Stand .... <zObject.cpp,#244>
+         - oCAISound .... <zObject.cpp,#244>
+             - oCAIArrowBase .... <zObject.cpp,#244>
+                 - oCAIArrow .... <zObject.cpp,#244>
+             - oCAIDrop .... <zObject.cpp,#244>
+             - oCAIVobMove .... <zObject.cpp,#244>
+                 - oCAIVobMoveTorch .... <zObject.cpp,#244>
+         - zCAIBaseSound .... <zObject.cpp,#244>
+         - zCAICamera [objs 1] [ctor 2] .... <zObject.cpp,#244>
+         - zCAIPlayer .... <zObject.cpp,#244>
+             - oCAniCtrl_Human .... <zObject.cpp,#244>
+                 - oCAIHuman [objs 2] [ctor 2] .... <zObject.cpp,#244>
+     - zCArchiver .... <zObject.cpp,#244>
+         - zCArchiverBinSafe [ctor 2] .... <zObject.cpp,#244>
+         - zCArchiverGeneric [ctor 823] .... <zObject.cpp,#244>
+     - zCCSBlockBase .... <zObject.cpp,#244>
+         - zCCSAtomicBlock [objs 13179] [ctor 13179] .... <zObject.cpp,#244>
+         - zCCSBlock [objs 13180] [ctor 13180] .... <zObject.cpp,#244>
+             - zCCSSyncBlock .... <zObject.cpp,#244>
+             - zCCutscene .... <zObject.cpp,#244>
+                 - zCCSCutsceneContext [ctor 6] .... <zObject.cpp,#244>
+     - zCCSLib [objs 1] [ctor 1] .... <zObject.cpp,#244>
+     - zCCSManager .... <zObject.cpp,#244>
+         - oCCSManager [objs 1] [ctor 1] .... <zObject.cpp,#244>
+     - zCCSPlayer .... <zObject.cpp,#244>
+         - oCCSPlayer [objs 1] [ctor 4] .... <zObject.cpp,#244>
+     - zCCSPoolItem .... <zObject.cpp,#244>
+     - zCCSProps [ctor 6] .... <zObject.cpp,#244>
+         - oCCSProps .... <zObject.cpp,#244>
+     - zCCSRole .... <zObject.cpp,#244>
+     - zCEventManager [objs 508] [ctor 628] .... <zObject.cpp,#244>
+         - zCNetEventManager .... <zObject.cpp,#244>
+     - zCEventMessage .... <zObject.cpp,#244>
+         - oCMobMsg .... <zObject.cpp,#244>
+         - oCNpcMessage .... <zObject.cpp,#244>
+             - oCMsgAttack .... <zObject.cpp,#244>
+             - oCMsgConversation [objs 13185] [ctor 13221] .... <zObject.cpp,#244>
+             - oCMsgDamage .... <zObject.cpp,#244>
+             - oCMsgMagic .... <zObject.cpp,#244>
+             - oCMsgManipulate [ctor 1] .... <zObject.cpp,#244>
+             - oCMsgMovement [objs 2] [ctor 17] .... <zObject.cpp,#244>
+             - oCMsgState [objs 1] [ctor 3] .... <zObject.cpp,#244>
+             - oCMsgUseItem .... <zObject.cpp,#244>
+             - oCMsgWeapon .... <zObject.cpp,#244>
+         - zCCSCamera_EventMsg [ctor 6] .... <zObject.cpp,#244>
+         - zCCSCamera_EventMsgActivate [ctor 81] .... <zObject.cpp,#244>
+         - zCEvMsgCutscene [ctor 12] .... <zObject.cpp,#244>
+         - zCEventCommon .... <zObject.cpp,#244>
+         - zCEventCore [ctor 1] .... <zObject.cpp,#244>
+         - zCEventMover .... <zObject.cpp,#244>
+         - zCEventMusicControler .... <zObject.cpp,#244>
+         - zCEventScreenFX [ctor 1] .... <zObject.cpp,#244>
+     - zCLensFlareFX [objs 7] [ctor 7] [hash 0.006836] .... <zObject.cpp,#244>
+     - zCLightMap [objs 1910] [ctor 1910] .... <zObject.cpp,#244>
+     - zCMaterial [objs 3633] [ctor 3660] [hash 0.9648] .... <zObject.cpp,#244>
+     - zCModelAni [objs 1577] [ctor 1577] .... <zObject.cpp,#244>
+     - zCModelMeshLib [objs 2] [ctor 2] [hash 0.001953] .... <zObject.cpp,#244>
+     - zCNetManager .... <zObject.cpp,#244>
+     - zCNetVobControl .... <zObject.cpp,#244>
+     - zCObjectFactory [ctor 1] .... <zObject.cpp,#244>
+         - oCObjectFactory [objs 1] [ctor 1] .... <zObject.cpp,#244>
+     - zCResource .... <zObject.cpp,#244>
+         - zCSoundFX [objs 19] [ctor 26] [hash 0] .... <zObject.cpp,#244>
+         - zCTexture [objs 1269] [ctor 1277] [hash 0.6719] .... <zObject.cpp,#244>
+     - zCSkyControler .... <zObject.cpp,#244>
+         - zCSkyControler_Mid .... <zObject.cpp,#244>
+             - zCSkyControler_Indoor [objs 1] [ctor 2] .... <zObject.cpp,#244>
+             - zCSkyControler_Outdoor [objs 1] [ctor 3] .... <zObject.cpp,#244>
+     - zCTextureFileFormat .... <zObject.cpp,#244>
+         - zCTextureFileFormatInternal [ctor 188] .... <zObject.cpp,#244>
+         - zCTextureFileFormatTGA .... <zObject.cpp,#244>
+     - zCVertexBuffer [objs 190] [ctor 190] .... <zObject.cpp,#244>
+     - zCViewObject .... <zObject.cpp,#244>
+         - zCViewDraw [objs 1] [ctor 1] .... <zObject.cpp,#244>
+             - zCViewFX .... <zObject.cpp,#244>
+                 - zCViewPrint .... <zObject.cpp,#244>
+                     - zCViewDialog .... <zObject.cpp,#244>
+                         - oCViewDialogInventory [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                         - oCViewDialogItem .... <zObject.cpp,#244>
+                         - oCViewDialogItemContainer [objs 2] [ctor 2] .... <zObject.cpp,#244>
+                         - oCViewDialogStealContainer [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                         - oCViewDialogTrade [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                         - zCViewDialogChoice [objs 3] [ctor 3] .... <zObject.cpp,#244>
+     - zCVisual .... <zObject.cpp,#244>
+         - zCDecal [objs 523] [ctor 523] .... <zObject.cpp,#244>
+         - zCMesh [objs 24] [ctor 41] .... <zObject.cpp,#244>
+         - zCParticleFX [objs 339] [ctor 339] .... <zObject.cpp,#244>
+         - zCPolyStrip [ctor 16] .... <zObject.cpp,#244>
+         - zCProgMeshProto [objs 699] [ctor 700] [hash 0.4131] .... <zObject.cpp,#244>
+             - zCMeshSoftSkin [objs 7] [ctor 7] .... <zObject.cpp,#244>
+         - zCQuadMark [ctor 1] .... <zObject.cpp,#244>
+         - zCVisualAnimate .... <zObject.cpp,#244>
+             - zCModel [objs 1664] [ctor 1664] .... <zObject.cpp,#244>
+             - zCMorphMesh [objs 305] [ctor 307] .... <zObject.cpp,#244>
+     - zCVob [objs 9563] [ctor 9564] .... <zObject.cpp,#244>
+         - oCDummyVobGenerator .... <zObject.cpp,#244>
+         - oCVob .... <zObject.cpp,#244>
+             - oCItem [objs 4275] [ctor 4303] .... <zObject.cpp,#244>
+             - oCMOB [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                 - oCMobInter [objs 534] [ctor 534] .... <zObject.cpp,#244>
+                     - oCMobBed [objs 10] [ctor 10] .... <zObject.cpp,#244>
+                     - oCMobFire [objs 238] [ctor 238] .... <zObject.cpp,#244>
+                     - oCMobItemSlot .... <zObject.cpp,#244>
+                     - oCMobLadder [objs 73] [ctor 73] .... <zObject.cpp,#244>
+                     - oCMobLockable .... <zObject.cpp,#244>
+                         - oCMobContainer [objs 325] [ctor 325] .... <zObject.cpp,#244>
+                         - oCMobDoor [objs 305] [ctor 305] .... <zObject.cpp,#244>
+                     - oCMobSwitch [objs 9] [ctor 9] .... <zObject.cpp,#244>
+                     - oCMobWheel [objs 10] [ctor 10] .... <zObject.cpp,#244>
+             - oCNpc [objs 1194] [ctor 1194] .... <zObject.cpp,#244>
+         - zCCSCamera [objs 8] [ctor 48] .... <zObject.cpp,#244>
+         - zCCamTrj_KeyFrame [objs 16] [ctor 96] .... <zObject.cpp,#244>
+         - zCEffect .... <zObject.cpp,#244>
+             - oCVisualFX [objs 1] [ctor 3] [hash 0] .... <zObject.cpp,#244>
+                 - oCVisFX_Lightning .... <zObject.cpp,#244>
+                 - oCVisFX_MultiTarget .... <zObject.cpp,#244>
+             - zCEarthquake .... <zObject.cpp,#244>
+             - zCMusicControler .... <zObject.cpp,#244>
+             - zCPFXControler [objs 2] [ctor 2] .... <zObject.cpp,#244>
+             - zCTouchAnimate .... <zObject.cpp,#244>
+                 - zCTouchAnimateSound .... <zObject.cpp,#244>
+             - zCTouchDamage .... <zObject.cpp,#244>
+                 - oCTouchDamage .... <zObject.cpp,#244>
+             - zCVobAnimate [objs 164] [ctor 164] .... <zObject.cpp,#244>
+             - zCVobLensFlare [objs 178] [ctor 178] .... <zObject.cpp,#244>
+             - zCVobScreenFX [objs 9] [ctor 9] .... <zObject.cpp,#244>
+         - zCTriggerBase .... <zObject.cpp,#244>
+             - zCCodeMaster .... <zObject.cpp,#244>
+             - zCMessageFilter .... <zObject.cpp,#244>
+             - zCMoverControler .... <zObject.cpp,#244>
+             - zCTrigger .... <zObject.cpp,#244>
+                 - oCCSTrigger [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                 - oCTriggerChangeLevel [objs 6] [ctor 6] .... <zObject.cpp,#244>
+                 - oCTriggerScript [objs 25] [ctor 25] .... <zObject.cpp,#244>
+                 - zCMover [objs 41] [ctor 41] .... <zObject.cpp,#244>
+                 - zCTriggerList [objs 1] [ctor 1] .... <zObject.cpp,#244>
+                 - zCTriggerTeleport .... <zObject.cpp,#244>
+             - zCTriggerUntouch .... <zObject.cpp,#244>
+             - zCTriggerWorldStart .... <zObject.cpp,#244>
+         - zCVobLevelCompo [ctor 6] .... <zObject.cpp,#244>
+         - zCVobLight [objs 965] [ctor 965] .... <zObject.cpp,#244>
+         - zCVobSpot [objs 2240] [ctor 2240] .... <zObject.cpp,#244>
+         - zCVobStair [objs 11] [ctor 11] .... <zObject.cpp,#244>
+         - zCVobStartpoint [objs 1] [ctor 1] .... <zObject.cpp,#244>
+         - zCVobWaypoint .... <zObject.cpp,#244>
+         - zCZone .... <zObject.cpp,#244>
+             - oCZoneMusic [objs 39] [ctor 39] .... <zObject.cpp,#244>
+                 - oCZoneMusicDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+             - zCVobSound [objs 518] [ctor 518] .... <zObject.cpp,#244>
+                 - zCVobSoundDaytime [objs 92] [ctor 92] .... <zObject.cpp,#244>
+             - zCZoneMusic .... <zObject.cpp,#244>
+             - zCZoneReverb .... <zObject.cpp,#244>
+                 - zCZoneReverbDefault .... <zObject.cpp,#244>
+             - zCZoneVobFarPlane [objs 2] [ctor 2] .... <zObject.cpp,#244>
+                 - zCZoneVobFarPlaneDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+             - zCZoneZFog [objs 2] [ctor 2] .... <zObject.cpp,#244>
+                 - zCZoneZFogDefault [objs 1] [ctor 1] .... <zObject.cpp,#244>
+     - zCVobLightPreset [objs 10] [ctor 10] .... <zObject.cpp,#244>
+     - zCWayNet [objs 1] [ctor 6] .... <zObject.cpp,#244>
+     - zCWaypoint [objs 3537] [ctor 3537] .... <zObject.cpp,#244>
+     - zCWorld [ctor 1] .... <zObject.cpp,#244>
+         - oCWorld [objs 1] [ctor 1] .... <zObject.cpp,#244>
+*********************************** .... <zObject.cpp,#254>

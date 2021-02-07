@@ -26,7 +26,7 @@ const string InfoManagerDefaultColorDialogGrey = "C8C8C8";	//G1 standard dialog 
 //Default text alignment
 const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;	//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
 
-var int InfoManagerSpinnerPageSize;				//Page Up/Page Down
+const int InfoManagerSpinnerPageSize = 5;			//Page Up/Page Down
 var int InfoManagerSpinnerValueMin;				//Home
 var int InfoManagerSpinnerValueMax;				//End
 
@@ -36,10 +36,12 @@ const int InfoManagerIndicatorAlpha = 255;			//Default alpha value for 'answer' 
 const string InfoManagerSpinnerIndicatorString = "<-- -->";	//Default spinner indicator (non animated)
 const string InfoManagerAnswerIndicatorString = "...";		//Default answer indicator
 
-var int InfoManagerSpinnerIndicatorAnimation;			//Set to TRUE if you want animated spinner
+const int InfoManagerSpinnerIndicatorAnimation = 1;		//Set to TRUE if you want animated spinner. Animated spinners require LeGo_FrameFunctions intialization !
+								//LeGo_Init (yourBits | LeGo_FrameFunctions);
 
 //Dialog 'NumKey' controls [WIP]
-var int InfoManagerNumKeys;					//Set to TRUE if you want to enable num key support for dialogs
+const int InfoManagerNumKeysControls = 1;			//Set to TRUE if you want to enable num key support for dialogs
+const int InfoManagerNumKeysNumbers = 0;			//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
 /*
  *	Internal variables
@@ -385,7 +387,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 //--- Num Keys control [WIP] -->
 
-			if (InfoManagerNumKeys)
+			if (InfoManagerNumKeysControls)
 			{
 				//Override Num Keys 
 				if (key == KEY_0) { cancel = TRUE; };
@@ -826,7 +828,7 @@ MEM_InformationMan.LastMethod:
 							};
 						};
 
-						if (InfoManagerNumKeys) {
+						if (InfoManagerNumKeysNumbers) {
 							dlgDescription = ConcatStrings (InfoManagerNumKeyString (i + 1), dlgDescription);
 						};
 

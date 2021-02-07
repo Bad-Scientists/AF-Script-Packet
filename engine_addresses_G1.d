@@ -78,6 +78,7 @@ const int oCViewDialogTrade__HandleEvent	= 7510432;
 /*
  *	Enhanced oCTriggerScript
  */
+
 //007DBF2C  .rdata    Debug data           ??_7zCTrigger@@6B@
 const int zCTrigger_vtbl = 8240940;
 
@@ -113,3 +114,26 @@ func int Hlp_Is_zCParticleFX (var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
 };
+
+/*
+ *	Enable Player States
+ */
+
+//006C5C60  .text     Debug data           ?DoAIState@oCNPC_States@@QAEHXZ
+const int oCNPC_States__DoAIState = 7101536;
+
+/*
+ *	PickLockHelper
+ */
+
+//00682990  .text     Debug data           ?PickLock@oCMobLockable@@MAEHPAVoCNpc@@D@Z
+const int oCMobLockable__PickLock = 6826384;
+
+//0067FCA0  .text     Debug data           ?StartInteraction@oCMobInter@@MAEXPAVoCNPC@@@Z
+const int oCMobInter__StartInteraction = 6814880;
+
+//0067FFD0  .text     Debug data           ?EndInteraction@oCMobInter@@UAEXPAVoCNPC@@H@Z
+const int oCMobInter__EndInteraction = 6815696;
+
+//00680250  .text     Debug data           ?StopInteraction@oCMobInter@@UAEXPAVoCNPC@@@Z
+const int oCMobInter__StopInteraction = 6816336;
