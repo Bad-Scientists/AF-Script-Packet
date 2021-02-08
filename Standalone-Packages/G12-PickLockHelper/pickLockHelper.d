@@ -90,7 +90,6 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 		//Reset PickLockHelper string
 		if (bBrokenOpen) {
 			pickLockHelper_CurrentCombination = "";
-			B_Msg_Add ("TEST");
 		};
 	} else {
 		//Reset PickLockHelper string
