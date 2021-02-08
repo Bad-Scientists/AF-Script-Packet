@@ -98,6 +98,6 @@ Simple feature, that shows Pick Lock combination progress.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnablePlayerStates.src` for G1
     * `AF-Script-Packet\_headers_G2_EnablePlayerStates.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnablePlayerStates_Init ();`.
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_PickLockHelper_Init ();`.
 
     [![Gothic FirePlace zCTrigger FireDamage](https://img.youtube.com/vi/kdX9e3QlAbg/0.jpg)](https://www.youtube.com/watch?v=kdX9e3QlAbg)
