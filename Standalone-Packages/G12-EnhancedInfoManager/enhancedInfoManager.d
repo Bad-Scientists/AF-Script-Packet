@@ -516,17 +516,6 @@ MEM_InformationMan.LastMethod:
 			//Reset by default, script will figure out whether Spinning is poosible below, when it updates all dialog descriptions
 			InfoManagerSpinnerPossible = FALSE;
 
-			//var int choiceView; choiceView = manager.DlgChoice;
-
-			//DlgChoice.backTex => 96
-
-			//Nacita nastavenu texturu 
-			//DLG_CHOICE.TGA
-			//B_Msg_Add (zCTexture_GetName (MEM_ReadInt (choiceView + 96)));
-
-			//Updatuje texturu pozadia
-			//MEM_WriteInt (choiceView + 96, zCTexture_Load ("CONSOLE.TGA"));
-
 			arr = _^ (choiceView + 172);
 			if (arr.array) {
 				var int nextPosY; nextPosY = 0;

@@ -241,8 +241,6 @@ func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
 	if (ptr) {
 		ptr = MEM_ReadInt (ptr + 252);	//oCViewDialogStealContainer
 		if (ptr) {
-			//B_Msg_Add (ConcatStrings ("Trader offer: ", IntToString (MEM_ReadInt (ptr))));	//8254956 oCViewDialogStealContainer ?
-
 			ptr = MEM_ReadInt (ptr + 256);	//oCItemContainer
 			container_Trader_Offer = _^ (ptr);
 		};
@@ -254,8 +252,6 @@ func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
 	if (ptr) {
 		ptr = MEM_ReadInt (ptr + 260);	//oCViewDialogItemContainer
 		if (ptr) {
-			//B_Msg_Add (ConcatStrings ("Buyer offer: ", IntToString (MEM_ReadInt (ptr))));		//8254956 oCViewDialogStealContainer ?
-
 			ptr = MEM_ReadInt (ptr + 256);	//oCItemContainer
 			container_Buyer_Offer = _^ (ptr);
 		};
@@ -267,8 +263,6 @@ func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
 	if (ptr) {
 		ptr = MEM_ReadInt (ptr + 264);	//oCViewDialogItemInventory
 		if (ptr) {
-			//B_Msg_Add (ConcatStrings ("Buyer: ", IntToString (MEM_ReadInt (ptr))));		//8254716 oCViewDialogItemInventory ?
-
 			ptr = MEM_ReadInt (ptr + 256);	//oCItemContainer
 			container_Buyer = _^ (ptr);
 		};
