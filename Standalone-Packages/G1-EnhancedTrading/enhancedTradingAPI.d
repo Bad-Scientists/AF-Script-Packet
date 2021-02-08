@@ -49,13 +49,12 @@ func int NPC_WantsToBuyItems (var int slfInstance, var int itemPtr) {
 	var oCItem itm; itm = _^ (itemPtr);
 
 // -->	YOU CAN DEFINE NPC-SPECIFIC RULES HERE
+/*
 	if (Hlp_GetInstanceID (slf) == ORG_855_Wolf) {
 		if (Hlp_GetInstanceID (itm) == Wolf_Skin) {
 
-			/*
-				Check how many EV_PLAYANI_NOOVERLAY events we have in AI queue. If none - then play T_NO animation and say that we are not interrested.
-				This will add to Event Manager event: EV_PLAYANI_NOOVERLAY.
-			*/
+			//Check how many EV_PLAYANI_NOOVERLAY events we have in AI queue. If none - then play T_NO animation and say that we are not interrested.
+			//This will add to Event Manager event: EV_PLAYANI_NOOVERLAY.
 			if (NPC_EM_GetEventCountByEventName (slf, "EV_PLAYANI_NOOVERLAY") == 0)
 			{
 				MEM_PushInstParam (slf);
@@ -69,6 +68,7 @@ func int NPC_WantsToBuyItems (var int slfInstance, var int itemPtr) {
 			return FALSE;
 		};
 	};
+*/
 // <--
 
 	return TRUE;

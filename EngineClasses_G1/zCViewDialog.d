@@ -739,7 +739,7 @@ class oCViewDialogTrade {
 	var int _vtbl;			//0
 	var int refctr;			//4
 	var int hashindex;		//8
-	var int hashNext;			//12
+	var int hashNext;		//12
 
 	/*
 	Seems like at u16 there is actually a string! which was so far completely empty
@@ -749,7 +749,7 @@ class oCViewDialogTrade {
 	var int u28;                 //28
 	var int u32;                 //32
 	*/
-	var string objectName; //16
+	var string objectName;		//16
 
 	var int _zCViewBase_vtbl; //36
 

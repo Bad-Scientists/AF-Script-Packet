@@ -49,3 +49,26 @@ func int Hlp_Is_zCParticleFX (var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
 };
+
+/*
+ *	Enable Player States
+ */
+
+//0x0076D1A0 public: int __thiscall oCNPC_States::DoAIState(void)
+const int oCNPC_States__DoAIState = 7786912;
+
+/*
+ *	PickLockHelper
+ */
+
+//0x00724800 protected: virtual int __thiscall oCMobLockable::PickLock(class oCNpc *,char)
+const int oCMobLockable__PickLock = 7489536;
+
+//0x00721580 protected: virtual void __thiscall oCMobInter::StartInteraction(class oCNpc *)
+const int oCMobInter__StartInteraction = 7476608;
+
+//0x00721950 public: virtual void __thiscall oCMobInter::EndInteraction(class oCNpc *,int)
+const int oCMobInter__EndInteraction = 7477584;
+
+//0x00721C20 public: virtual void __thiscall oCMobInter::StopInteraction(class oCNpc *)
+const int oCMobInter__StopInteraction = 7478304;

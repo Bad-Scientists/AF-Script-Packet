@@ -75,3 +75,29 @@ In a folder `AF-Script-Packet\Standalone-Packages\G12-EnhancedoCTriggerScript\` 
 
     [![Gothic FirePlace zCTrigger FireDamage](https://img.youtube.com/vi/U9IVhqSixW0/0.jpg)](https://www.youtube.com/watch?v=U9IVhqSixW0)
 
+### Gothic 1 & 2 Enable Player States
+AI states that you can use on Player are hardcoded in engine, in vanilla you can use following:
+Gothic 1: ZS_ASSESSMAGIC, ZS_ASSESSSTOPMAGIC, ZS_MAGICFREEZE, ZS_SHORTZAPPED, ZS_ZAPPED, ZS_PYRO, ZS_MAGICSLEEP, ZS_MAGICFEAR
+Gothic 2: ZS_ASSESSMAGIC, ZS_ASSESSSTOPMAGIC, ZS_MAGICFREEZE, ZS_WHIRLWIND, ZS_SHORTZAPPED, ZS_ZAPPED, ZS_PYRO, ZS_MAGICSLEEP
+
+This package allows you to enable additional AI States. (without limitation)
+
+1. Make sure both **Ikarus** and **LeGo** are parsed from your `Gothic.src` file.
+1. Copy all files from this repository to your Gothic work folder `_work\data\Scripts\Content\AF-Script-Packet`.
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_EnablePlayerStates.src` for G1
+    * `AF-Script-Packet\_headers_G2_EnablePlayerStates.src` for G2A
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnablePlayerStates_Init ();`.
+
+### Gothic 1 & 2 Pick Lock Helper
+
+Simple feature, that shows Pick Lock combination progress.
+
+1. Make sure both **Ikarus** and **LeGo** are parsed from your `Gothic.src` file.
+1. Copy all files from this repository to your Gothic work folder `_work\data\Scripts\Content\AF-Script-Packet`.
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_EnablePlayerStates.src` for G1
+    * `AF-Script-Packet\_headers_G2_EnablePlayerStates.src` for G2A
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnablePlayerStates_Init ();`.
+
+    [![Gothic FirePlace zCTrigger FireDamage](https://img.youtube.com/vi/kdX9e3QlAbg/0.jpg)](https://www.youtube.com/watch?v=kdX9e3QlAbg)

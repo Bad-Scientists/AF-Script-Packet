@@ -118,7 +118,6 @@ func void FirePlace_FireDamage_ApplyDamage () {
  *		};
  *
  */
- //FIREPLACE_TRIGGERFIREDAMAGE
 func void FirePlace_AddFireDamageTriggers () {
 	var int vobPtr;
 	
