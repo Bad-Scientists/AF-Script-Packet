@@ -6,7 +6,8 @@
  *
  *	func void Init_Global () {
  *		...
- *		InfoManagerNumKeys = TRUE;
+ *		InfoManagerNumKeysControls = TRUE;
+ *		InfoManagerNumKeysNumbers = TRUE;
  *		InfoManagerSpinnerIndicatorAnimation = TRUE;
  *		G12_EnhancedInfoManager_Init ();
  *	};
