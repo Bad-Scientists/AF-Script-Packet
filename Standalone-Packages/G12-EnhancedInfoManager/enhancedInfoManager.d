@@ -23,6 +23,9 @@
 const string InfoManagerDefaultDialogColorSelected = "FFFFFF";	//G1 standard dialog - white color FFFFFF
 const string InfoManagerDefaultColorDialogGrey = "C8C8C8";	//G1 standard dialog - grey color C8C8C8
 
+const string InfoManagerDisabledDialogColorSelected = "808080";	//Disabled color - selected
+const string InfoManagerDisabledColorDialogGrey = "808080";	//Disabled color - grey
+
 //Default text alignment
 const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;	//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
 
@@ -56,6 +59,8 @@ var string InfoManagerAnswer;
 var int InfoManagerSpinnerPossible;
 var int InfoManagerSpinnerValue;
 var string InfoManagerSpinnerID;
+
+var int InfoManagerChoiceDisabled;
 
 //Variables used for elimination of unnecessary code runnings
 var int InfoManagerLastChoiceSelected;
@@ -133,7 +138,163 @@ func string InfoManagerNumKeyString (var int index) {
 	return s;
 };
 
+func int Choice_IsDisabled (var string s) {
+	if (STR_IndexOf (s, "d@ ") > -1) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
+func int Choice_IsAnswer (var string s) {
+	if (STR_IndexOf (s, "a@ ") > -1) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
+func int Choice_IsSpinner (var string s) {
+	if (STR_IndexOf (s, "s@") > -1) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
+func string InfoManager_GetChoiceDescription (var int index) {
+	if (!MEM_InformationMan.IsWaitingForSelection) { return ""; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+	
+	if (!choiceView) { return ""; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	var zCArray arr; arr = _^ (choiceView + 172);
+
+	if (arr.array) {
+		var int infoPtr;
+		var oCInfo dlgInstance;
+
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO)
+		{
+			var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
+			var C_NPC her; her = _^ (MEM_InformationMan.player);
+
+			infoPtr = oCInfoManager_GetInfoUnimportant (slf, her, index);
+
+			if (infoPtr) {
+				dlgInstance = _^ (infoPtr);
+				return dlgInstance.description;
+			};
+		} else
+		//Choices - have to be extracted from oCInfo.listChoices_next
+		//MEM_InformationMan.Info is oCInfo pointer
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+			infoPtr = MEM_InformationMan.Info;
+		
+			if (infoPtr) {
+				dlgInstance = _^ (infoPtr);
+
+				if (dlgInstance.listChoices_next) {
+					//loop counter for all Choices
+					var int i; i = 0;
+
+					var oCInfoChoice dlgChoice;
+
+					var int list; list = dlgInstance.listChoices_next;
+					var zCList l;
+					
+					while (list);
+						l = _^ (list);
+						if (l.data) {
+							//if our dialog option is dialog choice - put text to dlgDescription
+							if (i == index) {
+								dlgChoice = MEM_PtrToInst (l.data);
+								return dlgChoice.Text;
+							};
+						};
+						
+						list = l.next;
+						i += 1;
+					end;
+				};
+			};
+		};
+	};
+	
+	return "";
+};
+
+func void InfoManager_SkipDisabledDialogChoices (var int key) {
+	var string s;
+
+	var zCViewDialogChoice dlg;
+	var int nextChoiceIndex;
+	var int lastChoiceIndex;
+
+	dlg = _^ (MEM_InformationMan.DlgChoice);
+	lastChoiceIndex = dlg.ChoiceSelected;
+	nextChoiceIndex = lastChoiceIndex;
+
+	var int loop; loop = MEM_StackPos.position;
+	
+	if (key == KEY_UPARROW)
+	//2057 - Wheel up
+	|| (key == 2057)
+	{
+		nextChoiceIndex -= 1;
+		
+		if (nextChoiceIndex < 0) {
+			nextChoiceIndex = dlg.Choices - 1;
+		};
+	};
+
+	if (key == KEY_DOWNARROW)
+	//2058 - Wheel down
+	|| (key == 2058)
+	{
+		nextChoiceIndex += 1;
+		
+		if (nextChoiceIndex >= dlg.Choices) {
+			nextChoiceIndex = 0;
+		};
+	};
+
+	s = InfoManager_GetChoiceDescription (nextChoiceIndex);
+	
+	InfoManagerChoiceDisabled = FALSE;
+
+	if (Choice_IsDisabled (s)) {
+		//Auto-scrolling
+		if (key == -1) {
+			key = KEY_DOWNARROW;
+			zCViewDialogChoice_SelectNext ();
+			MEM_StackPos.position = loop;
+		} else {
+			InfoManagerChoiceDisabled = TRUE;
+		};
+
+		//Prevent infinite loops
+		if (nextChoiceIndex != lastChoiceIndex) {
+			if (key == KEY_UPARROW) {
+				zCViewDialogChoice_SelectPrevious ();
+			} else {
+				zCViewDialogChoice_SelectNext ();
+			};
+
+			MEM_StackPos.position = loop;
+		};
+	};
+};
+
 func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
+	var string s;
+
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
 	InfoManagerUpdateState = cIM2BChanged;
 	
@@ -195,7 +356,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				InfoManagerAnswerMode = !InfoManagerAnswerMode;
 			};
 			
-			var string s; s = "";
+			s = "";
 
 			if (InfoManagerAnswerMode) {
 				var int shift;
@@ -404,9 +565,21 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		};
 
 //--- Additional tweaks -->
+
+		//G2A tweak - dialog confirmation with SPACE
 		if (!InfoManagerAnswerPossible) {
-			//G2A tweak - dialog confirmation with SPACE
 			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
+		};
+
+		//Skip disabled dialog choices
+		if (key == KEY_UPARROW)
+		|| (key == KEY_DOWNARROW)
+		//2057 - Wheel up
+		|| (key == 2057)
+		//2058 - Wheel down
+		|| (key == 2058)
+		{
+			InfoManager_SkipDisabledDialogChoices (key);
 		};
 	};
 
@@ -417,6 +590,14 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 //	|| (MEM_InformationMan.IsWaitingForScript) this would prevent us from cancelling output units
 	{
 		cancel = TRUE;
+	};
+
+	//Safety check in case of disabled dialog choice
+	if (InfoManagerChoiceDisabled) {
+		if (key == KEY_RETURN) {
+			cancel = TRUE;
+			update = FALSE;
+		};
 	};
 
 	if (cancel) {
@@ -436,6 +617,8 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
 
 	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+	
+	if (!choiceView) { return; };
 
 	var int i;
 	var zCArray arr;
@@ -509,6 +692,9 @@ MEM_InformationMan.LastMethod:
 	var int InfoManagerIndicatorColor;
 
 	if (dlg.IsActivated) {
+		//Auto-scrolling for disabled dialog choices
+		InfoManager_SkipDisabledDialogChoices (-1);
+
 		if (InfoManagerUpdateState == cIM2BChanged)
 		|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
 			//Reset by default, script will figure out whether Answer is possible below, when it updates all dialog descriptions
@@ -581,15 +767,19 @@ MEM_InformationMan.LastMethod:
 								//loop counter for all Choices
 								var int j; j = 0;
 								
-								var zCList l;
+								var oCInfoChoice dlgChoice;
 								var int list; list = dlgInstance.listChoices_next;
+								var zCList l;
+
 								while (list);
-									l = _^(list);
-									var oCInfoChoice dlgChoice; dlgChoice = MEM_PtrToInst (l.data);
+									l = _^ (list);
 									
 									//if our dialog option is dialog choice - put text to dlgDescription
-									if (i == j) {
-										dlgDescription = dlgChoice.Text;
+									if (l.data) {
+										if (i == j) {
+											dlgChoice = MEM_PtrToInst (l.data);
+											dlgDescription = dlgChoice.Text;
+										};
 									};
 									
 									list = l.next;
@@ -601,139 +791,321 @@ MEM_InformationMan.LastMethod:
 						/* Extract font, font selected, color and color selected from dlgDescription.
 						   Clear dlgDescription in process. */
 
-						//Extract font name
-						if (STR_StartsWith (dlgDescription, "f@")) {
+						var string s1;
+						var string s2;
+
+						//Disabled dialog choices
+						var int disabledChoice; disabledChoice = -1;
+
+						index = (STR_IndexOf (dlgDescription, "d@ "));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
 							len = STR_Len (dlgDescription);
-							len -= 2;
-							
-							dlgDescription = mySTR_SubStr (dlgDescription, 2, len);
-							index = STR_IndexOf (dlgDescription, " ");
+							len -= 3;
 							
 							if (index > 0) {
-								len = STR_Len (dlgDescription);
-								len -= (index + 1);
-								
-								dlgFont = mySTR_Prefix (dlgDescription, index);
-								dlgDescription = mySTR_SubStr (dlgDescription, index + 1, len);
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
 							};
+
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len);
+							
+							dlgDescription = ConcatStrings (s1, s2);
+
+							disabledChoice = i;
+						};
+
+						//Extract font name
+						index = (STR_IndexOf (dlgDescription, "f@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
+							};
+
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 2, len - 2);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							dlgFont = mySTR_Prefix (s2, index);
+							
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 
 						//Extract font selected name
-						if (STR_StartsWith (dlgDescription, "fs@")) {
-							len = STR_Len (dlgDescription);
-							len -= 3;
-							
-							dlgDescription = mySTR_SubStr (dlgDescription, 3, len);
-							index = STR_IndexOf (dlgDescription, " ");
-							
+						index = (STR_IndexOf (dlgDescription, "fs@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
 							if (index > 0) {
-								len = STR_Len (dlgDescription);
-								len -= (index + 1);
-								
-								dlgFontSelected = mySTR_Prefix (dlgDescription, index);
-								dlgDescription = mySTR_SubStr (dlgDescription, index + 1, len);
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
 							};
+
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len - 3);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							dlgFontSelected = mySTR_Prefix (s2, index);
+							
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
+							dlgDescription = ConcatStrings (s1, s2);
 						};
-						
+
 						//Extract color grayed
-						if (STR_StartsWith (dlgDescription, "h@")) {
-							len = STR_Len (dlgDescription);
-							len -= 2;
-							
-							dlgDescription = mySTR_SubStr (dlgDescription, 2, len);
-							index = STR_IndexOf (dlgDescription, " ");
-							
+						index = (STR_IndexOf (dlgDescription, "h@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
 							if (index > 0) {
-								len = STR_Len (dlgDescription);
-								len -= (index + 1);
-								
-								dlgColor = mySTR_Prefix (dlgDescription, index);
-								dlgDescription = mySTR_SubStr (dlgDescription, index + 1, len);
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
 							};
+
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 2, len - 2);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							dlgColor = mySTR_Prefix (s2, index);
+							
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 						
 						//Extract color selected
-						if (STR_StartsWith (dlgDescription, "hs@")) {
-							len = STR_Len (dlgDescription);
-							len -= 3;
-							
-							dlgDescription = mySTR_SubStr (dlgDescription, 3, len);
-							index = STR_IndexOf (dlgDescription, " ");
-							
+						index = (STR_IndexOf (dlgDescription, "hs@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
 							if (index > 0) {
-								len = STR_Len (dlgDescription);
-								len -= (index + 1);
-								
-								dlgColorSelected = mySTR_Prefix (dlgDescription, index);
-								dlgDescription = mySTR_SubStr (dlgDescription, index + 1, len);
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
 							};
+
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len - 3);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							dlgColorSelected = mySTR_Prefix (s2, index);
+							
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 						
 						var int alignment; alignment = InfoManagerDefaultDialogAlignment;
 						var int textWidth;
 
 						//al@ align left
-						if (STR_StartsWith (dlgDescription, "al@")) {
+						index = (STR_IndexOf (dlgDescription, "al@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
+							};
+
 							len = STR_Len (dlgDescription);
-							len -= 4;
-							dlgDescription = mySTR_SubStr (dlgDescription, 4, len);
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len - 3);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
 							
 							alignment = ALIGN_LEFT;
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 
 						//ac@ align center
-						if (STR_StartsWith (dlgDescription, "ac@")) {
+						index = (STR_IndexOf (dlgDescription, "ac@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
+							};
+
 							len = STR_Len (dlgDescription);
-							len -= 4;
-							dlgDescription = mySTR_SubStr (dlgDescription, 4, len);
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len - 3);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
 							
 							alignment = ALIGN_CENTER;
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 
 						//ar@ align right
-						if (STR_StartsWith (dlgDescription, "ar@")) {
+						index = (STR_IndexOf (dlgDescription, "ar@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
+							};
+
 							len = STR_Len (dlgDescription);
-							len -= 4;
-							dlgDescription = mySTR_SubStr (dlgDescription, 4, len);
+							s2 = mySTR_SubStr (dlgDescription, index + 3, len - 3);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
 							
 							alignment = ALIGN_RIGHT;
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 
 						var int answerDialog; answerDialog = -1;
 						
 						//answer
-						if (STR_StartsWith (dlgDescription, "a@")) {
-							len = STR_Len (dlgDescription);
-							len -= 3;
-							dlgDescription = mySTR_SubStr (dlgDescription, 3, len);
+						index = (STR_IndexOf (dlgDescription, "a@"));
 
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
+							};
+
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 2, len - 2);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
 							answerDialog = i;
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 						
 						var int spinnerDialog; spinnerDialog = -1;
 						var string spinnerDialogID; spinnerDialogID = "";
 
 						//spinner s@
-						if (STR_StartsWith (dlgDescription, "s@")) {
-							len = STR_Len (dlgDescription);
-							len -= 2;
-							dlgDescription = mySTR_SubStr (dlgDescription, 2, len);
-							
-							index = STR_IndexOf (dlgDescription, " ");
-							
-							if (index > 0)
-							{
-								len = STR_Len (dlgDescription);
-								len -= (index + 1);
-								
-								spinnerDialogID = mySTR_Prefix (dlgDescription, index);
-								dlgDescription = mySTR_SubStr (dlgDescription, index + 1, len);
+						index = (STR_IndexOf (dlgDescription, "s@"));
+
+						if (index > -1) {
+							s1 = ""; s2 = "";
+
+							if (index > 0) {
+								s1 = mySTR_SubStr (dlgDescription, 0, index);
 							};
 
+							len = STR_Len (dlgDescription);
+							s2 = mySTR_SubStr (dlgDescription, index + 2, len - 2);
+
+							index = STR_IndexOf (s2, " ");
+							len = STR_Len (s2);
+
+							if (index == -1) {
+								index = len;
+							};
+
+							spinnerDialogID = mySTR_Prefix (s2, index);
+
+							if (index == len) {
+								s2 = "";
+							} else {							
+								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+							};
+							
 							spinnerDialog = i;
+							dlgDescription = ConcatStrings (s1, s2);
 						};
 						
 						//txtIndicator.posx = dlg.psizex - txt.posx - textWidth - dlg.offsetTextpx;
+						//
+						if (disabledChoice == i) {
+							dlgColorSelected = InfoManagerDisabledDialogColorSelected;
+							dlgColor = InfoManagerDisabledColorDialogGrey;
+						};
 
 						//Apply dlgColor and dlgColorSelected
 						//Is current dialog choice selected one ?

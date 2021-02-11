@@ -325,7 +325,7 @@ func void zCViewDialogChoice_SelectNext () {
 	const int zCViewDialogChoice__SelectNext_G2 = 6878000;
 
 	const int null = 0;
-
+	
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (null), MEMINT_SwitchG1G2 (zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
