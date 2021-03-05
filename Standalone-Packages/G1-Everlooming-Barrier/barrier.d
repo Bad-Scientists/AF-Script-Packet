@@ -58,7 +58,7 @@ func void _hook_oCBarrier_Render (){
 	};
 };
 
-func void G1_Barrier_Everlooming_Init (){
+func void G1_BarrierEverlooming_Init (){
 	const int once = 0;
 
 	if (!once){
