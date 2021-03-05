@@ -72,3 +72,17 @@ const int oCMobInter__EndInteraction = 7477584;
 
 //0x00721C20 public: virtual void __thiscall oCMobInter::StopInteraction(class oCNpc *)
 const int oCMobInter__StopInteraction = 7478304;
+
+/*
+ *	Prevent Looting
+ */
+
+//0x00762970 public: void __thiscall oCNpc::OpenDeadNpc(void)
+const int oCNPC__OpenDeadNPC = 7743856;
+
+/*
+ *	Interface
+ */
+
+//0x00699F60 protected: int __thiscall oCAIHuman::PC_ActionMove(int)
+const int oCAIHuman__PC_ActionMove = 6922080;
