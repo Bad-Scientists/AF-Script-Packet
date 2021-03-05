@@ -1,6 +1,6 @@
 /*
  *	Author: szapp (mud-freak)
- *	Oringinal post:
+ *	Original post:
  *	https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
  *
  *	Small change in case of SearchVobsByVisual function visual is checked with function Vob_GetVisualName (in order to be able to work with oCMob objects
