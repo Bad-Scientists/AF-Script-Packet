@@ -1,7 +1,7 @@
-func void AI_TurnToPos (var int slfInstance, var int posPtr) {
+func void AI_TurnToPos (var int slfinstance, var int posPtr) {
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -11,9 +11,8 @@ func void AI_TurnToPos (var int slfInstance, var int posPtr) {
 	AI_TurnToSound (slf);
 };
 
-
-func void AI_TurnToWP (var int slfInstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func void AI_TurnToWP (var int slfinstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -34,8 +33,8 @@ func void AI_TurnToWP (var int slfInstance, var string waypoint) {
 		/
 	[pos]						(pos = [self] - [dir vector])
 */
-func void AI_TurnAwayWP (var int slfInstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -62,10 +61,10 @@ func void AI_TurnAwayWP (var int slfInstance, var string waypoint) {
 	AI_TurnToPos (slf, _@ (pos));
 };
 
-func void AI_TurnToVobPtr (var int slfInstance, var int vobPtr) {
+func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -76,10 +75,10 @@ func void AI_TurnToVobPtr (var int slfInstance, var int vobPtr) {
 	AI_TurnToPos (slf, _@ (pos));
 };
 
-func void AI_TurnAwayVobPtr (var int slfInstance, var int vobPtr) {
+func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -102,10 +101,10 @@ func void AI_TurnAwayVobPtr (var int slfInstance, var int vobPtr) {
 	AI_TurnToPos (slf, _@ (pos));
 };
 
-func void AI_GotoPos (var int slfInstance, var int posPtr) {
+func void AI_GotoPos (var int slfinstance, var int posPtr) {
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -115,10 +114,10 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 	AI_GotoSound (slf);
 };
 
-func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
+func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -164,10 +163,48 @@ func void _AI_TeleportKeepQueue (var string vobName) {
 	Vob.trafoObjToWorld[11] = pos[2];
 };
 
-func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+func string _AI_GetAniName_T_MAGRUN_2_HEASHOOT () {
+	//G1 version has much cooler teleportation animation with particle effects ;-)
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		return "T_STAND_2_TELEPORT";
+	};
+
+	//G2A teleportation animation
+	return "T_MAGRUN_2_HEASHOOT";
+};
+
+func string _AI_GetAniName_T_HEASHOOT_2_STAND () {
+	//G1 version has much cooler teleportation animation with particle effects ;-)
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		return "T_TELEPORT_2_STAND";
+	};
+
+	//G2A teleportation animation
+	return "T_HEASHOOT_2_STAND";
+};
+
+func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	AI_PlayAni (slf, "T_STAND_2_TELEPORT");
+
+	AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
 	AI_Function_S (slf, _AI_TeleportKeepQueue, vobName);
-	AI_PlayAni (slf, "T_TELEPORT_2_STAND");
+	AI_PlayAni (slf, _AI_GetAniName_T_HEASHOOT_2_STAND ());
+};
+
+func void AI_TeleportToWorld (var int slfinstance, var string levelName, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
+
+	thisLevelName = STR_Upper (thisLevelName);
+	levelName = STR_Upper (levelName);
+
+	if (Hlp_StrCmp (thisLevelName, levelName)) {
+		AI_TeleportKeepQueue (slfinstance, vobName);
+	} else {
+		AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
+		AI_Function_SS (slf, oCGame_TriggerChangeLevel, levelName, vobName);
+	};
 };
