@@ -93,3 +93,23 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 
 	return 0;
 };
+
+/*
+ *	Returns number of items in inventory by item instance name
+ *		slfinstance		NPC instance
+ *		instanceName		item instance name
+ */
+func int NPC_HasItemInstanceName (var int slfinstance, var string instanceName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int symbID; symbID = MEM_GetSymbolIndex (instanceName);
+	if (symbID > 0) && (symbID < currSymbolTableLength) {
+		//if (NPC_GetInventoryItem (slf, symbID))
+		if (NPC_GetInvItem (slf, symbID)) {
+			return (NPC_HasItems (slf, Hlp_GetinstanceID (item)));
+		};
+	};
+	
+	return 0;
+};
