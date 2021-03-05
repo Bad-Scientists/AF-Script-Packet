@@ -12,23 +12,25 @@
  *		- [x] oCViewDialogTrade			[G1
  *		- [x] zCViewDialogChoice		[G1, G2A]
  */
- 
+
 class zCViewText2 {
-	var int validcolor; // bool //0
-	var int remove; // bool //4
+	var int enabledColor;	//0	int EnabledColor;
+	var int enabledTimer;	//4	int EnabledTimer;
 
-	var int posx; // zCPosition //8
-	var int posy; // zCPosition //12
+	var int posX;		//8	zPOS PixelPosition;
+	var int posY;		//12	zPOS PixelPosition;
 
-	var int timer;      //zREAL //übrige Zeit für PrintScreen anzeigen die nur eine bestimmte Zeit dauern? //16
-	var string text;    //zstring //Die Entscheidende Eigenschaft. //20
-	var int alphaFunc; //24
-	var int font;       //zCFont* //28
-	var int color;      //zCOLOR //32
-	var int alpha;      //zBOOL //36
-	var int useAlpha;    //zBOOL //40
+	var int timer;		//16	float Timer;
+	var string text;	//20	zSTRING Text;
+
+	//zCViewFont ViewFont;
+	var int funcAlphaBlend;	//40	zTRnd_AlphaBlendFunc FuncAlphaBlend;
+	var int font;		//44	zCFont* Font;
+	var int	color;		//48	zCOLOR Color;
+	var int alpha;		//52	int Alpha;
+	var int enabledBlend;	//56	int EnabledBlend; 
 };
-
+    
 class zCViewDialog {
 	var int _vtbl;               //0
 	var int refctr;              //4
