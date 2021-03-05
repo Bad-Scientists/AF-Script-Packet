@@ -29,8 +29,6 @@ func void FirePlace_FireDamage_ApplyDamage_OnTrigger (var int triggerPtr) {
  *		this function will be called in a loop with delay of oCTriggerScript._zCTrigger_fireDelaySec every time an object touches trigger
  */
 func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
-	MEM_Info ("FirePlace_FireDamage_ApplyDamage_OnContact");
-
 	if (!triggerPtr) {
 		return;
 	};
@@ -45,13 +43,57 @@ func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
 	var int count; count = t._zCVob_touchVobList_numInArray;
 
 	if (count > 0) {
+		var int bitsBackup;
+
 		var int vobPtr;
 		var int i; i = 0;
+
+		var int pos[3]; var int dir[3];
+		var int dist;
 
 		//we have to use separate variable here for count
 		while(i < count);
 			//Read vob pointer from touchVobList array
 			vobPtr = MEM_ReadIntArray(t._zCVob_touchVobList_array, i);
+
+			//Is it item?
+			if (Hlp_Is_oCItem (vobPtr)) {
+				var int amount; amount = 0;
+				var oCItem itm; itm = _^ (vobPtr);
+
+				if (Hlp_IsValidItem (itm)) {
+					amount = itm.amount;
+
+					//Get item position and direction (rotation)
+					trfPosToVector (_@ (itm._zCVob_trafoObjToWorld), _@ (pos));
+					trfDirToVector (_@ (itm._zCVob_trafoObjToWorld), _@ (dir));
+					
+					//Get distance
+					dist = getVectorDistXZ (_@ (pos), _@ (tPos));
+
+					//If close enough --> then replace with cooked meat
+					if (lef (dist, mkf (90))) {
+						if (Hlp_GetinstanceID (itm) == ItFoMuttonRaw) {
+							//Ignore moving items
+							if (!(itm._zCVob_bitfield[1] & zCVob_bitfield1_isInMovementMode)) {
+								//remove bitfields - this will temporarily disable trigger
+								//we have to disable it otherwise Wld_RemoveItem will cause infinite loop when removing item from world
+								bitsBackup = t.bitfield;
+								t.bitfield = 0;
+
+								//Remove item from world
+								Wld_RemoveItem (itm);
+
+								//Insert new item to same position
+								InsertItemPos ("ItFoMutton", amount, _@ (pos), _@ (dir));
+
+								//restore bitfields
+								t.bitfield = bitsBackup;
+							};
+						};
+					};
+				};
+			};
 
 			//Is it NPC ?
 			if (Hlp_Is_oCNPC (vobPtr)) {
@@ -61,11 +103,10 @@ func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
 				if (Hlp_IsValidNPC (slf)) {
 
 					//Get NPC position
-					var int slfPos[3];
-					TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (slfPos));
+					TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (pos));
 
 					//Get distance
-					var int dist; dist = getVectorDistXZ (_@ (slfPos), _@ (tPos));
+					dist = getVectorDistXZ (_@ (pos), _@ (tPos));
 
 					//If close enough --> then burn victim
 					if (lef (dist, mkf (90))) {
@@ -121,25 +162,25 @@ func void FirePlace_FireDamage_ApplyDamage () {
 func void FirePlace_AddFireDamageTriggers () {
 	var int vobPtr;
 	
-	var oCMobFire mob;
+	var oCMob mob;
 	var string mobVisualName;
 
 	//Create array
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
-	//Fill array with oCMobFire objects
-	if (MEMINT_SwitchG1G2 (1, 0)) {
-		if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
-			MEM_Info ("No oCMobFire objects found.");
-			return;
-		};
-	} else {
+	//Fill array with oCMob objects
+//	if (MEMINT_SwitchG1G2 (1, 0)) {
+//		if (!SearchVobsByClass ("oCMOB", vobListPtr)) {	//CASE sensitive!
+//			MEM_Info ("No oCMOB objects found.");
+//			return;
+//		};
+//	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
 			MEM_Info ("No zCVisual objects found.");
 			return;
 		};
-	};
+//	};
 	
 	var int counter; counter = 0;
 	var zCArray vobList; vobList = _^ (vobListPtr);
@@ -165,9 +206,10 @@ func void FirePlace_AddFireDamageTriggers () {
 		flagFound = FALSE;
 		if (MEMINT_SwitchG1G2 (1, 0)) {
 			//G1 example
+			//FIREPLACE_GROUND.ASC
 			if (Hlp_StrCmp (mobVisualName, "FIREPLACE_GROUND.ASC"))		//oCMobFire
 			|| (Hlp_StrCmp (mobVisualName, "FIREPLACE_GROUND2.ASC"))	//oCMobFire
-			//|| (Hlp_StrCmp (mobVisualName, "BARBQ_SCAV.MDS"))		//oCMobInter!
+			|| (Hlp_StrCmp (mobVisualName, "BARBQ_SCAV.MDS"))		//oCMobInter!
 			{
 				flagFound = TRUE;
 			};
