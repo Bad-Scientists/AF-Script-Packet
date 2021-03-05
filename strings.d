@@ -51,7 +51,7 @@ func string mySTR_Prefix (var string str, var int len) {
  *	R  G  B  A
  *	FF FF FF FF
  */
-FUNC INT HEX2RGBA (var string hex)
+func int HEX2RGBA (var string hex)
 {
 	var int R; R = 255;
 	var int G; G = 255;
@@ -65,3 +65,98 @@ FUNC INT HEX2RGBA (var string hex)
 	
 	return RGBA (R, G, B, A);
 };
+
+/*
+ *	Original function STR_Trim (author: szapp aka Mud-freak) - split into 2 functions
+ */
+func string STR_TrimL(var string str, var string tok) {
+    var int lenS; lenS = STR_Len(str);
+    var int lenT; lenT = STR_Len(tok);
+
+    var string ss;
+    var string ts;
+    var int cont;
+    var int t;
+
+    // Start from the beginning
+    var int startP; startP = 0;
+
+    while(startP < lenS);
+        ss = STR_Substr(str, startP, 1);
+        cont = FALSE;
+
+        t = 0;
+        while(t < lenT);
+            ts = STR_Substr(tok, t, 1);
+
+            if (Hlp_StrCmp(ss, ts)) {
+                cont = TRUE;
+                break;
+            };
+
+            t += 1;
+        end;
+
+        if (!cont) {
+            break;
+        };
+
+        startP += 1;
+    end;
+
+    if (startP >= lenS) {
+        return "";
+    } else {
+        return STR_Substr(str, startP, lenS-startP);
+    };
+};
+
+
+func string STR_TrimR(var string str, var string tok) {
+    var int lenS; lenS = STR_Len(str);
+    var int lenT; lenT = STR_Len(tok);
+
+    var string ss;
+    var string ts;
+    var int cont;
+    var int t;
+
+    // Start from the beginning
+    var int endP; endP = lenS-1;
+
+    // Start from the end
+    while(endP >= 0);
+        ss = STR_Substr(str, endP, 1);
+        cont = FALSE;
+
+        t = 0;
+        while(t < lenT);
+            ts = STR_Substr(tok, t, 1);
+
+            if (Hlp_StrCmp(ss, ts)) {
+                cont = TRUE;
+                break;
+            };
+
+            t += 1;
+        end;
+
+        if (!cont) {
+            break;
+        };
+
+        endP -= 1;
+    end;
+
+    // Convert offset to length (0 -> 1, 1 -> 2, ...)
+    endP += 1;
+
+    if (endP <= 0) {
+        return "";
+    } else {
+        return STR_Substr(str, 0, endP);
+    };
+};
+
+
+
