@@ -59,8 +59,20 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	if (!eMsg) { return ""; };
 	if (subType < 0) { return ""; };
 
-	const int bit6 = 1 << 6;
-
+	const int bit6 = 1 << 6;	//64
+	const int bit7 = 1 << 7;	//128
+	const int bit8 = 1 << 8;	//256
+	const int bit9 = 1 << 9;	//512
+	const int bit10 = 1 << 10;	//1024
+	const int bit11 = 1 << 11;	//2048
+	const int bit12 = 1 << 12;
+	const int bit13 = 1 << 13;
+	const int bit14 = 1 << 14;
+	const int bit15 = 1 << 15;
+	const int bit16 = 1 << 16;
+	const int bit17 = 1 << 17;
+	const int bit18 = 1 << 18;
+	const int bit19 = 1 << 19;
 	const int bit20 = 1 << 20;
 	const int bit21 = 1 << 21;
 	const int bit22 = 1 << 22;
@@ -71,12 +83,12 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	const int bit27 = 1 << 27;
 	const int bit28 = 1 << 28;
 	const int bit29 = 1 << 29;
-	const int bit30 = 1 << 30;
+	const int bit30 = 1 << 30;	//1073741824
 	
 	/*
-	eventMessage.subType sometimes has huge values - idk why
-	are these some 'bitwise flags' that we can remove?
-	if I deduct these constants then function seems to return correct values 
+	eventMessage.subType sometimes has huge values - idk why.
+	Are these some 'bitwise flags' that we can remove?
+	If I deduct these constants then function seems to return correct values.
 	*/
 
 	if (subType & bit30) { subType = (subType & ~ bit30); };
@@ -90,14 +102,27 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	if (subType & bit22) { subType = (subType & ~ bit22); };
 	if (subType & bit21) { subType = (subType & ~ bit21); };
 	if (subType & bit20) { subType = (subType & ~ bit20); };
-
-	if (subType > bit6) {
-		MEM_Info ("Check this subType out!");
-		MEM_Info (IntToString (MEM_ReadInt (eMsg)));
-		MEM_Info (IntToString (eventMessage.subType));
-	};
+	if (subType & bit19) { subType = (subType & ~ bit19); };
+	if (subType & bit18) { subType = (subType & ~ bit18); };
+	if (subType & bit17) { subType = (subType & ~ bit17); };
+	if (subType & bit16) { subType = (subType & ~ bit16); };
+	if (subType & bit15) { subType = (subType & ~ bit15); };
+	if (subType & bit14) { subType = (subType & ~ bit14); };
+	if (subType & bit13) { subType = (subType & ~ bit13); };
+	if (subType & bit12) { subType = (subType & ~ bit12); };
+	if (subType & bit11) { subType = (subType & ~ bit11); };
+	if (subType & bit10) { subType = (subType & ~ bit10); };
+	if (subType & bit9) { subType = (subType & ~ bit9); };
+	if (subType & bit8) { subType = (subType & ~ bit8); };
+	if (subType & bit7) { subType = (subType & ~ bit7); };
+	if (subType & bit6) { subType = (subType & ~ bit6); };
 
 	var int vtbl; vtbl = MEM_ReadInt (eMsg);
+
+	/*
+		Seems like not all event-like classes have their MD_GetSubTypeString function ...
+		Do we need to emulate them ?
+	*/
 
 	if (vtbl == oCMsgConversation_vtbl) {
 		return oCMsgConversation_MD_GetSubTypeString (eMsg, subType);
@@ -150,6 +175,10 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 		return zCEventMusicControler_MD_GetSubTypeString (eMsg, subType);
 	};
 
+	if (vtbl == oCMobMsg_vtbl) {
+		return oCMobMsg_MD_GetSubTypeString (eMsg, subType);
+	};
+
 	//unknown vtbl
 	MEM_Info (ConcatStrings ("eMsg_MD_GetSubTypeString - Unknown vtbl: ", IntToString (vtbl)));
 	return "";
@@ -177,6 +206,14 @@ oCMsgConversation_vtbl
 -4-	00:37 Info:  0 Q:     17 1 EV_STOPPROCESSINFOS  
 -4-	00:37 Info:  0 Q:     18 1 EV_OUTPUTSVM_OVERLAY  
 */
+func string zCEventMessage_GetEventName (var int eMsg){
+	if (!eMsg) { return ""; };
+
+	var string eventName;
+	eventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
+
+	return eventName;
+};
 
 /*
  *	Function returns Event Name from Event Manager at index
@@ -235,10 +272,10 @@ func int zcEventManager_GetEventCountByEventName (var int eMgr, var string event
 
 /*
  *	Function returns number of Event messages in NPC's Event Manager
- *		slfInstance		NPC instance
+ *		slfinstance		NPC instance
  */
-func int NPC_EM_GetEventCount (var int slfInstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func int NPC_EM_GetEventCount (var int slfinstance){
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -252,13 +289,13 @@ func int NPC_EM_GetEventCount (var int slfInstance){
 
 /*
  *	Function returns Event Name from NPC's Event Manager at index
- *		slfInstance		NPC instance
+ *		slfinstance		NPC instance
  *		index			Event Message index (starts at 0)
  */
-func string NPC_EM_GetEventName (var int slfInstance, var int index){
+func string NPC_EM_GetEventName (var int slfinstance, var int index){
 	if (index < 0) { return ""; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
@@ -268,11 +305,11 @@ func string NPC_EM_GetEventName (var int slfInstance, var int index){
 
 /*
  *	Function returns number of Event Messages which are in NPC's Event Manager (by name)
- *		slfInstance		NPC instance
+ *		slfinstance		NPC instance
  *		eventName		Event Name
  */
-func int NPC_EM_GetEventCountByEventName (var int slfInstance, var string eventName){
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventName){
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -284,13 +321,13 @@ func int NPC_EM_GetEventCountByEventName (var int slfInstance, var string eventN
 
 /*
  *	Function returns Event Name of Active Event Message from NPC's Event Manager
- *		slfInstance		NPC instance
+ *		slfinstance		NPC instance
  *
  *
  *	Hmmm this one does not return same thing as NPC_EM_GetEventName (eMgr, 0);
  */
-func string NPC_EM_GetActiveEventName (var int slfInstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func string NPC_EM_GetActiveEventName (var int slfinstance){
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
