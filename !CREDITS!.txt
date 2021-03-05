@@ -1,0 +1,35 @@
+Credits: We are using here many scripts sourced from great Gothic community. None of this would be possible without Ikarus/LeGo and of course without modders willing to share their amazing work/ideas.
+Some scripts were slightly altered (added G1 compatibility, safety checks ...)
+
+ScriptBin\
+	Author: szapp (mud-freak)
+	convert.d
+		Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+	
+	searchVobs.d
+		Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+
+	insertAnything.d
+		Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page2?p=25712257&viewfull=1#post25712257
+
+	objCheckInheritance.d
+		Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin?p=25548652&viewfull=1#post25548652
+
+	strings.d
+		Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+
+Functions:
+----------
+
+NPC_GetWalkMode
+	Author: Dalai Zoll
+	Original post: https://forum.worldofplayers.de/forum/threads/1090721-Testschleichen?p=17909902&viewfull=1#post17909902
+
+oCNpc_SetFocusVob
+_getInterfaceScaling
+	Author: szapp (mud-freak)
+
+PC_SetTurnSpeed
+	Author: Sektenspinner
+	Original post: https://forum.worldofplayers.de/forum/threads/879891-Skriptpaket-Ikarus-2/page13?p=14886885#post14886885
+
