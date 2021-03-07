@@ -4,6 +4,7 @@ engine_addresses_G2.d
 
 EngineClasses_G2\zCViewDialog.d
 EngineClasses_G2\oNpcStates.d
+EngineClasses_G2\oSDamageDescriptor.d
 
 functions_oCNpc_engine.d
 
