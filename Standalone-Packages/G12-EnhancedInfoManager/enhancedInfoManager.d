@@ -925,13 +925,16 @@ MEM_InformationMan.LastMethod:
 	var int overlayPtr;
 	
 	var int thisID; thisID = 0;
-	var int overlayID[2048];			//
 
-	var int overlayListMapChoice[2048];		//
-	var int overlayListMapView[2048];		//
+	const int OVERLAY_MAX = 255;
 
-	var int overlayListColor[2048];			//
-	var int overlayListColorSelected[2048];		//
+	var int overlayID[OVERLAY_MAX];			//
+
+	var int overlayListMapChoice[OVERLAY_MAX];	//
+	var int overlayListMapView[OVERLAY_MAX];	//
+
+	var int overlayListColor[OVERLAY_MAX];		//
+	var int overlayListColorSelected[OVERLAY_MAX];	//
 
 	//If number of lines in list changed at any point ... refresh all overlays
 	if (InfoManagerListLines != dlg.m_listLines_numInArray) {
@@ -1335,9 +1338,9 @@ MEM_InformationMan.LastMethod:
 							
 							k = 0;
 							while (k < overlayCount);
-								if (MEM_ReadIntArray (_@ (overlayID[0]), k) == thisID) {
+								if (MEM_ReadIntArray (_@ (overlayID), k) == thisID) {
 									//Update overlay text and colors
-									overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView[0]), k);
+									overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView), k);
 
 									if (overlayChoice < dlg.m_listLines_numInArray)
 									{
@@ -1392,6 +1395,11 @@ MEM_InformationMan.LastMethod:
 								flagAdd = FALSE;
 							};
 
+							//Prevent overflow
+							if (overlayCount >= OVERLAY_MAX) {
+								flagAdd = FALSE;
+							};
+
 							if (flagAdd)
 							{
 								//Create new zCViewText2 instance for overlay
@@ -1440,13 +1448,13 @@ MEM_InformationMan.LastMethod:
 								//Insert indicator to dialog choices
 								MEM_ArrayInsert (choiceView + 172, overlayPtr); 
 
-								MEM_WriteIntArray (_@ (overlayID[0]), overlayCount, thisID);
+								MEM_WriteIntArray (_@ (overlayID), overlayCount, thisID);
 
-								MEM_WriteIntArray (_@ (overlayListColor[0]), overlayCount, overlayColor);
-								MEM_WriteIntArray (_@ (overlayListColorSelected[0]), overlayCount, overlayColorSelected);
+								MEM_WriteIntArray (_@ (overlayListColor), overlayCount, overlayColor);
+								MEM_WriteIntArray (_@ (overlayListColorSelected), overlayCount, overlayColorSelected);
 
-								MEM_WriteIntArray (_@ (overlayListMapChoice[0]), overlayCount, i);
-								MEM_WriteIntArray (_@ (overlayListMapView[0]), overlayCount, dlg.m_listLines_numInArray - 1);
+								MEM_WriteIntArray (_@ (overlayListMapChoice), overlayCount, i);
+								MEM_WriteIntArray (_@ (overlayListMapView), overlayCount, dlg.m_listLines_numInArray - 1);
 
 								overlayCount += 1;
 							};
@@ -1986,7 +1994,7 @@ MEM_InformationMan.LastMethod:
 					&& (overlayPtr != InfoManagerSpinnerIndicator)
 					{
 						txtIndicator = _^ (overlayPtr);
-						overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice[0]), txtIndicator.timer);
+						overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
 						
 						if (overlayChoice < dlg.m_listLines_numInArray) {
 							var int color;
@@ -1997,7 +2005,7 @@ MEM_InformationMan.LastMethod:
 
 							//Update color
 							if (dlg.ChoiceSelected == overlayChoice) {
-								color = MEM_ReadIntArray (_@(overlayListColorSelected[0]), txtIndicator.timer);
+								color = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
 								txtIndicator.color = color;
 
 								//if (STR_Len (overlayColorSelected) > 0) {
@@ -2006,7 +2014,7 @@ MEM_InformationMan.LastMethod:
 								//	txtIndicator.color = overlayChoiceTxt.color;										
 								//};
 							} else {
-								color = MEM_ReadIntArray (_@(overlayListColor[0]), txtIndicator.timer);
+								color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
 								txtIndicator.color = color;
 								//if (STR_Len (overlayColor) > 0) {
 								//	txtIndicator.color = HEX2RGBA (overlayColor);
