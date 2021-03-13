@@ -81,6 +81,11 @@ func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
 	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
 };
 
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
+};
+
 func int zCEventMessage_MD_GetNumOfSubTypes (var int eventMessage) {
 	//00401E90  .text     Debug data           ?MD_GetNumOfSubTypes@zCEventMessage@@UAEHXZ
 	const int zCEventMessage__MD_GetNumOfSubTypes_G1 = 4202128;
