@@ -923,13 +923,15 @@ MEM_InformationMan.LastMethod:
 
 	var int overlayCount;
 	var int overlayPtr;
+	
+	var int thisID; thisID = 0;
+	var int overlayID[2048];			//
 
-	var int overlayListMapChoice[2048];
-	var int overlayListMapView[2048];
+	var int overlayListMapChoice[2048];		//
+	var int overlayListMapView[2048];		//
 
-	var string overlayID[2048];
-	var int overlayListColor[2048];
-	var int overlayListColorSelected[2048];
+	var int overlayListColor[2048];			//
+	var int overlayListColorSelected[2048];		//
 
 	//If number of lines in list changed at any point ... refresh all overlays
 	if (InfoManagerListLines != dlg.m_listLines_numInArray) {
@@ -1032,7 +1034,7 @@ MEM_InformationMan.LastMethod:
 		|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
 			//Reset by default, script will figure out whether Answer is possible below, when it updates all dialog descriptions
 			InfoManagerAnswerPossible = FALSE;
-			//Reset by default, script will figure out whether Spinning is poosible below, when it updates all dialog descriptions
+			//Reset by default, script will figure out whether Spinning is possible below, when it updates all dialog descriptions
 			InfoManagerSpinnerPossible = FALSE;
 
 			//Get current dialog instance
@@ -1155,8 +1157,6 @@ MEM_InformationMan.LastMethod:
 						var int overlayShiftX;
 						var int overlayWidth;
 						
-						var string thisID; thisID = "";
-
 						var int flagAdd;
 						var int k;
 
@@ -1170,8 +1170,6 @@ MEM_InformationMan.LastMethod:
 						overlayWidth = 0;
 						overlayIndex = 0;
 						overlayDialog = "";
-						
-						thisID = IntToString (i);
 						
 						overlayConcat = "";
 
@@ -1331,15 +1329,15 @@ MEM_InformationMan.LastMethod:
 							};
 							//<--
 
-							thisID = ConcatStrings (thisID, ".1");
+							thisID += 1;
 							
 							flagAdd = true;
 							
 							k = 0;
 							while (k < overlayCount);
-								if (Hlp_StrCmp (MEM_ReadStringArray (_@s(overlayID), k), thisID)) {
+								if (MEM_ReadIntArray (_@ (overlayID[0]), k) == thisID) {
 									//Update overlay text and colors
-									overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView), k);
+									overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView[0]), k);
 
 									if (overlayChoice < dlg.m_listLines_numInArray)
 									{
@@ -1442,14 +1440,13 @@ MEM_InformationMan.LastMethod:
 								//Insert indicator to dialog choices
 								MEM_ArrayInsert (choiceView + 172, overlayPtr); 
 
-								//B_Msg_Add (ConcatStrings ("insert ", overlayText));
-								
-								MEM_WriteStringArray (_@s (overlayID), overlayCount, thisID);
-								MEM_WriteIntArray (_@ (overlayListColor), overlayCount, overlayColor);
-								MEM_WriteIntArray (_@ (overlayListColorSelected), overlayCount, overlayColorSelected);
+								MEM_WriteIntArray (_@ (overlayID[0]), overlayCount, thisID);
 
-								MEM_WriteIntArray (_@ (overlayListMapChoice), overlayCount, i);
-								MEM_WriteIntArray (_@ (overlayListMapView), overlayCount, dlg.m_listLines_numInArray - 1);
+								MEM_WriteIntArray (_@ (overlayListColor[0]), overlayCount, overlayColor);
+								MEM_WriteIntArray (_@ (overlayListColorSelected[0]), overlayCount, overlayColorSelected);
+
+								MEM_WriteIntArray (_@ (overlayListMapChoice[0]), overlayCount, i);
+								MEM_WriteIntArray (_@ (overlayListMapView[0]), overlayCount, dlg.m_listLines_numInArray - 1);
 
 								overlayCount += 1;
 							};
@@ -1989,7 +1986,7 @@ MEM_InformationMan.LastMethod:
 					&& (overlayPtr != InfoManagerSpinnerIndicator)
 					{
 						txtIndicator = _^ (overlayPtr);
-						overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
+						overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice[0]), txtIndicator.timer);
 						
 						if (overlayChoice < dlg.m_listLines_numInArray) {
 							var int color;
@@ -2000,7 +1997,7 @@ MEM_InformationMan.LastMethod:
 
 							//Update color
 							if (dlg.ChoiceSelected == overlayChoice) {
-								color = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
+								color = MEM_ReadIntArray (_@(overlayListColorSelected[0]), txtIndicator.timer);
 								txtIndicator.color = color;
 
 								//if (STR_Len (overlayColorSelected) > 0) {
@@ -2009,7 +2006,7 @@ MEM_InformationMan.LastMethod:
 								//	txtIndicator.color = overlayChoiceTxt.color;										
 								//};
 							} else {
-								color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
+								color = MEM_ReadIntArray (_@(overlayListColor[0]), txtIndicator.timer);
 								txtIndicator.color = color;
 								//if (STR_Len (overlayColor) > 0) {
 								//	txtIndicator.color = HEX2RGBA (overlayColor);
