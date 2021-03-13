@@ -2159,7 +2159,7 @@ func void _hook_oCInformationManager_CollectChoices () {
 						l.next = n.next;
 					} else {
 						//Replace pointer of previous item with next item
-						p.next = n.next;
+						p.next = l.next;
 					};
 
 					//restart loop
