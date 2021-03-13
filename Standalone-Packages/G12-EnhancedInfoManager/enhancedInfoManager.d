@@ -165,6 +165,14 @@ func int Choice_IsSpinner (var string s) {
 	return FALSE;
 };
 
+func int Choice_IsHidden (var string s) {
+	if (STR_IndexOf (s, "hidden@") > -1) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 func string Choice_GetColor (var string s) {
 	var int len;
 	var int index;
@@ -434,7 +442,7 @@ func string InfoManager_GetChoiceDescription (var int index) {
 
 	if (arr.array) {
 		var int infoPtr;
-		var oCInfo dlginstance;
+		var oCInfo dlgInstance;
 
 		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO)
 		{
@@ -444,8 +452,8 @@ func string InfoManager_GetChoiceDescription (var int index) {
 			infoPtr = oCInfoManager_GetInfoUnimportant (slf, her, index);
 
 			if (infoPtr) {
-				dlginstance = _^ (infoPtr);
-				return dlginstance.description;
+				dlgInstance = _^ (infoPtr);
+				return dlgInstance.description;
 			};
 		} else
 		//Choices - have to be extracted from oCInfo.listChoices_next
@@ -454,15 +462,15 @@ func string InfoManager_GetChoiceDescription (var int index) {
 			infoPtr = MEM_InformationMan.Info;
 		
 			if (infoPtr) {
-				dlginstance = _^ (infoPtr);
+				dlgInstance = _^ (infoPtr);
 
-				if (dlginstance.listChoices_next) {
+				if (dlgInstance.listChoices_next) {
 					//loop counter for all Choices
 					var int i; i = 0;
 
 					var oCInfoChoice dlgChoice;
 
-					var int list; list = dlginstance.listChoices_next;
+					var int list; list = dlgInstance.listChoices_next;
 					var zCList l;
 					
 					while (list);
@@ -891,10 +899,14 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 	if (!choiceView) { return; };
 
 	var int i;
+	var int j;
 	var zCArray arr;
 
 	var zCViewText2 txt;
 	var zCViewText2 txtIndicator;
+
+	var int infoPtr;
+	var oCInfo dlgInstance;
 
 /*
 MEM_InformationMan.LastMethod:
@@ -926,6 +938,7 @@ MEM_InformationMan.LastMethod:
 
 	//Remove added 'Indicator' dialogs
 	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
+	|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
 	|| (InfoManagerRefreshOverlays)
 	{
 		//TODO: figure out better method
@@ -1022,6 +1035,9 @@ MEM_InformationMan.LastMethod:
 			//Reset by default, script will figure out whether Spinning is poosible below, when it updates all dialog descriptions
 			InfoManagerSpinnerPossible = FALSE;
 
+			//Get current dialog instance
+			var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
+			var C_NPC her; her = _^ (MEM_InformationMan.player);
 
 			arr = _^ (choiceView + 172);
 			if (arr.array) {
@@ -1045,17 +1061,12 @@ MEM_InformationMan.LastMethod:
 					//Get current fontame
 					dlgFont = Print_GetFontName (txt.font);
 
-					//Get current dialog instance
-					var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
-					var C_NPC her; her = _^ (MEM_InformationMan.player);
-					
-					var int infoPtr; infoPtr = 0;
+					infoPtr = 0;
 
 					var int answerDialog; answerDialog = -1;
 					var int spinnerDialog; spinnerDialog = -1;
 					var string spinnerDialogID; spinnerDialogID = "";
 
-					var oCInfo dlginstance;
 					var string dlgDescription; dlgDescription = "";
 					
 					const int cINFO_MGR_MODE_IMPORTANT	= 0;
@@ -1070,8 +1081,8 @@ MEM_InformationMan.LastMethod:
 						
 						if (infoPtr) {
 							//Get description from dialoginstance.description
-							dlginstance = _^ (infoPtr);
-							dlgDescription = dlginstance.description;
+							dlgInstance = _^ (infoPtr);
+							dlgDescription = dlgInstance.description;
 						};
 					} else
 					//Choices - have to be extracted from oCInfo.listChoices_next
@@ -1080,14 +1091,14 @@ MEM_InformationMan.LastMethod:
 						infoPtr = MEM_InformationMan.Info;
 
 						if (infoPtr) {
-							dlginstance = _^ (infoPtr);
+							dlgInstance = _^ (infoPtr);
 
-							if (dlginstance.listChoices_next) {
+							if (dlgInstance.listChoices_next) {
 								//loop counter for all Choices
-								var int j; j = 0;
+								j = 0;
 								
 								var oCInfoChoice dlgChoice;
-								var int list; list = dlginstance.listChoices_next;
+								var int list; list = dlgInstance.listChoices_next;
 								var zCList l;
 
 								while (list);
@@ -2108,11 +2119,132 @@ MEM_InformationMan.LastMethod:
 	InfoManagerListLines = dlg.m_listLines_numInArray;
 };
 
+//Remove hidden@ choices
+func void _hook_oCInformationManager_CollectChoices () {
+	var int infoPtr;
+
+	//We can't use first parameter - it is a lie !!! :)
+	//infoPtr = MEM_ReadInt (ESP + 4);
+	
+	infoPtr = MEM_InformationMan.Info;
+
+	if (!infoPtr) { return; };
+	
+	var oCInfo dlgInstance;
+	dlgInstance = _^ (infoPtr);
+
+	var int i; i = 0;
+
+	if (dlgInstance.listChoices_next) {
+		
+		var oCInfoChoice dlgChoice;
+		var int list; list = dlgInstance.listChoices_next;
+		var zCList l;
+		var zCList p;
+		var zCList n;
+
+		while (list);
+			l = _^ (list);
+			
+			if (l.data) {
+				dlgChoice = _^ (l.data);
+
+				if (Choice_IsHidden (dlgChoice.Text)) {
+					//Get next item
+					n = _^ (l.next);
+
+					if (i == 0) {
+						//Replace current item with next item
+						l.data = n.data;
+						l.next = n.next;
+					} else {
+						//Replace pointer of previous item with next item
+						p.next = n.next;
+					};
+
+					//restart loop
+					list = dlgInstance.listChoices_next;
+					continue;
+				};
+			};
+
+			//remember previous
+			p = _^ (list);
+
+			list = l.next;
+			i += 1;
+		end;
+	};
+};
+
+//Remove hidden@ dialogues
+func void _hook_oCInformationManager_CollectInfos () {
+	
+	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
+	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
+
+	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
+	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
+
+	self = _^ (MEM_InformationMan.npc);
+	other = _^ (MEM_InformationMan.player);
+	
+	var oCInfo dlgInstance;
+	var zCListSort list;
+
+	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+
+	while (infoPtr);
+		list = _^ (infoPtr);
+		dlgInstance = _^ (list.data);
+		if (dlgInstance.npc == slfInstance) {
+
+			//Here we have to re-evaluate dialogue conditions.
+			//Because we can have a situation where condition function updates description
+			//and dialogues will no longer be hidden.
+
+			var int retVal;
+			MEM_CallByID (dlgInstance.conditions);
+			retVal = MEMINT_PopInt();
+
+			if (Choice_IsHidden (dlgInstance.description)) {
+				//hide
+				if (dlgInstance.permanent == 1) {
+					dlgInstance.told = -2;
+					dlgInstance.permanent = 0;
+				} else {
+					if (dlgInstance.told == 0) {
+						dlgInstance.told = -1;
+					};
+				};
+			} else {
+				//restore
+				if (dlgInstance.told == -1) {
+					dlgInstance.told = 0;
+				} else
+				if (dlgInstance.told == -2) {
+					dlgInstance.permanent = 1;
+					dlgInstance.told = 0;
+				};
+			};
+		};
+
+		infoPtr = list.next;
+	end;
+
+	self = Hlp_GetNPC (selfBackup);
+	other = Hlp_GetNPC (otherBackup);
+};
+
 func void G12_EnhancedInfoManager_Init () {
 	const int once = 0;
 	if (!once) {
 		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
 		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EnhancedInfoManager");
+
+		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices");
+		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos");
+
 		once = 1;
 	};
 };

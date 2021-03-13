@@ -56,6 +56,12 @@ const int zCViewDialogChoice__HandleEvent	= 7703136;
 //0x0072BE90 public: void __fastcall oCInformationManager::Update(void) 
 const int oCInformationManager__Update		= 7519888;
 
+//0x0072CFC0 protected: int __fastcall oCInformationManager::CollectChoices(class oCInfo *) 
+const int oCInformationManager__CollectChoices	= 7524288;
+
+//0x0072CD90 protected: void __fastcall oCInformationManager::CollectInfos(void) 
+const int oCInformationManager__CollectInfos	= 7523728;
+
 /*
  *	Enhanced Trading
  */

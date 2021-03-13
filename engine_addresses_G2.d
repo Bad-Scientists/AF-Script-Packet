@@ -8,6 +8,11 @@ const int zCViewDialogChoice__HandleEvent	= 6876064;
 //0x00660BB0 public: void __fastcall oCInformationManager::Update(void)
 const int oCInformationManager__Update		= 6687664;
 
+//0x00661CD0 protected: int __fastcall oCInformationManager::CollectChoices(class oCInfo *)
+const int oCInformationManager__CollectChoices	= 6692048;
+
+//0x00661AA0 protected: void __fastcall oCInformationManager::CollectInfos(void)
+const int oCInformationManager__CollectInfos	= 6691488;
 
 /*
  *	Enhanced oCTriggerScript
