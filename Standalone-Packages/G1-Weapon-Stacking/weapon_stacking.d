@@ -87,7 +87,7 @@ func void _hook_oCNPC_UnequipItem__weaponStacking (){
 	};
 };
 
-func void _hook_oCoCNpc_DoTakeVob__weaponStacking (){
+func void _hook_oCNpc_DoTakeVob__weaponStacking (){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!ECX) || (!itemPtr)) { return; };
 
@@ -137,7 +137,7 @@ func void G1_WeaponStacking_Init (){
 		HookEngine (oCNPC__UnequipItem, 7, "_hook_oCNPC_UnequipItem__weaponStacking");
 
 		//Applies ITEM_MULTI flag when picking items
-		HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCoCNpc_DoTakeVob__weaponStacking");
+		HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNpc_DoTakeVob__weaponStacking");
 		
 		//Hook on oCNpc__DoDropVob applying back on weapons ITEM_MULTI when dropping is not supported. (When weapon was equipped it messed up oCNPC__UnequipItem hook)
 		//It is probably not required. We can rethink this later if needed.
