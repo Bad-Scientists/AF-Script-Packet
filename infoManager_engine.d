@@ -346,6 +346,9 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 		call = CALL_End();
 	};
 };
+
+//0x00665B70 public: void __thiscall oCInfo::RemoveChoice(class zSTRING)
+
 /*
 00758E00  .text     Debug data           ?StartSelection@zCViewDialogChoice@@UAIXXZ
 0x0068EF70 public: virtual void __fastcall zCViewDialogChoice::StartSelection(void)
