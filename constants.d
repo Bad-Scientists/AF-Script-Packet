@@ -18,3 +18,25 @@ enum zTMdl_AniDir {
 const int AniDir_Forward	= 0;
 const int AniDir_Reverse	= 1;
 const int AniDir_EndFastest	= 2;
+
+/*
+enum zTRnd_AlphaBlendFunc {
+	zRND_ALPHA_FUNC_MAT_DEFAULT,
+	zRND_ALPHA_FUNC_NONE,
+	zRND_ALPHA_FUNC_BLEND,
+	zRND_ALPHA_FUNC_ADD,
+	zRND_ALPHA_FUNC_SUB,
+	zRND_ALPHA_FUNC_MUL,
+	zRND_ALPHA_FUNC_MUL2,
+	zRND_ALPHA_FUNC_TEST
+}; 
+*/
+
+const int ALPHA_FUNC_MAT_DEFAULT	= 0;
+const int ALPHA_FUNC_NONE		= 1;
+const int ALPHA_FUNC_BLEND		= 2;
+const int ALPHA_FUNC_ADD		= 3;
+const int ALPHA_FUNC_SUB		= 4;
+const int ALPHA_FUNC_MUL		= 5;
+const int ALPHA_FUNC_MUL2		= 6;
+const int ALPHA_FUNC_TEST		= 7;
