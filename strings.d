@@ -51,17 +51,16 @@ func string mySTR_Prefix (var string str, var int len) {
  *	R  G  B  A
  *	FF FF FF FF
  */
-func int HEX2RGBA (var string hex)
-{
+func int HEX2RGBA (var string hex) {
 	var int R; R = 255;
 	var int G; G = 255;
 	var int B; B = 255;
 	var int A; A = 255;
 	
-	if (STR_Len(hex) > 1)	{	R = hex2dec (mySTR_SubStr (hex, 0, 2));		};
-	if (STR_Len(hex) > 3)	{	G = hex2dec (mySTR_SubStr (hex, 2, 2));		};
-	if (STR_Len(hex) > 5)	{	B = hex2dec (mySTR_SubStr (hex, 4, 2));		};
-	if (STR_Len(hex) > 7)	{	A = hex2dec (mySTR_SubStr (hex, 6, 2));		};
+	if (STR_Len(hex) > 1) { R = hex2dec (mySTR_SubStr (hex, 0, 2)); };
+	if (STR_Len(hex) > 3) { G = hex2dec (mySTR_SubStr (hex, 2, 2)); };
+	if (STR_Len(hex) > 5) { B = hex2dec (mySTR_SubStr (hex, 4, 2)); };
+	if (STR_Len(hex) > 7) { A = hex2dec (mySTR_SubStr (hex, 6, 2)); };
 	
 	return RGBA (R, G, B, A);
 };
