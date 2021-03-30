@@ -63,9 +63,9 @@ const int InfoManagerSpinnerIndicatorAnimation = 1;		//Set to TRUE if you want a
 
 //Dialog 'NumKey' controls [WIP]
 const int InfoManagerNumKeysControls = 1;			//Set to TRUE if you want to enable num key support for dialogs
-const int InfoManagerNumKeysNumbers = 0;			//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
+const int InfoManagerNumKeysNumbers = 1;			//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
-const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;		//ALPHA_FUNC_NONE
+const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;		//ALPHA_FUNC_NONE 
 /*
  *	Internal variables
  */
@@ -86,6 +86,8 @@ var int InfoManagerRefreshOverlays;
 
 //Variables used for elimination of unnecessary code runnings
 var int InfoManagerLastChoiceSelected;
+var int InfoManagerModeInfoLastChoiceSelected;
+
 var int InfoManagerUpdateState;
 	const int cIM2BChanged	= 0;
 	const int cIMChanged	= 1;
@@ -837,7 +839,7 @@ func string Choice_GetCleanText (var string s) {
 };
 
 func string InfoManager_GetChoiceDescription (var int index) {
-	if (!MEM_InformationMan.IsWaitingForSelection) { return ""; };
+//	if (!MEM_InformationMan.IsWaitingForSelection) { return ""; };
 
 	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
 	
@@ -972,7 +974,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	var string s;
 
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
-	InfoManagerUpdateState = cIM2BChanged;
+	//InfoManagerUpdateState = cIM2BChanged;
 	
 	var int cancel; cancel = FALSE;
 	var int update; update = FALSE;
@@ -1015,9 +1017,12 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		if (InfoManagerAnswerPossible) {
 
 			//Cancel answer mode
-			if (key == KEY_ESCAPE) {
-				InfoManagerAnswerMode = FALSE;
-				InfoManagerAnswer = "";
+			if (InfoManagerAnswerMode) {
+				if (key == KEY_ESCAPE) {
+					InfoManagerRefreshOverlays = TRUE;
+					InfoManagerAnswerMode = FALSE;
+					InfoManagerAnswer = "";
+				};
 			};
 
 			//Enter answer mode / confirm answer
@@ -1226,9 +1231,9 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			};
 
 			//Refresh all overlays (everything might have changed)
-			if (InfoManagerSpinnerValue != lastSpinnerValue) {
-				InfoManagerRefreshOverlays = TRUE;
-			};
+			//if (InfoManagerSpinnerValue != lastSpinnerValue) {
+			//	InfoManagerRefreshOverlays = TRUE;
+			//};
 		};
 
 //--- Num Keys control -->
@@ -1309,6 +1314,8 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 
 	var int i;
 	var int j;
+	var int loop;
+
 	var zCArray arr;
 
 	var zCViewText2 txt;
@@ -1318,6 +1325,11 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 	var int choicePtr;
 	var oCInfo dlgInstance;
 
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+	
 /*
 MEM_InformationMan.LastMethod:
 	OnImportantBegin
@@ -1328,25 +1340,43 @@ MEM_InformationMan.LastMethod:
 	OnExit
 	InfoWaitForEnd
 */
-	//Disabled dialog choices
-	var int disabledChoice;
 
 	var int overlayCount;
+	var int nextAvailableOverlayIndex;
 	var int overlayPtr;
 	
-	var int thisID; thisID = 0;
+	var string thisID;
 
+//---
+	const int DIALOG_MAX = 255;
+
+	var int dialogCachedCount;
+	var string dialogCachedDescriptions[DIALOG_MAX];	//cached dialog descriptions
+	var int dialogProperties[DIALOG_MAX];			//dialog properties: answer, spinner, disabled
+	var int properties;
+	
+	const int dialogChoiceType_Answer	= 1;
+	const int dialogChoiceType_Spinner	= 2;
+	const int dialogChoiceType_Disabled	= 4;
+
+//---
 	const int OVERLAY_MAX = 255;
 
-	var int overlayID[OVERLAY_MAX];			//
+	var string overlayID[OVERLAY_MAX];
 
-	var int overlayListMapChoice[OVERLAY_MAX];	//
-	var int overlayListMapView[OVERLAY_MAX];	//
+	var int overlayListMapChoice[OVERLAY_MAX];		//Dialog choice number
+	var int overlayListMapView[OVERLAY_MAX];
 
-	var int overlayListColor[OVERLAY_MAX];		//
-	var int overlayListColorSelected[OVERLAY_MAX];	//
+	var int overlayListColor[OVERLAY_MAX];
+	var int overlayListColorSelected[OVERLAY_MAX];
+	
+	var int refreshOverlays; refreshOverlays = FALSE;
+
+	var int color;
+	var int overlayChoice;
 
 	//Remove added 'Indicator' dialogs
+
 	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
 	|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
 	|| (InfoManagerRefreshOverlays)
@@ -1407,13 +1437,14 @@ MEM_InformationMan.LastMethod:
 			InfoManagerSpinnerIndicator = 0;
 		};
 		*/
-		
+
 		InfoManagerAnswerIndicator = 0;
 		InfoManagerSpinnerIndicator = 0;
 
 		//
 		overlayCount = 0;
 
+		//Flag all overlays for deletion
 		if (dlg.m_listLines_numInArray > dlg.Choices) {
 			arr = _^ (choiceView + 172);
 
@@ -1428,735 +1459,876 @@ MEM_InformationMan.LastMethod:
 			};
 		};
 
+		dialogCachedCount = 0;
 		InfoManagerRefreshOverlays = FALSE;
-		InfoManagerUpdateState = cIM2BChanged;
+		refreshOverlays = TRUE;
+
+		//Reset
+		MEM_WriteIntArray (_@ (overlayListMapChoice), 0, -1);
+		MEM_WriteIntArray (_@ (overlayListMapView), 0, 0);
+		MEM_WriteStringArray (_@s (overlayID), 0, "");
+
+		if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
+		|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
+		{
+			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
+				if (InfoManagerModeInfoLastChoiceSelected != dlg.ChoiceSelected) {
+					if (InfoManagerModeInfoLastChoiceSelected < dlg.choices) {
+						//Restore previous cursor position
+						dlg.ChoiceSelected = InfoManagerModeInfoLastChoiceSelected;
+						//Force auto-scrolling update
+						InfoManagerLastChoiceSelected = -1;
+					};
+				};
+			};
+		};
+	};
+
+	if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
+		//Auto-scrolling for disabled dialog choices
+		InfoManager_SkipDisabledDialogChoices (-1);
 	};
 
 	var int InfoManagerIndicatorColor;
 
-	if (dlg.IsActivated)
-	&& (dlg.m_listLines_numInArray) {
-		if (InfoManagerUpdateState == cIM2BChanged)
-		|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
-			//Auto-scrolling for disabled dialog choices
-			InfoManager_SkipDisabledDialogChoices (-1);
+	arr = _^ (choiceView + 172);
 
-			//Reset by default, script will figure out whether Answer is possible below, when it updates all dialog descriptions
-			InfoManagerAnswerPossible = FALSE;
-			//Reset by default, script will figure out whether Spinning is possible below, when it updates all dialog descriptions
-			InfoManagerSpinnerPossible = FALSE;
+	//if (dlg.IsActivated)
+	if (dlg.m_listLines_numInArray)
+	&& (arr.array)
+	{
+		var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
+		var C_NPC her; her = _^ (MEM_InformationMan.player);
 
-			//Get current dialog instance
-			var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
-			var C_NPC her; her = _^ (MEM_InformationMan.player);
+		var int nextPosY;
+		var string dlgFont;
 
-			arr = _^ (choiceView + 172);
-			if (arr.array) {
-				var int nextPosY; nextPosY = 0;
+		var string oldDescription;
+		var string dlgDescription;
+		var int descriptionAvailable;
 
-				//loop counter for dialog options in zCViewDialogChoice
-				i = 0;
-				var int p;
-				
-				var string dlgFont;
-				
-				p = MEM_StackPos.position;
-				
-				//if (i < dlg.Choices) {
-				if (i < dlg.m_listLines_numInArray) {
-					overlayPtr = 0;
-					disabledChoice = -1;
+		//--> This piece of code will re-evaluate all condition functions (oCInfoManager_GetInfoUnimportant) and detect description changes
+		i = 0;
+		nextPosY = 0;
 
-					txt = _^ (MEM_ReadIntArray(arr.array, i));
+		loop = dlg.Choices;
+
+		while (i < loop);
+
+			dlgDescription = "";
+			descriptionAvailable = FALSE;
+
+			infoPtr = 0;
+			choicePtr = 0;
+			properties = 0;
+
+			if (i < dialogCachedCount) {
+				oldDescription = MEM_ReadStringArray (_@s (dialogCachedDescriptions), i);
+			} else {
+				oldDescription = "";
+			};
+
+			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
+				infoPtr = oCInfoManager_GetInfoUnimportant (slf, her, i);
+
+				if (infoPtr) {
+					dlgInstance = _^ (infoPtr);
+					dlgDescription = dlgInstance.description;
+					descriptionAvailable = TRUE;
+				};
+			} else
+
+			//Choices - have to be extracted from oCInfo.listChoices_next
+			//MEM_InformationMan.Info is oCInfo pointer
+			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+				infoPtr = MEM_InformationMan.Info;
+
+				if (infoPtr) {
+					dlgInstance = _^ (infoPtr);
 					
-					//Get current fontame
-					dlgFont = Print_GetFontName (txt.font);
-
 					infoPtr = 0;
-					choicePtr = 0;
 
-					var int answerDialog; answerDialog = -1;
-					var int spinnerDialog; spinnerDialog = -1;
-					var string spinnerDialogID; spinnerDialogID = "";
+					if (dlgInstance.listChoices_next) {
 
-					var string dlgDescription; dlgDescription = "";
-					
-					const int cINFO_MGR_MODE_IMPORTANT	= 0;
-					const int cINFO_MGR_MODE_INFO		= 1;
-					const int cINFO_MGR_MODE_CHOICE		= 2;
-					const int cINFO_MGR_MODE_TRADE		= 3;
+						var oCInfoChoice dlgChoice;
+						var int list; list = dlgInstance.listChoices_next;
+						var zCList l;
 
-					//'Standard' dialog options
-					if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO)
-					{
-						infoPtr = oCInfoManager_GetInfoUnimportant (slf, her, i);
-						
-						if (infoPtr) {
-							//Get description from dialoginstance.description
-							dlgInstance = _^ (infoPtr);
-							dlgDescription = dlgInstance.description;
-						};
-					} else
-					//Choices - have to be extracted from oCInfo.listChoices_next
-					//MEM_InformationMan.Info is oCInfo pointer
-					if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
-						infoPtr = MEM_InformationMan.Info;
-
-						if (infoPtr) {
-							dlgInstance = _^ (infoPtr);
+						j = 0;
+						while (list);
+							l = _^ (list);
 							
-							infoPtr = 0;
-
-							if (dlgInstance.listChoices_next) {
-								//loop counter for all Choices
-								j = 0;
-								
-								var oCInfoChoice dlgChoice;
-								var int list; list = dlgInstance.listChoices_next;
-								var zCList l;
-
-								while (list);
-									l = _^ (list);
-									
-									//if our dialog option is dialog choice - put text to dlgDescription
-									if (l.data) {
-										if (i == j) {
-											choicePtr = l.data;
-											dlgChoice = _^ (l.data);
-											dlgDescription = dlgChoice.Text;
-										};
-									};
-									
-									list = l.next;
-									j += 1;
-								end;
+							//if our dialog option is dialog choice - put text to dlgDescription
+							if (l.data) {
+								if (i == j) {
+									choicePtr = l.data;
+									dlgChoice = _^ (l.data);
+									dlgDescription = dlgChoice.Text;
+									descriptionAvailable = TRUE;
+									break;
+								};
 							};
+							
+							list = l.next;
+							j += 1;
+						end;
+					};
+				};
+			};
+
+			//Store in cache
+			if (descriptionAvailable) {
+				if (i >= dialogCachedCount) {
+					if (i < DIALOG_MAX) {
+						MEM_WriteStringArray (_@s (dialogCachedDescriptions), i, dlgDescription);
+						dialogCachedCount += 1;
+						InfoManagerUpdateState = cIM2BChanged;
+					};
+				} else {
+					//Compare with cached description
+					if (!Hlp_StrCmp (oldDescription, dlgDescription)) {
+						//Update cache
+						MEM_WriteStringArray (_@s (dialogCachedDescriptions), i, dlgDescription);
+
+						//description changed!
+						InfoManagerUpdateState = cIM2BChanged;
+					};
+				};
+			};
+
+			//Recalculate Y pos
+			txt = _^ (MEM_ReadIntArray (arr.array, i));
+
+			//Get current fontame
+			dlgFont = Print_GetFontName (txt.font);
+
+			if (InfoManagerUpdateState == cIM2BChanged)
+			|| (refreshOverlays)
+			|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
+			|| ((InfoManagerLastChoiceSelected != dlg.ChoiceSelected) && ((i == InfoManagerLastChoiceSelected) || (i == dlg.ChoiceSelected)))
+			{
+
+			//--> Remove old overlays for this dialog choice
+			//--> Overlay
+				j = 0;
+				while (j < overlayCount);
+					if (MEM_ReadIntArray (_@ (overlayListMapChoice), j) == i) {
+						overlayPtr = MEM_ReadIntArray (_@ (overlayListMapView), j);
+						if (overlayPtr) {
+							MEM_WriteIntArray (_@ (overlayListMapChoice), j, -1);
+							MEM_WriteIntArray (_@ (overlayListMapView), j, 0);
+							MEM_WriteStringArray (_@s (overlayID), j, "");
+							
+							txtIndicator = _^ (overlayPtr);
+							txtIndicator.enabledTimer = TRUE;
+							txtIndicator.timer = floatnull;
+
+							refreshOverlays = TRUE;
 						};
 					};
 
-					if (infoPtr)
-					|| (choicePtr)
-					{
-						var int alignment; alignment = InfoManagerDefaultDialogAlignment;
+					j += 1;
+				end;
+				
+			//<-- remove old overlays
+			
+			
+			
+				//Reset by default, script will figure out whether Answer is possible below, when it updates all dialog descriptions
+				//InfoManagerAnswerPossible = FALSE;
+				//Reset by default, script will figure out whether Spinning is possible below, when it updates all dialog descriptions
+				//InfoManagerSpinnerPossible = FALSE;
 
-						var int overlayStart; overlayStart = overlayCount;
+				if (i < dlg.m_listLines_numInArray) {
 
-						var int len;
-						var int index;
-						var int index2;
-						var int index3;
-						
-						//Default colors
-						var string dlgColor; dlgColor = InfoManagerDefaultColorDialogGrey;
-						var string dlgColorSelected; dlgColorSelected = InfoManagerDefaultDialogColorSelected;
+					if (i < dlg.Choices) {
 
-						var string dlgFontSelected; dlgFontSelected = "";
-						
-						/* Extract font, font selected, color and color selected from dlgDescription.
-						   Clear dlgDescription in process. */
+						var string spinnerDialogID; spinnerDialogID = "";
 
-						var string s1; s1 = "";
-						var string s2; s2 = "";
-						var string s3; s3 = "";
-						
-						//Overlay
-						var string overlayText;
-						var string overlayFormat;
-						var string overlayDialog;
-						var string overlayConcat;
-
-						var int overlayColor;
-						var int overlayColorSelected;
-						
-						var int overlayChoice;
-						var zCViewText2 overlayChoiceTxt;
-						
-						var int overlayIndex;
-						var int overlayPosX;
-						var int overlayShiftX;
-						var int overlayWidth;
-						
-						var int flagDialogChoiceStartsWithOverlay; flagDialogChoiceStartsWithOverlay = FALSE;
-						var int flagAdd;
-						var int k;
-
-						var int overlayAlignment;
-
-						var int textWidth;
-						var int defaultPosX;
-
-						defaultPosX = dlg.sizeMargin_0[0];
-
-						overlayWidth = 0;
-						overlayIndex = 0;
-						overlayDialog = "";
-						
-						if (InfoManagerNumKeysNumbers) {
-							dlgDescription = ConcatStrings (InfoManagerNumKeyString (i + 1), dlgDescription);
-						};
-
-						var string dlgDescriptionClean; dlgDescriptionClean = Choice_GetCleanText (dlgDescription);
-
-						overlayConcat = "";
-
-						//Is this answer dialog ?
-						index = (STR_IndexOf (dlgDescription, "a@"));
-
-						if (index > -1) {
-							dlgDescription = Choice_RemoveModifierByText (dlgDescription, "a@");
-
-							if (i == dlg.ChoiceSelected) {
-								answerDialog = i;
-								InfoManagerAnswerPossible = TRUE;
-							};
-						};
-
-						//Is this disabled dialog ?
-						index = (STR_IndexOf (dlgDescription, "d@"));
-
-						if (index > -1) {
-							dlgDescription = Choice_RemoveModifierByText (dlgDescription, "d@");
-							disabledChoice = i;
-						};
-
-						//var int originalPosX; originalPosX = txt.posX;
-						
-						var int overlayLoop; overlayLoop = MEM_StackPos.position;
-						
-						//o@ h@FF8000 :(1) ~Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
-						//o@:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
-						index = STR_IndexOf (dlgDescription, "o@");
-						index2 = STR_IndexOf (dlgDescription, ":");
-						index3 = STR_IndexOf (dlgDescription, "~");
-						
-						overlayFormat = "";
-						overlayColor = -1;
-						overlayColorSelected = -1;
-
-						overlayAlignment = -1; //no alignment
-						
-						//Recalculate pos X
-						//overlayPosX = originalPosX;
-						if (alignment == ALIGN_LEFT) {
-							txt.posX = defaultPosX;
-						} else
-						if (alignment == ALIGN_CENTER) {
-							textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-							txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-							
-							if (txt.posX < defaultPosX) {
-								txt.posX = defaultPosX;
-							};
-						} else
-						if (alignment == ALIGN_RIGHT) {
-							textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-							txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-
-							if (txt.posX < defaultPosX) {
-								txt.posX = defaultPosX;
-							};
-						};
-
-						overlayPosX = txt.posX;
-						
-						if (STR_Len (overlayConcat) > 0)
-						&& (overlayIndex > 0)
+						if (infoPtr)
+						|| (choicePtr)
 						{
-							//
-							overlayShiftX = STR_SplitCount (overlayConcat, " ");
-							overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
-						};
+							var int alignment; alignment = InfoManagerDefaultDialogAlignment;
 
-						if ((index > -1) && (index2 > index) && (index3 > index2))
-						{
-							//Prefix Overlay  Suffix
- 							s1 = ""; s2 = ""; s3 = "";
-
-							//""
-							if (index > 0) {
-								s1 = mySTR_SubStr (dlgDescription, 0, index);
-							};
+							var int len;
+							var int index;
+							var int index2;
+							var int index3;
 							
-							if (index > -1) {
-								len = STR_Len (dlgDescription);
-								// h@FF8000 :(1) ~Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
-								//:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
-								s2 = mySTR_SubStr (dlgDescription, index + 2, len - index - 2);
+							//Default colors
+							var string dlgColor; dlgColor = InfoManagerDefaultColorDialogGrey;
+							var string dlgColorSelected; dlgColorSelected = InfoManagerDefaultDialogColorSelected;
+
+							var string dlgFontSelected; dlgFontSelected = "";
+							
+							/* Extract font, font selected, color and color selected from dlgDescription.
+							   Clear dlgDescription in process. */
+
+							var string s1; s1 = "";
+							var string s2; s2 = "";
+							var string s3; s3 = "";
+							
+							//Overlay
+							var string overlayText;
+							var string overlayFormat;
+							var string overlayDialog;
+							var string overlayConcat;
+
+							var int overlayColor;
+							var int overlayColorSelected;
+							
+							var zCViewText2 overlayChoiceTxt;
+							
+							var int overlayIndex;
+							var int overlayPosX;
+							var int overlayShiftX;
+							var int overlayWidth;
+							
+							var int flagDialogChoiceStartsWithOverlay; flagDialogChoiceStartsWithOverlay = FALSE;
+							var int flagAdd;
+							var int k;
+
+							var int overlayAlignment;
+
+							var int textWidth;
+							var int defaultPosX;
+
+							defaultPosX = dlg.sizeMargin_0[0];
+
+							overlayWidth = 0;
+							overlayIndex = 0;
+							overlayDialog = "";
+							
+							if (InfoManagerNumKeysNumbers) {
+								dlgDescription = ConcatStrings (InfoManagerNumKeyString (i + 1), dlgDescription);
 							};
 
-							len = STR_Len (s2);
-							index = STR_IndexOf (s2, "~");
+							var string dlgDescriptionClean; dlgDescriptionClean = Choice_GetCleanText (dlgDescription);
 
-							if (index > -1) {
-								// h@FF8000 :(1) 
-								//:Dobrá, co bych měl vědět o 
-								s3 = mySTR_Prefix (s2, index);
+							overlayConcat = "";
 
-								//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
-								//o@hs@FF8000:tomhle~ místě?
-								s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
-							};
-
-							len = STR_Len (s3);
-							index = STR_IndexOf (s3, ":");
-
-							if (index > -1) {
-								// h@FF8000 
-								//
-								overlayFormat = mySTR_Prefix (s3, index);
-								//(1) 
-								//Dobrá, co bych měl vědět o 
-								overlayText = mySTR_SubStr (s3, index + 1, (len - index - 1));
-							};
-
-							//Default color
-							if (disabledChoice == i) {
-								dlgColorSelected = InfoManagerDisabledDialogColorSelected;
-								dlgColor = InfoManagerDisabledColorDialogGrey;
-								overlayColor = HEX2RGBA (InfoManagerDisabledDialogColorSelected);
-								overlayColorSelected = HEX2RGBA (InfoManagerDisabledColorDialogGrey);
-							} else {
-								overlayColor = HEX2RGBA (InfoManagerDefaultColorDialogGrey);
-								overlayColorSelected = HEX2RGBA (InfoManagerDefaultDialogColorSelected);
-							};
-
-							//--> Extract overlay format modifiers
-							//Extract alignment
-							index = STR_IndexOf (overlayFormat, "al@");
-
-							if (index > -1) {
-								overlayAlignment = ALIGN_LEFT;
-								overlayFormat = Choice_RemoveModifierByText (overlayFormat, "al@");
-							};
-
-							index = STR_IndexOf (overlayFormat, "ac@");
-
-							if (index > -1) {
-								overlayAlignment = ALIGN_CENTER;
-								overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ac@");
-							};
-							index = STR_IndexOf (overlayFormat, "ar@");
+							//Is this answer dialog ?
+							index = (STR_IndexOf (dlgDescription, "a@"));
 
 							if (index > -1) {
-								overlayAlignment = ALIGN_RIGHT;
-								overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ar@");
+								dlgDescription = Choice_RemoveModifierByText (dlgDescription, "a@");
+								properties = properties | dialogChoiceType_Answer;
 							};
-							//<--
 
-							//If dialog choice starts with overlay, then we have to treat this first overlay as a dialog choice
-							if (STR_Len (s1) == 0)
-							&& (overlayIndex == 0)
-							&& (overlayAlignment == -1)
-							{
-								flagDialogChoiceStartsWithOverlay = TRUE;
-								overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (overlayText));
+							//Is this disabled dialog ?
+							index = (STR_IndexOf (dlgDescription, "d@"));
+
+							if (index > -1) {
+								dlgDescription = Choice_RemoveModifierByText (dlgDescription, "d@");
+								properties = properties | dialogChoiceType_Disabled;
+							};
+
+							//var int originalPosX; originalPosX = txt.posX;
+							
+							thisID = IntToString (i);
+							
+							var int overlayLoop; overlayLoop = MEM_StackPos.position;
+							
+							//o@ h@FF8000 :(1) ~Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
+							//o@:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
+							index = STR_IndexOf (dlgDescription, "o@");
+							index2 = STR_IndexOf (dlgDescription, ":");
+							index3 = STR_IndexOf (dlgDescription, "~");
+							
+							overlayFormat = "";
+							overlayColor = -1;
+							overlayColorSelected = -1;
+
+							overlayAlignment = -1; //no alignment
+							
+							//Recalculate pos X
+							//overlayPosX = originalPosX;
+							if (alignment == ALIGN_LEFT) {
+								txt.posX = defaultPosX;
+							} else
+							if (alignment == ALIGN_CENTER) {
+								textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
+								txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 								
-								overlayFormat = STR_Trim (overlayFormat, " ");
+								if (txt.posX < defaultPosX) {
+									txt.posX = defaultPosX;
+								};
+							} else
+							if (alignment == ALIGN_RIGHT) {
+								textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
+								txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 
-								// h@FF8000 
-								if (STR_Len (overlayFormat) > 0)
+								if (txt.posX < defaultPosX) {
+									txt.posX = defaultPosX;
+								};
+							};
+
+							overlayPosX = txt.posX;
+							
+							if (STR_Len (overlayConcat) > 0)
+							&& (overlayIndex > 0)
+							{
+								//
+								overlayShiftX = STR_SplitCount (overlayConcat, " ");
+								overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
+							};
+
+							if ((index > -1) && (index2 > index) && (index3 > index2))
+							{
+								//Prefix Overlay  Suffix
+								s1 = ""; s2 = ""; s3 = "";
+
+								//""
+								if (index > 0) {
+									s1 = mySTR_SubStr (dlgDescription, 0, index);
+								};
+								
+								if (index > -1) {
+									len = STR_Len (dlgDescription);
+									// h@FF8000 :(1) ~Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
+									//:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
+									s2 = mySTR_SubStr (dlgDescription, index + 2, len - index - 2);
+								};
+
+								len = STR_Len (s2);
+								index = STR_IndexOf (s2, "~");
+
+								if (index > -1) {
+									// h@FF8000 :(1) 
+									//:Dobrá, co bych měl vědět o 
+									s3 = mySTR_Prefix (s2, index);
+
+									//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
+									//o@hs@FF8000:tomhle~ místě?
+									s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
+								};
+
+								len = STR_Len (s3);
+								index = STR_IndexOf (s3, ":");
+
+								if (index > -1) {
+									// h@FF8000 
+									//
+									overlayFormat = mySTR_Prefix (s3, index);
+									//(1) 
+									//Dobrá, co bych měl vědět o 
+									overlayText = mySTR_SubStr (s3, index + 1, (len - index - 1));
+								};
+
+								//Default color
+								if (properties & dialogChoiceType_Disabled) {
+									dlgColorSelected = InfoManagerDisabledDialogColorSelected;
+									dlgColor = InfoManagerDisabledColorDialogGrey;
+									overlayColor = HEX2RGBA (InfoManagerDisabledDialogColorSelected);
+									overlayColorSelected = HEX2RGBA (InfoManagerDisabledColorDialogGrey);
+								} else {
+									overlayColor = HEX2RGBA (InfoManagerDefaultColorDialogGrey);
+									overlayColorSelected = HEX2RGBA (InfoManagerDefaultDialogColorSelected);
+								};
+
+								//--> Extract overlay format modifiers
+								//Extract alignment
+								index = STR_IndexOf (overlayFormat, "al@");
+
+								if (index > -1) {
+									overlayAlignment = ALIGN_LEFT;
+									overlayFormat = Choice_RemoveModifierByText (overlayFormat, "al@");
+								};
+
+								index = STR_IndexOf (overlayFormat, "ac@");
+
+								if (index > -1) {
+									overlayAlignment = ALIGN_CENTER;
+									overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ac@");
+								};
+								index = STR_IndexOf (overlayFormat, "ar@");
+
+								if (index > -1) {
+									overlayAlignment = ALIGN_RIGHT;
+									overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ar@");
+								};
+								//<--
+
+								//If dialog choice starts with overlay, then we have to treat this first overlay as a dialog choice
+								if (STR_Len (s1) == 0)
+								&& (overlayIndex == 0)
+								&& (overlayAlignment == -1)
+								{
+									flagDialogChoiceStartsWithOverlay = TRUE;
+									overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (overlayText));
+									
+									overlayFormat = STR_Trim (overlayFormat, " ");
+
+									// h@FF8000 
+									if (STR_Len (overlayFormat) > 0)
+									{
+										//h@FF8000 (1) 
+										s1 = ConcatStrings (overlayFormat, " ");
+										s1 = ConcatStrings (s1, overlayText);
+										overlayFormat = "";
+									} else {
+										s1 = overlayText;
+									};
+
+									//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
+									//overlayText = s2; s2 = "";
+									overlayText = "";
+								};
+
+								if (overlayIndex == 0)
 								{
 									//h@FF8000 (1) 
-									s1 = ConcatStrings (overlayFormat, " ");
-									s1 = ConcatStrings (s1, overlayText);
-									overlayFormat = "";
-								} else {
-									s1 = overlayText;
-								};
+									overlayDialog = s1;
 
-								//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
-								//overlayText = s2; s2 = "";
-								overlayText = "";
-							};
-
-							if (overlayIndex == 0)
-							{
-								//h@FF8000 (1) 
-								overlayDialog = s1;
-
-								if (overlayAlignment == -1)
-								&& (flagDialogChoiceStartsWithOverlay == FALSE)
-								{
-									overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (s1));
-
-									overlayShiftX = STR_SplitCount (overlayConcat, " ");
-									overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
-								};
-							};
-
-							//--> Extract overlay format modifiers
-							index = STR_IndexOf (overlayFormat, "h@");
-
-							if (index > -1) {
-								overlayColor = HEX2RGBA (Choice_GetModifierColor (overlayFormat));
-								overlayFormat = Choice_RemoveModifierColor (overlayFormat);
-							};
-							
-							//Extract color selected
-							index = STR_IndexOf (overlayFormat, "hs@");
-
-							if (index > -1) {
-								overlayColorSelected = HEX2RGBA (Choice_GetModifierColorSelected (overlayFormat));
-								overlayFormat = Choice_RemoveModifierColorSelected (overlayFormat);
-							};
-							//<--
-
-							thisID += 1;
-							
-							flagAdd = true;
-							
-							if (!STR_Len (overlayText)) {
-								flagAdd = FALSE;
-							} else {
-									//Extract font name
-									index = (STR_IndexOf (overlayText, "f@"));
-
-									if (index > -1) {
-										dlgFont = Choice_GetModifierFont (overlayText);
-										overlayText = Choice_RemoveModifierFont (overlayText);
-									};
-
-									//Extract font selected name
-									index = (STR_IndexOf (overlayText, "fs@"));
-
-									if (index > -1) {
-										dlgFontSelected = Choice_GetModifierFontSelected (overlayText);
-										overlayText = Choice_RemoveModifierFontSelected (overlayText);
-									};
-
-									//Extract color grayed
-									index = (STR_IndexOf (overlayText, "h@"));
-
-									if (index > -1) {
-										dlgColor = Choice_GetModifierColor (overlayText);
-										overlayText = Choice_RemoveModifierColor (overlayText);
-										overlayColor = HEX2RGBA (dlgColor);
-									};
-									
-									//Extract color selected
-									index = (STR_IndexOf (overlayText, "hs@"));
-
-									if (index > -1) {
-										dlgColorSelected = Choice_GetModifierColorSelected (overlayText);
-										overlayText = Choice_RemoveModifierColorSelected (overlayText);
-										overlayColorSelected = HEX2RGBA (dlgColorSelected);
-									};
-									
-									//al@ align left
-									index = (STR_IndexOf (overlayText, "al@"));
-
-									if (index > -1) {
-										//alignment = ALIGN_LEFT;
-										overlayAlignment = ALIGN_LEFT;
-										overlayText = Choice_RemoveModifierByText (overlayText, "al@");
-									};
-
-									//ac@ align center
-									index = (STR_IndexOf (overlayText, "ac@"));
-
-									if (index > -1) {
-										//alignment = ALIGN_CENTER;
-										overlayAlignment = ALIGN_CENTER;
-										overlayText = Choice_RemoveModifierByText (overlayText, "ac@");
-									};
-
-									//ar@ align right
-									index = (STR_IndexOf (overlayText, "ar@"));
-									
-									if (index > -1) {
-										//alignment = ALIGN_RIGHT;
-										overlayAlignment = ALIGN_RIGHT;
-										overlayText = Choice_RemoveModifierByText (overlayText, "ar@");
-									};
-
-									//spinner s@
-									index = (STR_IndexOf (overlayText, "s@"));
-
-									if (index > -1) {
-										spinnerDialog = i;
-										spinnerDialogID = Choice_GetModifierSpinnerID (overlayText);
-										overlayText = Choice_RemoveModifierSpinner (overlayText);
-									};
-							};
-							
-							k = 0;
-							while (k < overlayCount);
-								if (MEM_ReadIntArray (_@ (overlayID), k) == thisID) {
-									//Update overlay text and colors
-									overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView), k);
-
-									if (overlayChoice < dlg.m_listLines_numInArray)
+									if (overlayAlignment == -1)
+									&& (flagDialogChoiceStartsWithOverlay == FALSE)
 									{
-										overlayChoiceTxt = _^ (MEM_ReadIntArray (arr.array, overlayChoice));
+										overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (s1));
 
-										overlayChoiceTxt.text = overlayText;
-										
-										//In line with text
-										
-										if (overlayAlignment == -1) {
-											overlayChoiceTxt.posX = overlayPosX;
-										} else
-										//align left
-										if (overlayAlignment == ALIGN_LEFT) {
-											overlayChoiceTxt.posX = defaultPosX;
-										} else
-										//align center
-										if (overlayAlignment == ALIGN_CENTER) {
-											textWidth = Print_GetStringWidth (overlayText, dlgFont);
-											overlayChoiceTxt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-											
-											if (overlayChoiceTxt.posX < defaultPosX) {
-												overlayChoiceTxt.posX = defaultPosX;
-											};
-										} else
-										//align right
-										if (overlayAlignment == ALIGN_RIGHT) {
-											textWidth = Print_GetStringWidth (overlayText, dlgFont);
-											overlayChoiceTxt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+										overlayShiftX = STR_SplitCount (overlayConcat, " ");
+										overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
+									};
+								};
 
-											if (overlayChoiceTxt.posX < defaultPosX) {
-												overlayChoiceTxt.posX = defaultPosX;
-											};
+								//--> Extract overlay format modifiers
+								index = STR_IndexOf (overlayFormat, "h@");
+
+								if (index > -1) {
+									overlayColor = HEX2RGBA (Choice_GetModifierColor (overlayFormat));
+									overlayFormat = Choice_RemoveModifierColor (overlayFormat);
+								};
+								
+								//Extract color selected
+								index = STR_IndexOf (overlayFormat, "hs@");
+
+								if (index > -1) {
+									overlayColorSelected = HEX2RGBA (Choice_GetModifierColorSelected (overlayFormat));
+									overlayFormat = Choice_RemoveModifierColorSelected (overlayFormat);
+								};
+								//<--
+
+								//thisID += 1;
+								thisID = ConcatStrings (thisID, ".1");
+								
+								flagAdd = true;
+								
+								if (!STR_Len (overlayText)) {
+									flagAdd = FALSE;
+								} else {
+										//Extract font name
+										index = (STR_IndexOf (overlayText, "f@"));
+
+										if (index > -1) {
+											dlgFont = Choice_GetModifierFont (overlayText);
+											overlayText = Choice_RemoveModifierFont (overlayText);
+										};
+
+										//Extract font selected name
+										index = (STR_IndexOf (overlayText, "fs@"));
+
+										if (index > -1) {
+											dlgFontSelected = Choice_GetModifierFontSelected (overlayText);
+											overlayText = Choice_RemoveModifierFontSelected (overlayText);
+										};
+
+										//Extract color grayed
+										index = (STR_IndexOf (overlayText, "h@"));
+
+										if (index > -1) {
+											dlgColor = Choice_GetModifierColor (overlayText);
+											overlayText = Choice_RemoveModifierColor (overlayText);
+											overlayColor = HEX2RGBA (dlgColor);
+										};
+										
+										//Extract color selected
+										index = (STR_IndexOf (overlayText, "hs@"));
+
+										if (index > -1) {
+											dlgColorSelected = Choice_GetModifierColorSelected (overlayText);
+											overlayText = Choice_RemoveModifierColorSelected (overlayText);
+											overlayColorSelected = HEX2RGBA (dlgColorSelected);
+										};
+										
+										//al@ align left
+										index = (STR_IndexOf (overlayText, "al@"));
+
+										if (index > -1) {
+											//alignment = ALIGN_LEFT;
+											overlayAlignment = ALIGN_LEFT;
+											overlayText = Choice_RemoveModifierByText (overlayText, "al@");
+										};
+
+										//ac@ align center
+										index = (STR_IndexOf (overlayText, "ac@"));
+
+										if (index > -1) {
+											//alignment = ALIGN_CENTER;
+											overlayAlignment = ALIGN_CENTER;
+											overlayText = Choice_RemoveModifierByText (overlayText, "ac@");
+										};
+
+										//ar@ align right
+										index = (STR_IndexOf (overlayText, "ar@"));
+										
+										if (index > -1) {
+											//alignment = ALIGN_RIGHT;
+											overlayAlignment = ALIGN_RIGHT;
+											overlayText = Choice_RemoveModifierByText (overlayText, "ar@");
+										};
+
+										//spinner s@
+										index = (STR_IndexOf (overlayText, "s@"));
+
+										if (index > -1) {
+											properties = properties | dialogChoiceType_Spinner;
+											spinnerDialogID = Choice_GetModifierSpinnerID (overlayText);
+											overlayText = Choice_RemoveModifierSpinner (overlayText);
+										};
+								};
+								
+								k = 0;
+								nextAvailableOverlayIndex = -1;
+
+								while (k < overlayCount);
+									if (nextAvailableOverlayIndex == -1) {
+										if (MEM_ReadIntArray (_@ (overlayListMapChoice), k) == -1) {
+											nextAvailableOverlayIndex = k;
 										};
 									};
-									
-									//
-									flagAdd = false;
-									break;
-								};
-								
-								k += 1;
-							end;
 
-							txt.enabledBlend = TRUE;
-							txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
-							//txt.alpha = 255;
-							
-							if (InfoManagerAnswerMode)
-							&& (answerDialog == i)
-							{
-								flagAdd = FALSE;
-							};
+									if (Hlp_StrCmp (MEM_ReadStringArray (_@s (overlayID), k), thisID)) {
+										//Update overlay text and colors
+										overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView), k);
 
-							//Prevent overflow
-							if (overlayCount >= OVERLAY_MAX) {
-								flagAdd = FALSE;
-							};
+										//if (overlayChoice < dlg.m_listLines_numInArray)
+										if (overlayChoice)
+										{
+											//overlayChoiceTxt = _^ (MEM_ReadIntArray (arr.array, overlayChoice));
+											overlayChoiceTxt = _^ (overlayChoice);
 
-							if (flagAdd)
-							{
-								//Create new zCViewText2 instance for overlay
-								overlayPtr = create (zCViewText2@);
-								txtIndicator = _^ (overlayPtr);
+											overlayChoiceTxt.text = overlayText;
+											
+											//In line with text
+											
+											if (overlayAlignment == -1) {
+												overlayChoiceTxt.posX = overlayPosX;
+											} else
+											//align left
+											if (overlayAlignment == ALIGN_LEFT) {
+												overlayChoiceTxt.posX = defaultPosX;
+											} else
+											//align center
+											if (overlayAlignment == ALIGN_CENTER) {
+												textWidth = Print_GetStringWidth (overlayText, dlgFont);
+												overlayChoiceTxt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+												
+												if (overlayChoiceTxt.posX < defaultPosX) {
+													overlayChoiceTxt.posX = defaultPosX;
+												};
+											} else
+											//align right
+											if (overlayAlignment == ALIGN_RIGHT) {
+												textWidth = Print_GetStringWidth (overlayText, dlgFont);
+												overlayChoiceTxt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 
-								txtIndicator.enabledColor = txt.enabledColor;
-								txtIndicator.font = txt.font;
-
-								txtIndicator.enabledBlend = txt.enabledBlend;
-								txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-								//txtIndicator.alpha = 255;
-								
-								txtIndicator.text = overlayText;
-								
-								//In line with text
-								if (overlayAlignment == -1) {
-									txtIndicator.posX = overlayPosX;
-								} else
-								//align left
-								if (overlayAlignment == ALIGN_LEFT) {
-									txtIndicator.posX = defaultPosX;
-								} else
-								//align center
-								if (overlayAlignment == ALIGN_CENTER) {
-									textWidth = Print_GetStringWidth (overlayText, dlgFont);
-									txtIndicator.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-									
-									if (txtIndicator.posX < defaultPosX) {
-										txtIndicator.posX = defaultPosX;
-									};
-								} else
-								//align right
-								if (overlayAlignment == ALIGN_RIGHT) {
-									textWidth = Print_GetStringWidth (overlayText, dlgFont);
-									txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-
-									if (txtIndicator.posX < defaultPosX) {
-										txtIndicator.posX = defaultPosX;
-									};
-								};
-
-								//We will exploit this variable a little bit
-								txtIndicator.timer = overlayCount;
-
-								//Insert indicator to dialog choices
-								MEM_ArrayInsert (choiceView + 172, overlayPtr); 
-
-								MEM_WriteIntArray (_@ (overlayID), overlayCount, thisID);
-
-								MEM_WriteIntArray (_@ (overlayListColor), overlayCount, overlayColor);
-								MEM_WriteIntArray (_@ (overlayListColorSelected), overlayCount, overlayColorSelected);
-
-								MEM_WriteIntArray (_@ (overlayListMapChoice), overlayCount, i);
-								MEM_WriteIntArray (_@ (overlayListMapView), overlayCount, dlg.m_listLines_numInArray - 1);
-
-								overlayCount += 1;
-							};
-							//};
-							
-							//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
-							if (STR_Len (s2) > 0) {
-
-								//Treat rest of this dialogue as overlays
-								index = STR_IndexOf (s2, "o@");
-								
-								overlayFormat = "";
-
-								/*
-								if (nextOverlayAlignment != -1) {
-									if (nextOverlayAlignment == ALIGN_LEFT) {
-										overlayFormat = "al@";
-									} else
-									if (nextOverlayAlignment == ALIGN_CENTER) {
-										overlayFormat = "ac@";
-									} else
-									if (nextOverlayAlignment == ALIGN_RIGHT) {
-										overlayFormat = "ar@";
-									};
-								};
-								*/
-
-								//convert to overlays
-								if (index == -1) {
-									s2 = ConcatStrings (":", s2);
-									s2 = ConcatStrings (overlayFormat, s2);
-									s2 = ConcatStrings ("o@", s2);
-									s2 = ConcatStrings (s2, "~");
-								} else {
-									if (index > 0) {
-										len = STR_Len (s2);
-										//Dobrá, co bych měl vědět o 
-										s1 = mySTR_Prefix (s2, index);
-										//o@hs@FF8000:tomhle~ místě?
-										s3 = mySTR_SubStr (s2, index, len - index);
+												if (overlayChoiceTxt.posX < defaultPosX) {
+													overlayChoiceTxt.posX = defaultPosX;
+												};
+											};
+										};
 										
-										s2 = s1;
+										flagAdd = false;
+										break;
+									};
+									
+									k += 1;
+								end;
+
+								txt.enabledBlend = TRUE;
+								txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+								//txt.alpha = 255;
+								
+								if (InfoManagerAnswerMode)
+								&& (dlg.ChoiceSelected == i)
+								&& (properties & dialogChoiceType_Answer)
+								{
+									flagAdd = FALSE;
+								};
+
+								//Prevent overflow
+								if (overlayCount >= OVERLAY_MAX) {
+									flagAdd = FALSE;
+								};
+
+								if (flagAdd) {
+									if (nextAvailableOverlayIndex == -1) {
+										nextAvailableOverlayIndex = overlayCount;
+										overlayCount += 1;
+									};
+
+									//Create new zCViewText2 instance for overlay
+									overlayPtr = create (zCViewText2@);
+									txtIndicator = _^ (overlayPtr);
+
+									txtIndicator.enabledColor = txt.enabledColor;
+									txtIndicator.font = txt.font;
+
+									txtIndicator.enabledBlend = txt.enabledBlend;
+									txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+									//txtIndicator.alpha = 255;
+									
+									txtIndicator.text = overlayText;
+									
+									//In line with text
+									if (overlayAlignment == -1) {
+										txtIndicator.posX = overlayPosX;
+									} else
+									//align left
+									if (overlayAlignment == ALIGN_LEFT) {
+										txtIndicator.posX = defaultPosX;
+									} else
+									//align center
+									if (overlayAlignment == ALIGN_CENTER) {
+										textWidth = Print_GetStringWidth (overlayText, dlgFont);
+										txtIndicator.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 										
+										if (txtIndicator.posX < defaultPosX) {
+											txtIndicator.posX = defaultPosX;
+										};
+									} else
+									//align right
+									if (overlayAlignment == ALIGN_RIGHT) {
+										textWidth = Print_GetStringWidth (overlayText, dlgFont);
+										txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+
+										if (txtIndicator.posX < defaultPosX) {
+											txtIndicator.posX = defaultPosX;
+										};
+									};
+
+									//We will exploit this variable a little bit
+									txtIndicator.timer = nextAvailableOverlayIndex;
+									txtIndicator.enabledTimer = FALSE;
+
+									//Insert indicator to dialog choices
+									MEM_ArrayInsert (choiceView + 172, overlayPtr);
+
+									//MEM_WriteIntArray (_@ (overlayID), nextAvailableOverlayIndex, thisID);
+									MEM_WriteStringArray (_@s (overlayID), nextAvailableOverlayIndex, thisID);
+
+									MEM_WriteIntArray (_@ (overlayListColor), nextAvailableOverlayIndex, overlayColor);
+									MEM_WriteIntArray (_@ (overlayListColorSelected), nextAvailableOverlayIndex, overlayColorSelected);
+
+									MEM_WriteIntArray (_@ (overlayListMapChoice), nextAvailableOverlayIndex, i);
+									//MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, dlg.m_listLines_numInArray - 1);
+									MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, overlayPtr);
+
+									//-->
+									txtIndicator.posY = txt.posY;
+
+									//Update color
+									if (i == dlg.ChoiceSelected) {
+										txtIndicator.color = overlayColor;
+										txtIndicator.alpha = GetAlpha (overlayColor);
+									} else {
+										txtIndicator.color = overlayColorSelected;
+										txtIndicator.alpha = GetAlpha (overlayColorSelected);
+									};
+									//<--
+
+									//Reset values for next overlay
+									if (overlayCount < OVERLAY_MAX) {
+										MEM_WriteIntArray (_@ (overlayListMapView), overlayCount, 0);
+										MEM_WriteIntArray (_@ (overlayListMapChoice), overlayCount, -1);
+									};
+								};
+								//};
+								
+								//Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
+								if (STR_Len (s2) > 0) {
+
+									//Treat rest of this dialogue as overlays
+									index = STR_IndexOf (s2, "o@");
+									
+									overlayFormat = "";
+
+									/*
+									if (nextOverlayAlignment != -1) {
+										if (nextOverlayAlignment == ALIGN_LEFT) {
+											overlayFormat = "al@";
+										} else
+										if (nextOverlayAlignment == ALIGN_CENTER) {
+											overlayFormat = "ac@";
+										} else
+										if (nextOverlayAlignment == ALIGN_RIGHT) {
+											overlayFormat = "ar@";
+										};
+									};
+									*/
+
+									//convert to overlays
+									if (index == -1) {
 										s2 = ConcatStrings (":", s2);
 										s2 = ConcatStrings (overlayFormat, s2);
 										s2 = ConcatStrings ("o@", s2);
 										s2 = ConcatStrings (s2, "~");
+									} else {
+										if (index > 0) {
+											len = STR_Len (s2);
+											//Dobrá, co bych měl vědět o 
+											s1 = mySTR_Prefix (s2, index);
+											//o@hs@FF8000:tomhle~ místě?
+											s3 = mySTR_SubStr (s2, index, len - index);
+											
+											s2 = s1;
+											
+											s2 = ConcatStrings (":", s2);
+											s2 = ConcatStrings (overlayFormat, s2);
+											s2 = ConcatStrings ("o@", s2);
+											s2 = ConcatStrings (s2, "~");
 
-										//o@:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
-										s2 = ConcatStrings (s2, s3);
+											//o@:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
+											s2 = ConcatStrings (s2, s3);
+										};
 									};
 								};
+								
+								dlgDescription = s2;
+
+								if (overlayAlignment == -1) {
+									overlayConcat = ConcatStrings (overlayConcat, overlayText);
+								};
+
+								overlayIndex += 1;
+								MEM_StackPos.position = overlayLoop;
+							};
+
+							if (STR_Len (overlayDialog) > 0) {
+								dlgDescription = overlayDialog;
+							};
+
+							//<-- Overlays
+							if (properties & dialogChoiceType_Disabled) {
+								dlgColorSelected = InfoManagerDisabledDialogColorSelected;
+								dlgColor = InfoManagerDisabledColorDialogGrey;
 							};
 							
-							dlgDescription = s2;
+							//Extract font name
+							index = (STR_IndexOf (dlgDescription, "f@"));
 
-							if (overlayAlignment == -1) {
-								overlayConcat = ConcatStrings (overlayConcat, overlayText);
+							if (index > -1) {
+								dlgFont = Choice_GetModifierFont (dlgDescription);
+								dlgDescription = Choice_RemoveModifierFont (dlgDescription);
 							};
 
-							overlayIndex += 1;
-							MEM_StackPos.position = overlayLoop;
-						};
+							//Extract font selected name
+							index = (STR_IndexOf (dlgDescription, "fs@"));
 
-						if (STR_Len (overlayDialog) > 0) {
-							dlgDescription = overlayDialog;
-						};
+							if (index > -1) {
+								dlgFontSelected = Choice_GetModifierFontSelected (dlgDescription);
+								dlgDescription = Choice_RemoveModifierFontSelected (dlgDescription);
+							};
 
-						//<-- Overlays
-						if (disabledChoice == i) {
-							dlgColorSelected = InfoManagerDisabledDialogColorSelected;
-							dlgColor = InfoManagerDisabledColorDialogGrey;
-						};
-						
-						//Extract font name
-						index = (STR_IndexOf (dlgDescription, "f@"));
+							//Extract color grayed
+							index = (STR_IndexOf (dlgDescription, "h@"));
 
-						if (index > -1) {
-							dlgFont = Choice_GetModifierFont (dlgDescription);
-							dlgDescription = Choice_RemoveModifierFont (dlgDescription);
-						};
+							if (index > -1) {
+								dlgColor = Choice_GetModifierColor (dlgDescription);
+								dlgDescription = Choice_RemoveModifierColor (dlgDescription);
+							};
+							
+							//Extract color selected
+							index = (STR_IndexOf (dlgDescription, "hs@"));
 
-						//Extract font selected name
-						index = (STR_IndexOf (dlgDescription, "fs@"));
+							if (index > -1) {
+								dlgColorSelected = Choice_GetModifierColorSelected (dlgDescription);
+								dlgDescription = Choice_RemoveModifierColorSelected (dlgDescription);
+							};
+							
+							//al@ align left
+							index = (STR_IndexOf (dlgDescription, "al@"));
 
-						if (index > -1) {
-							dlgFontSelected = Choice_GetModifierFontSelected (dlgDescription);
-							dlgDescription = Choice_RemoveModifierFontSelected (dlgDescription);
-						};
+							if (index > -1) {
+								alignment = ALIGN_LEFT;
+								dlgDescription = Choice_RemoveModifierByText (dlgDescription, "al@");
+							};
 
-						//Extract color grayed
-						index = (STR_IndexOf (dlgDescription, "h@"));
+							//ac@ align center
+							index = (STR_IndexOf (dlgDescription, "ac@"));
 
-						if (index > -1) {
-							dlgColor = Choice_GetModifierColor (dlgDescription);
-							dlgDescription = Choice_RemoveModifierColor (dlgDescription);
-						};
-						
-						//Extract color selected
-						index = (STR_IndexOf (dlgDescription, "hs@"));
+							if (index > -1) {
+								alignment = ALIGN_CENTER;
+								dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ac@");
+							};
 
-						if (index > -1) {
-							dlgColorSelected = Choice_GetModifierColorSelected (dlgDescription);
-							dlgDescription = Choice_RemoveModifierColorSelected (dlgDescription);
-						};
-						
-						//al@ align left
-						index = (STR_IndexOf (dlgDescription, "al@"));
+							//ar@ align right
+							index = (STR_IndexOf (dlgDescription, "ar@"));
+							
+							if (index > -1) {
+								alignment = ALIGN_RIGHT;
+								dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ar@");
+							};
 
-						if (index > -1) {
-							alignment = ALIGN_LEFT;
-							dlgDescription = Choice_RemoveModifierByText (dlgDescription, "al@");
-						};
+							//spinner s@
+							index = (STR_IndexOf (dlgDescription, "s@"));
 
-						//ac@ align center
-						index = (STR_IndexOf (dlgDescription, "ac@"));
+							if (index > -1) {
+								properties = properties | dialogChoiceType_Spinner;
+								spinnerDialogID = Choice_GetModifierSpinnerID (dlgDescription);
+								dlgDescription = Choice_RemoveModifierSpinner (dlgDescription);
+							};
+							
+							//txtIndicator.posX = dlg.psizex - txt.posX - textWidth - dlg.offsetTextpx;
+							//
 
-						if (index > -1) {
-							alignment = ALIGN_CENTER;
-							dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ac@");
-						};
+							//Apply dlgColor and dlgColorSelected
+							//Is current dialog choice selected one ?
+							if (i == dlg.ChoiceSelected) {
+								if (InfoManagerAnswerPossible) {
 
-						//ar@ align right
-						index = (STR_IndexOf (dlgDescription, "ar@"));
-						
-						if (index > -1) {
-							alignment = ALIGN_RIGHT;
-							dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ar@");
-						};
+									//Add answer indicator
+									if (!InfoManagerAnswerMode) {
+										if (!InfoManagerAnswerIndicator) {
+											txt.enabledBlend = TRUE;
+											txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+											//txt.alpha = 255;
 
-						//spinner s@
-						index = (STR_IndexOf (dlgDescription, "s@"));
+											//Create new zCViewText2 instance for our indicator
+											InfoManagerAnswerIndicator = create (zCViewText2@);
+											txtIndicator = _^ (InfoManagerAnswerIndicator);
 
-						if (index > -1) {
-							spinnerDialog = i;
-							spinnerDialogID = Choice_GetModifierSpinnerID (dlgDescription);
-							dlgDescription = Choice_RemoveModifierSpinner (dlgDescription);
-						};
-						
-						//txtIndicator.posX = dlg.psizex - txt.posX - textWidth - dlg.offsetTextpx;
-						//
+											txtIndicator.enabledColor = txt.enabledColor;
+											txtIndicator.font = txt.font;
+											txtIndicator.posY = txt.posY;
 
-						//Apply dlgColor and dlgColorSelected
-						//Is current dialog choice selected one ?
-						if (i == dlg.ChoiceSelected) {
-							//if (answerDialog == i) {
-							//	InfoManagerAnswerPossible = TRUE;
-							if (InfoManagerAnswerPossible) {
+											txtIndicator.enabledBlend = txt.enabledBlend;
+											txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+											txtIndicator.alpha = InfoManagerIndicatorAlpha;
+											
+											txtIndicator.text = InfoManagerAnswerIndicatorString;
 
-								//Add answer indicator
-								if (!InfoManagerAnswerMode) {
-									if (!InfoManagerAnswerIndicator) {
+											//Insert indicator to dialog choices
+											MEM_ArrayInsert (choiceView + 172, InfoManagerAnswerIndicator); 
+										};
+									};
+								};
+
+								if (properties & dialogChoiceType_Spinner) {
+									InfoManagerSpinnerPossible = TRUE;
+									InfoManagerSpinnerID = spinnerDialogID;
+									
+									//Dokazeme tu pridat novy 'dialog' s transparentnym textom '<>' ako overlay ???
+									//Funguje !
+									
+									//Add spinner indicator
+									if (!InfoManagerSpinnerIndicator) {
 										txt.enabledBlend = TRUE;
 										txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
 										//txt.alpha = 255;
 
 										//Create new zCViewText2 instance for our indicator
-										InfoManagerAnswerIndicator = create (zCViewText2@);
-										txtIndicator = _^ (InfoManagerAnswerIndicator);
+										InfoManagerSpinnerIndicator = create (zCViewText2@);
+										txtIndicator = _^ (InfoManagerSpinnerIndicator);
 
 										txtIndicator.enabledColor = txt.enabledColor;
 										txtIndicator.font = txt.font;
@@ -2165,305 +2337,272 @@ MEM_InformationMan.LastMethod:
 										txtIndicator.enabledBlend = txt.enabledBlend;
 										txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
 										txtIndicator.alpha = InfoManagerIndicatorAlpha;
-										
-										txtIndicator.text = InfoManagerAnswerIndicatorString;
+
+										txtIndicator.text = InfoManagerSpinnerIndicatorString;
 
 										//Insert indicator to dialog choices
-										MEM_ArrayInsert (choiceView + 172, InfoManagerAnswerIndicator); 
+										MEM_ArrayInsert (choiceView + 172, InfoManagerSpinnerIndicator); 
+
+										if (InfoManagerSpinnerIndicatorAnimation) {
+											FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
+											InfoManagerSpinnerAnimate (FALSE);
+										};
 									};
+								};
+
+								if (STR_Len (dlgColorSelected) > 0) {
+									color = HEX2RGBA (dlgColorSelected);
+									txt.color = color;
+									txt.alpha = GetAlpha (color);
+								};
+								
+								if (STR_Len (dlgFontSelected) > 0) {
+									dlgFont = dlgFontSelected;
+								};
+
+								//Can we go into answer mode? If yes replace description with current answer
+								if (InfoManagerAnswerMode) {
+									dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
+								};
+							} else
+							{
+								if (STR_Len (dlgColor) > 0) {
+									color = HEX2RGBA (dlgColor);
+									txt.color = color;
+									txt.alpha = GetAlpha (color);
 								};
 							};
 
-							if (spinnerDialog == i) {
-								InfoManagerSpinnerPossible = TRUE;
-								InfoManagerSpinnerID = spinnerDialogID;
+							//Replace dialog option text with 'cleared' dlgDescription
+							txt.text = dlgDescription;
+							
+							//
+							if (alignment == ALIGN_LEFT) {
+								txt.posX = defaultPosX;
+							} else
+							if (alignment == ALIGN_CENTER) {
+								textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
+								txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 								
-								//Dokazeme tu pridat novy 'dialog' s transparentnym textom '<>' ako overlay ???
-								//Funguje !
-								
-								//Add spinner indicator
-								if (!InfoManagerSpinnerIndicator) {
-									txt.enabledBlend = TRUE;
-									txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
-									//txt.alpha = 255;
+								if (txt.posX < defaultPosX) {
+									txt.posX = defaultPosX;
+								};
+							} else
+							if (alignment == ALIGN_RIGHT) {
+								textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
+								txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 
-									//Create new zCViewText2 instance for our indicator
-									InfoManagerSpinnerIndicator = create (zCViewText2@);
-									txtIndicator = _^ (InfoManagerSpinnerIndicator);
+								if (txt.posX < defaultPosX) {
+									txt.posX = defaultPosX;
+								};
+							};
+						};
+					
+						//MEM_WriteIntArray (_@ (listPosY), i, nextPosY);
 
-									txtIndicator.enabledColor = txt.enabledColor;
-									txtIndicator.font = txt.font;
+						//---
+						var int newFont; newFont = Print_GetFontPtr (dlgFont);
+
+						//Adjust X, Y pos in case dialog with indicators is selected
+						//if (i < dlg.Choices) {
+						if (i == dlg.ChoiceSelected) {
+							if (InfoManagerAnswerIndicator) {
+								txtIndicator = _^ (InfoManagerAnswerIndicator);
+
+								if (properties & dialogChoiceType_Answer) {
+									txtIndicator.font = newFont;
+									
+									if (STR_Len (InfoManagerIndicatorColorDefault) == 0) {
+										InfoManagerIndicatorColor = HEX2RGBA (dlgColor);
+									} else {
+										InfoManagerIndicatorColor = HEX2RGBA (InfoManagerIndicatorColorDefault);
+									};
+									
+									txtIndicator.color = InfoManagerIndicatorColor;
+									txtIndicator.alpha = GetAlpha (InfoManagerIndicatorColor);
+
 									txtIndicator.posY = txt.posY;
 
-									txtIndicator.enabledBlend = txt.enabledBlend;
-									txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-									txtIndicator.alpha = InfoManagerIndicatorAlpha;
-
-									txtIndicator.text = InfoManagerSpinnerIndicatorString;
-
-									//Insert indicator to dialog choices
-									MEM_ArrayInsert (choiceView + 172, InfoManagerSpinnerIndicator); 
-
-									if (InfoManagerSpinnerIndicatorAnimation) {
-										FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
-										InfoManagerSpinnerAnimate (FALSE);
-									};
-								};
-							};
-
-							if (STR_Len (dlgColorSelected) > 0) {
-								txt.color = HEX2RGBA (dlgColorSelected);
-								txt.alpha = GetAlpha (txt.color);
-							};
-							
-							if (STR_Len (dlgFontSelected) > 0) {
-								dlgFont = dlgFontSelected;
-							};
-
-							//Can we go into answer mode? If yes replace description with current answer
-							if (InfoManagerAnswerMode) {
-								dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
-							};
-						} else
-						{
-							if (STR_Len (dlgColor) > 0) {
-								txt.color = HEX2RGBA (dlgColor);
-								txt.alpha = GetAlpha (txt.color);
-							};
-						};
-
-						//Replace dialog option text with 'cleared' dlgDescription
-						txt.text = dlgDescription;
-						
-						//
-						if (alignment == ALIGN_LEFT) {
-							txt.posX = defaultPosX;
-						} else
-						if (alignment == ALIGN_CENTER) {
-							textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-							txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-							
-							if (txt.posX < defaultPosX) {
-								txt.posX = defaultPosX;
-							};
-						} else
-						if (alignment == ALIGN_RIGHT) {
-							textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-							txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-
-							if (txt.posX < defaultPosX) {
-								txt.posX = defaultPosX;
-							};
-						};
-					};
-				
-					//Recalculate offsetTextpy and posY for dialog items in case fonts changed
-					if (i < dlg.Choices) {
-						if (i == 0) {
-							nextPosY = txt.posY;
-							dlg.offsetTextpy = 0;
-						} else {					
-							txt.posY = nextPosY;
-						};
-					};
-					
-					//MEM_WriteIntArray (_@ (listPosY), i, nextPosY);
-
-					//---
-					var int newFont; newFont = Print_GetFontPtr (dlgFont);
-
-					//Adjust X, Y pos in case dialog with indicators is selected
-					//if (i < dlg.Choices) {
-					if (i == dlg.ChoiceSelected) {
-						if (InfoManagerAnswerIndicator) {
-							txtIndicator = _^ (InfoManagerAnswerIndicator);
-
-							if (answerDialog == i) {
-								txtIndicator.font = newFont;
-								
-								if (STR_Len (InfoManagerIndicatorColorDefault) == 0) {
-									InfoManagerIndicatorColor = HEX2RGBA (dlgColor);
-								} else {
-									InfoManagerIndicatorColor = HEX2RGBA (InfoManagerIndicatorColorDefault);
-								};
-								
-								txtIndicator.color = InfoManagerIndicatorColor;
-								txtIndicator.alpha = GetAlpha (txtIndicator.color);
-
-								txtIndicator.posY = txt.posY;
-
-								textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
-								txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
-							};
-						};
-
-						if (InfoManagerSpinnerIndicator) {
-							txtIndicator = _^ (InfoManagerSpinnerIndicator);
-
-							if (spinnerDialog == i) {
-								txtIndicator.font = newFont;
-
-								if (STR_Len (InfoManagerIndicatorColorDefault) == 0) {
-									InfoManagerIndicatorColor = HEX2RGBA (dlgColor);
-								} else {
-									InfoManagerIndicatorColor = HEX2RGBA (InfoManagerIndicatorColorDefault);
-								};
-								
-								txtIndicator.color = InfoManagerIndicatorColor;
-								txtIndicator.alpha = GetAlpha (txtIndicator.color);
-								
-								txtIndicator.posY = txt.posY;
-
-								textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
-								
-								if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+									textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 									txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 								};
 							};
-						};
-					};
-					//};
-					
-					overlayPtr = 0;
 
-					if (i >= dlg.Choices) {
-						overlayPtr = MEM_ReadIntArray(arr.array, i);
-					};
+							if (InfoManagerSpinnerIndicator) {
+								txtIndicator = _^ (InfoManagerSpinnerIndicator);
 
-					//--> Overlay
-					if (overlayPtr)
-					&& (overlayPtr != InfoManagerAnswerIndicator)
-					&& (overlayPtr != InfoManagerSpinnerIndicator)
-					{
-						txtIndicator = _^ (overlayPtr);
-						overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
-						
-						if (overlayChoice < dlg.m_listLines_numInArray) {
-							var int color;
+								if (properties & dialogChoiceType_Spinner) {
+									txtIndicator.font = newFont;
 
-							//adjust posY
-							overlayChoiceTxt = _^ (MEM_ReadIntArray(arr.array, overlayChoice));
-							txtIndicator.posY = overlayChoiceTxt.posY;
+									if (STR_Len (InfoManagerIndicatorColorDefault) == 0) {
+										InfoManagerIndicatorColor = HEX2RGBA (dlgColor);
+									} else {
+										InfoManagerIndicatorColor = HEX2RGBA (InfoManagerIndicatorColorDefault);
+									};
+									
+									txtIndicator.color = InfoManagerIndicatorColor;
+									txtIndicator.alpha = GetAlpha (InfoManagerIndicatorColor);
+									
+									txtIndicator.posY = txt.posY;
 
-							//Update color
-							if (dlg.ChoiceSelected == overlayChoice) {
-								color = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
-								txtIndicator.color = color;
-								txtIndicator.alpha = GetAlpha (txtIndicator.color);
-
-								//if (STR_Len (overlayColorSelected) > 0) {
-								//	txtIndicator.color = HEX2RGBA (overlayColorSelected);
-								//} else {
-								//	txtIndicator.color = overlayChoiceTxt.color;										
-								//};
-							} else {
-								color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
-								txtIndicator.color = color;
-								txtIndicator.alpha = GetAlpha (txtIndicator.color);
-								//if (STR_Len (overlayColor) > 0) {
-								//	txtIndicator.color = HEX2RGBA (overlayColor);
-								//} else {
-								//	//Default color (underlaying
-								//	txtIndicator.color = overlayChoiceTxt.color;										
-								//};
+									textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+									
+									if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+										txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+									};
+								};
 							};
 						};
 					};
-					//<-- Overlays
-
-					if (i < dlg.Choices) {
-						if (i < dlg.LineStart) {
-							dlg.offsetTextpy -= Print_GetFontHeight (dlgFont);
-						};
-						
-						//Apply new font (or re-apply old one)
-						txt.font = newFont;
-						
-						//
-						nextPosY += Print_GetFontHeight (dlgFont);
-					};
-
-					i += 1;
-					MEM_StackPos.position = p;
 				};
+
+				MEM_WriteIntArray (_@ (dialogProperties), i, properties);
+				InfoManagerUpdateState = cIMChanged;
 			};
 
-			InfoManagerUpdateState = cIMChanged;
-			InfoManagerLastChoiceSelected = dlg.ChoiceSelected;
+			//Recalculate offsetTextpy and posY for dialog items in case fonts changed
+			if (i < dlg.Choices) {
+				if (i == 0) {
+					nextPosY = txt.posY;
+					dlg.offsetTextpy = 0;
+				} else {					
+					txt.posY = nextPosY;
+				};
+
+				if (i < dlg.LineStart) {
+					dlg.offsetTextpy -= Print_GetFontHeight (dlgFont);
+				};
+				
+				//Apply new font (or re-apply old one)
+				txt.font = newFont;
+				
+				//
+				nextPosY += Print_GetFontHeight (dlgFont);
+			};
+
+			i += 1;
+		end;
+
+		if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
+		|| (refreshOverlays)
+		{
+			//--> Overlay
+			i = 0;
+
+			while (i < overlayCount);
+
+				overlayPtr = MEM_ReadIntArray (_@ (overlayListMapView), i);
+				if (overlayPtr) {
+					txtIndicator = _^ (overlayPtr);
+					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
+					
+					if (overlayChoice < dlg.m_listLines_numInArray) {
+						//adjust posY
+						overlayChoiceTxt = _^ (MEM_ReadIntArray(arr.array, overlayChoice));
+						txtIndicator.posY = overlayChoiceTxt.posY;
+
+						//Update color
+						if (dlg.ChoiceSelected == overlayChoice) {
+							color = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
+							txtIndicator.color = color;
+							txtIndicator.alpha = GetAlpha (color);
+						} else {
+							color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
+							txtIndicator.color = color;
+							txtIndicator.alpha = GetAlpha (color);
+						};
+					};
+				};
+				
+				i += 1;
+			end;
+			
+			/*
+			i = dlg.choices;
+			loop = dlg.m_listLines_numInArray;
+			
+			while (i < loop);
+				overlayPtr = MEM_ReadIntArray(arr.array, i);
+
+				if (overlayPtr)
+				&& (overlayPtr != InfoManagerAnswerIndicator)
+				&& (overlayPtr != InfoManagerSpinnerIndicator)
+				{
+					txtIndicator = _^ (overlayPtr);
+					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
+					
+					if (overlayChoice < dlg.m_listLines_numInArray) {
+						var int color;
+
+						//adjust posY
+						overlayChoiceTxt = _^ (MEM_ReadIntArray(arr.array, overlayChoice));
+						txtIndicator.posY = overlayChoiceTxt.posY;
+
+						//Update color
+						if (dlg.ChoiceSelected == overlayChoice) {
+							color = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
+							txtIndicator.color = color;
+							txtIndicator.alpha = GetAlpha (txtIndicator.color);
+						} else {
+							color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
+							txtIndicator.color = color;
+							txtIndicator.alpha = GetAlpha (txtIndicator.color);
+						};
+					};
+				};
+
+				i += 1;
+			end;
+			*/
+			//<-- Overlays
+
+			//Special properties
+			if (dlg.ChoiceSelected < DIALOG_MAX) {
+				properties = (MEM_ReadIntArray (_@ (dialogProperties), dlg.ChoiceSelected));
+
+				InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
+				InfoManagerSpinnerPossible = properties & dialogChoiceType_Spinner;
+
+				//Remove if not required (or if we are already answering)
+				if (!InfoManagerAnswerPossible) || (InfoManagerAnswerMode) {
+					if (InfoManagerAnswerIndicator) {
+						InfoManagerRefreshOverlays = TRUE;
+					};
+				};
+
+				//Remove if not required
+				if (!InfoManagerSpinnerPossible) {
+					if (InfoManagerSpinnerIndicator) {
+						InfoManagerRefreshOverlays = TRUE;
+					};
+				};
+			};
+		};
+
+		if (InfoManagerAnswerPossible)
+		&& (InfoManagerAnswerMode) {
+			//Replace description with current answer
+			txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+			dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
+			txt.text = dlgDescription;
+		};
+
+		InfoManagerLastChoiceSelected = dlg.ChoiceSelected;
+
+		if (refreshOverlays > 0) {
+			refreshOverlays -= 1;
+		};
+
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
+			InfoManagerModeInfoLastChoiceSelected = dlg.ChoiceSelected;
 		};
 	};
-		/*
+	/*
 	} else
 	{
 		InfoManagerUpdateState = cIM2BChanged;
 	};
 	*/
-
-	//Remove if not required (or if we are already answering)
-	if (!InfoManagerAnswerPossible) || (InfoManagerAnswerMode) {
-		if (InfoManagerAnswerIndicator) {
-			InfoManagerRefreshOverlays = TRUE;
-
-			/*
-			//Is there an extra dialog ?
-			if (dlg.m_listLines_numInArray > dlg.Choices) {
-				arr = _^ (choiceView + 172);
-
-				if (arr.array) {
-					i = 0;
-					while (i < dlg.m_listLines_numInArray);
-						if (MEM_ReadIntArray (arr.array, i) == InfoManagerAnswerIndicator) {
-							txtIndicator = _^ (MEM_ReadIntArray (arr.array, i));
-							txtIndicator.enabledTimer = TRUE;
-							txtIndicator.timer = floatnull;
-							break;
-						};
-						i += 1;
-					end;
-
-					//txtIndicator = _^ (MEM_ReadIntArray (arr.array, dlg.m_listLines_numInArray - 1));
-					//add remove flag - Gothic will take care of the rest
-					//txtIndicator.enabledTimer = TRUE;
-				};
-			};
-
-			InfoManagerAnswerIndicator = 0;
-			*/
-		};
-	};
-
-	//Remove if not required
-	if (!InfoManagerSpinnerPossible) {
-		if (InfoManagerSpinnerIndicator) {
-			InfoManagerRefreshOverlays = TRUE;
-			
-			/*
-			//Is there an extra dialog ?
-			if (dlg.m_listLines_numInArray > dlg.Choices) {
-				arr = _^ (choiceView + 172);
-
-				if (arr.array) {
-					i = 0;
-					while (i < dlg.m_listLines_numInArray);
-						if (MEM_ReadIntArray (arr.array, i) == InfoManagerSpinnerIndicator) {
-							txtIndicator = _^ (MEM_ReadIntArray (arr.array, i));
-							txtIndicator.enabledTimer = TRUE;
-							txtIndicator.timer = floatnull;
-							break;
-						};
-						i += 1;
-					end;
-
-					//txtIndicator = _^ (MEM_ReadIntArray (arr.array, dlg.m_listLines_numInArray - 1));
-					//add remove flag - Gothic will take care of the rest
-					//txtIndicator.enabledTimer = TRUE;
-				};
-			};
-
-			InfoManagerSpinnerIndicator = 0;
-			*/
-		};
-	};
 };
 
 //Remove hidden@ choices
@@ -2472,6 +2611,7 @@ func void _hook_oCInformationManager_CollectChoices () {
 
 	//We can't use first parameter - it is a lie !!! :)
 	//infoPtr = MEM_ReadInt (ESP + 4);
+	InfoManagerLastChoiceSelected = -1;
 	
 	infoPtr = MEM_InformationMan.Info;
 
@@ -2526,7 +2666,7 @@ func void _hook_oCInformationManager_CollectChoices () {
 
 //Remove hidden@ dialogues
 func void _hook_oCInformationManager_CollectInfos () {
-	
+
 	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
 	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
 
@@ -2540,6 +2680,8 @@ func void _hook_oCInformationManager_CollectInfos () {
 	var zCListSort list;
 
 	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+
+	InfoManagerLastChoiceSelected = -1;
 
 	while (infoPtr);
 		list = _^ (infoPtr);
