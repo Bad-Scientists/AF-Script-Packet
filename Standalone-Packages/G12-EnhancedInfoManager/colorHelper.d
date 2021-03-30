@@ -39,21 +39,20 @@ instance colorHelpo1 (Npc_Default)
 instance DIA_ColorHelper_Exit (C_Info) {
 	npc		= colorHelpo1;
 	nr		= 999;
-	condition	= Always_True;
-	information	= Exit_Dialog;
+	condition	= DIA_ColorHelper_Exit_Condition;
+	information	= DIA_ColorHelper_Exit_Info;
 	important	= FALSE;
 	permanent	= TRUE;
 	description	= DIALOG_ENDE;
 };
 
-/*
-instance ColorHelper_Important (C_Info) {
-	npc		= colorHelpo1;
-	condition	= Always_False;
-	important	= TRUE;
-	permanent	= TRUE;
+func int DIA_ColorHelper_Exit_Condition () {
+	return TRUE;
 };
-*/
+
+func void DIA_ColorHelper_Exit_Info () {
+	AI_StopProcessInfos (self);
+};
 
 func string DIA_ColorHelper_BuildHexColor (var int r, var int g, var int b, var int a) {
 	var string _r; _r = dec2hex (r);
