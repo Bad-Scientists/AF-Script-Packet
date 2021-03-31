@@ -65,7 +65,14 @@ const int InfoManagerSpinnerIndicatorAnimation = 1;		//Set to TRUE if you want a
 const int InfoManagerNumKeysControls = 1;			//Set to TRUE if you want to enable num key support for dialogs
 const int InfoManagerNumKeysNumbers = 1;			//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
-const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;		//ALPHA_FUNC_NONE 
+const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;		//ALPHA_FUNC_NONE
+
+const int cIM_RememberSelectedChoice_None	= 0;		//Does nothing (default vanilla behaviour)
+const int cIM_RememberSelectedChoice_All	= 1;		//Moves cursor to last selected choice
+const int cIM_RememberSelectedChoice_Spinners	= 2;		//Moves cursor to last selected choice only when used with spinners
+
+const int InfoManagerRememberSelectedChoice = cIM_RememberSelectedChoice_Spinners;
+
 /*
  *	Internal variables
  */
@@ -88,9 +95,10 @@ var int InfoManagerRefreshOverlays;
 var int InfoManagerLastChoiceSelected;
 var int InfoManagerModeInfoLastChoiceSelected;
 
+const int cIM_UpdateState_2BChanged	= 0;
+const int cIM_UpdateState_Changed	= 1;
+
 var int InfoManagerUpdateState;
-	const int cIM2BChanged	= 0;
-	const int cIMChanged	= 1;
 
 instance zCViewText2@ (zCViewText2);
 
@@ -974,7 +982,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	var string s;
 
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
-	//InfoManagerUpdateState = cIM2BChanged;
+	//InfoManagerUpdateState = cIM_UpdateState_2BChanged;
 	
 	var int cancel; cancel = FALSE;
 	var int update; update = FALSE;
@@ -1371,6 +1379,7 @@ MEM_InformationMan.LastMethod:
 	var int overlayListColorSelected[OVERLAY_MAX];
 	
 	var int refreshOverlays; refreshOverlays = FALSE;
+	var int refreshOverlayColors; refreshOverlayColors = FALSE;
 
 	var int color;
 	var int overlayChoice;
@@ -1462,6 +1471,7 @@ MEM_InformationMan.LastMethod:
 		dialogCachedCount = 0;
 		InfoManagerRefreshOverlays = FALSE;
 		refreshOverlays = TRUE;
+		refreshOverlayColors = TRUE;
 
 		//Reset
 		MEM_WriteIntArray (_@ (overlayListMapChoice), 0, -1);
@@ -1471,13 +1481,17 @@ MEM_InformationMan.LastMethod:
 		if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
 		|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
 		{
-			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
-				if (InfoManagerModeInfoLastChoiceSelected != dlg.ChoiceSelected) {
-					if (InfoManagerModeInfoLastChoiceSelected < dlg.choices) {
-						//Restore previous cursor position
-						dlg.ChoiceSelected = InfoManagerModeInfoLastChoiceSelected;
-						//Force auto-scrolling update
-						InfoManagerLastChoiceSelected = -1;
+			if (InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_All)
+			|| ((InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (InfoManagerSpinnerPossible))
+			{
+				if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
+					if (InfoManagerModeInfoLastChoiceSelected != dlg.ChoiceSelected) {
+						if (InfoManagerModeInfoLastChoiceSelected < dlg.choices) {
+							//Restore previous cursor position
+							dlg.ChoiceSelected = InfoManagerModeInfoLastChoiceSelected;
+							//Force auto-scrolling update
+							InfoManagerLastChoiceSelected = -1;
+						};
 					};
 				};
 			};
@@ -1582,7 +1596,7 @@ MEM_InformationMan.LastMethod:
 					if (i < DIALOG_MAX) {
 						MEM_WriteStringArray (_@s (dialogCachedDescriptions), i, dlgDescription);
 						dialogCachedCount += 1;
-						InfoManagerUpdateState = cIM2BChanged;
+						InfoManagerUpdateState = cIM_UpdateState_2BChanged;
 					};
 				} else {
 					//Compare with cached description
@@ -1591,7 +1605,7 @@ MEM_InformationMan.LastMethod:
 						MEM_WriteStringArray (_@s (dialogCachedDescriptions), i, dlgDescription);
 
 						//description changed!
-						InfoManagerUpdateState = cIM2BChanged;
+						InfoManagerUpdateState = cIM_UpdateState_2BChanged;
 					};
 				};
 			};
@@ -1602,7 +1616,7 @@ MEM_InformationMan.LastMethod:
 			//Get current fontame
 			dlgFont = Print_GetFontName (txt.font);
 
-			if (InfoManagerUpdateState == cIM2BChanged)
+			if (InfoManagerUpdateState == cIM_UpdateState_2BChanged)
 			|| (refreshOverlays)
 			|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
 			|| ((InfoManagerLastChoiceSelected != dlg.ChoiceSelected) && ((i == InfoManagerLastChoiceSelected) || (i == dlg.ChoiceSelected)))
@@ -1623,7 +1637,7 @@ MEM_InformationMan.LastMethod:
 							txtIndicator.enabledTimer = TRUE;
 							txtIndicator.timer = floatnull;
 
-							refreshOverlays = TRUE;
+							refreshOverlayColors = TRUE;
 						};
 					};
 
@@ -2457,7 +2471,7 @@ MEM_InformationMan.LastMethod:
 				};
 
 				MEM_WriteIntArray (_@ (dialogProperties), i, properties);
-				InfoManagerUpdateState = cIMChanged;
+				InfoManagerUpdateState = cIM_UpdateState_Changed;
 			};
 
 			//Recalculate offsetTextpy and posY for dialog items in case fonts changed
@@ -2484,14 +2498,16 @@ MEM_InformationMan.LastMethod:
 		end;
 
 		if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
-		|| (refreshOverlays)
+		|| (refreshOverlayColors)
 		{
-			//--> Overlay
+			
+			//--> Update overlay colors
 			i = 0;
 
 			while (i < overlayCount);
 
 				overlayPtr = MEM_ReadIntArray (_@ (overlayListMapView), i);
+
 				if (overlayPtr) {
 					txtIndicator = _^ (overlayPtr);
 					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
@@ -2600,7 +2616,7 @@ MEM_InformationMan.LastMethod:
 	/*
 	} else
 	{
-		InfoManagerUpdateState = cIM2BChanged;
+		InfoManagerUpdateState = cIM_UpdateState_2BChanged;
 	};
 	*/
 };
