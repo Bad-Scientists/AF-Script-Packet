@@ -42,8 +42,8 @@
 const string InfoManagerDefaultDialogColorSelected = "FFFFFF";		//G1 standard dialog - white color FFFFFF
 const string InfoManagerDefaultColorDialogGrey = "C8C8C8";		//G1 standard dialog - grey color C8C8C8
 
-const string InfoManagerDefaultFontDialogSelected = "FONT_DEFAULT.TGA";	//G1 standard dialog - grey color C8C8C8
-const string InfoManagerDefaultFontDialogGrey = "FONT_DEFAULT.TGA";	//G1 standard dialog - grey color C8C8C8
+const string InfoManagerDefaultFontDialogSelected = "";			//Default font for selected dialog choice (if blank default Gothic version will be used)
+const string InfoManagerDefaultFontDialogGrey = "";			//Default font for greyed (if blank default Gothic version will be used)
 
 const string InfoManagerDisabledDialogColorSelected = "808080";		//Disabled color - selected
 const string InfoManagerDisabledColorDialogGrey = "808080";		//Disabled color - grey
@@ -1508,6 +1508,9 @@ MEM_InformationMan.LastMethod:
 
 			//Recalculate Y pos
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
+			
+			dlgFont = Print_GetFontName (txt.font);
+			MEM_Info (dlgFont);
 
 			//Get current fontame
 			if (STR_Len (InfoManagerDefaultFontDialogGrey)) {
