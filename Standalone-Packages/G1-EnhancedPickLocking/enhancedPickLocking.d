@@ -16,16 +16,26 @@ func void _hook_oCMobLockable_CanOpen () {
 	};
 
 	const int lastMobPtr = 0;
+
 	var int AlreadyValidated;
 
 	if (!PC_ActionButtonPressed) {
 		AlreadyValidated = FALSE;
 		return;
 	};
+
+	if (slf.focus_vob != ECX) {
+		AlreadyValidated = FALSE;
+		return;
+	};
+
+	if (slf.focus_vob != lastMobPtr) || (ECX != lastMobPtr) {
+		AlreadyValidated = FALSE;
+	};
 	
-	if (slf.focus_vob != ECX) { return; };
-	
-	if (AlreadyValidated) { return; };
+	if (AlreadyValidated) {
+		return;
+	};
 
 	AlreadyValidated = TRUE;
 
@@ -35,7 +45,7 @@ func void _hook_oCMobLockable_CanOpen () {
 		PC_PickLockOutputVariation = 1;
 		lastMobPtr = ECX;
 	};
-
+	
 	//We need one more C_NPC type variable for NPC_GetTalentSkil & Npc_SetTalentValue :-/
 	var C_NPC npc; npc = Hlp_GetNPC (slf);
 
@@ -122,6 +132,10 @@ func void _hook_oCMobLockable_CanOpen () {
 		};
 	};
 
+	if (!slf.focus_vob) {
+		AlreadyValidated = FALSE;
+	};
+
 	//Recalculate skill level - based on dexterity
 	var int failRate; failRate = 100 - npc.attribute [ATR_DEXTERITY];
 
@@ -142,6 +156,7 @@ func void G1_EnhancedPickLocking_Init () {
 	if (!once) {
 		//HookEngine (oCMobLockable__CanOpen, 6, "_hook_oCMobLockable_CanOpen");
 		ReplaceEngineFunc (oCMobLockable__CanOpen, 1, "_hook_oCMobLockable_CanOpen");
+
 		once = 1;
 	};
 };
