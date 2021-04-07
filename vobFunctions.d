@@ -1,5 +1,5 @@
 func int oCMob_GetModel (var int mobPtr) {
-	//0067AD00  .text     Debug data           ?GetModel@oCMOB@@UAEPAVzCModel@@XZ
+	//0x0067AD00 public: virtual class zCModel * __thiscall oCMOB::GetModel(void) 
 	const int oCMOB__GetModel_G1 = 6794496;
 	
 	//0x0071BEE0 public: virtual class zCModel * __thiscall oCMOB::GetModel(void)
@@ -17,7 +17,7 @@ func int oCMob_GetModel (var int mobPtr) {
 };
 
 func string zCModel_GetVisualName (var int modelPtr) {
-	//00563EF0  .text     Debug data           ?GetVisualName@zCModel@@UAE?AVzSTRING@@XZ
+	//0x00563EF0 public: virtual class zSTRING __thiscall zCModel::GetVisualName(void) 
 	const int zCModel__GetVisualName_G1 = 5652208;
 	
 	//0x0057DF60 public: virtual class zSTRING __thiscall zCModel::GetVisualName(void)

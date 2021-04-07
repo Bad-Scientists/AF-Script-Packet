@@ -6,6 +6,10 @@ inventory_oCNpc.d
 
 interface.d
 
+vobFunctions.d
+
+vectors.d
+
 Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking_API.d
 Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking.d
 
