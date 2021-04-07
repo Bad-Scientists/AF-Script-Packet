@@ -66,7 +66,7 @@ const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want 
 
 //Dialog 'NumKey' controls [WIP]
 const int InfoManagerNumKeysControls = 1;				//Set to TRUE if you want to enable num key support for dialogs
-const int InfoManagerNumKeysNumbers = 1;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
+const int InfoManagerNumKeysNumbers = 0;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
 const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;			//ALPHA_FUNC_NONE
 
@@ -921,6 +921,13 @@ func string InfoManager_GetChoiceDescription (var int index) {
 	return "";
 };
 
+func void InfoManager_SelectLastChoice () {
+	var zCViewDialogChoice dlg;
+	if (!MEM_InformationMan.DlgChoice) { return; };
+	dlg = _^ (MEM_InformationMan.DlgChoice);
+	zCViewDialogChoice_Select (dlg.Choices - 1);
+};
+
 func void InfoManager_SkipDisabledDialogChoices (var int key) {
 	var string s;
 
@@ -1274,9 +1281,16 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 //--- Additional tweaks -->
 
-		//Cancel KEY_GRAVE changes fight mode to fist mode, causes issues
+		//Cancel KEY_GRAVE changes fight mode to fist mode, this caused some issues ... we will use it for a better purpose - move cursor to last dialog choice
 		if (key == KEY_GRAVE) {
+			InfoManager_SelectLastChoice ();
+			InfoManager_SkipDisabledDialogChoices (-1);
 			cancel = TRUE;
+		};
+
+		if (key == KEY_RETURN) {
+			//Skip disabled dialog choices
+			InfoManager_SkipDisabledDialogChoices (-1);
 		};
 
 		//G2A tweak - dialog confirmation with SPACE
@@ -1327,13 +1341,17 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 {
-	if (!MEM_InformationMan.DlgChoice) { return; };
+	if (MEM_InformationMan.IsDone) { return; };
 
-	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
+	if (!MEM_InformationMan.DlgChoice) { return; };
 
 	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
 	
 	if (!choiceView) { return; };
+
+	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
+
+	if (!dlg.m_listLines_numInArray) { return; };
 
 	var int i;
 	var int j;
@@ -1510,7 +1528,6 @@ MEM_InformationMan.LastMethod:
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
 			
 			dlgFont = Print_GetFontName (txt.font);
-			MEM_Info (dlgFont);
 
 			//Get current fontame
 			if (STR_Len (InfoManagerDefaultFontDialogGrey)) {
@@ -1613,6 +1630,11 @@ MEM_InformationMan.LastMethod:
 			if (InfoManagerUpdateState == cIM_UpdateState_2BChanged)
 			|| (refreshOverlays)
 			{
+				/*
+				TODO: Potential for optimization:
+				Atm we are removing all overlays for changed dialog choice and then code below re-evaluates description - since all of them are deleted, code will in some cases add new version of them.
+				We should check what exactly was changed - and if for example only color/text is changed then we should only update colors/texts.
+				*/
 
 				//--> Remove old overlays for this dialog choice
 				j = 0;
