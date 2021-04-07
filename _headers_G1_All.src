@@ -55,7 +55,7 @@ view.d
 
 AI_Functions.d
 
-Standalone-Packages\G1-Everlooming-Barrier\barrier.d
+Standalone-Packages\G1-EverloomingBarrier\barrier.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
@@ -71,8 +71,8 @@ Standalone-Packages\G1-EnhancedTrading\enhancedTrading.d
 
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
 
-Standalone-Packages\G1-Weapon-Stacking\inventory.d
-Standalone-Packages\G1-Weapon-Stacking\weapon_stacking.d
+Standalone-Packages\G1-WeaponStacking\inventory.d
+Standalone-Packages\G1-WeaponStacking\weapon_stacking.d
 
 Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d
