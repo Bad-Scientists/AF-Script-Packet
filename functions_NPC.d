@@ -276,3 +276,21 @@ func int NPC_HasTimedOverlay (var int slfInstance, var string testOverlay)
 	
 	return FALSE;
 };
+
+func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (addBitfield & zCVob_bitfield2_sleepingMode) {
+		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 0;
+	};
+};
+
+func void NPC_RemoveBitfield (var int slfInstance, var int removeBitfield) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (removeBitfield & zCVob_bitfield2_sleepingMode) {
+		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 1;
+	};
+};

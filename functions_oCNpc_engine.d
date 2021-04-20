@@ -48,7 +48,7 @@ func void oCNPC_DropUnconscious (var int slfInstance, var int attackerInstance)
 	
 	CALL_PtrParam (attackerPtr);
 	CALL_FloatParam (mkf (0));	//???
-	CALL__thiscall (MEM_InstToPtr (slf), MEMINT_SwitchG1G2 (oCNPC__DropUnconscious_G1, oCNPC__DropUnconscious_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__DropUnconscious_G1, oCNPC__DropUnconscious_G2));
 };
 
 func void oCNpc_DoDie (var int slfInstance, var int attackerInstance)
@@ -72,7 +72,7 @@ func void oCNpc_DoDie (var int slfInstance, var int attackerInstance)
 	};
 
 	CALL_PtrParam (attackerPtr);
-	CALL__thiscall (MEM_InstToPtr (slf), MEMINT_SwitchG1G2 (oCNpc__DoDie_G1, oCNpc__DoDie_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DoDie_G1, oCNpc__DoDie_G2));
 };
 
 func void oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
@@ -89,8 +89,68 @@ func void oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 	if (!Hlp_Is_oCItem (itemPtr)) { return; };
 	
 	CALL_PtrParam (itemPtr);
-	CALL__thiscall (MEM_InstToPtr (slf), MEMINT_SwitchG1G2 (oCNpc__DoTakeVob_G1, oCNpc__DoTakeVob_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DoTakeVob_G1, oCNpc__DoTakeVob_G2));
 	
 	var int retVal;
 	retVal = CALL_RetValAsInt ();
+};
+
+func void oCNPC_OpenDeadNpc (var int slfInstance) {
+	//0x006BB890 public: void __thiscall oCNpc::OpenDeadNpc(void) 
+	const int oCNPC__OpenDeadNpc_G1 = 7059600;
+	
+	//0x00762970 public: void __thiscall oCNpc::OpenDeadNpc(void)
+	const int oCNPC__OpenDeadNpc_G2 = 7743856;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__OpenDeadNpc_G1, oCNPC__OpenDeadNpc_G2));
+};
+
+func void oCNPC_CloseDeadNpc (var int slfInstance) {
+	//0x006BBAA0 public: void __thiscall oCNpc::CloseDeadNpc(void) 
+	const int oCNPC__CloseDeadNpc_G1 = 7060128;
+	
+	//0x00762B40 public: void __thiscall oCNpc::CloseDeadNpc(void)
+	const int oCNPC__CloseDeadNpc_G2 = 7744320;
+	
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__CloseDeadNpc_G1, oCNPC__CloseDeadNpc_G2));
+};
+
+func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
+	//0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void) 
+	const int oCNPC__OpenInventory_G1 = 7057568;
+	
+	//0x00762250 public: void __thiscall oCNpc::OpenInventory(int)
+	const int oCNPC__OpenInventory_G2 = 7742032;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (MEMINT_SwitchG1G2 (0, 1)) {
+		CALL_IntParam (param1);
+	};
+
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__OpenInventory_G1, oCNPC__OpenInventory_G2));
+};
+
+func void oCNPC_CloseInventory (var int slfInstance) {
+	//0x006BB2F0 public: void __thiscall oCNpc::CloseInventory(void) 
+	const int oCNPC__CloseInventory_G1 = 7058160;
+	
+	//0x00762410 public: void __thiscall oCNpc::CloseInventory(void)
+	const int oCNPC__CloseInventory_G2 = 7742480;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__CloseInventory_G1, oCNPC__CloseInventory_G2));
 };

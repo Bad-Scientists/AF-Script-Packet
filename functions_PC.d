@@ -15,3 +15,8 @@ func void PC_SetTurnSpeed (var int f)
 	MemoryProtectionOverride (MEMINT_SwitchG1G2 (G1_HeroTurnSpeedAdr, G2_HeroTurnSpeedAdr), 4);
 	MEM_WriteInt (MEMINT_SwitchG1G2 (G1_HeroTurnSpeedAdr, G2_HeroTurnSpeedAdr), f);
 };
+
+func int PC_IsInState (var func f) {
+	var oCNPC her; her = Hlp_GetNPC (hero);
+	return ((MEM_FindParserSymbol (her.state_curState_name) == MEM_GetFuncID (f)) && (her.state_curState_valid));
+};

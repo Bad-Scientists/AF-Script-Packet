@@ -316,4 +316,3 @@ func int oCItem_SplitItemPtr (var int itemPtr, var int qty){
 
 	return CALL_RetValAsPtr();
 };
-

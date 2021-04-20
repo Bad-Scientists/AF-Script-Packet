@@ -67,7 +67,7 @@ func void mulVector (var int v1, var int m)
 
 //returns magnitude of a vector
 //v1 - pointer to vector
-FUNC INT magVector (var int v1)
+func int magVector (var int v1)
 {
 	return sqrtf (addf (addf (sqrf (MEM_ReadIntArray(v1,  0)), sqrf (MEM_ReadIntArray(v1,  1))), sqrf (MEM_ReadIntArray(v1,  2))));
 };

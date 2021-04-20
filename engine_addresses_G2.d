@@ -91,3 +91,52 @@ const int oCNPC__OpenDeadNPC = 7743856;
 
 //0x00699F60 protected: int __thiscall oCAIHuman::PC_ActionMove(int)
 const int oCAIHuman__PC_ActionMove = 6922080;
+
+//0x0074B020 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
+const int oCNpc__OnMessage = 7647264;
+
+
+/*
+ *	game_Events_G12.d
+ */
+
+//Already defined in LeGo
+//0x00762410 public: void __thiscall oCNpc::CloseInventory(void)
+//const int oCNPC__CloseInventory = 7742480;
+
+//0x0074CC10 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon		= 7654416;
+//0x0074D2E0 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon1		= 7656160;
+//0x0074D580 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon2		= 7656832;
+
+//0x0047ED60 public: void __thiscall oCStatusScreen::Show(void)
+const int oCStatusScreen__Show = 4713824;
+
+//0x0047F3E0 public: void __thiscall oCLogScreen::Show(void)
+const int oCLogScreen__Show = 4715488;
+
+//0x0047F9C0 public: void __thiscall oCMapScreen::Show(int)
+const int oCMapScreen__Show = 4716992;
+
+//0x00709F40 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int)
+const int oCItemContainer__TransferItem = 7380800;
+
+//0x00739C90 public: void __thiscall oCNpc::Equip(class oCItem *)
+//Already defined in LeGo
+//const int oCNPC__Equip			= 7576720;
+
+//0x007326C0 public: void __thiscall oCNpc::UnequipItem(class oCItem *)
+//Already defined in LeGo
+//const int oCNPC__UnequipItem			= 7546560;
+
+//0x007449C0 public: virtual int __thiscall oCNpc::DoTakeVob(class zCVob *)
+const int oCNPC__DoTakeVob			= 7621056;
+
+//0x00762250 public: void __thiscall oCNPC::OpenInventory(int)
+//Already defined in LeGo
+//const int oCNPC__OpenInventory = 7742032;
+
+//0x00744DD0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
+const int oCNpc__DoDropVob = 7622096;

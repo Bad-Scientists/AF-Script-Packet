@@ -166,6 +166,9 @@ const int oCDocumentManager__CreateMap = 7489232;
 //0x00613A60 protected: int __thiscall oCAIHuman::PC_ActionMove(int) 
 const int oCAIHuman__PC_ActionMove = 6371936;
 
+//0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *) 
+const int oCNpc__OnMessage = 6973920;
+
 /*
  *	Enhnaced PickLocking
  */
@@ -173,3 +176,66 @@ const int oCAIHuman__PC_ActionMove = 6371936;
 //0x006827C0 public: int __thiscall oCMobLockable::CanOpen(class oCNpc *) 
 const int oCMobLockable__CanOpen = 6825920;
 
+
+/*
+ *	Enhanced PickPocketing
+ */
+//Already defined in LeGo (Lego 7058164) 
+//0x006BB2F0 public: void __thiscall oCNpc::CloseInventory(void) 
+//const int oCNPC__CloseInventory = 7058160;
+
+//0x00669780 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int) 
+const int oCItemContainer__TransferItem = 6723456;
+
+//0x007DCF54 const oCNpcContainer::`vftable' 
+const int oCNPCContainer_vtbl = 8245076;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
+
+/*
+ *	game_Events_G12.d
+ */
+
+//0x006A8500 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *) 
+const int oCNPC__EV_DrawWeapon		= 6980864;
+//0x006A8B80 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *) 
+const int oCNPC__EV_DrawWeapon1		= 6982528;
+//0x006A8E20 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon2		= 6983200;
+
+//0x00477830 public: void __thiscall oCStatusScreen::Show(void) 
+const int oCStatusScreen__Show = 4683824;
+
+//0x00477EC0 public: void __thiscall oCLogScreen::Show(void) 
+const int oCLogScreen__Show = 4685504;
+
+//0x00478490 public: void __thiscall oCMapScreen::Show(void)
+const int oCMapScreen__Show = 4686992;
+
+//0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void)
+//Already defined in LeGo
+//const int oCNPC__OpenInventory = 7057568;
+
+//0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
+const int oCNpc__DoDropVob = 6951152;
+
+/*
+ *	game_Events_G1.d
+ */
+
+//0x00669DD0 protected: virtual int __thiscall oCItemContainer::HandleEvent(int) 
+const int oCItemContainer__HandleEvent = 6725072;
+//G2A HookLen 6
+
+//0x0066A730 public: virtual int __thiscall oCStealContainer::HandleEvent(int) 
+const int oCStealContainer__HandleEvent = 6727472;
+//0x0066ACD0 public: virtual int __thiscall oCNpcContainer::HandleEvent(int) 
+
+const int oCNpcContainer__HandleEvent = 6728912;
+//G2A HookLen 7
+
+//0x0066E390 public: virtual int __thiscall oCNpcInventory::HandleEvent(int) 
+const int oCNpcInventory__HandleEvent = 6742928;
