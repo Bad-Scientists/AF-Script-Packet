@@ -65,6 +65,7 @@ func void PickLockHelper_Show () {
 	View_Open (hPickLockHelper_LastCombination);
 	View_MoveTo (hPickLockHelper_LastCombination, posx, posy);
 	View_Resize (hPickLockHelper_LastCombination, pickLockHelper_WidthScaled, fontHeight);
+	zcView_SetText (hPickLockHelper_LastCombination, pickLockHelper_LastCombination);
 	
 	if (!Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) {
 		hPickLockHelper_CurrentCombination = View_Create(posx, posy, pickLockHelper_WidthScaled, posy + fontHeight);
@@ -74,6 +75,7 @@ func void PickLockHelper_Show () {
 	View_Open (hPickLockHelper_CurrentCombination);
 	View_MoveTo (hPickLockHelper_CurrentCombination, posx, posy);
 	View_Resize (hPickLockHelper_CurrentCombination, pickLockHelper_WidthScaled, fontHeight);
+	zcView_SetText (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination);
 };
 
 func void PickLockHelper_Hide () {
@@ -155,11 +157,9 @@ func void _hook_oCMobInter_StartInteraction () {
 	var oCMobLockable mob; mob = _^ (ECX);
 	
 	//Reset for new mob
-	if (STR_Len (pickLockHelper_LastCombination) > 0) {
-		if (pickLockHelper_LastMob != ECX) {
-			pickLockHelper_CurrentCombination = "";
-			pickLockHelper_LastCombination = "";
-		};
+	if (pickLockHelper_LastMob != ECX) {
+		pickLockHelper_CurrentCombination = "";
+		pickLockHelper_LastCombination = "";
 	};
 	
 	pickLockHelper_LastMob = ECX;
@@ -169,8 +169,7 @@ func void _hook_oCMobInter_StartInteraction () {
 	var int currCharCount;
 	currCharCount = (mob.bitfield & oCMobLockable_bitfield_pickLockNr) >> 2;
 
-	if (currCharCount > 0)
-	{
+	if (currCharCount > 0) {
 		pickLockHelper_CurrentCombination = STR_Prefix (mob.pickLockStr, currCharCount);
 	} else {
 		pickLockHelper_CurrentCombination = "";
