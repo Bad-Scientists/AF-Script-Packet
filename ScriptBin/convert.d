@@ -1,4 +1,7 @@
-//https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+/*
+ *	Author: szapp (mud-freak)
+ *	Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+ */
 
 /*
  * convert.d

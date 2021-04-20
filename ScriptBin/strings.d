@@ -1,4 +1,7 @@
-//https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+/*
+ *	Author: szapp (mud-freak)
+ *	Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page3?p=25717007&viewfull=1#post25717007
+ */
 
 /*
  * strings.d
@@ -135,16 +138,23 @@ func int STR_IndexOfFirstNonNumeric(var string str) {
 func string STR_Trim(var string str, var string tok) {
     var int lenS; lenS = STR_Len(str);
     var int lenT; lenT = STR_Len(tok);
+    
+    var string ss;
+    var string ts;
+    var int cont;
+    var int t;
 
     // Start from the beginning
     var int startP; startP = 0;
-    while(startP < lenS);
-        var string ss; ss = STR_Substr(str, startP, 1);
-        var int cont; cont = FALSE;
+    var int endP; endP = lenS-1;
 
-        var int t; t = 0;
+    while(startP < lenS);
+        ss = STR_Substr(str, startP, 1);
+        cont = FALSE;
+
+        t = 0;
         while(t < lenT);
-            var string ts; ts = STR_Substr(tok, t, 1);
+            ts = STR_Substr(tok, t, 1);
 
             if (Hlp_StrCmp(ss, ts)) {
                 cont = TRUE;
@@ -162,7 +172,6 @@ func string STR_Trim(var string str, var string tok) {
     end;
 
     // Start from the end
-    var int endP; endP = lenS-1;
     while(endP >= startP);
         ss = STR_Substr(str, endP, 1);
         cont = FALSE;

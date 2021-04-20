@@ -64,6 +64,7 @@ const int zCEventCore_vtbl		= 8193972;
 //007DBECC  .rdata    Debug data           ??_7zCEventScreenFX@@6B@
 
 //007DDC9C  .rdata    Debug data           ??_7oCMobMsg@@6B@
+const int oCMobMsg_vtbl			= 8248476;
 
 func int Hlp_Is_zCEventManager (var int ptr) {
 	if (!ptr) { return 0; };
@@ -78,6 +79,11 @@ func int Hlp_Is_oCMsgConversation (var int ptr) {
 func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
 	if (!ptr) { return 0; };
 	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
+};
+
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
 };
 
 func int zCEventMessage_MD_GetNumOfSubTypes (var int eventMessage) {
@@ -696,17 +702,17 @@ func string zCEventMusicControler_MD_GetSubTypeString (var int eventMessage, var
 006DED20  .text     Debug data           ?Remove@?$zCArray@PAVzCEventManager@@@@QAEXABQAVzCEventManager@@@Z
 */
 
-func int oCNPC_GetTalkingWithMessage (var int slfInstance, var int npcInstance) {
+func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) {
 	//00633620  .text     Debug data           ?GetTalkingWithMessage@oCNpc@@QAEPAVzCEventMessage@@PAV1@@Z
 	const int oCNPC__GetTalkingWithMessage_G1 = 6501920;
 
 	//0x006BCFB0 public: class zCEventMessage * __thiscall oCNpc::GetTalkingWithMessage(class oCNpc *)
 	const int oCNPC__GetTalkingWithMessage_G2 = 7065520;
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var oCNPC npc; npc = Hlp_GetNPC (npcInstance);
+	var oCNPC npc; npc = Hlp_GetNPC (npcinstance);
 	if (!Hlp_IsValidNPC (npc)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -1084,11 +1090,7 @@ func void zCEventManager_DoFrameActivity (var int eMgr) {
 
 	if (!eMgr) { return; };
 
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__DoFrameActivity_G1, zCEventManager__DoFrameActivity_G2));
-		call = CALL_End();
-	};
+	CALL__cdecl (MEMINT_SwitchG1G2 (zCEventManager__DoFrameActivity_G1, zCEventManager__DoFrameActivity_G2));
 };
 
 func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) {
@@ -1145,6 +1147,40 @@ func void zCEventManager_InsertInList (var int eMgr, var int eMsg) {
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(eMsg));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__InsertInList_G1, zCEventManager__InsertInList_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_ProcessMessageList (var int eMgr) {
+	//006DDD10  .text     Debug data           ?ProcessMessageList@zCEventManager@@MAEXXZ
+	const int zCEventManager__ProcessMessageList_G1 = 7200016;
+
+	//0x00787000 protected: virtual void __thiscall zCEventManager::ProcessMessageList(void)
+	const int zCEventManager__ProcessMessageList_G2 = 7892992;
+
+	if (!eMgr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__ProcessMessageList_G1, zCEventManager__ProcessMessageList_G2));
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_SetActive (var int eMgr, var int index) {
+	//006DDE20  .text     Debug data           ?SetActive@zCEventManager@@UAEXH@Z
+	const int zCEventManager__SetActive_G1 = 7200288;
+
+	//0x00787110 public: virtual void __thiscall zCEventManager::SetActive(int)
+	const int zCEventManager__SetActive_G2 = 7893264;
+
+	if (!eMgr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(index));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__SetActive_G1, zCEventManager__SetActive_G2));
 
 		call = CALL_End();
 	};

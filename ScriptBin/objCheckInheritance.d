@@ -1,4 +1,7 @@
-//https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin?p=25548652&viewfull=1#post25548652
+/*
+ *	Author: szapp (mud-freak)
+ *	Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin?p=25548652&viewfull=1#post25548652
+ */
 
 // Extended functionality for Wld_StopEffect()
 // See https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin?p=25548652&viewfull=1#post25548652

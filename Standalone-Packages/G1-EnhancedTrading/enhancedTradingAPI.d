@@ -40,18 +40,18 @@ func string GetText_ReceiveGiveOre (var int amount) {
 	return s;
 };
 
-func int NPC_WantsToBuyItems (var int slfInstance, var int itemPtr) {
+func int NPC_WantsToBuyItems (var int slfinstance, var int itemPtr) {
 	if (!Hlp_Is_oCItem (itemPtr)) { return FALSE; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
 	var oCItem itm; itm = _^ (itemPtr);
 
 // -->	YOU CAN DEFINE NPC-SPECIFIC RULES HERE
-/*
-	if (Hlp_GetInstanceID (slf) == ORG_855_Wolf) {
-		if (Hlp_GetInstanceID (itm) == Wolf_Skin) {
+
+	if (Hlp_GetinstanceID (slf) == ORG_873_Cipher) {
+		if (Hlp_GetinstanceID (itm) != ItMi_Plants_Swampherb_01) {
 
 			//Check how many EV_PLAYANI_NOOVERLAY events we have in AI queue. If none - then play T_NO animation and say that we are not interrested.
 			//This will add to Event Manager event: EV_PLAYANI_NOOVERLAY.
@@ -68,13 +68,13 @@ func int NPC_WantsToBuyItems (var int slfInstance, var int itemPtr) {
 			return FALSE;
 		};
 	};
-*/
+
 // <--
 
 	return TRUE;
 };
 
-func int NPC_GetSellMultiplierF (var int slfInstance, var int itemPtr) {
+func int NPC_GetSellMultiplierF (var int slfinstance, var int itemPtr) {
 	var int multiplier;
 
 	//Set by default to 30%
@@ -82,7 +82,7 @@ func int NPC_GetSellMultiplierF (var int slfInstance, var int itemPtr) {
 
 	if (!Hlp_Is_oCItem (itemPtr)) { return multiplier; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return multiplier; };
 
 	var oCItem itm; itm = _^ (itemPtr);
@@ -90,17 +90,29 @@ func int NPC_GetSellMultiplierF (var int slfInstance, var int itemPtr) {
 // -->	YOU CAN DEFINE NPC-SPECIFIC TRADE SELLING MULTIPLIER RULES HERE
 
 	//Wolf will trade furs and skins in 1 x 1 ratio
-	if (Hlp_GetInstanceID (slf) == ORG_855_Wolf) {
-		if (Hlp_GetInstanceID (itm) == Wolf_Skin)
-		|| (Hlp_GetInstanceID (itm) == Warg_Skin)
-		|| (Hlp_GetInstanceID (itm) == ShadowBeast_Skin)
-		|| (Hlp_GetInstanceID (itm) == Troll_Skin)
-		|| (Hlp_GetInstanceID (itm) == BlackTroll_Skin)
-		|| (Hlp_GetInstanceID (itm) == Lurker_Skin)
-		|| (Hlp_GetInstanceID (itm) == Swampshark_Skin)
+	if (Hlp_GetinstanceID (slf) == ORG_855_Wolf) {
+		if (Hlp_GetinstanceID (itm) == Wolf_Skin)
+		|| (Hlp_GetinstanceID (itm) == Warg_Skin)
+		|| (Hlp_GetinstanceID (itm) == ShadowBeast_Skin)
+		|| (Hlp_GetinstanceID (itm) == Troll_Skin)
+		|| (Hlp_GetinstanceID (itm) == BlackTroll_Skin)
+		|| (Hlp_GetinstanceID (itm) == Lurker_Skin)
+		|| (Hlp_GetinstanceID (itm) == Swampshark_Skin)
 		{
 			multiplier = FLOATONE;
 		};
+	};
+
+	//Cipher will buy swamp weed in 1 x 1 ratio
+	if (Hlp_GetinstanceID (slf) == ORG_873_Cipher) {
+		if (Hlp_GetinstanceID (itm) == ItMi_Plants_Swampherb_01)
+		{
+			multiplier = FLOATONE;
+		};
+	};
+
+	//
+	if (Hlp_GetinstanceID (slf) == NOV_1357_Fortuno) {
 	};
 
 	//ARMOR - set to 100%
@@ -121,7 +133,7 @@ func int NPC_GetSellMultiplierF (var int slfInstance, var int itemPtr) {
 	return multiplier;
 };
 
-func int NPC_GetBuyMultiplierF (var int slfInstance, var int itemPtr) {
+func int NPC_GetBuyMultiplierF (var int slfinstance, var int itemPtr) {
 	var int multiplier;
 
 	//Set by default to 100%
@@ -129,7 +141,7 @@ func int NPC_GetBuyMultiplierF (var int slfInstance, var int itemPtr) {
 
 	if (!Hlp_Is_oCItem (itemPtr)) { return multiplier; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return multiplier; };
 
 

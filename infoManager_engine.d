@@ -2,16 +2,16 @@
  *	Function will return specific instance of dialog option (includes C_Info.important dialogs, which are not listed in Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
-func int oCInfoManager_GetInfo (var int slfInstance, var int othInstance, var int index) {
+func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
 	//00664E50  .text     Debug data           ?GetInfo@oCInfoManager@@QAEPAVoCInfo@@PAVoCNPC@@0H@Z
 	const int oCInfoManager__GetInfo_G1 = 6704720;
 
 	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfo_G2 = 7351648;
 	
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	var oCNPC oth; oth = Hlp_GetNPC (othInstance);
+	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
 	if (!Hlp_IsValidNPC (oth)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -33,16 +33,16 @@ func int oCInfoManager_GetInfo (var int slfInstance, var int othInstance, var in
  *	Function will return specific instance of dialog option (does not include C_Info.important dialogs. Will return only dialog which is listed Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
-func int oCInfoManager_GetInfoUnimportant (var int slfInstance, var int othInstance, var int index) {
+func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
 	//00665120  .text     Debug data           ?GetInfoUnimportant@oCInfoManager@@QAEPAVoCInfo@@PAVoCNPC@@0H@Z
 	const int oCInfoManager__GetInfoUnimportant_G1 = 6705440;
 
 	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
 	
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	var oCNPC oth; oth = Hlp_GetNPC (othInstance);
+	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
 	if (!Hlp_IsValidNPC (oth)) { return 0; };
 	
 	var int slfPtr; slfPtr = _@ (slf);
@@ -61,18 +61,18 @@ func int oCInfoManager_GetInfoUnimportant (var int slfInstance, var int othInsta
 };
 
 /*
- *	Function returns number of dialog instances which are available between slfInstance & othInstance
+ *	Function returns number of dialog instances which are available between slfinstance & othinstance
  */
-func int oCInfoManager_GetInfoCount (var int slfInstance, var int othInstance) {
+func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	//00664A30  .text     Debug data           ?GetInfoCount@oCInfoManager@@QAEHPAVoCNPC@@0@Z
 	const int oCInfoManager__GetInfoCount_G1 = 6703664;
 
 	//0x00702940 public: int __thiscall oCInfoManager::GetInfoCount(class oCNPC *,class oCNPC *)
 	const int oCInfoManager__GetInfoCount_G2 = 7350592;
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	var oCNPC oth; oth = Hlp_GetNPC (othInstance);
+	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
 	if (!Hlp_IsValidNPC (oth)) { return 0; };
 	
 	var int slfPtr; slfPtr = _@ (slf);
@@ -333,6 +333,22 @@ func void zCViewDialogChoice_SelectNext () {
 	};
 };
 
+//???
+func void zCViewDialogChoice_RemoveChoice (var int index) {
+	//00759800  .text     Debug data           ?RemoveChoice@zCViewDialogChoice@@QAIXH@Z
+	const int zCViewDialogChoice__RemoveChoice_G1 = 7706624;
+	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
+	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (index), MEMINT_SwitchG1G2 (zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
+		call = CALL_End();
+	};
+};
+
+//0x00665B70 public: void __thiscall oCInfo::RemoveChoice(class zSTRING)
+
 /*
 00758E00  .text     Debug data           ?StartSelection@zCViewDialogChoice@@UAIXXZ
 0x0068EF70 public: virtual void __fastcall zCViewDialogChoice::StartSelection(void)
@@ -382,8 +398,6 @@ func void zCViewDialogChoice_SelectNext () {
 007597F0  .text     Debug data           ?RemoveChoice@zCViewDialogChoice@@QAIXAAVzSTRING@@@Z
 0x0068F9A0 public: void __fastcall zCViewDialogChoice::RemoveChoice(class zSTRING &)
 
-00759800  .text     Debug data           ?RemoveChoice@zCViewDialogChoice@@QAIXH@Z
-0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 
 00759810  .text     Debug data           ?RemoveAllChoices@zCViewDialogChoice@@QAIXXZ
 0x0068F9C0 public: void __fastcall zCViewDialogChoice::RemoveAllChoices(void)

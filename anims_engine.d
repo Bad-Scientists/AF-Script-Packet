@@ -1,17 +1,12 @@
 /*
- * These are some useful engine ANIMATION functions
- * by Milgos, Fawkes and Auronen
- *  
+ *	These are some useful engine ANIMATION functions
+ *	by Milgos, Fawkes and Auronen
  */
 
-// Animation directions
-const int Anim_DirForward = 0;
-const int Anim_DirReverse = 1;
-
-func int oCNPC_GetModel (var int npcInstance)
+func int oCNPC_GetModel (var int npcinstance)
 {
 	//check if npc is valid
-	var oCNPC slf; slf = Hlp_GetNPC (npcInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (npcinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	
 	//00695300  .text     Debug data           ?GetModel@oCNpc@@QAEPAVzCModel@@XZ
@@ -212,7 +207,7 @@ func void zCModelAniActive_SetActFrame (var int zCModelAniActivePtr, var int fra
  *	  Sets direction for active animation
  * 	  
  *    @param zCModelAniActivePtr        active animation pointer
- *    @param direction      			direction - "Anim_DirForward" or "Anim_DirReverse"
+ *    @param direction      			direction - "AniDir_Forward" or "AniDir_Reverse"
  */
 func void zCModelAniActive_SetDirection (var int zCModelAniActivePtr, var int direction)
 {
@@ -254,21 +249,20 @@ func int zCModelAniActive_GetProgressPercent (var int zCModelAniActivePtr) { // 
  *    @param zCModel     zCModelptr
  *	  @param aniName	 animation name	 
  */
-func int zCModel_GetProgressPercent(var int zCModel, var string aniName)
-{
-    if (!zCModel) { return FLOATNULL; };
+func int zCModel_GetProgressPercent (var int model, var string aniName) {
+	//00565210  .text     Debug data           ?GetProgressPercent@zCModel@@QBEMABVzSTRING@@@Z
+	const int zCModel__GetProgressPercent_G1 = 5657104;
 
-    //00565210  .text     Debug data           ?GetProgressPercent@zCModel@@QBEMABVzSTRING@@@Z
-    const int zCModel__GetProgressPercent_G1 = 5657104;
+	//0x0057F290 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const 
+	const int zCModel__GetProgressPercent_G2 = 5763728;
 
-    //0x0057F290 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const 
-    const int zCModel__GetProgressPercent_G2 = 5763728;
+	if (!model) { return FLOATNULL; };
 
-    CALL_RetValIsFloat (); // method returns float 
-    CALL_zStringPtrParam (Str_Upper (aniName));
-    CALL__thiscall (zCModel, MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_G1, zCModel__GetProgressPercent_G2));
+	CALL_RetValIsFloat (); // method returns float 
+	CALL_zStringPtrParam (Str_Upper (aniName));
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_G1, zCModel__GetProgressPercent_G2));
 
-    return CALL_RetValAsFloat ();
+	return CALL_RetValAsFloat ();
 };
 
 /*
@@ -300,13 +294,13 @@ func int zCModel_GetProgressPercentId(var int zCModel, var int aniId)
 /*
  *    Is animation running
  *
- *    @param npcInstance     npc
+ *    @param npcinstance     npc
  *    @param zCModelAniPtr   animation pointer 
  */
-func int zCModel_IsAniActive(var int npcInstance, var int zCModelAniPtr) //BOOL
+func int zCModel_IsAniActive(var int npcinstance, var int zCModelAniPtr) //BOOL
 {
     var int zCModel;
-	zCModel = oCNpc_GetModel (npcInstance);
+	zCModel = oCNpc_GetModel (npcinstance);
 	
 	//check
     if (!zCModel) { return 0; };
@@ -329,22 +323,18 @@ func int zCModel_IsAniActive(var int npcInstance, var int zCModelAniPtr) //BOOL
  *    @param zCModel     			zCModelPtr
  *    @param aniName    			animation name
  */
-func void zCModel_StopAni(var int npcInstance, var string aniName)
-{
-	var int zCModel;
-	zCModel = oCNpc_GetModel (npcInstance);
-  
-	// check
-	if (!zCModel) { return; };
-
+func void zCModel_StopAnimation (var int model, var string aniName) {
 	//0055CE50  .text     Debug data           ?StopAnimation@zCModel@@UAEXABVzSTRING@@@Z
 	const int zCModel__StopAnimation_G1 = 5623376;
   
 	//0x005765F0 public: virtual void __thiscall zCModel::StopAnimation(class zSTRING const &)
 	const int zCModel__StopAnimation_G2 = 5727728;
 
+	// check
+	if (!model) { return; };
+
 	CALL_zStringPtrParam (STR_Upper (aniName));
-	CALL__thiscall (zCModel, MEMINT_SwitchG1G2 (zCModel__StopAnimation_G1, zCModel__StopAnimation_G2));
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__StopAnimation_G1, zCModel__StopAnimation_G2));
 };
 
 /*
@@ -353,19 +343,35 @@ func void zCModel_StopAni(var int npcInstance, var string aniName)
  *    @param zCModel     			zCModelPtr
  *    @param AniActivePtr    		active animation pointer
  */
-func void zCModel_StopAnimation(var int zCModel, var int AniActivePtr)
-{
-	// check
-	if (!zCModel) { return; };
-
+func void zCModel_StopAni_zCModelAniActive (var int model, var int AniActivePtr) {
 	//00560EE0  .text     Debug data           ?StopAni@zCModel@@QAEXPAVzCModelAniActive@@@Z
 	const int zCModel__StopAni_G1 = 5639904;
   
 	//0x0057ACB0 public: void __thiscall zCModel::StopAni(class zCModelAniActive *)
 	const int zCModel__StopAni_G2 = 5745840;
 
+	// check
+	if (!model) { return; };
+
 	CALL_IntParam (AniActivePtr);
-	CALL__thiscall (zCModel, MEMINT_SwitchG1G2 (zCModel__StopAni_G1, zCModel__StopAni_G2));
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__StopAni_G1, zCModel__StopAni_G2));
+};
+
+//modelAni == aniID
+func void zCModel_StopAni_zCModelAni (var int model, var int modelAni) {
+	//0x00560E90 public: void __thiscall zCModel::StopAni(class zCModelAni *)
+	const int zCModel__StopAni_G1 = 5639824;
+	
+	//0x0057AC60 public: void __thiscall zCModel::StopAni(class zCModelAni *)
+	const int zCModel__StopAni_G2 = 5745760;
+
+	// check
+	if (!model) { return; };
+
+	if (modelAni == -1) { return; };
+
+	CALL_IntParam (modelAni);
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__StopAni_G1, zCModel__StopAni_G2));
 };
 
 // I don't know, what this does - probably plays combined anis? (in .MDS -> "0.2 0.3" ???) 
@@ -390,7 +396,7 @@ func void zCModel_DoCombineAni(var int zCModel, var int zCModelAniActivePtr, var
 //  oCAniCtrl functions - they might have some use, mainly -> oCAniCtrl_Human_SetNextAni <- 
 //  but I haven't found a real use for them yet.
 // 	You can string 2 anis together with this (They play one afther the other, but you cannot string more than 2)
-func int oCAniCtrl__StartAni (var int slfInstance, var int aniId1, var int aniId2)
+func int oCAniCtrl__StartAni (var int slfinstance, var int aniId1, var int aniId2)
 {
 	//0061B7A0  .text     Debug data           ?StartAni@oCAniCtrl_Human@@QAEHHH@Z
 	const int oCAniCtrl__StartAni_G1 = 6404000;
@@ -399,7 +405,7 @@ func int oCAniCtrl__StartAni (var int slfInstance, var int aniId1, var int aniId
 	const int oCAniCtrl__StartAni_G2 = 6962624;
 	
 	var oCNPC slf;
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return -1; };
 	
@@ -411,7 +417,7 @@ func int oCAniCtrl__StartAni (var int slfInstance, var int aniId1, var int aniId
 };
 
 //sets next animation (bit pointless, you can call oCAniCtrl__StartAni and provide 2 IDs, and they get played after one another)
-func void oCAniCtrl_Human_SetNextAni (var int slfInstance, var int aniId1, var int aniId2)
+func void oCAniCtrl_Human_SetNextAni (var int slfinstance, var int aniId1, var int aniId2)
 {
 	//0061B980  .text     Debug data           ?SetNextAni@oCAniCtrl_Human@@QAEXHH@Z
 	const int oCAniCtrl_Human__SetNextAni_G1 = 6404480;
@@ -420,7 +426,7 @@ func void oCAniCtrl_Human_SetNextAni (var int slfInstance, var int aniId1, var i
 	const int oCAniCtrl_Human__SetNextAni_G2 = 6963104;
 	
 	var oCNPC slf; 
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return; };
 	
@@ -430,7 +436,7 @@ func void oCAniCtrl_Human_SetNextAni (var int slfInstance, var int aniId1, var i
 };
 
 // I don't really know what this initializes
-func void oCAniCtrl_Human_InitAnimations (var int slfInstance)
+func void oCAniCtrl_Human_InitAnimations (var int slfinstance)
 {
 	//0061B9F0  .text     Debug data           ?InitAnimations@oCAniCtrl_Human@@QAEXXZ
 	const int oCAniCtrl_Human__InitAnimations_G1 = 6404592;
@@ -439,7 +445,7 @@ func void oCAniCtrl_Human_InitAnimations (var int slfInstance)
 	const int oCAniCtrl_Human__InitAnimations_G2 = 6963216;
 	
 	var oCNPC slf; 
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return; };
 
@@ -447,7 +453,7 @@ func void oCAniCtrl_Human_InitAnimations (var int slfInstance)
 };
 
 // sets the walk mode
-func void oCAniCtrl__SetWalkMode (var int slfInstance, var int walkMode)
+func void oCAniCtrl__SetWalkMode (var int slfinstance, var int walkMode)
 {
 	//006211E0  .text     Debug data           ?SetWalkMode@oCAniCtrl_Human@@QAEXH@Z
 	const int oCAniCtrl_Human__SetWalkMode_G1 = 6427104;
@@ -457,7 +463,7 @@ func void oCAniCtrl__SetWalkMode (var int slfInstance, var int walkMode)
 
 	
 	var oCNPC slf;
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return; };
 	
@@ -466,7 +472,7 @@ func void oCAniCtrl__SetWalkMode (var int slfInstance, var int walkMode)
 };
 
 // Start the stand ani (the default npc animation)
-func void oCAniCtrl__StartStandAni (var int slfInstance)
+func void oCAniCtrl__StartStandAni (var int slfinstance)
 {
 	//0061CA40  .text     Debug data           ?StartStandAni@oCAniCtrl_Human@@UAEXXZ
 	const int oCAniCtrl_Human__StartStandAni_G1 = 6408768;
@@ -475,7 +481,7 @@ func void oCAniCtrl__StartStandAni (var int slfInstance)
 	const int oCAniCtrl_Human__StartStandAni_G2 = 6967392;
 	
 	var oCNPC slf;
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return; };
 	
@@ -483,7 +489,7 @@ func void oCAniCtrl__StartStandAni (var int slfInstance)
 };
 
 // I don't really know what this initializes + crashes the game. Not useful (for now)
-func void oCAniCtrl__Init (var int slfInstance)
+func void oCAniCtrl__Init (var int slfinstance)
 {
 	//0061B740  .text     Debug data           ?Init@oCAniCtrl_Human@@UAEXPAVoCNpc@@@Z
 	const int oCAniCtrl_Human__Init_G1 = 6403904;
@@ -492,7 +498,7 @@ func void oCAniCtrl__Init (var int slfInstance)
 	const int oCAniCtrl_Human__Init_G2 = 6962528;
 	
 	var oCNPC slf;
-	slf = Hlp_GetNPC (slfInstance);
+	slf = Hlp_GetNPC (slfinstance);
 	
 	if (!slf) { return; };
 	
@@ -508,16 +514,16 @@ func void oCAniCtrl__Init (var int slfInstance)
 /*
  * Plays animation with offset
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  *    @param aniProgress        animation progress (float) e.g. divf (mkf(12), mkf(100)); // = 0.12 12%
- *	  @param aniDir      		direction - "Anim_DirForward" or "Anim_DirReverse"
+ *	  @param aniDir      		direction - "AniDir_Forward" or "AniDir_Reverse"
  */
-func string NPC_StartAniWithOffset(var int npcInstance, var string aniName, var int aniProgress, var int aniDir)
+func string NPC_StartAniWithOffset(var int npcinstance, var string aniName, var int aniProgress, var int aniDir)
 {
 	// getting zCModel
 	var int zCModel; 
-	zCModel = oCNPC_GetModel (npcInstance);
+	zCModel = oCNPC_GetModel (npcinstance);
 	
 	// checks
 	if (!zCModel) { return ""; };
@@ -562,16 +568,16 @@ func string NPC_StartAniWithOffset(var int npcInstance, var string aniName, var 
 /*
  * Plays animation - starts on specified frame
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  *    @param aniFrame           animation frame (float)
  *	  @param aniDir      		direction - "dirForward" or "dirReverse"
  */
-func string NPC_StartAniWithFrameOffset(var int npcInstance, var string aniName, var int aniFrame, var int aniDir)
+func string NPC_StartAniWithFrameOffset(var int npcinstance, var string aniName, var int aniFrame, var int aniDir)
 {
 	// getting zCModel
 	var int zCModel; 
-	zCModel = oCNPC_GetModel (npcInstance);
+	zCModel = oCNPC_GetModel (npcinstance);
 	
 	// checks
 	if (!zCModel) { return ""; };
@@ -621,15 +627,15 @@ func string NPC_StartAniWithFrameOffset(var int npcInstance, var string aniName,
 /*
  * Is animation playing?
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  */
 
-func int NPC_IsAniActive(var int npcInstance, var string aniName)
+func int NPC_IsAniActive(var int npcinstance, var string aniName)
 {
 	// getting zCModel
 	var int zCModel; 
-	zCModel = oCNPC_GetModel (npcInstance);
+	zCModel = oCNPC_GetModel (npcinstance);
 	
 	// checks
 	if (!zCModel) { return -1; };
@@ -640,21 +646,21 @@ func int NPC_IsAniActive(var int npcInstance, var string aniName)
 	var int aniPtr;
 	aniPtr = zCModel_GetAniFromAniID(zCModel, aniId);
 	
-	return zCModel_IsAniActive(npcInstance, aniPtr);
+	return zCModel_IsAniActive(npcinstance, aniPtr);
 };
 
 /*
  * Get animation progress
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  */
 
-func int NPC_GetProgressPercent(var int npcInstance, var string aniName)
+func int NPC_GetProgressPercent(var int npcinstance, var string aniName)
 {
 	// getting zCModel
 	var int zCModel; 
-	zCModel = oCNPC_GetModel (npcInstance);
+	zCModel = oCNPC_GetModel (npcinstance);
 	
 	// checks
 	if (!zCModel) { return FLOATNULL; };
@@ -665,13 +671,13 @@ func int NPC_GetProgressPercent(var int npcInstance, var string aniName)
 /*
  * Stops animation (if it is playing) 
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  */
 
-func int NPC_StopAnimation(var int npcInstance, var string aniName){
+func int NPC_StopAnimation(var int npcinstance, var string aniName){
 	var int zCModel;
-	zCModel = oCNpc_GetModel (npcInstance);
+	zCModel = oCNpc_GetModel (npcinstance);
 	
 	var int aniId;
 	aniId = zCModel_GetAniIdFromAniName(zCModel, aniName);
@@ -682,19 +688,19 @@ func int NPC_StopAnimation(var int npcInstance, var string aniName){
 	var int AniActivePtr;
 	AniActivePtr = zCModel_GetActiveAniPtrByAniID(zCModel, aniId);
 	
-	zCModel_StopAnimation(zCModel, AniActivePtr);
+	zCModel_StopAni_zCModelAniActive (zCModel, AniActivePtr);
 };
 
 /*
  * Starts animation
  *
- *    @param npcInstance        npc 
+ *    @param npcinstance        npc 
  *    @param aniName            animation name (string)    e.g. "t_DIALOGGESTURE_12"
  */
 
-func int NPC_StartAni (var int npcInstance, var string aniName){
+func int NPC_StartAni (var int npcinstance, var string aniName){
 	var int zCModel;
-	zCModel = oCNpc_GetModel (npcInstance);
+	zCModel = oCNpc_GetModel (npcinstance);
 	
 	zCModel_StartAni (zCModel, aniName);
 };
@@ -704,7 +710,56 @@ func int NPC_StartAni (var int npcInstance, var string aniName){
 
 
 
+//Author: OrcWarrior
+//https://github.com/orcwarrior/Czas_Zaplaty/blob/master/Content/AI/AI_Intern/Sprint_Func.d
+func string oCAniCtrl__GetCurrentAniName (var int oCAniCtrl_Ptr)
+{
+	if (oCAniCtrl_Ptr) {
+
+		var int ptr;
+		ptr = MEM_ReadInt (oCAniCtrl_Ptr + 104);			//zCModel 	oCAniCtrl_Human._zCAIPlayer_model
+
+		if (ptr) 
+		{
+			ptr = MEM_ReadInt (ptr + 56);				//*ActiveAniLayer1
+			if (ptr)
+			{
+				ptr = MEM_ReadInt (ptr);			//*oCAni				
+				if (ptr)
+				{ 
+					return MEM_ReadString (ptr + 36);	// This will read active ani name(?)
+				};	//aniname(zstring)
+			};
+		};
+	};
+
+	return "ERROR";
+};
+
+func string NPC_GetAniName (var int slfinstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return "ERROR"; };
+	var string aniName; aniName = oCAniCtrl__GetCurrentAniName (slf.AniCtrl);
+	return aniName;
+};
 
 
+func void NPC_StopAni (var int slfinstance, var string aniName) {
+	var int model; model = oCNPC_GetModel (slfinstance);
+	var int aniID; aniID = zCModel_GetAniIDFromAniName (model, STR_Upper (aniName));
 
+	zCModel_StopAni_zCModelAni (model, aniID);
+};
 
+//Wrapper function to get current ani progress
+func int NPC_GetAniProgress (var int slfinstance) {
+	var int model; model = oCNpc_GetModel (slfinstance);
+	var string aniName; aniName = NPC_GetAniName (slfinstance);
+	var int aniID; aniID = zCModel_GetAniIDFromAniName (model, aniName);
+
+	if (aniID != -1) {
+		return zCModel_GetProgressPercent (model, aniName);
+	};
+	
+	return FLOATNULL;
+};
