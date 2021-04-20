@@ -6,5 +6,9 @@ engine_addresses_G1.d
 
 eventManager_engine.d
 eventManager.d
+
+game_Events_G1.d
+game_Events_G12.d
+
 Standalone-Packages\G1-EnhancedTrading\enhancedTradingAPI.d
 Standalone-Packages\G1-EnhancedTrading\enhancedTrading.d

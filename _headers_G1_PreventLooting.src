@@ -1,4 +1,7 @@
 engine_addresses_G1.d
 functions_oCNpc_engine.d
+
+game_Events_G12.d
+
 Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d

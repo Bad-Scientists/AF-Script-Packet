@@ -34,6 +34,9 @@ functions_NPC.d
 
 interface.d
 
+game_Events_G1.d
+game_Events_G12.d
+
 infoManager_engine.d
 
 inventory_oCMob_engine.d
@@ -61,6 +64,7 @@ Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
 
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
+Standalone-Packages\G12-EnhancedInfoManager\colorHelper.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d
 Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceFireDamage.d
@@ -79,3 +83,10 @@ Standalone-Packages\G12-PreventLooting\preventLooting.d
 
 Standalone-Packages\G1-PlayerMap\playerMap_API.d
 Standalone-Packages\G1-PlayerMap\playerMap.d
+
+Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing_API.d
+Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing.d
+
+Standalone-Packages\G1-QuickLoot\quickLoot.d
+
+Standalone-Packages\G1-BetterInventoryControls\betterInventoryControls.d
