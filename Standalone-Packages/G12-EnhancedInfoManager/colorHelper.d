@@ -1,17 +1,17 @@
-FUNC VOID ZS_ColorHelper_Hangaround () {
+func void ZS_ColorHelper_Hangaround () {
 	NPC_PercEnable (self, PERC_ASSESSTALK, B_AssessTalk);
 };
 
-FUNC VOID ZS_ColorHelper_Hangaround_Loop () {};
+func void ZS_ColorHelper_Hangaround_Loop () {};
 
-FUNC VOID ZS_ColorHelper_Hangaround_End () {};
+func void ZS_ColorHelper_Hangaround_End () {};
 
 var int colorHelperR;
 var int colorHelperG;
 var int colorHelperB;
 var int colorHelperA;
 
-instance colorHelpo1 (Npc_Default)
+instance colorHelpo1 (C_Npc)
 {
 	Name[0]		= "Color Helper";
 	NPCType		= NPCType_Main;
