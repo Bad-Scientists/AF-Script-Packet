@@ -998,10 +998,9 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
 	//InfoManagerUpdateState = cIM_UpdateState_2BChanged;
 	
+	var int key; key = MEM_ReadInt (ESP + 4);
 	var int cancel; cancel = FALSE;
 	var int update; update = FALSE;
-
-	var int key; key = MEM_ReadInt (ESP + 4);
 
 	//Cancel mouse input in event handler
 	//2050 - Left Mouse button
@@ -1261,22 +1260,28 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 //--- Num Keys control -->
 
 		if (!InfoManagerAnswerMode) {
+			var int numKeyPressed; numKeyPressed = FALSE;
+
 			if (InfoManagerNumKeysControls) {
 				//Override Num Keys 
-				if (key == KEY_0) { cancel = TRUE; };
-				if (key == KEY_1) { key = KEY_0; update = TRUE; };
-				if (key == KEY_2) { key = KEY_1; update = TRUE; };
-				if (key == KEY_3) { key = KEY_2; update = TRUE; };
-				if (key == KEY_4) { key = KEY_3; update = TRUE; };
-				if (key == KEY_5) { key = KEY_4; update = TRUE; };
-				if (key == KEY_6) { key = KEY_5; update = TRUE; };
-				if (key == KEY_7) { key = KEY_6; update = TRUE; };
-				if (key == KEY_8) { key = KEY_7; update = TRUE; };
-				if (key == KEY_9) { key = KEY_8; update = TRUE; };
+				if (key == KEY_0) { cancel = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_1) { key = KEY_0; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_2) { key = KEY_1; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_3) { key = KEY_2; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_4) { key = KEY_3; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_5) { key = KEY_4; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_6) { key = KEY_5; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_7) { key = KEY_6; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_8) { key = KEY_7; update = TRUE; numKeyPressed = TRUE; };
+				if (key == KEY_9) { key = KEY_8; update = TRUE; numKeyPressed = TRUE; };
 			};
 
 			//We have to refresh dialog colors
-			InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+			if (InfoManagerRefreshOverlays == cIM_RefreshNothing)
+			&& (numKeyPressed)
+			{
+				InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+			};
 		};
 
 //--- Additional tweaks -->
@@ -1286,6 +1291,10 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			InfoManager_SelectLastChoice ();
 			InfoManager_SkipDisabledDialogChoices (-1);
 			cancel = TRUE;
+
+			if (InfoManagerRefreshOverlays == cIM_RefreshNothing) {
+				InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+			};
 		};
 
 		if (key == KEY_RETURN) {
