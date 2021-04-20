@@ -2,6 +2,68 @@
  *	oCItemContainer, oCNpcInventory are taken from Ikarus G1 oCNPC class definition
  */ 
 
+/*
+class oCItemContainer : public zCInputCallback {
+	enum oTItemListMode {
+		FULLSCREEN,
+		HALFSCREEN,
+		ONE
+	};
+
+	zCListSort<oCItem>* contents;
+	oCNpc* npc;
+	int selectedItem;
+	int offset;
+	int drawItemMax;
+	oTItemListMode itemListMode;
+	int frame;
+	int right;
+	int ownList;
+	int prepared;
+	int passive;
+	zCView* viewCat;
+	zCView* viewItem;
+	zCView* viewItemActive;
+	zCView* viewItemHightlighted;
+	zCView* viewItemActiveHighlighted;
+	zCView* viewItemFocus;
+	zCView* viewItemActiveFocus;
+	zCView* viewItemHightlightedFocus;
+	zCView* viewItemActiveHighlightedFocus;
+	zCView* viewItemInfo;
+	zCView* viewItemInfoItem;
+	zCView* textView;
+	zCView* viewArrowAtTop;
+	zCView* viewArrowAtBottom;
+	zCWorld* rndWorld;
+	int posx;
+	int posy;
+	zSTRING textCategoryStatic;
+	int m_bManipulateItemsDisabled;
+	int m_bCanTransferMoreThanOneItem;
+	zCOLOR image_chroma;
+	zCOLOR blit_chroma;
+};
+ 
+class oCStealContainer : public oCItemContainer {
+	oCNpc* owner; 
+}; 
+
+class oCNpcContainer : public oCStealContainer {
+}; 
+
+class oCNpcInventory : public oCItemContainer {
+	oCNpc* owner;
+	int packAbility;
+	zCListSort<oCItem> inventory[INV_MAX];
+	zSTRING packString[INV_MAX];
+	int _offset[INV_MAX];
+	int _itemnr[INV_MAX];
+	int maxSlots[INV_MAX];
+	int invnr;
+};
+*/
+
 class oCItemContainer {
 //      oCItemContainer inventory2 {
             var int    inventory2_vtbl;                           				   // 0x0550
@@ -39,6 +101,88 @@ class oCItemContainer {
             var int    inventory2_oCItemContainer_image_chroma;                    // 0x05E0 zCOLOR
             var int    inventory2_oCItemContainer_blit_chroma;                     // 0x05E4 zCOLOR
 //      }
+};
+
+class oCStealContainer {
+//      oCItemContainer inventory2 {
+            var int    inventory2_vtbl;                           				   // 0x0550
+            var int    inventory2_oCItemContainer_contents;                        // 0x0554 zCListSort<oCItem>*
+            var int    inventory2_oCItemContainer_npc;                             // 0x0558 oCNpc*
+            var int    inventory2_oCItemContainer_selectedItem;                    // 0x055C int
+            var int    inventory2_oCItemContainer_offset;                          // 0x0560 int
+            var int    inventory2_oCItemContainer_drawItemMax;                     // 0x0564 int
+            var int    inventory2_oCItemContainer_itemListMode;                    // 0x0568 oTItemListMode
+            var int    inventory2_oCItemContainer_frame;                           // 0x056C zBOOL
+            var int    inventory2_oCItemContainer_right;                           // 0x0570 zBOOL
+            var int    inventory2_oCItemContainer_ownList;                         // 0x0574 zBOOL
+            var int    inventory2_oCItemContainer_prepared;                        // 0x0578 zBOOL
+            var int    inventory2_oCItemContainer_passive;                         // 0x057C zBOOL
+            var int    inventory2_oCItemContainer_viewCat;                         // 0x0580 zCView*
+            var int    inventory2_oCItemContainer_viewItem;                        // 0x0584 zCView*
+            var int    inventory2_oCItemContainer_viewItemActive;                  // 0x0588 zCView*
+            var int    inventory2_oCItemContainer_viewItemHightlighted;            // 0x058C zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveHighlighted;       // 0x0590 zCView*
+            var int    inventory2_oCItemContainer_viewItemFocus;                   // 0x0594 zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveFocus;             // 0x0598 zCView*
+            var int    inventory2_oCItemContainer_viewItemHightlightedFocus;       // 0x059C zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveHighlightedFocus;  // 0x05A0 zCView*
+            var int    inventory2_oCItemContainer_viewItemInfo;                    // 0x05A4 zCView*
+            var int    inventory2_oCItemContainer_viewItemInfoItem;                // 0x05A8 zCView*
+            var int    inventory2_oCItemContainer_textView;                        // 0x05AC zCView*
+            var int    inventory2_oCItemContainer_viewArrowAtTop;                  // 0x05B0 zCView*
+            var int    inventory2_oCItemContainer_viewArrowAtBottom;               // 0x05B4 zCView*
+            var int    inventory2_oCItemContainer_rndWorld;                        // 0x05B8 zCWorld*
+            var int    inventory2_oCItemContainer_posx;                            // 0x05BC int
+            var int    inventory2_oCItemContainer_posy;                            // 0x05C0 int
+            var string inventory2_oCItemContainer_textCategoryStatic;              // 0x05C4 zSTRING
+            var int    inventory2_oCItemContainer_m_bManipulateItemsDisabled;      // 0x05D8 zBOOL
+            var int    inventory2_oCItemContainer_m_bCanTransferMoreThanOneItem;   // 0x05DC zBOOL
+            var int    inventory2_oCItemContainer_image_chroma;                    // 0x05E0 zCOLOR
+            var int    inventory2_oCItemContainer_blit_chroma;                     // 0x05E4 zCOLOR
+//      }
+
+	var int        inventory2_owner;                           // 0x05E8 oCNpc*
+};
+
+class oCNpcContainer {
+//      oCItemContainer inventory2 {
+            var int    inventory2_vtbl;                           				   // 0x0550
+            var int    inventory2_oCItemContainer_contents;                        // 0x0554 zCListSort<oCItem>*
+            var int    inventory2_oCItemContainer_npc;                             // 0x0558 oCNpc*
+            var int    inventory2_oCItemContainer_selectedItem;                    // 0x055C int
+            var int    inventory2_oCItemContainer_offset;                          // 0x0560 int
+            var int    inventory2_oCItemContainer_drawItemMax;                     // 0x0564 int
+            var int    inventory2_oCItemContainer_itemListMode;                    // 0x0568 oTItemListMode
+            var int    inventory2_oCItemContainer_frame;                           // 0x056C zBOOL
+            var int    inventory2_oCItemContainer_right;                           // 0x0570 zBOOL
+            var int    inventory2_oCItemContainer_ownList;                         // 0x0574 zBOOL
+            var int    inventory2_oCItemContainer_prepared;                        // 0x0578 zBOOL
+            var int    inventory2_oCItemContainer_passive;                         // 0x057C zBOOL
+            var int    inventory2_oCItemContainer_viewCat;                         // 0x0580 zCView*
+            var int    inventory2_oCItemContainer_viewItem;                        // 0x0584 zCView*
+            var int    inventory2_oCItemContainer_viewItemActive;                  // 0x0588 zCView*
+            var int    inventory2_oCItemContainer_viewItemHightlighted;            // 0x058C zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveHighlighted;       // 0x0590 zCView*
+            var int    inventory2_oCItemContainer_viewItemFocus;                   // 0x0594 zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveFocus;             // 0x0598 zCView*
+            var int    inventory2_oCItemContainer_viewItemHightlightedFocus;       // 0x059C zCView*
+            var int    inventory2_oCItemContainer_viewItemActiveHighlightedFocus;  // 0x05A0 zCView*
+            var int    inventory2_oCItemContainer_viewItemInfo;                    // 0x05A4 zCView*
+            var int    inventory2_oCItemContainer_viewItemInfoItem;                // 0x05A8 zCView*
+            var int    inventory2_oCItemContainer_textView;                        // 0x05AC zCView*
+            var int    inventory2_oCItemContainer_viewArrowAtTop;                  // 0x05B0 zCView*
+            var int    inventory2_oCItemContainer_viewArrowAtBottom;               // 0x05B4 zCView*
+            var int    inventory2_oCItemContainer_rndWorld;                        // 0x05B8 zCWorld*
+            var int    inventory2_oCItemContainer_posx;                            // 0x05BC int
+            var int    inventory2_oCItemContainer_posy;                            // 0x05C0 int
+            var string inventory2_oCItemContainer_textCategoryStatic;              // 0x05C4 zSTRING
+            var int    inventory2_oCItemContainer_m_bManipulateItemsDisabled;      // 0x05D8 zBOOL
+            var int    inventory2_oCItemContainer_m_bCanTransferMoreThanOneItem;   // 0x05DC zBOOL
+            var int    inventory2_oCItemContainer_image_chroma;                    // 0x05E0 zCOLOR
+            var int    inventory2_oCItemContainer_blit_chroma;                     // 0x05E4 zCOLOR
+//      }
+
+	var int        inventory2_owner;                           // 0x05E8 oCNpc*
 };
 
 class oCNpcInventory {
