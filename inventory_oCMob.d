@@ -123,6 +123,23 @@ func void Mob_RemoveItems (var int mobPtr, var int itemInstance, var int qty){
  *	Usage:
  *		Mob_TransferItemsToNPC (her.focus_vob, hero);
  */
+var int _MobTransferItemPrint_Event;
+var int _MobTransferItemPrint_Event_Enabled;
+
+func void MobTransferItemPrintEvent_Init () {
+	if (!_MobTransferItemPrint_Event) {
+		_MobTransferItemPrint_Event = Event_Create ();
+	};
+};
+
+func void MobTransferItemPrintEvent_AddListener (var func f) {
+	Event_AddOnce (_MobTransferItemPrint_Event, f);
+};
+
+func void MobTransferItemPrintEvent_RemoveListener (var func f) {
+	Event_Remove (_MobTransferItemPrint_Event, f);
+};
+
 func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 	if (!mobPtr) { return; };
 
@@ -147,8 +164,13 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 		} else {
 			itm = _^ (itmPtr);
 
+			//Custom prints for transferred items
+			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
+				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			};
+
 			i = 0;
-			while (i<itm.amount);
+			while (i < itm.amount);
 				//We have to create items in a loop using CreateInvItem function (because of items without ITEM_MULTI flag)
 				CreateInvItem (slf, Hlp_GetInstanceID (itm));
 				i += 1;
