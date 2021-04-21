@@ -2,7 +2,7 @@
  *	This feature enables better navigation in inventories:
  *		- Home key moves cursor to first item
  *		- End key  moves cursor to last item
- *		- Page Up/Page Down keys to scroll faster
+ *		- Page Up/Page Down keys to scroll faster through inventory
  */
 
 /*
