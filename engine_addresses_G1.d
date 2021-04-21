@@ -239,3 +239,10 @@ const int oCNpcContainer__HandleEvent = 6728912;
 
 //0x0066E390 public: virtual int __thiscall oCNpcInventory::HandleEvent(int) 
 const int oCNpcInventory__HandleEvent = 6742928;
+
+/*
+ *	Sprint mode
+ */
+
+//0x00624E30 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int) 
+const int oCAniCtrl_Human__ToggleWalkMode = 6442544;

@@ -140,3 +140,10 @@ const int oCNPC__DoTakeVob			= 7621056;
 
 //0x00744DD0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 const int oCNpc__DoDropVob = 7622096;
+
+/*
+ *	Sprint mode
+ */
+
+//0x006AD500 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int)
+const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
