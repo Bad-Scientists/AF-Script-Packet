@@ -163,6 +163,23 @@ func void NPC_RemoveInventory (var C_NPC slf, var int flagsKeepItems, var int ma
 	NPC_RemoveInventoryCategory (slf, INV_MISC, flagsKeepItems, mainFlagsKeepItems);
 };
 
+var int _NpcTransferItemPrint_Event;
+var int _NpcTransferItemPrint_Event_Enabled;
+
+func void NpcTransferItemPrintEvent_Init () {
+	if (!_NpcTransferItemPrint_Event) {
+		_NpcTransferItemPrint_Event = Event_Create ();
+	};
+};
+
+func void NpcTransferItemPrintEvent_AddListener (var func f) {
+	Event_AddOnce (_NpcTransferItemPrint_Event, f);
+};
+
+func void NpcTransferItemPrintEvent_RemoveListener (var func f) {
+	Event_Remove (_NpcTransferItemPrint_Event, f);
+};
+
 func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCategory, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -208,8 +225,13 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Convert to oCItem to get amount property
-		var int ptr; ptr = _@ (item);
-		var oCItem itm; itm = _^ (ptr);
+		var int itmPtr; itmPtr = _@ (item);
+		var oCItem itm; itm = _^ (itmPtr);
+
+		//Custom prints for transferred items
+		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
+			Event_Execute (_NpcTransferItemPrint_Event, itmPtr);
+		};
 		
 		if (itm.amount == 1) {
 			CreateInvItem (oth, itmInstance);
