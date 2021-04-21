@@ -59,12 +59,31 @@ Improved Map handling when pressing 'M':
     * `AF-Script-Packet\_headers_G1_PlayerMap.src`
 1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_PlayerMap_Init ();`.
 
+### Gothic 1 Quick Loot
+Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
+ - transfers items from dead NPC to players inventory, closes inventory
+ - transfers items from chest to players inventory, closes inventory, ends interaction with chest
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_QuickLoot.src`
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_QuickLoot_Init ();`.
+
+### Gothic 1 Better Inventory Controls
+Enables better navigation in inventories
+ - use home/end keys to navigate to first/last item
+ - use page up/page down keys to scroll faster through inventory
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_BetterInventoryControls_Init ();`.
+
 ### Gothic 1 & 2 Enhanced Information Manager
 Package adds several features for dialogues (Information manager):
  - Simple dialog color/font/text alignment control - using dialog description.
  - Answering system
  - Spinner system
  - Dialog control with numeric keys (1 .. 9)
+ - Dialog overlays through which you can simply change color for specific words
 
    [More on this feature here](https://forum.worldofplayers.de/forum/threads/1532719-G1-G2-Simple-dialogs-font-change-and-color-change?highlight=simple)
 
