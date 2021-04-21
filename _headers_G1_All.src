@@ -29,6 +29,8 @@ anims_engine.d
 eventManager_engine.d
 eventManager.d
 
+functions_oCMobInter_engine.d
+
 functions_oCNPC_engine.d
 functions_NPC.d
 

@@ -1,6 +1,7 @@
 EngineClasses_G1\oInventory.d
 
 functions_oCNpc_engine.d
+functions_oCMobInter_engine.d
 
 inventory_oCNpc_engine.d
 inventory_oCNpc.d
