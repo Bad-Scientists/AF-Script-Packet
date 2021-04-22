@@ -41,7 +41,7 @@ func int NPC_GetWalkMode (var int slfInstance) {
  */
 
 func int NPC_IsWalking (var int slfInstance) {
-	//006257E0  .text     Debug data           ?IsWalking@oCAniCtrl_Human@@QAEHXZ
+	//0x006257E0 public: int __thiscall oCAniCtrl_Human::IsWalking(void) 
 	const int oCAniCtrl_Human__IsWalking_G1 = 6445024;
 
 	//0x006AE0E0 public: int __thiscall oCAniCtrl_Human::IsWalking(void)
@@ -275,6 +275,46 @@ func int NPC_HasTimedOverlay (var int slfInstance, var string testOverlay)
 	end;
 	
 	return FALSE;
+};
+
+/*
+ *	Function loops through timedOverlays_next and gets remaining time testOverlay
+ *		usage:	if (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS")) { ...
+ */
+func int NPC_GetTimedOverlayTimer (var int slfInstance, var string testOverlay)
+{
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return FLOATNULL; };
+	
+	//zCList<oCNpcTimedOverlay> timedOverlays {
+	//var int        timedOverlays_data;                         // 0x0444 oCNpcTimedOverlay*
+	//var int        timedOverlays_next;                         // 0x0448 zCList<oCNpcTimedOverlay>*
+
+	var int ptr;
+	var zCList list;
+	var int timedOverlayPtr;
+	
+	ptr = slf.timedOverlays_next;
+	
+	while (ptr);
+		list = _^ (ptr);
+		
+		timedOverlayPtr = list.data;
+		
+		if (timedOverlayPtr) {
+			var oCNpcTimedOverlay timedOverlay;
+			timedOverlay = _^ (timedOverlayPtr);
+			
+			if (Hlp_StrCmp (timedOverlay.mdsOverlayName, testOverlay)) {
+				return timedOverlay.timer;
+			};
+		};
+
+		ptr = list.next;
+	end;
+	
+	return FLOATNULL;
 };
 
 func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
