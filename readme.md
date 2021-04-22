@@ -141,3 +141,26 @@ Simple feature, that allows you to control which NPC's can be looted. (for examp
     * `AF-Script-Packet\_headers_G1_PreventLooting.src` for G1
     * `AF-Script-Packet\_headers_G2_PreventLooting.src` for G2A
 1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_PreventLooting_Init ();`.
+
+### Gothic 1 & 2 Sprint mode
+Enables simple sprint mode
+ - adds stamina bar right underneath health bar
+ - when player is exhausted sprint mode is disabled with cool down of 4 seconds
+ - jumping & fighting consumes stamina significantly
+ - potions of speed disable stamina consumption (they still have same effect)
+ - potions of speed have their own texture of stamina bar - you will see how much time is left from potion effect
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_SprintMode.src` for G1
+    * `AF-Script-Packet\_headers_G2_SprintMode.src` for G2A
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_SprintMode_Init ();`.
+1. Make sure you setup stamina level when game begins (in your `Startup_` function):
+
+    [![Gothic 1 & 2 Sprint mode](https://img.youtube.com/vi/x8N7AS1mawo/0.jpg)](https://www.youtube.com/watch?v=x8N7AS1mawo)
+
+```c++
+	//[Sprint mode]
+	PC_SprintModeStaminaMax = 80;
+	PC_SprintModeStamina = PC_SprintModeStaminaMax;
+	PC_SprintModeConsumeStamina = TRUE;
+```
