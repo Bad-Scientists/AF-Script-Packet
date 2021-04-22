@@ -743,8 +743,8 @@ func string NPC_GetAniName (var int slfinstance) {
 	return aniName;
 };
 
-
-func void NPC_StopAni (var int slfinstance, var string aniName) {
+//Name changed from NPC_StopAni to NPC_StopAniByAniName (NPC_StopAni is G2A default function)
+func void NPC_StopAniByAniName (var int slfinstance, var string aniName) {
 	var int model; model = oCNPC_GetModel (slfinstance);
 	var int aniID; aniID = zCModel_GetAniIDFromAniName (model, STR_Upper (aniName));
 
