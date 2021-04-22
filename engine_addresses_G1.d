@@ -246,3 +246,98 @@ const int oCNpcInventory__HandleEvent = 6742928;
 
 //0x00624E30 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int) 
 const int oCAniCtrl_Human__ToggleWalkMode = 6442544;
+
+/*
+ *	Event Manager
+ */
+
+//0x007D3ECC const zCMaterial::`vftable' 
+
+//0x007D0894 const zCObject::`vftable' 
+//const int zCObject_vtbl		= 8194196;
+ 
+//0x007D0D44 const zCCSBlockPosition::`vftable' 
+//const int zCCSBlockPosition_vtbl	= 8195396;
+
+//0x007D0FAC const zCCSProps::`vftable'
+//const int zCCSProps_vtbl		= 8196012;
+
+//0x007D08F4 const oCCSPlayer::`vftable'{for `zCObject'}
+//const int zCObject__oCCSPlayer_vtbl	= 8194292;
+
+//0x007D0754 const zCEventMessage::`vftable' 
+const int zCEventMessage_vtbl		= 8193876;
+
+//0x007DE97C const zCEventManager::`vftable' 
+const int zCEventManager_vtbl		= 8251772;
+
+func int Hlp_Is_zCEventManager (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
+};
+
+//0x007D0A24 const zCCSCutsceneContext::`vftable' 
+const int zCCSCutsceneContext_vtbl	= 8194596;
+
+func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
+};
+
+//0x007DE28C const oCNpcMessage::`vftable' 
+const int oCNpcMessage_vtbl		= 8249996;
+
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
+};
+
+//0x007DE2F4 const oCMsgDamage::`vftable' 
+const int oCMsgDamage_vtbl		= 8250100;
+
+//0x007DE35C const oCMsgWeapon::`vftable' 
+const int oCMsgWeapon_vtbl		= 8250204;
+
+//0x007DE3C4 const oCMsgMovement::`vftable' 
+const int oCMsgMovement_vtbl		= 8250308;
+
+//0x007DE42C const oCMsgAttack::`vftable' 
+const int oCMsgAttack_vtbl		= 8250412;
+
+//0x007DE494 const oCMsgUseItem::`vftable' 
+const int oCMsgUseItem_vtbl		= 8250516;
+
+//0x007DE4FC const oCMsgState::`vftable' 
+const int oCMsgState_vtbl		= 8250620;
+
+//0x007DE564 const oCMsgManipulate::`vftable' 
+const int oCMsgManipulate_vtbl		= 8250724;
+
+//0x007DE5CC const oCMsgConversation::`vftable' 
+const int oCMsgConversation_vtbl	= 8250828;
+
+func int Hlp_Is_oCMsgConversation (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
+};
+
+//0x007DE634 const oCMsgMagic::`vftable' 
+const int oCMsgMagic_vtbl		= 8250932;
+
+//0x007DEDDC const zCEventMusicControler::`vftable' 
+const int zCEventMusicControler_vtbl	= 8252892;
+
+//0x007D07B4 const zCEventCore::`vftable' 
+const int zCEventCore_vtbl		= 8193972;
+
+//0x007D284C const zCCSCamera_EventMsg::`vftable' 
+//0x007D06F4 const zCCSCamera_EventMsgActivate::`vftable' 
+//0x007D07B4 const zCEventCore::`vftable' 
+//0x007D0CE4 const zCEvMsgCutscene::`vftable' 
+
+//0x007DBE0C const zCEventCommon::`vftable' 
+//0x007DBE6C const zCEventMover::`vftable' 
+//0x007DBECC const zCEventScreenFX::`vftable' 
+
+//0x007DDC9C const oCMobMsg::`vftable' 
+const int oCMobMsg_vtbl			= 8248476;

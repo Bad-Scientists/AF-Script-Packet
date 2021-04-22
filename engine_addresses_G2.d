@@ -105,9 +105,11 @@ const int oCNpc__OnMessage = 7647264;
 //const int oCNPC__CloseInventory = 7742480;
 
 //0x0074CC10 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *)
-const int oCNPC__EV_DrawWeapon		= 7654416;
+//Already defined in LeGo 2.7.1
+//const int oCNPC__EV_DrawWeapon		= 7654416;
 //0x0074D2E0 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *)
-const int oCNPC__EV_DrawWeapon1		= 7656160;
+//Already defined in LeGo 2.7.1
+//const int oCNPC__EV_DrawWeapon1		= 7656160;
 //0x0074D580 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
 const int oCNPC__EV_DrawWeapon2		= 7656832;
 
@@ -141,9 +143,112 @@ const int oCNPC__DoTakeVob			= 7621056;
 //0x00744DD0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 const int oCNpc__DoDropVob = 7622096;
 
+//0x0083C644 const oCNpcContainer::`vftable' 
+const int oCNPCContainer_vtbl = 8635972;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
+
 /*
  *	Sprint mode
  */
 
 //0x006AD500 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int)
 const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
+
+/*
+ *	Event Manager
+ */
+
+//0x00832214 const zCMaterial::`vftable' 
+
+//0x0082E89C const zCObject::`vftable' 
+//const int zCObject_vtbl		= 8579228;
+ 
+//0x0082ED78 const zCCSBlockPosition::`vftable' 
+//const int zCCSBlockPosition_vtbl	= 8580472;
+
+//0x0082F00C const zCCSProps::`vftable' 
+//const int zCCSProps_vtbl		= 8581132;
+
+//0x0082E904 const oCCSPlayer::`vftable'{for `zCObject'} 
+//const int zCObject__oCCSPlayer_vtbl	= 8579332;
+
+//0x0082E75C const zCEventMessage::`vftable' 
+const int zCEventMessage_vtbl		= 8578908;
+
+//0x0083E23C const zCEventManager::`vftable' 
+const int zCEventManager_vtbl		= 8643132;
+
+func int Hlp_Is_zCEventManager (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
+};
+
+//0x0082EA4C const zCCSCutsceneContext::`vftable' 
+const int zCCSCutsceneContext_vtbl	= 8579660;
+
+func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
+};
+
+//0x0083DA8C const oCNpcMessage::`vftable' 
+const int oCNpcMessage_vtbl		= 8641164;
+
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
+};
+
+//0x0083DAFC const oCMsgDamage::`vftable' 
+const int oCMsgDamage_vtbl		= 8641276;
+
+//0x0083DB6C const oCMsgWeapon::`vftable' 
+const int oCMsgWeapon_vtbl		= 8641388;
+
+//0x0083DBDC const oCMsgMovement::`vftable' 
+const int oCMsgMovement_vtbl		= 8641500;
+
+//0x0083DC4C const oCMsgAttack::`vftable' 
+const int oCMsgAttack_vtbl		= 8641612;
+
+//0x0083DCBC const oCMsgUseItem::`vftable' 
+const int oCMsgUseItem_vtbl		= 8641724;
+
+//0x0083DD2C const oCMsgState::`vftable' 
+const int oCMsgState_vtbl		= 8641836;
+
+//0x0083DD9C const oCMsgManipulate::`vftable' 
+const int oCMsgManipulate_vtbl		= 8641948;
+
+//0x0083DE0C const oCMsgConversation::`vftable' 
+const int oCMsgConversation_vtbl	= 8642060;
+
+func int Hlp_Is_oCMsgConversation (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
+};
+
+//0x0083DE7C const oCMsgMagic::`vftable' 
+const int oCMsgMagic_vtbl		= 8642172;
+
+//0x0083AF34 const zCEventMusicControler::`vftable' 
+const int zCEventMusicControler_vtbl	= 8630068;
+
+//0x0082E7BC const zCEventCore::`vftable' 
+const int zCEventCore_vtbl		= 8579004;
+
+//0x0083096C const zCCSCamera_EventMsg::`vftable' 
+//0x0082E6FC const zCCSCamera_EventMsgActivate::`vftable' 
+//0x0082E7BC const zCEventCore::`vftable' 
+//0x0082ED14 const zCEvMsgCutscene::`vftable' 
+
+//0x0083A2DC const zCEventCommon::`vftable' 
+//0x0083A33C const zCEventMover::`vftable' 
+//0x0083A39C const zCEventScreenFX::`vftable' 
+
+//0x0083D474 const oCMobMsg::`vftable' 
+const int oCMobMsg_vtbl			= 8639604;
