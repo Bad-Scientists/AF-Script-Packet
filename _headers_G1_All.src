@@ -23,8 +23,11 @@ ScriptBin\convert.d
 ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
+ScriptBin\gameKeyEvents.d
 
 anims_engine.d
+
+bars.d
 
 eventManager_engine.d
 eventManager.d
@@ -86,9 +89,14 @@ Standalone-Packages\G12-PreventLooting\preventLooting.d
 Standalone-Packages\G1-PlayerMap\playerMap_API.d
 Standalone-Packages\G1-PlayerMap\playerMap.d
 
+Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking_API.d
+Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking.d
+
 Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing_API.d
 Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing.d
 
 Standalone-Packages\G1-QuickLoot\quickLoot.d
 
 Standalone-Packages\G1-BetterInventoryControls\betterInventoryControls.d
+
+Standalone-Packages\G12-SprintMode\sprintMode.d

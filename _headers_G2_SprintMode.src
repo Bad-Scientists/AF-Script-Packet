@@ -1,3 +1,14 @@
+EngineClasses_G2\oNpc.d
+
 engine_addresses_G2.d
+
+ScriptBin\gameKeyEvents.d
+
+anims_engine.d
+
+bars.d
+
+functions_oCNPC_engine.d
+functions_NPC.d
 
 Standalone-Packages\G12-SprintMode\sprintMode.d
