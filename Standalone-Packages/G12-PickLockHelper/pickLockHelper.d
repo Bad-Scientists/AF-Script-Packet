@@ -1,3 +1,6 @@
+/*
+ *	Requires LeGo flags: LeGo_HookEngine | LeGo_View
+ */
 const int pickLockHelper_Alpha = 192;					//Alpha
 const string pickLockHelper_FontName = "font_old_10_white.tga";		//font
 
