@@ -141,6 +141,7 @@ Simple feature, that allows you to control which NPC's can be looted. (for examp
     * `AF-Script-Packet\_headers_G1_PreventLooting.src` for G1
     * `AF-Script-Packet\_headers_G2_PreventLooting.src` for G2A
 1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_PreventLooting_Init ();`.
+1. Requires LeGo flags: LeGo_HookEngine | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
 
 ### Gothic 1 & 2 Sprint mode
 Enables simple sprint mode
@@ -154,6 +155,7 @@ Enables simple sprint mode
     * `AF-Script-Packet\_headers_G1_SprintMode.src` for G1
     * `AF-Script-Packet\_headers_G2_SprintMode.src` for G2A
 1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_SprintMode_Init ();`.
+1. Requires LeGo flags: LeGo_HookEngine | LeGo_FrameFunctions | LeGo_Bars, make sure you initialize them in your `LeGo_Init` function.
 1. Make sure you setup stamina level when game begins (in your `Startup_` function):
 
     [![Gothic 1 & 2 Sprint mode](https://img.youtube.com/vi/x8N7AS1mawo/0.jpg)](https://www.youtube.com/watch?v=x8N7AS1mawo)
