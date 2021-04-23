@@ -16,8 +16,10 @@
  *			PC_SprintModeStamina = PC_SprintModeStaminaMax;		//Current stamina level
  *			PC_SprintModeConsumeStamina = TRUE;			//Make sure this is set to true
  *
- *		- haste potions disable stamina consumption
- *		- haste potions will have their own texture in stamina bar - you will see how much time is left for potion effect
+ *		- potions of speed disable stamina consumption
+ *		- potions of speed will have their own texture in stamina bar - you will see how much time is left from potion effect
+ *
+ *	Requires LeGo flags: LeGo_HookEngine | LeGo_FrameFunctions | LeGo_Bars
  */
 
 var int PC_SprintMode;
@@ -60,8 +62,15 @@ func void _eventGameKeyEvent_SprintMode () {
 
 		//Activate
 		if (PC_SprintModeSwitch) {
-			PC_SprintMode = TRUE;
-			Mdl_ApplyOverlayMds (hero, "HUMANS_SPRINT.MDS");
+			if (NPC_HasOverlay (hero, "HUMANS_SPRINT.MDS")) || (NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS"))
+			|| (NPC_HasOverlay (hero, "HUMANS_DRUNKEN.MDS")) || (NPC_HasTimedOverlay (hero, "HUMANS_DRUNKEN.MDS"))
+			{
+				//Don't enable sprint mode if player already has HUMANS_SPRINT.MDS overlay or if he is drunk :)
+				PC_SprintModeSwitch = FALSE;
+			} else {
+				PC_SprintMode = TRUE;
+				Mdl_ApplyOverlayMds (hero, "HUMANS_SPRINT.MDS");
+			};
 		} else {
 			//Deactivate
 			if (PC_SprintMode) {
