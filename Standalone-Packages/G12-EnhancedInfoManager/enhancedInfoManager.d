@@ -87,6 +87,7 @@ var int InfoManagerAnswerAlignment;
 var string InfoManagerAnswer;
 
 var int InfoManagerSpinnerAlignment;
+var int InfoManagerSpinnerNumberEditMode;
 var string InfoManagerSpinnerNumber;
 
 //Dialog 'Spiner system'
@@ -1293,6 +1294,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			//Reset value
 			if (key == KEY_ESCAPE) {
 				InfoManagerSpinnerNumber = "";
+				InfoManagerSpinnerNumberEditMode = FALSE;
 				cancel = TRUE; 
 			};
 
@@ -1301,9 +1303,13 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				len = STR_Len (InfoManagerSpinnerNumber);
 				
 				if (len == 0) {
-					InfoManagerSpinnerNumber = IntToString (InfoManagerSpinnerValue);
+					if (!InfoManagerSpinnerNumberEditMode) {
+						InfoManagerSpinnerNumber = IntToString (InfoManagerSpinnerValue);
+						InfoManagerSpinnerNumberEditMode = TRUE;
+					};
 				} else
 				if (len == 1) {
+					InfoManagerSpinnerNumberEditMode = TRUE;
 					InfoManagerSpinnerNumber = "";
 				} else 
 				if (len > 1) {
@@ -1312,14 +1318,20 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 				cancel = TRUE;
 			};
+			
+			if (!InfoManagerSpinnerNumberEditMode) {
+				InfoManagerSpinnerNumberEditMode = STR_Len (InfoManagerSpinnerNumber);
+			};
 
 			//First ENTER stops 'editing' mode
 			if (key == KEY_RETURN) {
-				if (STR_Len (InfoManagerSpinnerNumber)) {
+				if (InfoManagerSpinnerNumberEditMode) {
 					InfoManagerSpinnerValue = STR_ToInt (InfoManagerSpinnerNumber);
 
 					//Reset value (
 					InfoManagerSpinnerNumber = "";
+					InfoManagerSpinnerNumberEditMode = FALSE;
+
 					cancel = TRUE;
 					update = FALSE;
 				};
@@ -1576,6 +1588,7 @@ MEM_InformationMan.LastMethod:
 
 		//Reset value on CollectInfos/CollectChoices
 		InfoManagerSpinnerNumber = "";
+		InfoManagerSpinnerNumberEditMode = FALSE;
 
 		//Flag all overlays for deletion
 		if (dlg.m_listLines_numInArray > dlg.Choices) {
@@ -1625,6 +1638,7 @@ MEM_InformationMan.LastMethod:
 	if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
 		//Reset value when choice changes
 		InfoManagerSpinnerNumber = "";
+		InfoManagerSpinnerNumberEditMode = FALSE;
 
 		//Auto-scrolling for disabled dialog choices
 		InfoManager_SkipDisabledDialogChoices (-1);
