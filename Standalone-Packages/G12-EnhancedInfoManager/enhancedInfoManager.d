@@ -83,7 +83,11 @@ const int InfoManagerRememberSelectedChoice = cIM_RememberSelectedChoice_Spinner
 //Dialog 'Answering system'
 var int InfoManagerAnswerPossible;
 var int InfoManagerAnswerMode;
+var int InfoManagerAnswerAlignment;
 var string InfoManagerAnswer;
+
+var int InfoManagerSpinnerAlignment;
+var string InfoManagerSpinnerNumber;
 
 //Dialog 'Spiner system'
 var int InfoManagerSpinnerPossible;
@@ -172,7 +176,27 @@ func void InfoManagerSpinnerAniFunction () {
 		var zCViewText2 txtIndicator;
 		if (InfoManagerSpinnerIndicator) {
 			txtIndicator = _^ (InfoManagerSpinnerIndicator);
-			txtIndicator.text = InfoManagerSpinnerIndicatorString;
+			
+			//if (STR_Len (InfoManagerSpinnerNumber)) {
+			//	txtIndicator.text = InfoManagerSpinnerNumber;
+			//} else {
+				txtIndicator.text = InfoManagerSpinnerIndicatorString;
+			//};
+
+			//Adjust alignment of spinner indicator
+			var string dlgFont;
+			var int textWidth;
+
+			var zCViewDialogChoice dlg;
+			if (!MEM_InformationMan.DlgChoice) { return; };
+			dlg = _^ (MEM_InformationMan.DlgChoice);
+
+			dlgFont = Print_GetFontName (txtIndicator.font);
+			textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+			
+			if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
+				txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+			};
 		};
 	};
 };
@@ -590,8 +614,8 @@ func string Choice_RemoveModifierOverlay (var string s) {
 	var int len;
 
 	index = STR_IndexOf (s, "o@");
-	index2 = STR_IndexOf (s, ":");
-	index3 = STR_IndexOf (s, "~");
+	index2 = STR_IndexOfFrom (s, ":", index);
+	index3 = STR_IndexOfFrom (s, "~", index2);
 
 	if ((index > -1) && (index2 > index) && (index3 > index2))
 	{
@@ -635,8 +659,8 @@ func string Choice_RemoveModifierOverlayKeepInline (var string s) {
 	var int indexFormat;
 
 	index = STR_IndexOf (s, "o@");
-	index2 = STR_IndexOf (s, ":");
-	index3 = STR_IndexOf (s, "~");
+	index2 = STR_IndexOfFrom (s, ":", index);
+	index3 = STR_IndexOfFrom (s, "~", index2);
 
 	if ((index > -1) && (index2 > index) && (index3 > index2))
 	{
@@ -712,8 +736,10 @@ func string Choice_RemoveModifierOverlayKeepInline (var string s) {
 
 func string Choice_RemoveAllModifiers (var string s) {
 	var int lastLen; lastLen = -1;
-	var int index; index = STR_IndexOf (s, "o@");
 	var int len;
+	var int index;
+
+	index = STR_IndexOf (s, "o@");
 
 	while (index > -1);
 		s = Choice_RemoveModifierOverlay (s);
@@ -749,9 +775,13 @@ func string Choice_GetCleanText (var string s) {
 
 //--- Remove overlays (will keep only text from 'inline' overlays)
 
-	var int index; index = STR_IndexOf (s, "o@");
-	var int index2; index2 = STR_IndexOf (s, ":");
-	var int index3; index3 = STR_IndexOf (s, "~");
+	var int index;
+	var int index2;
+	var int index3;
+	
+	index = STR_IndexOf (s, "o@");
+	index2 = STR_IndexOfFrom (s, ":", index);
+	index3 = STR_IndexOfFrom (s, "~", index2);
 
 	var int len;
 	var int lastLen; lastLen = -1;
@@ -824,8 +854,8 @@ func string Choice_GetCleanText (var string s) {
 		s = Choice_RemoveModifierOverlayKeepInline (s);
 
 		index = STR_IndexOf (s, "o@");
-		index2; index2 = STR_IndexOf (s, ":");
-		index3; index3 = STR_IndexOf (s, "~");
+		index2 = STR_IndexOfFrom (s, ":", index);
+		index3 = STR_IndexOfFrom (s, "~", index2);
 
 		if ((index > -1) && (index2 > index) && (index3 > index2)) {
 		} else {
@@ -1002,7 +1032,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	var int cancel; cancel = FALSE;
 	var int update; update = FALSE;
 
-	//Cancel mouse input in event handler
+	var int len;
+	//cancel mouse input in event handler
 	//2050 - Left Mouse button
 	//2052 - Right Mouse button
 	//2057 - Wheel up
@@ -1024,7 +1055,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	};
 	*/
 
-	//Cancel selection of dialog by KEY_TAB (causing auto-selection in combination with Alt + Tab)
+	//cancel selection of dialog by KEY_TAB (causing auto-selection in combination with Alt + Tab)
 	if (key == KEY_TAB) {
 		cancel = TRUE;
 	};
@@ -1032,12 +1063,20 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	//Work with input only in case InfoManager is waiting for an input
 	if (MEM_InformationMan.IsWaitingForSelection) {
 
+		//G2A tweak - dialog confirmation with SPACE
+		if (!InfoManagerAnswerPossible) {
+			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
+		} else {
+			if (!InfoManagerAnswerMode) 
+			&& (key == KEY_SPACE) { key = KEY_RETURN; };
+		};
+
 //--- Answers -->
 
 		//InfoManagerAnswerPossible is set by _hook_oCInformationManager_Update_EnhancedInfoManager
 		if (InfoManagerAnswerPossible) {
 
-			//Cancel answer mode
+			//cancel answer mode
 			if (InfoManagerAnswerMode) {
 				if (key == KEY_ESCAPE) {
 					InfoManagerRefreshOverlays = cIM_RefreshOverlays;
@@ -1083,7 +1122,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 				//Backspace
 				if (key == KEY_BACK) {
-					var int len;
 					len = STR_Len (InfoManagerAnswer);
 					
 					if (len == 1) {
@@ -1167,7 +1205,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 					InfoManagerAnswer = ConcatStrings (InfoManagerAnswer, s);
 				};
 
-				cancel = TRUE; //Cancel input
+				cancel = TRUE; //cancel input
 			};
 		} else
 
@@ -1237,9 +1275,71 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 			if (key == KEY_RIGHTARROW) || (key == KEY_D) {
 				InfoManagerSpinnerValue += 1;
-				cancel = TRUE; //Cancel input (just in case)
+				cancel = TRUE; //cancel input (just in case)
 			};
-			
+
+			//Edit number
+			if (key == KEY_NUMPAD0) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "0"); cancel = TRUE; };
+			if (key == KEY_NUMPAD1) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "1"); cancel = TRUE; };
+			if (key == KEY_NUMPAD2) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "2"); cancel = TRUE; };
+			if (key == KEY_NUMPAD3) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "3"); cancel = TRUE; };
+			if (key == KEY_NUMPAD4) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "4"); cancel = TRUE; };
+			if (key == KEY_NUMPAD5) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "5"); cancel = TRUE; };
+			if (key == KEY_NUMPAD6) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "6"); cancel = TRUE; };
+			if (key == KEY_NUMPAD7) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "7"); cancel = TRUE; };
+			if (key == KEY_NUMPAD8) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "8"); cancel = TRUE; };
+			if (key == KEY_NUMPAD9) { InfoManagerSpinnerNumber = ConcatStrings (InfoManagerSpinnerNumber, "9"); cancel = TRUE; };
+
+			//Reset value
+			if (key == KEY_ESCAPE) {
+				InfoManagerSpinnerNumber = "";
+				cancel = TRUE; 
+			};
+
+			//Backspace
+			if (key == KEY_BACK) {
+				len = STR_Len (InfoManagerSpinnerNumber);
+				
+				if (len == 0) {
+					InfoManagerSpinnerNumber = IntToString (InfoManagerSpinnerValue);
+				} else
+				if (len == 1) {
+					InfoManagerSpinnerNumber = "";
+				} else 
+				if (len > 1) {
+					InfoManagerSpinnerNumber = mySTR_SubStr (InfoManagerSpinnerNumber, 0, len - 1);					
+				};
+
+				cancel = TRUE;
+			};
+
+			//First ENTER stops 'editing' mode
+			if (key == KEY_RETURN) {
+				if (STR_Len (InfoManagerSpinnerNumber)) {
+					InfoManagerSpinnerValue = STR_ToInt (InfoManagerSpinnerNumber);
+
+					//Reset value (
+					InfoManagerSpinnerNumber = "";
+					cancel = TRUE;
+					update = FALSE;
+				};
+
+				//Safety check - don't do anything if InfoManagerSpinnerValue is out of bounds!
+				if ((InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) || (InfoManagerSpinnerValue > InfoManagerSpinnerValueMax)) {
+					//Update value
+					if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					};
+
+					if (InfoManagerSpinnerValue > InfoManagerSpinnerValueMax) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					};
+
+					cancel = TRUE;
+					update = FALSE;
+				};
+			};
+
 			if (cancel) {
 				//Min/Max values
 				if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) {
@@ -1264,19 +1364,38 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 			if (InfoManagerNumKeysControls) {
 				//Override Num Keys 
-				if (key == KEY_0) { cancel = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_1) { key = KEY_0; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_2) { key = KEY_1; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_3) { key = KEY_2; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_4) { key = KEY_3; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_5) { key = KEY_4; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_6) { key = KEY_5; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_7) { key = KEY_6; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_8) { key = KEY_7; update = TRUE; numKeyPressed = TRUE; };
-				if (key == KEY_9) { key = KEY_8; update = TRUE; numKeyPressed = TRUE; };
+				
+				//2021-04-24
+				//Seems like union is doing this already :-/ :-)
+				const int unionActivatedCheck = 0;
+
+				var int unionActivated;
+				
+				if (!unionActivatedCheck) {
+					unionActivated = MEM_GothOptExists ("INTERNAL", "UnionActivated");
+					unionActivatedCheck = 1;
+				};
+				
+				if (!unionActivated) {
+					if (key == KEY_0) { cancel = TRUE; };
+					if (key == KEY_1) { key = KEY_0; update = TRUE; };
+					if (key == KEY_2) { key = KEY_1; update = TRUE; };
+					if (key == KEY_3) { key = KEY_2; update = TRUE; };
+					if (key == KEY_4) { key = KEY_3; update = TRUE; };
+					if (key == KEY_5) { key = KEY_4; update = TRUE; };
+					if (key == KEY_6) { key = KEY_5; update = TRUE; };
+					if (key == KEY_7) { key = KEY_6; update = TRUE; };
+					if (key == KEY_8) { key = KEY_7; update = TRUE; };
+					if (key == KEY_9) { key = KEY_8; update = TRUE; };
+				};
 			};
 
 			//We have to refresh dialog colors
+			if ((key == KEY_0) || (key == KEY_1) || (key == KEY_2) || (key == KEY_3) || (key == KEY_4) || (key == KEY_5)
+			|| (key == KEY_6) || (key == KEY_7) || (key == KEY_8) || (key == KEY_9)) {
+				numKeyPressed = TRUE;
+			};
+
 			if (InfoManagerRefreshOverlays == cIM_RefreshNothing)
 			&& (numKeyPressed)
 			{
@@ -1286,7 +1405,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 //--- Additional tweaks -->
 
-		//Cancel KEY_GRAVE changes fight mode to fist mode, this caused some issues ... we will use it for a better purpose - move cursor to last dialog choice
+		//cancel KEY_GRAVE changes fight mode to fist mode, this caused some issues ... we will use it for a better purpose - move cursor to last dialog choice
 		if (key == KEY_GRAVE) {
 			InfoManager_SelectLastChoice ();
 			InfoManager_SkipDisabledDialogChoices (-1);
@@ -1302,11 +1421,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			InfoManager_SkipDisabledDialogChoices (-1);
 		};
 
-		//G2A tweak - dialog confirmation with SPACE
-		if (!InfoManagerAnswerPossible) {
-			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
-		};
-
 		//Skip disabled dialog choices
 		if (key == KEY_UPARROW)
 		|| (key == KEY_DOWNARROW)
@@ -1319,7 +1433,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		};
 	};
 
-	//Cancel input if InfoManager is waiting for anything
+	//cancel input if InfoManager is waiting for anything
 	if (MEM_InformationMan.IsWaitingForEnd)
 	|| (MEM_InformationMan.IsWaitingForOpen)
 	|| (MEM_InformationMan.IsWaitingForClose)
@@ -1460,6 +1574,9 @@ MEM_InformationMan.LastMethod:
 		//
 		overlayCount = 0;
 
+		//Reset value on CollectInfos/CollectChoices
+		InfoManagerSpinnerNumber = "";
+
 		//Flag all overlays for deletion
 		if (dlg.m_listLines_numInArray > dlg.Choices) {
 			//arr = _^ (choiceView + 172);
@@ -1506,6 +1623,9 @@ MEM_InformationMan.LastMethod:
 	};
 
 	if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected) {
+		//Reset value when choice changes
+		InfoManagerSpinnerNumber = "";
+
 		//Auto-scrolling for disabled dialog choices
 		InfoManager_SkipDisabledDialogChoices (-1);
 	};
@@ -1760,8 +1880,8 @@ MEM_InformationMan.LastMethod:
 					//o@ h@FF8000 :(1) ~Dobrá, co bych měl vědět o o@hs@FF8000:tomhle~ místě?
 					//o@:Dobrá, co bych měl vědět o ~o@hs@FF8000:tomhle~ místě?
 					index = STR_IndexOf (dlgDescription, "o@");
-					index2 = STR_IndexOf (dlgDescription, ":");
-					index3 = STR_IndexOf (dlgDescription, "~");
+					index2 = STR_IndexOfFrom (dlgDescription, ":", index);
+					index3 = STR_IndexOfFrom (dlgDescription, "~", index2);
 					
 					overlayFormat = "";
 					overlayColor = -1;
@@ -2504,7 +2624,14 @@ MEM_InformationMan.LastMethod:
 					alignment = ALIGN_RIGHT;
 				};
 
+				//var int lastInfoManagerSpinnerPossible; lastInfoManagerSpinnerPossible = InfoManagerSpinnerPossible;
+
 				InfoManagerSpinnerPossible = properties & dialogChoiceType_Spinner;
+				
+				//if (lastInfoManagerSpinnerPossible != InfoManagerSpinnerPossible) {
+					//Reset value
+				//	InfoManagerSpinnerNumber = "";
+				//};
 
 				if (InfoManagerSpinnerPossible) {
 					//Get spinner ID
@@ -2559,10 +2686,20 @@ MEM_InformationMan.LastMethod:
 					
 					txtIndicator.posY = txt.posY;
 
-					dlgFont = Print_GetFontName (txt.font);
+					//dlgFont = Print_GetFontName (txt.font);
+					//textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+					
+					//if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+					//	txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+					//};
+					
+					InfoManagerSpinnerAlignment = alignment;
+
+					//Initial alignment
+					dlgFont = Print_GetFontName (txtIndicator.font);
 					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 					
-					if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
 						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 					};
 				};
@@ -2611,10 +2748,13 @@ MEM_InformationMan.LastMethod:
 
 						txtIndicator.posY = txt.posY;
 
-						dlgFont = Print_GetFontName (txt.font);
+						InfoManagerAnswerAlignment = alignment;
+
+						//Initial alignment
+						dlgFont = Print_GetFontName (txtIndicator.font);
 						textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 						
-						if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+						if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
 							txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 						};
 					};
@@ -2636,12 +2776,45 @@ MEM_InformationMan.LastMethod:
 			};
 		};
 
-		if (InfoManagerAnswerPossible)
-		&& (InfoManagerAnswerMode) {
-			//Replace description with current answer
-			txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
-			dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
-			txt.text = dlgDescription;
+		if (InfoManagerSpinnerPossible) {
+			if (!InfoManagerSpinnerIndicatorAnimation) {
+				if (InfoManagerSpinnerIndicator) {
+					txtIndicator = _^ (InfoManagerSpinnerIndicator);
+					
+					//if (STR_Len (InfoManagerSpinnerNumber)) {
+					//	txtIndicator.text = InfoManagerSpinnerNumber;
+					//} else {
+						txtIndicator.text = InfoManagerSpinnerIndicatorString;
+					//};
+
+					//Adjust alignment of spinner indicator
+					dlgFont = Print_GetFontName (txtIndicator.font);
+					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+					
+					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
+						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+					};
+				};
+			};
+		};
+
+		if (InfoManagerAnswerPossible) {
+			if (InfoManagerAnswerMode) {
+				//Replace description with current answer
+				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+				dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
+				txt.text = dlgDescription;
+			} else {
+				if (InfoManagerAnswerIndicator) {
+					txtIndicator = _^ (InfoManagerAnswerIndicator);
+					dlgFont = Print_GetFontName (txtIndicator.font);
+					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+					
+					if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
+						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+					};
+				};
+			};
 		};
 
 		InfoManagerLastChoiceSelected = dlg.ChoiceSelected;
