@@ -241,8 +241,7 @@ func int NPC_HasOverlay (var int slfInstance, var string testOverlay)
  *	Function loops through timedOverlays_next and checks if one of them is testOverlay
  *		usage:	if (NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) { ...
  */
-func int NPC_HasTimedOverlay (var int slfInstance, var string testOverlay)
-{
+func int NPC_HasTimedOverlay (var int slfInstance, var string testOverlay) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
@@ -281,8 +280,7 @@ func int NPC_HasTimedOverlay (var int slfInstance, var string testOverlay)
  *	Function loops through timedOverlays_next and gets remaining time testOverlay
  *		usage:	if (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS")) { ...
  */
-func int NPC_GetTimedOverlayTimer (var int slfInstance, var string testOverlay)
-{
+func int NPC_GetTimedOverlayTimer (var int slfInstance, var string testOverlay) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	
 	if (!Hlp_IsValidNPC (slf)) { return FLOATNULL; };
@@ -315,6 +313,107 @@ func int NPC_GetTimedOverlayTimer (var int slfInstance, var string testOverlay)
 	end;
 	
 	return FLOATNULL;
+};
+
+/*
+ *	In G1 if NPC drinks speed potions with different times, overlays will be added separately to the list
+ *		oCNpcTimedOverlay time #1
+ *		oCNpcTimedOverlay time #2
+ *
+ *	As soon as time #1 expires overlay is removed ... even though overlay with time #2 is still 'active' ...
+ *
+ *	This function loops through timedOverlays_next and removes duplicated timed overlays
+ *		sumValues parameter defines behaviour:
+ *			set it to 0 if you want script to get MAX value from all timers
+ *			set it to 1 if you want script to SUM all timers
+ *
+ *		usage:	if (NPC_RemoveDuplicatedTimedOverlays (hero, "HUMANS_SPRINT.MDS"), 0) { ...	//gets only max timer value
+ *		usage:	if (NPC_RemoveDuplicatedTimedOverlays (hero, "HUMANS_SPRINT.MDS"), 1) { ...	//sums up all timers
+ */
+func void NPC_RemoveDuplicatedTimedOverlays (var int slfInstance, var string testOverlay, var int sumValues)
+{
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	
+	//zCList<oCNpcTimedOverlay> timedOverlays {
+	//var int        timedOverlays_data;                         // 0x0444 oCNpcTimedOverlay*
+	//var int        timedOverlays_next;                         // 0x0448 zCList<oCNpcTimedOverlay>*
+
+	var int ptr;
+	var zCList list;
+	var int timedOverlayPtr;
+
+	var oCNpcTimedOverlay timedOverlay;
+	
+	ptr = slf.timedOverlays_next;
+
+	var int i; i = 0;
+	var int f; f = FLOATNULL;
+
+	while (ptr);
+		list = _^ (ptr);
+		
+		timedOverlayPtr = list.data;
+		
+		if (timedOverlayPtr) {
+			timedOverlay = _^ (timedOverlayPtr);
+			
+			if (Hlp_StrCmp (timedOverlay.mdsOverlayName, testOverlay)) {
+				//Sum all timers
+				if (sumValues) {
+					f = addf (f, timedOverlay.timer);
+				} else {
+					//Get max timer value
+					if (gf (timedOverlay.timer, f)) {
+						f = timedOverlay.timer;
+					};
+				};
+
+				//count how many timed overlays do we have
+				i += 1;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	//Is there more than 1 timed overlay ?
+	if (i > 1) {
+
+		i = 0;
+
+		var int j; j = 0;
+
+		if (gf (f, FLOATNULL)) {
+			ptr = slf.timedOverlays_next;
+
+			while (ptr);
+				list = _^ (ptr);
+				
+				timedOverlayPtr = list.data;
+				
+				if (timedOverlayPtr) {
+					timedOverlay = _^ (timedOverlayPtr);
+					
+					if (Hlp_StrCmp (timedOverlay.mdsOverlayName, testOverlay)) {
+						//Update first value with total number
+						if (i == 0) {
+							timedOverlay.timer = f;
+						} else {
+							//Remove overlay name - this way overlay wont be removed
+							timedOverlay.mdsOverlayName = "";
+						};
+
+						i += 1;
+					};
+				};
+
+				j += 1;
+				ptr = list.next;
+			end;
+		};
+	};
 };
 
 func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
