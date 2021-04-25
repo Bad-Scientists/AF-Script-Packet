@@ -37,6 +37,10 @@ var int PC_SprintModeBarAlpha;
 var int PC_SprintModeBarFlashingTimer;
 var int PC_SprintModeBarFlashingFadeOut;
 
+var int PC_SprintModePlayerHasTimedOverlay;
+var int PC_SprintModePlayerTimedOverlayTimer;
+var int PC_SprintModePlayerTimedOverlayTimerMax;
+
 var int hStaminaBar;
 
 const int BAR_TEX_SPRINTMODE_STAMINA		= 0;	//Bar texture for stamina
@@ -49,6 +53,14 @@ const string BAR_TEX_SPRINTMODE [BAR_TEX_SPRINTMODE_MAX] = {
 	//"Bar_SprintMode_TimedOverlay.tga",
 	"Bar_Misc.tga",					//Default Gothic bar texture (yellow)
 	"Bar_SprintMode_TimedOverlay.tga"		//This is my custom texture - you might have to adjust this one !!
+};
+
+func void _eventGameStateLoaded_SprintMode (var int state) {
+	if (state == Gamestate_Loaded) {
+		if (PC_SprintModePlayerHasTimedOverlay) {
+			Mdl_ApplyOverlayMdsTimed (hero, "HUMANS_SPRINT.MDS", PC_SprintModePlayerTimedOverlayTimer);
+		};
+	};
 };
 
 func void _eventGameKeyEvent_SprintMode () {
@@ -146,12 +158,12 @@ func void SprintMode_FrameFunction () {
 	};
 
 	//Does player have timed overlay ?
-	var int isTimedOverlay; isTimedOverlay = NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS");
+	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS");
 
 	//Option to disable consumption if needed
 	if (PC_SprintModeConsumeStamina) {
 		//If hero drunk speed potions then don't consume stamina
-		if (!isTimedOverlay) {
+		if (!PC_SprintModePlayerHasTimedOverlay) {
 
 			//Stamina consumption
 			if (isWalking) {
@@ -182,24 +194,21 @@ func void SprintMode_FrameFunction () {
 	//First time this is called player will most likely not have timed overlay - so set to 1 in order to 'reset' texture
 	const int timedOverlayFirstTime = 1;
 
-	if (isTimedOverlay) {
-		var int timedOverlayTimer;
-		var int timedOverlayTimerMax;
-
+	if (PC_SprintModePlayerHasTimedOverlay) {
 		//If timedOverlayFirstTime == 0 then this is first time script detected timed overlay, get max value and adjust texture
 		if (!timedOverlayFirstTime) {
 			//Get timer value - first value will be considered max value
-			timedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
 			timedOverlayFirstTime = 1;
 			Bar_SetBarTexture (hStaminaBar, MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_TIMEDOVERLAY));
 		};
 
 		//Get timer value - this is current value
-		timedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
 
 		//Set max and current value for timed overlay
-		Bar_SetMax (hStaminaBar, timedOverlayTimerMax);
-		Bar_SetValue (hStaminaBar, timedOverlayTimer);
+		Bar_SetMax (hStaminaBar, PC_SprintModePlayerTimedOverlayTimerMax);
+		Bar_SetValue (hStaminaBar, PC_SprintModePlayerTimedOverlayTimer);
 
 		//Disable sprint mode
 		if (PC_SprintMode) {
@@ -276,6 +285,11 @@ func void G12_SprintMode_Init () {
 
 	//Add listener for key
 	GameKeyEvent_AddListener (_eventGameKeyEvent_SprintMode);
+
+	//Add listener for loaded game
+	if (_LeGo_Flags & LeGo_Gamestate) {
+		Gamestate_AddListener (_eventGameStateLoaded_SprintMode);
+	};
 
 	const int once = 0;
 	if (!once) {
