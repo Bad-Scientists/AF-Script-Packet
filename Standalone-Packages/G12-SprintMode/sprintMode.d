@@ -40,8 +40,15 @@ var int PC_SprintModeBarFlashingFadeOut;
 var int PC_SprintModePlayerHasTimedOverlay;
 var int PC_SprintModePlayerTimedOverlayTimer;
 var int PC_SprintModePlayerTimedOverlayTimerMax;
+var int PC_SprintModePlayerTimedOverlayDetected;
 
 var int hStaminaBar;
+
+const int PC_SprintModeTimedOverlayStacking_GetMaxValue	= 0;	//get max value
+const int PC_SprintModeTimedOverlayStacking_SumValues	= 1;	//sum up all timers
+
+//When removing duplicate timed overlays script can either sum up all timers or get max value
+const int PC_SprintModeTimedOverlayStacking = PC_SprintModeTimedOverlayStacking_GetMaxValue;
 
 const int BAR_TEX_SPRINTMODE_STAMINA		= 0;	//Bar texture for stamina
 const int BAR_TEX_SPRINTMODE_TIMEDOVERLAY	= 1;	//Bar texture for timed overlays (potions)
@@ -56,9 +63,12 @@ const string BAR_TEX_SPRINTMODE [BAR_TEX_SPRINTMODE_MAX] = {
 };
 
 func void _eventGameStateLoaded_SprintMode (var int state) {
+	//Restore time overlay effect on game load
 	if (state == Gamestate_Loaded) {
 		if (PC_SprintModePlayerHasTimedOverlay) {
-			Mdl_ApplyOverlayMdsTimed (hero, "HUMANS_SPRINT.MDS", PC_SprintModePlayerTimedOverlayTimer);
+			if (!NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) {
+				Mdl_ApplyOverlayMdsTimed (hero, "HUMANS_SPRINT.MDS", PC_SprintModePlayerTimedOverlayTimer);
+			};
 		};
 	};
 };
@@ -160,6 +170,11 @@ func void SprintMode_FrameFunction () {
 	//Does player have timed overlay ?
 	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS");
 
+	//Remove duplicated timed overlays
+	if (PC_SprintModePlayerHasTimedOverlay) {
+		NPC_RemoveDuplicatedTimedOverlays (hero, "HUMANS_SPRINT.MDS", PC_SprintModeTimedOverlayStacking);
+	};
+
 	//Option to disable consumption if needed
 	if (PC_SprintModeConsumeStamina) {
 		//If hero drunk speed potions then don't consume stamina
@@ -192,19 +207,20 @@ func void SprintMode_FrameFunction () {
 	};
 
 	//First time this is called player will most likely not have timed overlay - so set to 1 in order to 'reset' texture
-	const int timedOverlayFirstTime = 1;
-
 	if (PC_SprintModePlayerHasTimedOverlay) {
-		//If timedOverlayFirstTime == 0 then this is first time script detected timed overlay, get max value and adjust texture
-		if (!timedOverlayFirstTime) {
-			//Get timer value - first value will be considered max value
-			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
-			timedOverlayFirstTime = 1;
-			Bar_SetBarTexture (hStaminaBar, MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_TIMEDOVERLAY));
-		};
-
 		//Get timer value - this is current value
 		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+
+		//If PC_SprintModePlayerTimedOverlayDetected == FALSE then this is first time script detected timed overlay, get max value and adjust texture
+		if (!PC_SprintModePlayerTimedOverlayDetected)
+		//Update if player drunk potion with longer lasting effect
+		|| (PC_SprintModePlayerTimedOverlayTimer > PC_SprintModePlayerTimedOverlayTimerMax)
+		{
+			//Get timer value - first value will be considered max value
+			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+			PC_SprintModePlayerTimedOverlayDetected = TRUE;
+			Bar_SetBarTexture (hStaminaBar, MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_TIMEDOVERLAY));
+		};
 
 		//Set max and current value for timed overlay
 		Bar_SetMax (hStaminaBar, PC_SprintModePlayerTimedOverlayTimerMax);
@@ -216,9 +232,9 @@ func void SprintMode_FrameFunction () {
 			PC_SprintModeSwitch = FALSE;
 		};
 	} else {
-		//if timedOverlayFirstTime was set to 1 - then reset and change texture to 'stamina' texture
-		if (timedOverlayFirstTime) {
-			timedOverlayFirstTime = 0;
+		//if PC_SprintModePlayerTimedOverlayDetected was set to TRUE - then reset and change texture to 'stamina' texture
+		if (PC_SprintModePlayerTimedOverlayDetected) {
+			PC_SprintModePlayerTimedOverlayDetected = FALSE;
 			Bar_SetBarTexture (hStaminaBar, MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_STAMINA));
 		};
 
@@ -276,6 +292,9 @@ func void G12_SprintMode_Init () {
 		//180, 20
 		Bar_ResizePxl (hStaminaBar, 180, 10);
 
+		//Initialize texture
+		Bar_SetBarTexture (hStaminaBar, MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_STAMINA));
+
 		PC_SprintModeBarAlpha = 255;
 		PC_SprintModeBarFlashingFadeOut = FALSE;
 	};
@@ -308,6 +327,7 @@ func void G12_SprintMode_Init () {
 			PC_SprintModeKeyToggle = STR_ToInt (MEM_GetModOpt ("KEYS", "keySprintModeToggleKey"));
 		};
 
+		//Set to true to force bar texture update
 		once = 1;
 	};
 };
