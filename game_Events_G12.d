@@ -16,6 +16,8 @@ var int _DoTakeVob_Event;
 var int _DoDropVob_Event;
 var int _OpenDeadNPC_Event;
 
+var int _MobStartStateChange_Event;
+
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
 };
@@ -80,6 +82,14 @@ func void OpenDeadNPCEvent_RemoveListener (var func f) {
 	Event_Remove (_OpenDeadNPC_Event, f);
 };
 
+func void MobStartStateChangeEvent_AddListener (var func f) {
+	Event_AddOnce (_MobStartStateChange_Event, f);
+};
+
+func void MobStartStateChangeEvent_RemoveListener (var func f) {
+	Event_Remove (_MobStartStateChange_Event, f);
+};
+
 /*
  *	Some made-up 'internal' constants
  */
@@ -100,7 +110,9 @@ func void _hook_oCNPC_OpenInventory () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_OpenInventory_Event, evOpenInventory);
+	if (_OpenInventory_Event) {
+		Event_Execute (_OpenInventory_Event, evOpenInventory);
+	};
 };
 
 /*
@@ -110,7 +122,9 @@ func void _hook_oCNpc_CloseInventory () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_CloseInventory_Event, evCloseInventory);
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, evCloseInventory);
+	};
 };
 
 /*
@@ -120,70 +134,141 @@ func void _hook_oCNPC_EV_DrawWeapon () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_CloseInventory_Event, evDrawWeapon);
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, evDrawWeapon);
+	};
 };
 
 /*
  *	Function is called when player presses 'B' for status screen
  */
 func void _hook_oCStatusScreen_Show () {
-	Event_Execute (_CloseInventory_Event, evStatusScreenShow);
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, evStatusScreenShow);
+	};
 };
 
 /*
  *	Function is called when player presses 'L' for Log screen
  */
 func void _hook_oCLogScreen_Show () {
-	Event_Execute (_CloseInventory_Event, evLogScreenShow);
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, evLogScreenShow);
+	};
 };
 
 /*
  *	Function is called when player presses 'M' to show Map
  */
 func void _hook_oCMapScreen_Show () {
-	Event_Execute (_CloseInventory_Event, evMapScreenShow);
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, evMapScreenShow);
+	};
 };
 
 //Even though this function is supposedly method of oCItemContainer class, reading out vtbl in ECX gives me 8245076 (oCNPCContainer_vtbl)
 //After some trial-error testing, we can safely use oCNpcInventory here
 func void _hook_oCItemContainer_TransferItem () {
 	if (!Hlp_Is_oCNpcContainer (ECX)) { return; };
-	Event_Execute (_TransferItem_Event, 0);
+	if (_CloseInventory_Event) {
+		Event_Execute (_TransferItem_Event, 0);
+	};
 };
 
 func void _hook_oCNPC_Equip () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_EquipItem_Event, 0);
+
+	if (_EquipItem_Event) {
+		Event_Execute (_EquipItem_Event, 0);
+	};
 };
 
 func void _hook_oCNPC_UnEquipItem () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_UnEquipItem_Event, 0);
+	if (_UnEquipItem_Event) {
+		Event_Execute (_UnEquipItem_Event, 0);
+	};
 };
 
 func void _hook_oCNpc_DoTakeVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_DoTakeVob_Event, 0);
+	if (_DoTakeVob_Event) {
+		Event_Execute (_DoTakeVob_Event, 0);
+	};
 };
 
+////0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 func void _hook_oCNpc_DoDropVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_DoDropVob_Event, 0);
+	if (_DoDropVob_Event) {
+		Event_Execute (_DoDropVob_Event, 0);
+	};
 };
 
 func void _hook_oCNPC_OpenDeadNPC () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	Event_Execute (_OpenDeadNPC_Event, 0);
+	if (_OpenDeadNPC_Event) {
+		Event_Execute (_OpenDeadNPC_Event, 0);
+	};
+};
+
+//protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int) 
+func void _hook_oCMobInter_StartStateChange () {
+	if (!Hlp_Is_oCMobInter (ECX)) { return; };
+	if (_MobStartStateChange_Event) {
+		Event_Execute (_MobStartStateChange_Event, 0);
+	};
+};
+
+//--- LeGo is 'detecting' following game states
+
+//const int Gamestate_NewGame     = 0;
+//const int Gamestate_Loaded      = 1;
+//const int Gamestate_WorldChange = 2;
+//const int Gamestate_Saving      = 3;
+
+//--- We have added custom game states (255+ value should be enough in case of future LeGo updates)
+
+const int Gamestate_PreSaveGameProcessing = 256;	//right before game saving
+const int Gamestate_PostSaveGameProcessing = 257;	//right after game saving
+const int Gamestate_ChangeLevel = 258;			//on level change
+
+func void _hook_oCNpc_PreSaveGameProcessing () {
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	var oCNpc slf; slf = _^ (ECX);
+	if (NPC_IsPlayer (slf)) {
+		if (_LeGo_Flags & LeGo_Gamestate) {
+			Event_Execute (_Gamestate_Event, Gamestate_PreSaveGameProcessing);
+		};
+	};
+};
+
+func void _hook_oCNpc_PostSaveGameProcessing () {
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	var oCNpc slf; slf = _^ (ECX);
+	if (NPC_IsPlayer (slf)) {
+		if (_LeGo_Flags & LeGo_Gamestate) {
+			Event_Execute (_Gamestate_Event, Gamestate_PostSaveGameProcessing);
+		};
+	};
+};
+
+func void _hook_oCGame_ChangeLevel () {
+	if (_LeGo_Flags & LeGo_Gamestate) {
+		Event_Execute (_Gamestate_Event, Gamestate_ChangeLevel);
+	};
 };
 
 //---
@@ -304,6 +389,78 @@ func void G12_OpenDeadNPCEvent_Init () {
 	};
 };
 
+func void G12_GameState_Extended_Init () {
+	const int once = 0;
+	if (!once) {
+
+		//0x006A4500 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+		const int oCNpc__PreSaveGameProcessing_G1 = 6964480;
+
+		//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+		const int oCNpc__PreSaveGameProcessing_G2 = 7637120;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PreSaveGameProcessing_G1, oCNpc__PreSaveGameProcessing_G2), 7, "_hook_oCNpc_PreSaveGameProcessing");
+
+		//0x006A4810 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+		const int oCNpc__PostSaveGameProcessing_G1 = 6965264;
+		
+		//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+		const int oCNpc__PostSaveGameProcessing_G2 = 7637904;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PostSaveGameProcessing_G1, oCNpc__PostSaveGameProcessing_G2), 7, "_hook_oCNpc_PostSaveGameProcessing");
+
+		/*
+		--> oCGame::PreSaveGameProcessing is not called?!
+		
+		//0x0063AC50 private: void __thiscall oCGame::PreSaveGameProcessing(int)
+		const int oCGame__PreSaveGameProcessing_G1 = 6532176;
+
+		//0x006C5120 private: void __thiscall oCGame::PreSaveGameProcessing(int)
+		const int oCGame__PreSaveGameProcessing_G2 = 7098656;
+
+		//HookEngine (MEMINT_SwitchG1G2 (oCGame__PreSaveGameProcessing_G1, oCGame__PreSaveGameProcessing_G2), 6, "_hook_oCGame_PreSaveGameProcessing");
+
+		//0x0063ACF0 private: void __thiscall oCGame::PostSaveGameProcessing(void) 
+		const int oCGame__PostSaveGameProcessing_G1 = 6532336;
+
+		//0x006C51C0 private: void __thiscall oCGame::PostSaveGameProcessing(void) 
+		const int oCGame__PostSaveGameProcessing_G2 = 7098816;
+
+		//HookEngine (MEMINT_SwitchG1G2 (oCGame__PostSaveGameProcessing_G1, oCGame__PostSaveGameProcessing_G2), 6, "_hook_oCGame_PostSaveGameProcessing");
+		*/
+
+		//0x0063CD60 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+		const int oCGame__ChangeLevel_G1 = 6540640;
+		
+		//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+		const int oCGame__ChangeLevel_G2 = 7107216;
+		
+		HookEngine (MEMINT_SwitchG1G2 (oCGame__ChangeLevel_G1, oCGame__ChangeLevel_G2), 7, "_hook_oCGame_ChangeLevel");
+		
+		once = 1;
+	};
+};
+
+func void G12_MobStartStateChangeEvent_Init () {
+	if (!_MobStartStateChange_Event) {
+		_MobStartStateChange_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x0067E6E0 protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
+		const int oCMobInter__StartStateChange_G1 = 6809312;
+		
+		//0x0071FEA0 public: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
+		const int oCMobInter__StartStateChange_G2 = 7470752;
+		
+		//[Mob Start state change events]
+		HookEngine (MEMINT_SwitchG1G2 (oCMobInter__StartStateChange_G1, oCMobInter__StartStateChange_G2), 7, "_hook_oCMobInter_StartStateChange");
+		once = 1;
+	};
+};
+
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -313,4 +470,8 @@ func void G12_GameEvents_Init () {
 	G12_DoTakeVobEvent_Init ();
 	G12_DoDropVobEvent_Init ();
 	G12_OpenDeadNPCEvent_Init ();
+
+	G12_GameState_Extended_Init ();
+	
+	G12_MobStartStateChangeEvent_Init ();
 };
