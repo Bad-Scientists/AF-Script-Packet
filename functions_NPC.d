@@ -563,9 +563,6 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 	//Get pointer to ZS_LEFTHAND
 	var int ptr; ptr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
 	
-	PrintS ("NPC_TorchSwitchOn");
-	PrintS (ConcatStrings ("ptr ", IntToString (ptr)));
-	
 	//Is there anything in hand?
 	if (ptr) {
 		var oCItem itm; itm = _^ (ptr);
