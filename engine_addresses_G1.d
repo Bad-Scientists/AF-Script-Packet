@@ -361,5 +361,5 @@ const int oCNpc__PreSaveGameProcessing = 6964480;
 const int oCNpc__PostSaveGameProcessing = 6965264;
 
 //0x0063CD60 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
-const int oCGame__ChangeLevel = 6540640;
-
+//Already defined in LeGo
+//const int oCGame__ChangeLevel = 6540640;

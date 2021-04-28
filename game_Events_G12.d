@@ -420,6 +420,7 @@ func void G12_GameState_Extended_Init () {
 		*/
 
 		//Called before change level
+		//This one is already hooked by LeGo (LeGo_Saves), but it seems like LeGo 2.7.1 does not mind (let's hope for the best!)
 		HookEngine (oCGame__ChangeLevel, 7, "_hook_oCGame_ChangeLevel");
 		
 		once = 1;
