@@ -1417,6 +1417,11 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 //--- Additional tweaks -->
 
+		//cancel KEY_BACKSPACE (opens up inventory in G1 - override does not work!)
+		if (key == KEY_BACK) {
+			cancel = TRUE;
+		};
+
 		//cancel KEY_GRAVE changes fight mode to fist mode, this caused some issues ... we will use it for a better purpose - move cursor to last dialog choice
 		if (key == KEY_GRAVE) {
 			InfoManager_SelectLastChoice ();
