@@ -252,3 +252,25 @@ const int zCEventCore_vtbl		= 8579004;
 
 //0x0083D474 const oCMobMsg::`vftable' 
 const int oCMobMsg_vtbl			= 8639604;
+
+
+/*
+ *	TriggerChangeLevel event
+ */
+
+//0x006C7AF0 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
+const int oCGame__TriggerChangeLevel = 7109360;
+
+
+/*
+ *	Gamestate extended events
+ */
+
+//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+const int oCNpc__PreSaveGameProcessing = 7637120;
+
+//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+const int oCNpc__PostSaveGameProcessing = 7637904;
+
+//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+const int oCGame__ChangeLevel = 7107216;

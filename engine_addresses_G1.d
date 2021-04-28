@@ -187,14 +187,6 @@ const int oCMobLockable__CanOpen = 6825920;
 //0x00669780 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int) 
 const int oCItemContainer__TransferItem = 6723456;
 
-//0x007DCF54 const oCNpcContainer::`vftable' 
-const int oCNPCContainer_vtbl = 8245076;
-
-func int Hlp_Is_oCNpcContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
-};
-
 /*
  *	game_Events_G12.d
  */
@@ -221,6 +213,14 @@ const int oCMapScreen__Show = 4686992;
 
 //0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 const int oCNpc__DoDropVob = 6951152;
+
+//0x007DCF54 const oCNpcContainer::`vftable' 
+const int oCNPCContainer_vtbl = 8245076;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
 
 /*
  *	game_Events_G1.d
@@ -341,3 +341,25 @@ const int zCEventCore_vtbl		= 8193972;
 
 //0x007DDC9C const oCMobMsg::`vftable' 
 const int oCMobMsg_vtbl			= 8248476;
+
+/*
+ *	TriggerChangeLevel event
+ */
+ 
+//0x0063D480 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &) 
+const int oCGame__TriggerChangeLevel = 6542464;
+
+
+/*
+ *	Gamestate extended events
+ */
+
+//0x006A4500 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+const int oCNpc__PreSaveGameProcessing = 6964480;
+
+//0x006A4810 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+const int oCNpc__PostSaveGameProcessing = 6965264;
+
+//0x0063CD60 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+const int oCGame__ChangeLevel = 6540640;
+
