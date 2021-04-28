@@ -393,24 +393,14 @@ func void G12_GameState_Extended_Init () {
 	const int once = 0;
 	if (!once) {
 
-		//0x006A4500 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
-		const int oCNpc__PreSaveGameProcessing_G1 = 6964480;
+		//Called before game save
+		HookEngine (oCNpc__PreSaveGameProcessing, 7, "_hook_oCNpc_PreSaveGameProcessing");
 
-		//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
-		const int oCNpc__PreSaveGameProcessing_G2 = 7637120;
-
-		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PreSaveGameProcessing_G1, oCNpc__PreSaveGameProcessing_G2), 7, "_hook_oCNpc_PreSaveGameProcessing");
-
-		//0x006A4810 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
-		const int oCNpc__PostSaveGameProcessing_G1 = 6965264;
-		
-		//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
-		const int oCNpc__PostSaveGameProcessing_G2 = 7637904;
-
-		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PostSaveGameProcessing_G1, oCNpc__PostSaveGameProcessing_G2), 7, "_hook_oCNpc_PostSaveGameProcessing");
+		//Called after game save
+		HookEngine (oCNpc__PostSaveGameProcessing, 7, "_hook_oCNpc_PostSaveGameProcessing");
 
 		/*
-		--> oCGame::PreSaveGameProcessing is not called?!
+		--> oCGame::PreSaveGameProcessing is not called ?!
 		
 		//0x0063AC50 private: void __thiscall oCGame::PreSaveGameProcessing(int)
 		const int oCGame__PreSaveGameProcessing_G1 = 6532176;
@@ -429,13 +419,8 @@ func void G12_GameState_Extended_Init () {
 		//HookEngine (MEMINT_SwitchG1G2 (oCGame__PostSaveGameProcessing_G1, oCGame__PostSaveGameProcessing_G2), 6, "_hook_oCGame_PostSaveGameProcessing");
 		*/
 
-		//0x0063CD60 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
-		const int oCGame__ChangeLevel_G1 = 6540640;
-		
-		//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
-		const int oCGame__ChangeLevel_G2 = 7107216;
-		
-		HookEngine (MEMINT_SwitchG1G2 (oCGame__ChangeLevel_G1, oCGame__ChangeLevel_G2), 7, "_hook_oCGame_ChangeLevel");
+		//Called before change level
+		HookEngine (oCGame__ChangeLevel, 7, "_hook_oCGame_ChangeLevel");
 		
 		once = 1;
 	};
@@ -459,7 +444,6 @@ func void G12_MobStartStateChangeEvent_Init () {
 		once = 1;
 	};
 };
-
 
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
