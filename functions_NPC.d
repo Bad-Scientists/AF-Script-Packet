@@ -401,8 +401,9 @@ func void NPC_RemoveDuplicatedTimedOverlays (var int slfInstance, var string tes
 						if (i == 0) {
 							timedOverlay.timer = f;
 						} else {
-							//Remove overlay name - this way overlay wont be removed
+							//Remove overlay name - this way overlay wont be removed from NPC
 							timedOverlay.mdsOverlayName = "";
+							timedOverlay.timer = FLOATNULL;
 						};
 
 						i += 1;
@@ -414,6 +415,45 @@ func void NPC_RemoveDuplicatedTimedOverlays (var int slfInstance, var string tes
 			end;
 		};
 	};
+};
+
+/*
+ *	Function loops through timedOverlays_next and removes them
+ *		usage:	if (NPC_RemoveTimedOverlay (hero, "HUMANS_SPRINT.MDS")) { ...
+ */
+func void NPC_RemoveTimedOverlay (var int slfInstance, var string testOverlay) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	
+	//zCList<oCNpcTimedOverlay> timedOverlays {
+	//var int        timedOverlays_data;                         // 0x0444 oCNpcTimedOverlay*
+	//var int        timedOverlays_next;                         // 0x0448 zCList<oCNpcTimedOverlay>*
+
+	var int ptr;
+	var zCList list;
+	var int timedOverlayPtr;
+	
+	ptr = slf.timedOverlays_next;
+	
+	while (ptr);
+		list = _^ (ptr);
+		
+		timedOverlayPtr = list.data;
+		
+		if (timedOverlayPtr) {
+			var oCNpcTimedOverlay timedOverlay;
+			timedOverlay = _^ (timedOverlayPtr);
+			
+			if (Hlp_StrCmp (timedOverlay.mdsOverlayName, testOverlay)) {
+				//Remove overlay name - this way overlay wont be removed from NPC
+				timedOverlay.mdsOverlayName = "";
+				timedOverlay.timer = FLOATNULL;
+			};
+		};
+
+		ptr = list.next;
+	end;
 };
 
 func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
@@ -432,4 +472,153 @@ func void NPC_RemoveBitfield (var int slfInstance, var int removeBitfield) {
 	if (removeBitfield & zCVob_bitfield2_sleepingMode) {
 		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 1;
 	};
+};
+
+/*
+ *	Switches torches on - off
+ *		return -1 if NPC does not have torch
+ *		return 0 if torch was removed
+ *		return 1 if torch was used
+ */
+func int NPC_TorchSwitchOnOff (var int slfinstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	//Get pointer to ZS_LEFTHAND
+	var int ptr; ptr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+	
+	//Is there anything in hand? - put it away
+	if (ptr) {
+		var oCItem itm; itm = _^ (ptr);
+
+		//Is it ItLsTorchBurning ?
+		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
+			//Use item - will put ItLsTorch back to inventory
+			if (oCNpc_UseItem (slf, ptr)) {
+				//For some reason we have to remove pointer here
+				NPC_RemoveInvItem (slf, ptr);
+
+				if (NPC_HasOverlay (hero, "HUMANS_TORCH.MDS")) {
+					Mdl_RemoveOverlayMds (hero, "HUMANS_TORCH.MDS");
+					return 0;
+				};
+			};
+		};
+	} else {
+		//Search for ItLsTorchBurned
+		ptr = NPC_GetInvItem (slf, ItLsTorchBurned);
+		
+		//Search for ItLsTorch
+		if (!ptr) {
+			ptr = NPC_GetInvItem (slf, ItLsTorch);
+		};
+		
+		//Fill item with pointer to some ItLsTorch in inventory
+		if (ptr) {
+			//get torch pointer
+			ptr = _@ (item);
+
+			//Equip it - puts ItLsTorchBurning in hand
+			if (oCNpc_UseItem (slf, ptr)) {
+				//For some reason we have to remove pointer here
+				NPC_RemoveInvItem (slf, ptr);
+				return 1;
+			};
+		};
+	};
+	
+	return -1;
+};
+
+func void NPC_TorchSwitchOff (var int slfinstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	
+	//Get pointer to ZS_LEFTHAND
+	var int ptr; ptr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+	
+	//Is there anything in hand?
+	if (ptr) {
+		var oCItem itm; itm = _^ (ptr);
+		
+		//Is it ItLsTorchBurning ?
+		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
+			//Use item - will put ItLsTorch back to inventory
+			if (oCNpc_UseItem (slf, ptr)) {
+				//For some reason we have to remove pointer here
+				NPC_RemoveInvItem (slf, ptr);
+
+				if (NPC_HasOverlay (hero, "HUMANS_TORCH.MDS")) {
+					Mdl_RemoveOverlayMds (hero, "HUMANS_TORCH.MDS");
+				};
+			};
+		};
+	};
+};
+
+func void NPC_TorchSwitchOn (var int slfinstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Get pointer to ZS_LEFTHAND
+	var int ptr; ptr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+	
+	PrintS ("NPC_TorchSwitchOn");
+	PrintS (ConcatStrings ("ptr ", IntToString (ptr)));
+	
+	//Is there anything in hand?
+	if (ptr) {
+		var oCItem itm; itm = _^ (ptr);
+		
+		//Is it ItLsTorchBurned? if yes - remove - script below will but ItLsTorchBurning in hand
+		if (Hlp_GetinstanceID (itm) == ItLsTorchBurned) {
+			if (oCNpc_UseItem (slf, ptr)) {
+				//For some reason we have to remove pointer here
+				NPC_RemoveInvItem (slf, ptr);
+				ptr = 0;
+			};
+		};
+	};
+	
+	//Is hand empty?
+	if (!ptr) {
+		//Search for ItLsTorchBurned - use if possible
+		ptr = NPC_GetInvItem (slf, ItLsTorchBurned);
+		
+		//Search for ItLsTorch
+		if (!ptr) {
+			ptr = NPC_GetInvItem (slf, ItLsTorch);
+		};
+		
+		if (ptr) {
+			//get torch pointer
+			ptr = _@ (item);
+
+			//Use it - puts ItLsTorchBurning in hand
+			oCNpc_UseItem (slf, ptr);
+			
+			//For some reason we have to remove pointer here
+			NPC_RemoveInvItem (slf, ptr);
+		};
+	};
+};
+
+func int NPC_CarriesTorch (var int slfinstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+	
+	//Get pointer to ZS_LEFTHAND
+	var int ptr; ptr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+	
+	//Is there anything in hand?
+	if (ptr) {
+		var oCItem itm; itm = _^ (ptr);
+		
+		//Is it ItLsTorchBurning / ItLsTorchBurned ?
+		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
+			return TRUE;
+		};
+	};
+	
+	return FALSE;
 };
