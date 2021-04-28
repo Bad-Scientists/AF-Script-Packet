@@ -21,7 +21,7 @@
  */
 
 /*
- *	[MODED]
+ *	[MODED VERSION !!!]
  */
 
 var int GameKeyEvent_Key;
