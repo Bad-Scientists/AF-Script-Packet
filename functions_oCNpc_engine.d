@@ -26,6 +26,9 @@ func void oCNpc_SetFocusVob (var int slfInstance, var int focusPtr) {
 	};
 };
 
+/*
+ *
+ */
 func void oCNPC_DropUnconscious (var int slfInstance, var int attackerInstance)
 {
 	//00692C10  .text     Debug data           ?DropUnconscious@oCNPC@@QAEXMPAV1@@Z
@@ -51,6 +54,9 @@ func void oCNPC_DropUnconscious (var int slfInstance, var int attackerInstance)
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__DropUnconscious_G1, oCNPC__DropUnconscious_G2));
 };
 
+/*
+ *
+ */
 func void oCNpc_DoDie (var int slfInstance, var int attackerInstance)
 {
 	//006934A0  .text     Debug data           ?DoDie@oCNpc@@UAEXPAV1@@Z
@@ -75,6 +81,9 @@ func void oCNpc_DoDie (var int slfInstance, var int attackerInstance)
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DoDie_G1, oCNpc__DoDie_G2));
 };
 
+/*
+ *
+ */
 func void oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 	//006A0D10  .text     Debug data           ?DoTakeVob@oCNpc@@UAEHPAVzCVob@@@Z
 	const int oCNpc__DoTakeVob_G1 = 6950160;
@@ -95,6 +104,9 @@ func void oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 	retVal = CALL_RetValAsInt ();
 };
 
+/*
+ *
+ */
 func void oCNPC_OpenDeadNpc (var int slfInstance) {
 	//0x006BB890 public: void __thiscall oCNpc::OpenDeadNpc(void) 
 	const int oCNPC__OpenDeadNpc_G1 = 7059600;
@@ -109,6 +121,9 @@ func void oCNPC_OpenDeadNpc (var int slfInstance) {
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__OpenDeadNpc_G1, oCNPC__OpenDeadNpc_G2));
 };
 
+/*
+ *
+ */
 func void oCNPC_CloseDeadNpc (var int slfInstance) {
 	//0x006BBAA0 public: void __thiscall oCNpc::CloseDeadNpc(void) 
 	const int oCNPC__CloseDeadNpc_G1 = 7060128;
@@ -123,6 +138,9 @@ func void oCNPC_CloseDeadNpc (var int slfInstance) {
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__CloseDeadNpc_G1, oCNPC__CloseDeadNpc_G2));
 };
 
+/*
+ *
+ */
 func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
 	//0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void) 
 	const int oCNPC__OpenInventory_G1 = 7057568;
@@ -141,6 +159,9 @@ func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__OpenInventory_G1, oCNPC__OpenInventory_G2));
 };
 
+/*
+ *
+ */
 func void oCNPC_CloseInventory (var int slfInstance) {
 	//0x006BB2F0 public: void __thiscall oCNpc::CloseInventory(void) 
 	const int oCNPC__CloseInventory_G1 = 7058160;
@@ -153,4 +174,68 @@ func void oCNPC_CloseInventory (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__CloseInventory_G1, oCNPC__CloseInventory_G2));
+};
+
+/*
+ *
+ */
+func int oCNpc_UseItem (var int slfInstance, var int itemPtr) {
+	//0x00698810 public: int __thiscall oCNpc::UseItem(class oCItem *) 
+	const int oCNPC__UseItem_G1 = 6916112;
+
+	//0x0073BC10 public: int __thiscall oCNPC::UseItem(class oCItem *)
+	const int oCNPC__UseItem_G2 = 7584784;
+	
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPc (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (itemPtr)); 
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__UseItem_G1, oCNPC__UseItem_G2));
+		call = CALL_End();
+	};
+	
+	return CALL_RetValAsInt ();
+};
+
+/*
+ *
+ */
+func int oCNpc_GetSlotItem (var int slfInstance, var string slotName)  {
+	
+	//0x0068F4F0 public: class oCItem * __thiscall oCNpc::GetSlotItem(class zSTRING const &) 
+	const int oCNPC__GetSlotItem_G1 = 6878448;
+	
+	//0x00731F90 public: class oCItem * __thiscall oCNpc::GetSlotItem(class zSTRING const &) 
+	const int oCNPC__GetSlotItem_G2 = 7544720;
+	
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPc (slf)) { return 0; };
+
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__GetSlotItem_G1, oCNPC__GetSlotItem_G2));
+
+	return CALL_RetValAsPtr ();
+};
+
+/*
+ *
+ */
+func int oCNpc_DoExchangeTorch (var int slfInstance)
+{
+	//0x006A1680 public: virtual int __thiscall oCNpc::DoExchangeTorch(void) 
+	const int oCNpc__DoExchangeTorch_G1 = 6952576;
+
+	//0x00745370 public: virtual int __thiscall oCNpc::DoExchangeTorch(void)
+	const int oCNpc__DoExchangeTorch_G2 = 7623536;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPc (slf)) { return 0; };
+
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DoExchangeTorch_G1, oCNpc__DoExchangeTorch_G2));
+	
+	return CALL_RetValAsInt ();
 };
