@@ -29,7 +29,10 @@ func void _hook_oCItemContainer_Activate__weaponStacking () {
 func void _eventEquipItem_WeaponStacking (var int dummyVariable){
 	//Seems like we can still use registers (ECX, ESP + 4) from listeners - yuppiii !!
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
-	if ((!ECX) || (!itemPtr)) { return; };
+
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	if (!Hlp_Is_oCItem (itemPtr)) { return; };
 
 	var oCNPC slf; slf = _^ (ECX);
 	var oCItem itm; itm = _^ (itemPtr);
