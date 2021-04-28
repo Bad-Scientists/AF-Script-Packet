@@ -134,7 +134,6 @@ Simple feature, that shows Pick Lock combination progress.
     [![Gothic 1 & 2 Pick Lock Helper](https://img.youtube.com/vi/kdX9e3QlAbg/0.jpg)](https://www.youtube.com/watch?v=kdX9e3QlAbg)
 
 ### Gothic 1 & 2 Prevent Looting
-
 Simple feature, that allows you to control which NPC's can be looted. (for example prevent looting from traders)
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
@@ -148,7 +147,7 @@ Enables simple sprint mode
  - adds stamina bar right underneath health bar
  - when player is exhausted sprint mode is disabled with cool down of 4 seconds
  - jumping & fighting consumes stamina significantly
- - potions of speed disable stamina consumption (they still have same effect)
+ - potions of speed disable stamina consumption (potions still have same effect)
  - potions of speed have their own texture of stamina bar - you will see how much time is left from potion effect
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
@@ -166,3 +165,19 @@ Enables simple sprint mode
 	PC_SprintModeStamina = PC_SprintModeStaminaMax;
 	PC_SprintModeConsumeStamina = TRUE;
 ```
+
+### Gothic 1 & 2 Torch HotKey
+Simple feature, improving torches
+ - adds hotkey 'keyTorchToggleKey' for putting on/removing torch (by default `T`)
+ - fixes issue of disappearing torches in G2A:
+    * Number of torches will be stored prior game saving. When game is loaded script will compare number of torches in players inventory, if there is torch missing it will add it back
+    * reinserts to world ItLsTorchBurning items before saving (fixes bug of disappearing dropped torches) and before level change
+ - compatible with sprint mode (reapplies overlay HUMANS_SPRINT.MDS when torch is removed/equipped)
+ - will re-lit all mobs, that were previously lit by player (list can be maintained in file 'torchHotKey_API.d' in array TORCH_ASC_MODELS [];
+ - Ctrl + 'keyTorchToggleKey' will put torch to right hand (with Union you can throw torch away in G1)
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_TorchHotKey.src` for G1
+    * `AF-Script-Packet\_headers_G2_TorchHotKey.src` for G2A
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_TorchHotKey_Init ();`.
+1. Requires LeGo flags: LeGo_HookEngine | LeGo_Gamestate, make sure you initialize them in your `LeGo_Init` function.
