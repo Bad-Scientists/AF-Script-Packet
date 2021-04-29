@@ -5,9 +5,9 @@ const int pickLockHelper_Alpha = 192;					//Alpha
 const string pickLockHelper_FontName = "font_old_10_white.tga";		//font
 
 //PickLockHelper position
-const int pickLockHelper_PPosX = 0;					//X position
-const int pickLockHelper_PPosY = -1;					//Y position, if not define (-1) then it will be in a middle of screen on Y axis
-const int pickLockHelper_Width = 320;					//Width
+const int pickLockHelper_PPosX = 0;					//X position, if not defined (-1) then it will be in a middle of screen on X axis
+const int pickLockHelper_PPosY = -1;					//Y position, if not defined (-1) then it will be in a middle of screen on Y axis
+const int pickLockHelper_Width = 320;					//default Width
 
 //Internal constants and variables
 
@@ -31,27 +31,37 @@ func void PickLockHelper_Show () {
 	var int scaleF; scaleF = _getInterfaceScaling ();
 
 	var int fontHeight; fontHeight = Print_GetFontHeight (pickLockHelper_FontName);
-	fontHeight = Print_ToVirtual(fontHeight, PS_Y);
+	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
 
 	var int pickLockHelper_WidthScaled;
 	pickLockHelper_WidthScaled = Print_ToVirtual(pickLockHelper_Width, PS_X);
 	pickLockHelper_WidthScaled = roundf (mulf (mkf (pickLockHelper_WidthScaled), scaleF));
 
 	//--- calculate if not specified
-	var int posx; posx = pickLockHelper_PPosX;
+	var int posx; posx = Print_ToVirtual (pickLockHelper_PPosX, PS_X);
 	if (pickLockHelper_PPosX == -1) {
+		//txt.posx = (PS_VMax - Print_ToVirtual(Print_GetStringWidth(text, font), PS_X)) / 2;
 		posx = (PS_VMax - pickLockHelper_WidthScaled) / 2;
 	};
 
-	var int posy; posy = pickLockHelper_PPosY;
+	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", "font_old_10_white.tga");
+
+	var int posxText; posxText = posX + Print_ToVirtual (spaceWidth, PS_X);
+	posx = roundf (mulf (mkf (posx), scaleF));
+	posxText = roundf (mulf (mkf (posxText), scaleF));
+
+	var int posy; posy = Print_ToVirtual (pickLockHelper_PPosY, PS_Y);
 	if (pickLockHelper_PPosY == -1) {
+		//txt.posy = (PS_VMax - Print_ToVirtual(Print_GetFontHeight(font), PS_Y)) / 2;
 		posy = (PS_VMax - fontHeight) / 2;
 	};
 	
+	posy = roundf (mulf (mkf (posy), scaleF));
+
 	//---
 
 	if (!Hlp_IsValidHandle (hPickLockHelper_Frame)) {
-		hPickLockHelper_Frame  = View_Create(posx, posy, pickLockHelper_WidthScaled, posy + fontHeight);
+		hPickLockHelper_Frame = View_Create(posx, posy, posx + pickLockHelper_WidthScaled, posy + fontHeight);
 		View_SetTexture (hPickLockHelper_Frame, "DLG_NOISE.TGA");
 		View_SetAlpha (hPickLockHelper_Frame, pickLockHelper_Alpha);
 	};
@@ -61,22 +71,22 @@ func void PickLockHelper_Show () {
 	View_Resize (hPickLockHelper_Frame, pickLockHelper_WidthScaled, fontHeight);
 	
 	if (!Hlp_IsValidHandle (hPickLockHelper_LastCombination)) {
-		hPickLockHelper_LastCombination = View_Create(posx, posy, pickLockHelper_WidthScaled, posy + fontHeight);
+		hPickLockHelper_LastCombination = View_Create(posxText, posy, posxText + pickLockHelper_WidthScaled, posy + fontHeight);
 		View_AddText (hPickLockHelper_LastCombination, 00, 00, pickLockHelper_LastCombination, pickLockHelper_FontName);	
 	};
 	
 	View_Open (hPickLockHelper_LastCombination);
-	View_MoveTo (hPickLockHelper_LastCombination, posx, posy);
+	View_MoveTo (hPickLockHelper_LastCombination, posxText, posy);
 	View_Resize (hPickLockHelper_LastCombination, pickLockHelper_WidthScaled, fontHeight);
 	zcView_SetText (hPickLockHelper_LastCombination, pickLockHelper_LastCombination);
 	
 	if (!Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) {
-		hPickLockHelper_CurrentCombination = View_Create(posx, posy, pickLockHelper_WidthScaled, posy + fontHeight);
+		hPickLockHelper_CurrentCombination = View_Create(posxText, posy, posxText + pickLockHelper_WidthScaled, posy + fontHeight);
 		View_AddText (hPickLockHelper_CurrentCombination, 00, 00, pickLockHelper_CurrentCombination, pickLockHelper_FontName);	
 	};
 	
 	View_Open (hPickLockHelper_CurrentCombination);
-	View_MoveTo (hPickLockHelper_CurrentCombination, posx, posy);
+	View_MoveTo (hPickLockHelper_CurrentCombination, posxText, posy);
 	View_Resize (hPickLockHelper_CurrentCombination, pickLockHelper_WidthScaled, fontHeight);
 	zcView_SetText (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination);
 };
@@ -155,8 +165,6 @@ func void _hook_oCMobInter_StartInteraction () {
 	
 	if (!NPC_IsPlayer (slf)) { return; };
 
-	var string mobVisualName; mobVisualName = Vob_GetVisualName (ECX);
-	
 	var oCMobLockable mob; mob = _^ (ECX);
 	
 	//Reset for new mob
