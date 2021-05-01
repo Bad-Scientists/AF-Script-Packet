@@ -239,3 +239,179 @@ func int oCNpc_DoExchangeTorch (var int slfInstance)
 	
 	return CALL_RetValAsInt ();
 };
+
+
+/*
+const int FMODE_NONE = 0;
+const int FMODE_FIST = 1;
+const int FMODE_MELEE = 2;
+const int FMODE_FAR = 5;
+const int FMODE_MAGIC = 7;
+*/
+
+func void oCNpc_SetWeaponMode (var int slfInstance, var int weaponMode) {
+	//0x00696550 public: virtual void __thiscall oCNpc::SetWeaponMode(int) 
+	const int oCNpc__SetWeaponMode_G1 = 6907216;
+
+	//0x00739940 public: virtual void __thiscall oCNpc::SetWeaponMode(int)
+	const int oCNpc__SetWeaponMode_G2 = 7575872;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (weaponMode));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetWeaponMode_G1, oCNpc__SetWeaponMode_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCNpc_SetWeaponMode2 (var int slfInstance, var int weaponMode) {
+	//0x00695A60 public: virtual void __thiscall oCNpc::SetWeaponMode2(int)
+	const int oCNpc__SetWeaponMode2_G1 = 6904416;
+
+	//0x00738E80 public: virtual void __thiscall oCNpc::SetWeaponMode2(int)
+	const int oCNpc__SetWeaponMode2_G2 = 7573120;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (weaponMode));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetWeaponMode2_G1, oCNpc__SetWeaponMode2_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCNpc_GetWeaponMode (var int slfInstance) {
+	//0x00695820 public: int __thiscall oCNpc::GetWeaponMode(void)
+	const int oCNpc__GetWeaponMode_G1 = 6903840;
+
+	//0x00738C40 public: int __thiscall oCNpc::GetWeaponMode(void)
+	const int oCNpc__GetWeaponMode_G2 = 7572544;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetWeaponMode_G1, oCNpc__GetWeaponMode_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt();
+};
+
+/*
+ *	NPC vob list
+ */
+
+/*
+ *	oCNpc_CreateVobList (var int slfInstance, var int rangeF)
+ *	Pretty much same as NPC_PerceiveAll - however allows you to control rangeF in which Vobs will be collected.
+ *	When used all collected vobs will be available in slf.vobList_array.
+ */
+func void oCNpc_CreateVobList (var int slfInstance, var int rangeF) {
+	//0x006B7110 public: void __thiscall oCNpc::CreateVobList(float) 
+	const int oCNpc__CreateVobList_G1 = 7041296;
+
+	//0x0075DA40 public: void __thiscall oCNpc::CreateVobList(float)
+	const int oCNpc__CreateVobList_G2 = 7723584;
+	
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (rangeF));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CreateVobList_G1, oCNpc__CreateVobList_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCNpc_ClearVobList (var int slfInstance)
+ *	Clears slf.vobList_array - not sure if this useful - I never used it :)
+ */
+func void oCNpc_ClearVobList (var int slfInstance) {
+	//0x006B6EB0 public: void __thiscall oCNpc::ClearVobList(void) 
+	const int oCNpc__ClearVobList_G1 = 7040688;
+
+	//0x0075D7F0 public: void __thiscall oCNpc::ClearVobList(void)
+	const int oCNpc__ClearVobList_G2 = 7722992;
+	
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__ClearVobList_G1, oCNpc__ClearVobList_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCNpc_InsertInVobList (var int slfInstance, var int vobPtr)
+ *	Adds specific vobPtr from slf.vobList_array
+ */
+func void oCNpc_InsertInVobList (var int slfInstance, var int vobPtr) {
+	//0x006B6F30 public: void __thiscall oCNpc::InsertInVobList(class zCVob *)
+	const int oCNpc__InsertInVobList_G1 = 7040816;
+
+	//0x0075D870 public: void __thiscall oCNpc::InsertInVobList(class zCVob *) 
+	const int oCNpc__InsertInVobList_G2 = 7723120;
+	
+	if (!vobPtr) { return; };
+	
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__InsertInVobList_G1, oCNpc__InsertInVobList_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr)
+ *	Removes specific vobPtr from slf.vobList_array
+ */
+func void oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr) {
+	//0x006B7080 public: void __thiscall oCNpc::RemoveFromVobList(class zCVob *) 
+	const int oCNpc__RemoveFromVobList_G1 = 7041152;
+
+	//0x0075D9B0 public: void __thiscall oCNpc::RemoveFromVobList(class zCVob *)
+	const int oCNpc__RemoveFromVobList_G2 = 7723440;
+	
+	if (!vobPtr) { return; };
+	
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__RemoveFromVobList_G1, oCNpc__RemoveFromVobList_G2));
+		call = CALL_End();
+	};
+};
+
+ 
