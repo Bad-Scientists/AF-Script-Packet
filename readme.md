@@ -181,3 +181,11 @@ Simple feature, improving torches
     * `AF-Script-Packet\_headers_G2_TorchHotKey.src` for G2A
 1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_TorchHotKey_Init ();`.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_Gamestate, make sure you initialize them in your `LeGo_Init` function.
+
+### Gothic 1 & 2 No ammo print
+Simple feature, displays message when you are out of ammo and trying to put in hand ranged weapon
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_NoAmmoPrint.src` for G1
+    * `AF-Script-Packet\_headers_G2_NoAmmoPrint.src` for G2A
+1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_NoAmmoPrint_Init ();`.
