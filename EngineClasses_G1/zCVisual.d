@@ -35,6 +35,7 @@ class zCVisualAnimate {
 
 class zCModel {
 
+	//class zCVisualAnimate : public zCVisual {
 	//class zCVisual {
 	var int _vtbl;					//0
 
@@ -63,8 +64,6 @@ class zCModel {
 	//var int s_visualClassList_numAlloc;		//
 	//var int s_visualClassList_numInArray;		//
 	//};
-
-	//class zCVisualAnimate : public zCVisual {
 	//}; 
 
 	/*
