@@ -1,4 +1,5 @@
 /*
+ *	NPC_GetWalkMode
  *	Author: Dalai Zoll
  *	Original post: https://forum.worldofplayers.de/forum/threads/1090721-Testschleichen?p=17909902&viewfull=1#post17909902
  */
@@ -98,8 +99,8 @@ func void NPC_SetTimeScale (var int slfInstance, var int f) {
 	//1D0h = 464
 	if (ptr) {
 		//var int timeScale;	//G1	464	float timeScale;
-		//Is G2A same ???
-		MEM_WriteInt (ptr + 464, f);
+		//var int timeScale;	//G2A	508	float timeScale;
+		MEM_WriteInt (ptr + MEMINT_SwitchG1G2 (464, 508), f);
 	};
 };
 
