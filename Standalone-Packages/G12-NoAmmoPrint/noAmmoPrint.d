@@ -17,47 +17,38 @@ func void _hook_oCNpc_IsMunitionAvailable () {
 		var int count; count = NPC_HasItems (slf, weapon.munition);
 
 		//Get qty in hand
-		var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-		if (Hlp_Is_oCItem (vobPtr)) {
-			var oCItem ammo; ammo = _^ (vobPtr);
-			if (Hlp_GetInstanceID (ammo) == weapon.munition) {
-				count += ammo.amount;
+		if (!count) {
+			var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+			if (Hlp_Is_oCItem (vobPtr)) {
+				var oCItem ammo; ammo = _^ (vobPtr);
+				if (Hlp_GetInstanceID (ammo) == weapon.munition) {
+					count += ammo.amount;
+				};
 			};
 		};
 		
 		//No ammo
 		if (!count) {
-			var int symbPtr; symbPtr = MEM_GetSymbolByIndex (weapon.munition);
+			var string instName; instName = oCItem_GetInstanceName (weapon.munition);
 
-			if (symbPtr) {
-				var zCPar_symbol symb; symb = _^ (symbPtr);
-				if (Hlp_StrCmp (symb.name, "ITAMARROW") || Hlp_StrCmp (symb.name, "ITRW_ARROW")) {
-					PrintS ("Došli mi šípy !");
-					return;
-				};
-
-				if (Hlp_StrCmp (symb.name, "ITRW_ADDON_MAGICARROW")) {
-					PrintS ("Došli mi magické šípy !");
-					return;
-				};
-
-				if (Hlp_StrCmp (symb.name, "ITRW_ADDON_FIREARROW")) {
-					PrintS ("Došli mi ohnivé šípy !");
-					return;
-				};
-
-				if (Hlp_StrCmp (symb.name, "ITAMBOLT") || Hlp_StrCmp (symb.name, "ITRW_BOLT")) {
-					PrintS ("Došli mi šipky !");
-					return;
-				};
-
-				if (Hlp_StrCmp (symb.name, "ITRW_ADDON_MAGICBOLT")) {
-					PrintS ("Došli mi magické šipky !");
-					return;
-				};
+			if (Hlp_StrCmp (instName, "ITAMARROW") || Hlp_StrCmp (instName, "ITRW_ARROW")) {
+				PrintS ("Došli mi šípy !");
+			} else
+			if (Hlp_StrCmp (instName, "ITRW_ADDON_MAGICARROW")) {
+				PrintS ("Došli mi magické šípy !");
+			} else
+			if (Hlp_StrCmp (instName, "ITRW_ADDON_FIREARROW")) {
+				PrintS ("Došli mi ohnivé šípy !");
+			} else 
+			if (Hlp_StrCmp (instName, "ITAMBOLT") || Hlp_StrCmp (instName, "ITRW_BOLT")) {
+				PrintS ("Došli mi šipky !");
+			} else 
+			if (Hlp_StrCmp (instName, "ITRW_ADDON_MAGICBOLT")) {
+				PrintS ("Došli mi magické šipky !");
+			} else
+			{
+				PrintS ("Došla mi munice !");
 			};
-
-			PrintS ("Došla mi munice !");
 		};
 	};
 };
