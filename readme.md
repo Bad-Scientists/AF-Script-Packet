@@ -12,18 +12,19 @@ In a future we will add wiki with examples explaining how to use each feature.
 ## Features available so far - in case of all of them you need both Ikarus (1.2.2) and LeGo (2.7.1):
 1. Make sure both **Ikarus** and **LeGo** are parsed from your `Gothic.src` file.
 1. Copy all files from this repository to your Gothic work folder `_work\data\Scripts\Content\AF-Script-Packet`.
+1. Gothic 1 users will have to add function `Init_Global();` into their Startup.d file (it is not there by default). Call `Init_Global ();` from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions).
 
 ### Gothic 1 Weapon stacking / splitting
 Emulates G2A inventory behaviour for weapons in G1 --> Stackable weapons (with flags | ITEM_MULTI) will be split into their own inventory slot when equipped.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_WeaponStacking.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_WeaponStacking_Init ();`.
+1. Call `G1_WeaponStacking_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Ever looming barrier
 Hooks Barrier render function and prevents Barrier from disappearing completely.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_BarrierEverlooming.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_BarrierEverlooming_Init ();`.
+1. Call `G1_BarrierEverlooming_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Enhanced Trading 
 Improves G1 trading:
@@ -33,7 +34,7 @@ Improves G1 trading:
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnhancedTrading.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_EnhancedTrading_Init ();`.
+1. Call `G1_EnhancedTrading_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Enhanced Pick Locking
 Package emulates G2A behaviour for PickLocking:
@@ -46,7 +47,7 @@ Package emulates G2A behaviour for PickLocking:
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnhancedPickLocking.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_EnhancedPickLocking_Init ();`.
+1. Call `G1_EnhancedPickLocking_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Player Map
 Improved Map handling when pressing 'M':
@@ -57,7 +58,7 @@ Improved Map handling when pressing 'M':
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_PlayerMap.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_PlayerMap_Init ();`.
+1. Call `G1_PlayerMap_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Quick Loot
 Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
@@ -66,7 +67,7 @@ Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_QuickLoot.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_QuickLoot_Init ();`.
+1. Call `G1_QuickLoot_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Better Inventory Controls
 Enables better navigation in inventories
@@ -75,7 +76,7 @@ Enables better navigation in inventories
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G1_BetterInventoryControls_Init ();`.
+1. Call `G1_BetterInventoryControls_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Enhanced Information Manager
 Package adds several features for dialogues (Information manager):
@@ -90,7 +91,7 @@ Package adds several features for dialogues (Information manager):
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnhancedInfoManager.src` for G1
     * `AF-Script-Packet\_headers_G2_EnhancedInfoManager.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnhancedInfoManager_Init ();`.
+1. Call `G12_EnhancedInfoManager_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Enhanced oCTriggerScript
 Package adds new features for oCTriggerScript objects:
@@ -100,7 +101,7 @@ Package adds new features for oCTriggerScript objects:
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnhancedoCTriggerScript.src` for G1
     * `AF-Script-Packet\_headers_G2_EnhancedoCTriggerScript.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnhancedoCTriggerScript_Init ();`.
+1. Call `G12_EnhancedoCTriggerScript_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 In a folder `AF-Script-Packet\Standalone-Packages\G12-EnhancedoCTriggerScript\` you can find practical examples:
 1. `example_FirePlaceFireDamage.d` demonstrates how you can add to all fireplaces in your world oCTriggerScript objects that will burn every NPC that is in contact with such fireplace. (_OnContact event)
@@ -120,7 +121,7 @@ This package allows you to enable additional AI States. (without limitation)
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_EnablePlayerStates.src` for G1
     * `AF-Script-Packet\_headers_G2_EnablePlayerStates.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_EnablePlayerStates_Init ();`.
+1. Call `G12_EnablePlayerStates_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Pick Lock Helper
 
@@ -129,7 +130,7 @@ Simple feature, that shows Pick Lock combination progress.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_PickLockHelper.src` for G1
     * `AF-Script-Packet\_headers_G2_PickLockHelper.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_PickLockHelper_Init ();`.
+1. Call `G12_PickLockHelper_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
     [![Gothic 1 & 2 Pick Lock Helper](https://img.youtube.com/vi/kdX9e3QlAbg/0.jpg)](https://www.youtube.com/watch?v=kdX9e3QlAbg)
 
@@ -139,7 +140,7 @@ Simple feature, that allows you to control which NPC's can be looted. (for examp
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_PreventLooting.src` for G1
     * `AF-Script-Packet\_headers_G2_PreventLooting.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_PreventLooting_Init ();`.
+1. Call `G12_PreventLooting_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
 
 ### Gothic 1 & 2 Sprint mode
@@ -153,7 +154,7 @@ Enables simple sprint mode
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_SprintMode.src` for G1
     * `AF-Script-Packet\_headers_G2_SprintMode.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_SprintMode_Init ();`.
+1. Call `G12_SprintMode_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_FrameFunctions | LeGo_Bars, make sure you initialize them in your `LeGo_Init` function.
 1. Make sure you setup stamina level when game begins (in your `Startup_` function):
 
@@ -179,7 +180,7 @@ Simple feature, improving torches
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_TorchHotKey.src` for G1
     * `AF-Script-Packet\_headers_G2_TorchHotKey.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_TorchHotKey_Init ();`.
+1. Call `G12_TorchHotKey_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_Gamestate, make sure you initialize them in your `LeGo_Init` function.
 
 ### Gothic 1 & 2 No ammo print
@@ -188,4 +189,15 @@ Simple feature, displays message when you are out of ammo and trying to put in h
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_NoAmmoPrint.src` for G1
     * `AF-Script-Packet\_headers_G2_NoAmmoPrint.src` for G2A
-1. Update file `_work\data\Scripts\Content\Story\Statup.d` - find function `INIT_Global()`. If you do not have `INIT_Global()` function, create it and call it from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions). In `INIT_Global()` call `G12_NoAmmoPrint_Init ();`.
+1. Call `G12_NoAmmoPrint_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+### Gothic 1 & 2 Vob Transport
+Allows player to move/clone/delete or buy objects (Vobs, Mobs, Items etc.) in game. Hands down one of the coolest features :)
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_VobTransport.src` for G1
+    * `AF-Script-Packet\_headers_G2_VobTransport.src` for G2A
+1. Call `G12_VobTransport_Init ();` from your `Init_Global();` function in `Startup.d` file.
+1. Requires LeGo flags: LeGo_FrameFunctions | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
+
+    [![Gothic 1 & 2 Vob Transport](https://img.youtube.com/vi/S4mboOKGvHo/0.jpg)](https://www.youtube.com/watch?v=S4mboOKGvHo)
