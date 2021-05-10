@@ -1,3 +1,4 @@
+/*
 class zCVisual {
     var int    _vtbl;
     var int    _zCObject_refCtr;
@@ -5,11 +6,12 @@ class zCVisual {
     var int    _zCObject_hashNext;
     var string _zCObject_objectName;
 
-    var int nextLODVisual;          //zCVisual*
-    var int prevLODVisual;          //zCVisual*            
-    var int lodFarDistance;         //zREAL                    
-    var int lodNearFadeOutDistance;    //zREAL        
+    var int nextLODVisual;	//zCVisual*
+    var int prevLODVisual;	//zCVisual*    
+    var int lodFarDistance;	//zREAL    
+    var int lodNearFadeOutDistance;	//zREAL
 };
+*/
 
 //zCVisualAnimate seems to be same as zCVisual
 //class zCVisualAnimate : public zCVisual {
@@ -281,4 +283,36 @@ class zCModel {
 	
 	var int timeScale;				//508	float timeScale;
 	var int aniHistoryListl;			//512	zCModelAni** aniHistoryList;
+};
+
+//class zCDecal : public zCVisual {
+//};
+class zCDecal {
+	var int _vtbl;					//0
+
+	//class zCObject {
+	var int refCtr;					//4	int refCtr;
+	var int hashIndex;				//8	unsigned short hashIndex;
+	var int hashNext;				//12	zCObject* hashNext;
+	var string objectName;				//16	zSTRING objectName 
+	//};
+
+	var int nextLODVisual;				//36	zCVisual* nextLODVisual;
+	var int prevLODVisual;				//40	zCVisual* prevLODVisual;
+	var int lodFarDistance;				//44	float lodFarDistance;
+	var int lodNearFadeOutDistance;			//48	float lodNearFadeOutDistance;
+
+	var int decalMaterial;				//52	zCMaterial* decalMaterial;
+	var int xdim;					//56	float xdim;
+	var int ydim;					//60	float ydim;
+	var int xoffset;				//64	float xoffset;
+	var int yoffset;				//68	float yoffset;
+	var int decal2Sided;				//72	int decal2Sided;
+
+	var int ignoreDayLight;				//76	int ignoreDayLight;
+	var int m_bOnTop;				//80	int m_bOnTop;
+    
+	// static properties
+	//static zCMesh*& decalMesh1Sided;
+	//static zCMesh*& decalMesh2Sided;
 };
