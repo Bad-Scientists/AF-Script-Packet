@@ -50,11 +50,6 @@ func int Hlp_Is_oCTriggerScript (var int ptr) {
     return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
 }; 
 
-func int Hlp_Is_zCParticleFX (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
-};
-
 /*
  *	Enable Player States
  */
@@ -275,3 +270,13 @@ const int oCNpc__PostSaveGameProcessing = 7637904;
 //0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
 //Already defined in LeGo
 //const int oCGame__ChangeLevel = 7107216;
+
+/*
+ *	No Ammo print
+ */
+//0x0073C6E0 public: int __thiscall oCNpc::IsMunitionAvailable(class oCItem *) 
+const int oCNpc__IsMunitionAvailable = 7587552;
+
+
+//0x00832084 const zCDecal::`vftable'
+const int zCDecal_vtbl = 8593540;
