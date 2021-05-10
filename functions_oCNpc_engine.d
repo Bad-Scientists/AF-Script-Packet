@@ -414,4 +414,30 @@ func void oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr) {
 	};
 };
 
- 
+/*
+ *
+ */
+func int oCNPC_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight){
+	//0x0069E010 public: int __thiscall oCNpc::CanSee(class zCVob *,int)
+	const int oCNPC__CanSee_G1 = 6938640;
+
+	//0x00741C10 public: int __thiscall oCNPC::CanSee(class zCVob *,int)
+	const int oCNPC__CanSee_G2 = 7609360;
+
+	if (!vobPtr) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (lineOfSight));
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__CanSee_G1, oCNPC__CanSee_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt();
+};
