@@ -118,6 +118,10 @@ func void G1_WeaponStacking_Init (){
 
 	G12_GameEvents_Init ();
 
+	EquipItemEvent_AddListener (_eventEquipItem_WeaponStacking);
+	UnEquipItemEvent_AddListener (_eventUnEquipItem_WeaponStacking);
+	DoTakeVobEvent_AddListener (_eventDoTakeVob_WeaponStacking);
+
 	if (!once){
 		//Splits equipped weapons on weapon removal.
 		//I didn't find better hook but this one - function is being called all the time during weapon removal - even when weapon is unequipped - which is ideal for calling 'NPC_SplitMultipleEquippedWeapons'.
@@ -138,15 +142,12 @@ func void G1_WeaponStacking_Init (){
 
 		//Splits weapons on equipping. Removes ITEM_MULTI flag and re-inserts to inventory
 		//HookEngine (oCNPC__Equip, 5, "_hook_oCNPC_Equip__weaponStacking");
-		EquipItemEvent_AddListener (_eventEquipItem_WeaponStacking);
 
 		//'Merges' weapons on unequipping. Applies ITEM_MULTI flag and re-inserts to inventory
 		//HookEngine (oCNPC__UnequipItem, 7, "_hook_oCNPC_UnequipItem__weaponStacking");
-		UnEquipItemEvent_AddListener (_eventUnEquipItem_WeaponStacking);
 
 		//Applies ITEM_MULTI flag when picking items
 		//HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNpc_DoTakeVob__weaponStacking");
-		DoTakeVobEvent_AddListener (_eventDoTakeVob_WeaponStacking);
 		
 		//Hook on oCNpc__DoDropVob applying back on weapons ITEM_MULTI when dropping is not supported. (When weapon was equipped it messed up oCNPC__UnequipItem hook)
 		//It is probably not required. We can rethink this later if needed.

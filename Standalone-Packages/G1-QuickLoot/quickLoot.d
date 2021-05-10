@@ -143,18 +143,16 @@ func void G1_QuickLoot_Init (){
 
 	G1_InventoryEvents_Init ();
 
-	if (!once){
-		//Chests & trade inventory containers
-		ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__QuickLoot);
+	//Chests & trade inventory containers
+	ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__QuickLoot);
 
-		//Nothing happening here atm
-		//StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__QuickLoot);
+	//Nothing happening here atm
+	//StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__QuickLoot);
 
-		NpcContainerHandleEvent_AddListener (_eventNpcContainerHandleEvent__QuickLoot);
+	NpcContainerHandleEvent_AddListener (_eventNpcContainerHandleEvent__QuickLoot);
 
-		//Nothing happening here atm
-		//NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__QuickLoot);
+	//Nothing happening here atm
+	//NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__QuickLoot);
 
-		once = 1;
-	};
+	once = 1;
 };

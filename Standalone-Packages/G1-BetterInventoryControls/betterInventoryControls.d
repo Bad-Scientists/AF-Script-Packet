@@ -211,17 +211,13 @@ func void G1_BetterInventoryControls_Init(){
 	
 	G1_InventoryEvents_Init ();
 	
-	if (!once) {
-		TradeHandleEvent_AddListener (_eventTradeHandleEvent__BetterInvControls);
+	TradeHandleEvent_AddListener (_eventTradeHandleEvent__BetterInvControls);
 
-		ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__BetterInvControls);
+	ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__BetterInvControls);
 
-		StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__BetterInvControls);
+	StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__BetterInvControls);
 
-		NpcContainerHandleEvent_AddListener (_eventNpcContainerHandleEvent__BetterInvControls);
+	NpcContainerHandleEvent_AddListener (_eventNpcContainerHandleEvent__BetterInvControls);
 
-		NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__BetterInvControls);
-
-		once = 1;
-	};
+	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__BetterInvControls);
 };

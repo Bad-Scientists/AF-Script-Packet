@@ -17,10 +17,6 @@ func void _eventOpenDeadNPC (var int dummyVariable) {
 func void G12_PreventLooting_Init () {
 	G12_OpenDeadNPCEvent_Init ();
 
-	//const int once = 0;
-	//if (!once) {
-		//HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
-		OpenDeadNPCEvent_AddListener (_eventOpenDeadNPC);
-	//	once = 1;
-	//};
+	//HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
+	OpenDeadNPCEvent_AddListener (_eventOpenDeadNPC);
 };

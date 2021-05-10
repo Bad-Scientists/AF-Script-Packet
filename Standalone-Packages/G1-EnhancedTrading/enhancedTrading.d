@@ -4,7 +4,6 @@
  *
  *	They were modified to change multipliers for both inventory containers in case of both buying / selling containers.
  *
- *	TODO: still dirty - becuase of oCNpcInventory
  */
 
 /*
@@ -467,7 +466,11 @@ func void G1_EnhancedTrading_Init(){
 	const int once = 0;
 	
 	G1_TradeEvents_Init ();
-	
+
+	TradeOnExitEvent_AddListener (_eventTradeOnExit__EnhancedTrading);
+	TradeOnAcceptEvent_AddListener (_eventTradeOnAccept__EnhancedTrading);
+	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
+
 	if (!once) {
 		//Hooked functions checks whether NPC wants to buy an item or not. Also it cahnges selling/buying multiplier values
 		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_oCViewDialogTrade_OnTransfer__EnhancedTrading");
@@ -475,15 +478,12 @@ func void G1_EnhancedTrading_Init(){
 
 		//Called when exiting trading
 		//HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit__EnhancedTrading");
-		TradeOnExitEvent_AddListener (_eventTradeOnExit__EnhancedTrading);
 
 		//Obsluha obchodovania - automaticke dorovnavanie rudy
 		//HookEngine (oCViewDialogTrade__OnAccept, 6, "_hook_oCViewDialogTrade_OnAccept__EnhancedTrading");
-		TradeOnAcceptEvent_AddListener (_eventTradeOnAccept__EnhancedTrading);
 
 		//10
 		//HookEngine (oCViewDialogTrade__HandleEvent, 7, "_hook_oCViewDialogTrade_HandleEvent__EnhancedTrading");
-		TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
 
 		once = 1;
 	};
