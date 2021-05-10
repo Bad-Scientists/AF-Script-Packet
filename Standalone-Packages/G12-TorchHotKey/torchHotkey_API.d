@@ -13,3 +13,11 @@ const string TORCH_ASC_MODELS [TORCH_ASC_MODELS_MAX] = {
 	"FIREPLACE_MIDDLE.ASC",		//Louc na stene
 	"FIREPLACE_ORCSTAND.ASC"	//
 };
+
+//We need to make sure these overlays are re-applied when removing torch
+const int PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX = 2;
+
+const string PC_TORCHHOTKEY_REAPPLYOVERLAYS [PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX] = {
+	"HUMANS_SPRINT.MDS",
+	"DUMMY"
+};

@@ -185,16 +185,20 @@ func void _eventMobStartStateChange__TorchHotKey (var int dummyVariable) {
 	};
 };
 
-func void PlayerReApplySprintMode__TorchHotKey () {
-	//Don't remove overlay if timed overlay is active
-	if (!NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) {
-		//In case of sprinting torch will remove overlay
-		if (NPC_HasOverlay (hero, "HUMANS_SPRINT.MDS")) {
-			Mdl_RemoveOverlayMds (hero, "HUMANS_SPRINT.MDS");
-			Mdl_ApplyOverlayMds (hero, "HUMANS_SPRINT.MDS");
-		};
-	};
+func void PlayerReApplyOverlays__TorchHotKey () {
+	repeat (i, PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX); var int i;
+		var string testOverlay; testOverlay = MEM_ReadStatStringArr (PC_TORCHHOTKEY_REAPPLYOVERLAYS, i);
 
+		//Don't remove overlay if timed overlay is active
+		if (!NPC_HasTimedOverlay (hero, testOverlay)) {
+			//In case of sprinting torch will remove overlay
+			if (NPC_HasOverlay (hero, testOverlay)) {
+				Mdl_RemoveOverlayMds (hero, testOverlay);
+				Mdl_ApplyOverlayMds (hero, testOverlay);
+			};
+		};
+	end;
+	
 	/*
 	//Timed overlay is not affected by HUMANS_TORCH.MDS removal/addition
 	if (NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) {
@@ -205,22 +209,35 @@ func void PlayerReApplySprintMode__TorchHotKey () {
 	*/
 };
 
-func void _eventGameKeyEvent__TorchHotKey (var int dummyVariable) {
+func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
+	var int cancel; cancel = FALSE;
+	var int key; key = MEM_ReadInt (ESP + 4);
+	if (!key) { return; };
+
 	if (!Hlp_IsValidNPC (hero)) { return; };
 
-	if (((GameKeyEvent_Key == MEM_GetKey ("keyTorchToggleKey")) && GameKeyEvent_Pressed) || ((GameKeyEvent_Key == MEM_GetSecondaryKey ("keyTorchToggleKey")) && GameKeyEvent_Pressed)) {
+	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
 		//Get Ctrl key status
-		var int altPressed; altPressed = MEM_KeyState (KEY_LCONTROL);
+		var int ctrlPressed; ctrlPressed = MEM_KeyState (KEY_LCONTROL);
 		
-		if ((altPressed == KEY_PRESSED) || (altPressed == KEY_HOLD)) {
+		if ((ctrlPressed == KEY_PRESSED) || (ctrlPressed == KEY_HOLD)) {
 			//Put torch to right hand
-			var int retVal; retVal = oCNpc_DoExchangeTorch (hero);
+			if (oCNpc_DoExchangeTorch (hero)) {
+				cancel = TRUE;
+			};
 		} else {
 			//On & Off
 			if (NPC_TorchSwitchOnOff (hero) != -1) {
-				PlayerReApplySprintMode__TorchHotKey ();
+				PlayerReApplyOverlays__TorchHotKey ();
+				cancel = TRUE;
 			};
 		};
+	};
+
+	if (cancel) {
+		//EDI has to be also nulled
+		MEM_WriteInt (ESP + 4, 0);
+		EDI = 0;
 	};
 };
 
@@ -286,10 +303,10 @@ func void _eventGameState__TorchHotKey (var int state) {
 
 func void G12_TorchHotKey_Init () {
 	//Init Game key events
-	Game_KeyEventInit ();
+	G12_GameHandleEvent_Init ();
 
 	//Add listener for key
-	GameKeyEvent_AddListener (_eventGameKeyEvent__TorchHotKey);
+	GameHandleEvent_AddListener (_eventGameHandleEvent__TorchHotKey);
 
 	//TriggerChangeLevel event
 	G12_GameState_Extended_Init ();
