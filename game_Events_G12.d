@@ -18,6 +18,10 @@ var int _OpenDeadNPC_Event;
 
 var int _MobStartStateChange_Event;
 
+var int _GameHandleEvent_Event;
+
+var int _PlayerPortalRoomChange_Event;
+
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
 };
@@ -88,6 +92,22 @@ func void MobStartStateChangeEvent_AddListener (var func f) {
 
 func void MobStartStateChangeEvent_RemoveListener (var func f) {
 	Event_Remove (_MobStartStateChange_Event, f);
+};
+
+func void GameHandleEvent_AddListener (var func f) {
+	Event_AddOnce (_GameHandleEvent_Event, f);
+};
+
+func void GameHandleEvent_RemoveListener (var func f) {
+	Event_Remove (_GameHandleEvent_Event, f);
+};
+
+func void PlayerPortalRoomChange_AddListener (var func f) {
+	Event_AddOnce (_PlayerPortalRoomChange_Event, f);
+};
+
+func void PlayerPortalRoomChange_RemoveListener (var func f) {
+	Event_Remove (_PlayerPortalRoomChange_Event, f);
 };
 
 /*
@@ -271,6 +291,28 @@ func void _hook_oCGame_ChangeLevel () {
 	};
 };
 
+func void _hook_oCGame_HandleEvent () {
+	var int key; key = MEM_ReadInt (ESP + 4);
+	var int cancel; cancel = FALSE;
+
+	Event_Execute (_GameHandleEvent_Event, key);
+};
+
+var int PC_PortalManager_OldPlayerRoom;
+
+func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
+	if (!MEM_Game.portalman) { return; };
+
+	var oCPortalRoomManager portalManager; portalManager = _^ (MEM_Game.portalman);
+	
+	if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
+		PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
+		if (_PlayerPortalRoomChange_Event) {
+			Event_Execute (_PlayerPortalRoomChange_Event, 0);
+		};
+	};
+};
+
 //---
 
 func void G12_OpenInventoryEvent_Init () {
@@ -446,6 +488,48 @@ func void G12_MobStartStateChangeEvent_Init () {
 	};
 };
 
+func void G12_GameHandleEvent_Init () {
+	if (!_GameHandleEvent_Event) {
+		_GameHandleEvent_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x0065EEE0 private: virtual int __thiscall oCGame::HandleEvent(int)
+		const int oCGame__HandleEvent_G1 = 6680288;	//0x65EEE0
+		//const int oCGame__HandleEvent_G1 = 6685092;	oCGame__HandleEvent_dfltCase
+
+		//0x006FC170 private: virtual int __thiscall oCGame::HandleEvent(int)
+		const int oCGame__HandleEvent_G2 = 7324016;	//0x6FC170
+						//7325123	oCGame__HandleEvent_openInvCheck
+						//7327661	oCGame__HandleEvent_spellKeys
+						//7328820	oCGame__HandleEvent_dfltCase
+
+		HookEngine (MEMINT_SwitchG1G2(oCGame__HandleEvent_G1, oCGame__HandleEvent_G2), MEMINT_SwitchG1G2 (6, 7), "_hook_oCGame_HandleEvent");
+		once = 1;
+	};
+};
+
+func void G12_PlayerPortalRoomChangeEvent_Init () {
+	if (!_PlayerPortalRoomChange_Event) {
+		_PlayerPortalRoomChange_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//Is there a better method? this function seems to be called constantly (so far I didn't notice any performance impact)
+
+		//0x006CB630 public: int __thiscall oCPortalRoomManager::HasPlayerChangedPortalRoom(void)
+		const int oCPortalRoomManager__HasPlayerChangedPortalRoom_G1 = 7124528;
+
+		//0x00773070 public: int __thiscall oCPortalRoomManager::HasPlayerChangedPortalRoom(void)
+		const int oCPortalRoomManager__HasPlayerChangedPortalRoom_G2 = 7811184;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCPortalRoomManager__HasPlayerChangedPortalRoom_G1, oCPortalRoomManager__HasPlayerChangedPortalRoom_G2), 9, "_hook_oCPortalRoomManager_HasPlayerChangedPortalRoom");
+		once = 1;
+	};
+};
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -459,4 +543,6 @@ func void G12_GameEvents_Init () {
 	G12_GameState_Extended_Init ();
 	
 	G12_MobStartStateChangeEvent_Init ();
+
+	G12_PlayerPortalRoomChangeEvent_Init ();
 };
