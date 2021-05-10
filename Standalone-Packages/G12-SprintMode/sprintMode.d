@@ -49,33 +49,34 @@ const int PC_SprintModeTimedOverlayStacking_SumValues	= 1;	//sum up all timers
 //When removing duplicate timed overlays script can either sum up all timers or get max value
 const int PC_SprintModeTimedOverlayStacking = PC_SprintModeTimedOverlayStacking_GetMaxValue;
 
-const int BAR_TEX_SPRINTMODE_STAMINA		= 0;	//Bar texture for stamina
-const int BAR_TEX_SPRINTMODE_TIMEDOVERLAY	= 1;	//Bar texture for timed overlays (potions)
-
-const int BAR_TEX_SPRINTMODE_MAX		= 2;
-
-const string BAR_TEX_SPRINTMODE [BAR_TEX_SPRINTMODE_MAX] = {
-	//"Bar_SprintMode_Stamina.tga",
-	//"Bar_SprintMode_TimedOverlay.tga",
-	"Bar_Misc.tga",					//Default Gothic bar texture (yellow)
-	"Bar_SprintMode_TimedOverlay.tga"		//This is my custom texture - you might have to adjust this one !!
-};
-
 func void _eventGameStateLoaded__SprintMode (var int state) {
 	//Restore time overlay effect on game load
 	if (state == Gamestate_Loaded) {
 		if (PC_SprintModePlayerHasTimedOverlay) {
-			if (!NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) {
-				Mdl_ApplyOverlayMdsTimed (hero, "HUMANS_SPRINT.MDS", PC_SprintModePlayerTimedOverlayTimer);
+			if (!NPC_HasTimedOverlay (hero, PC_SprintModeOverlayName)) {
+				Mdl_ApplyOverlayMdsTimed (hero, PC_SprintModeOverlayName, PC_SprintModePlayerTimedOverlayTimer);
 			};
 		};
 	};
 };
 
-func void _eventGameKeyEvent__SprintMode (var int dummyVariable) {
+func void PlayerResetWeaponMode__SprintMode () {
+	var oCNpc her; her = Hlp_GetNPC (hero);
+	var int fmode; fmode = her.fmode;
+	if (fmode != FMODE_NONE) {
+		oCNpc_SetWeaponMode2 (her, FMODE_NONE);
+		oCNpc_SetWeaponMode2 (her, fmode);
+	};
+};
+
+func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
+	var int cancel; cancel = FALSE;
+	var int key; key = MEM_ReadInt (ESP + 4);
+	if (!key) { return; };
+
 	//Activate sprint mode
 	//We have to check MEM_GetKey, MEM_GetSecondaryKey because of menu items (user can change keys during gameplay) (how much does this affect performance?)
-	if (((GameKeyEvent_Key == MEM_GetKey ("keySprintModeToggleKey")) && GameKeyEvent_Pressed) || ((GameKeyEvent_Key == MEM_GetSecondaryKey ("keySprintModeToggleKey")) && GameKeyEvent_Pressed)) {
+	if ((key == MEM_GetKey ("keySprintModeToggleKey")) || (key == MEM_GetSecondaryKey ("keySprintModeToggleKey"))) {
 		//Toggle if not in cool down
 		if (!PC_SprintModeCooldown) {
 			PC_SprintModeSwitch = (!PC_SprintModeSwitch);
@@ -83,14 +84,24 @@ func void _eventGameKeyEvent__SprintMode (var int dummyVariable) {
 
 		//Activate
 		if (PC_SprintModeSwitch) {
-			if (NPC_HasOverlay (hero, "HUMANS_SPRINT.MDS")) || (NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS"))
-			|| (NPC_HasOverlay (hero, "HUMANS_DRUNKEN.MDS")) || (NPC_HasTimedOverlay (hero, "HUMANS_DRUNKEN.MDS"))
-			{
+			var int dontActivate; dontActivate = FALSE;
+			
+			repeat (i, PC_SPRINTMODE_IGNOREWITHOVERLAYS_MAX); var int i;
+				var string testOverlay; testOverlay = MEM_ReadStatStringArr (PC_SPRINTMODE_IGNOREWITHOVERLAYS, i);
+
+				if (NPC_HasOverlay (hero, testOverlay)) || (NPC_HasTimedOverlay (hero, testOverlay)) {
+					dontActivate = TRUE;
+					break;
+				};
+			end;
+
+			if (dontActivate) {
 				//Don't enable sprint mode if player already has HUMANS_SPRINT.MDS overlay or if he is drunk :)
 				PC_SprintModeSwitch = FALSE;
 			} else {
 				PC_SprintMode = TRUE;
-				Mdl_ApplyOverlayMds (hero, "HUMANS_SPRINT.MDS");
+				Mdl_ApplyOverlayMds (hero, PC_SprintModeOverlayName);
+				PlayerResetWeaponMode__SprintMode ();
 			};
 		} else {
 			//Deactivate - we can't remove overlay immediately, so we use PC_SprintModeDisable and script bellow will perform additional checks
@@ -98,8 +109,14 @@ func void _eventGameKeyEvent__SprintMode (var int dummyVariable) {
 				PC_SprintModeDisable = TRUE;
 			};
 		};
+		
+		cancel = TRUE;
+	};
 
-		GameKeyEvent_KeyHandled ();
+	if (cancel) {
+		//EDI has to be also nulled
+		MEM_WriteInt (ESP + 4, 0);
+		EDI = 0;
 	};
 };
 
@@ -131,6 +148,8 @@ func void FrameFunction__SprintMode () {
 	var int isInFistAttack; isInFistAttack = (STR_IndexOf (aniName, "_FISTATTACK") > -1);
 	var int is1H; is1H = (STR_IndexOf (aniName, "_1H") > -1);
 	var int is2H; is2H = (STR_IndexOf (aniName, "_2H") > -1);
+	var int isInBowMode; isInBowMode = (STR_IndexOf (aniName, "_BOW") > -1);
+	var int isInCBowMode; isInCBowMode = (STR_IndexOf (aniName, "_CBOW") > -1);
 
 	/*
 	//Commented out - checking for bodystate BS_JUMP is enough
@@ -147,7 +166,7 @@ func void FrameFunction__SprintMode () {
 	var int isJumping; isJumping = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
 
 	//Does player have timed overlay ?
-	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS");
+	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, PC_SprintModeOverlayName);
 
 	//If I remove overlay while jumping then players animation will 'stutter', that's why I can remove overlay only once player is not jumping
 	if (PC_SprintModeDisable) {
@@ -157,15 +176,16 @@ func void FrameFunction__SprintMode () {
 			PC_SprintModeSwitch = FALSE;
 			PC_SprintModeDisable = FALSE;
 
-			if (NPC_HasOverlay (hero, "HUMANS_SPRINT.MDS")) {
-				Mdl_RemoveOverlayMds (hero, "HUMANS_SPRINT.MDS");
+			if (NPC_HasOverlay (hero, PC_SprintModeOverlayName)) {
+				Mdl_RemoveOverlayMds (hero, PC_SprintModeOverlayName);
+				PlayerResetWeaponMode__SprintMode ();
 			};
 		};
 	};
 
 	//Stamina regen
-	if (!PC_SprintMode) || (!isWalking) {
-		if (!isInFistAttack) && (!is1H) && (!is2H) && (!isJumping) {
+	if ((!PC_SprintMode) || (!isWalking)) {
+		if ((!isInFistAttack) && (!is1H) && (!is2H) && (!isJumping) && (!isInBowMode) && (!isInCBowMode)) {
 			if (PC_SprintModeStamina < PC_SprintModeStaminaMax) {
 				PC_SprintModeStamina += 1;
 			};
@@ -174,7 +194,7 @@ func void FrameFunction__SprintMode () {
 
 	//Remove duplicated timed overlays
 	if (PC_SprintModePlayerHasTimedOverlay) {
-		NPC_RemoveDuplicatedTimedOverlays (hero, "HUMANS_SPRINT.MDS", PC_SprintModeTimedOverlayStacking);
+		NPC_RemoveDuplicatedTimedOverlays (hero, PC_SprintModeOverlayName, PC_SprintModeTimedOverlayStacking);
 	};
 
 	//Option to disable consumption if needed
@@ -197,6 +217,10 @@ func void FrameFunction__SprintMode () {
 
 			if (is2H) { PC_SprintModeStamina -= 5; };
 
+			if (isInBowMode) { PC_SprintModeStamina -= 5; };
+
+			if (isInCBowMode) { PC_SprintModeStamina -= 5; };
+
 			if (isJumping) { PC_SprintModeStamina -= 5; };
 		};
 	};
@@ -211,7 +235,7 @@ func void FrameFunction__SprintMode () {
 	//First time this is called player will most likely not have timed overlay - so set to 1 in order to 'reset' texture
 	if (PC_SprintModePlayerHasTimedOverlay) {
 		//Get timer value - this is current value
-		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, PC_SprintModeOverlayName));
 
 		//If PC_SprintModePlayerTimedOverlayDetected == FALSE then this is first time script detected timed overlay, get max value and adjust texture
 		if (!PC_SprintModePlayerTimedOverlayDetected)
@@ -219,7 +243,7 @@ func void FrameFunction__SprintMode () {
 		|| (PC_SprintModePlayerTimedOverlayTimer > PC_SprintModePlayerTimedOverlayTimerMax)
 		{
 			//Get timer value - first value will be considered max value
-			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, "HUMANS_SPRINT.MDS"));
+			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, PC_SprintModeOverlayName));
 			PC_SprintModePlayerTimedOverlayDetected = TRUE;
 
 			textureName = MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_TIMEDOVERLAY);
@@ -242,9 +266,10 @@ func void FrameFunction__SprintMode () {
 			PC_SprintModePlayerTimedOverlayDetected = FALSE;
 
 			//If player had overlay - reapply
-			if (NPC_HasOverlay (hero, "HUMANS_SPRINT.MDS")) {
-				Mdl_RemoveOverlayMds (hero, "HUMANS_SPRINT.MDS");
-				Mdl_ApplyOverlayMds (hero, "HUMANS_SPRINT.MDS");
+			if (NPC_HasOverlay (hero, PC_SprintModeOverlayName)) {
+				Mdl_RemoveOverlayMds (hero, PC_SprintModeOverlayName);
+				Mdl_ApplyOverlayMds (hero, PC_SprintModeOverlayName);
+				PlayerResetWeaponMode__SprintMode ();
 			};
 			
 			textureName = MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_STAMINA);
@@ -256,11 +281,35 @@ func void FrameFunction__SprintMode () {
 		Bar_SetValue (hStaminaBar, PC_SprintModeStamina);
 	};
 
-	//Move bar right underneath health bar
-	var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-	//Bar_MoveTo (hStaminaBar, hpBar.zCView_vposx + hpBar.zCView_vsizex / 2, hpBar.zCView_vposy - hpBar.zCView_vsizey / 2);
-	//These LeGo bars have weird positions :-/
-	Bar_MoveTo (hStaminaBar, hpBar.zCView_vposx + hpBar.zCView_vsizex / 2 + 1, hpBar.zCView_vposy + (hpBar.zCView_vsizey / 2) * 2);
+	var int posX;
+	var int posY;
+
+	//Move bar right underneath health bar (if modder didn't define his own values)
+	if (PC_SprintModeBar_PPosY == -1) {
+		if (MEM_Game.hpBar) {
+			var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
+			//Bar_MoveTo (hStaminaBar, hpBar.zCView_vposx + hpBar.zCView_vsizex / 2, hpBar.zCView_vposy - hpBar.zCView_vsizey / 2);
+			//These LeGo bars have weird positions :-/
+			posX = hpBar.zCView_pposx + (hpBar.zCView_psizex / 2);
+			posY = hpBar.zCView_pposy + (hpBar.zCView_psizey / 2) * 2;
+		};
+	} else {
+		posX = PC_SprintModeBar_PPosX;
+		posY = PC_SprintModeBar_PPosY;
+	};
+
+	posX = Print_ToVirtual (posX, PS_X);
+	posY = Print_ToVirtual (posY, PS_Y);
+
+	if (PC_SprintModeBar_VPosX > -1) {
+		posX = PC_SprintModeBar_VPosX;
+	};
+
+	if (PC_SprintModeBar_VPosY > -1) {
+		posY = PC_SprintModeBar_VPosY;
+	};
+
+	Bar_MoveTo (hStaminaBar, posX, posY);
 
 	//Flash stamina bar if in cool down
 	if (PC_SprintModeCooldown) {
@@ -300,6 +349,9 @@ func void G12_SprintMode_Init () {
 	if (!Hlp_IsValidHandle(hStaminaBar)) {
 		hStaminaBar = Bar_Create (GothicBar@);
 
+		//If Bar_Show is called immediately bar is visible already on load screen
+		//Bar_Show (hStaminaBar);
+
 		//180, 20
 		Bar_ResizePxl (hStaminaBar, 180, 10);
 
@@ -313,10 +365,10 @@ func void G12_SprintMode_Init () {
 	};
 
 	//Init Game key events
-	Game_KeyEventInit ();
+	G12_GameHandleEvent_Init ();
 
 	//Add listener for key
-	GameKeyEvent_AddListener (_eventGameKeyEvent__SprintMode);
+	GameHandleEvent_AddListener (_eventGameHandleEvent__SprintMode);
 
 	//Add listener for loaded game
 	if (_LeGo_Flags & LeGo_Gamestate) {
@@ -338,5 +390,19 @@ func void G12_SprintMode_Init () {
 			var string keyString; keyString = MEM_GetModOpt ("KEYS", "keySprintModeToggleKey");
 			MEM_SetKey ("keySprintModeToggleKey", MEM_GetKey (keyString));
 		};
+	};
+
+	//Custom sprint mode overlay
+	if (!MEM_GothOptExists ("SPRINTMODE", "overlayName")) {
+		//Custom key from mod .ini file
+		if (!MEM_ModOptExists ("SPRINTMODE", "overlayName")) {
+			//Keep default constant
+		} else {
+			//Update from mod .ini file
+			PC_SprintModeOverlayName = MEM_GetModOpt ("SPRINTMODE", "overlayName");
+		};
+	} else {
+		//Update from Gothic.ini
+		PC_SprintModeOverlayName = MEM_GetGothOpt ("SPRINTMODE", "overlayName");
 	};
 };
