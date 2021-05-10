@@ -185,15 +185,13 @@ func void InfoManagerSpinnerAniFunction () {
 			//};
 
 			//Adjust alignment of spinner indicator
-			var string dlgFont;
 			var int textWidth;
 
 			var zCViewDialogChoice dlg;
 			if (!MEM_InformationMan.DlgChoice) { return; };
 			dlg = _^ (MEM_InformationMan.DlgChoice);
 
-			dlgFont = Print_GetFontName (txtIndicator.font);
-			textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+			textWidth = Print_GetStringWidthPtr (txtIndicator.text, txtIndicator.font);
 			
 			if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
 				txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
