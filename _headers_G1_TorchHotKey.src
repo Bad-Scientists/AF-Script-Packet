@@ -8,13 +8,15 @@ vobFunctions.d
 ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
-ScriptBin\gameKeyEvents.d
 
 anims_engine.d
 
 functions_oCNPC_engine.d
 
 functions_NPC.d
+
+inventory_oCNpc_engine.d
+inventory_oCNpc.d
 
 game_Events_G12.d
 
