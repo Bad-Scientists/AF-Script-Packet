@@ -1,3 +1,7 @@
+/*
+ *	Constants - same values for both G1 & G2A
+ */
+
 //const float zMDL_ANI_BLEND_IN_ZERO   = float_MAX;
 //const float zMDL_ANI_BLEND_OUT_ZERO  =-float_MAX;
 const int zMDL_ANIEVENT_MAXSTRING    = 4;
