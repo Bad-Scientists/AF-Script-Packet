@@ -1,5 +1,6 @@
 /*
  *	Copied from Ikarus --> MEM_Error & MEM_Warn calls removed
+ *	MEM_Error will eventually cause Gothic to crash in my experience
  */
 func string mySTR_SubStr (var string str, var int start, var int count) {
     if (start < 0) || (count < 0) {
