@@ -5,28 +5,6 @@
  */
  
 /*
- *	Removes flags from oCItem pointer
- *		itemPtr			item pointer
- *		removeFlags		flag(s) to be removed
- */
-func void oCItem_RemoveFlags (var int itemPtr, var int removeFlags) {
-	if (!itemPtr) { return; };
-	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags & ~ (removeFlags));
-};
-
-/*
- *	Adds flags to oCItem pointer
- *		itemPtr			item pointer
- *		addFlags		flag(s) to be added
- */
-func void oCItem_AddFlags (var int itemPtr, var int addFlags) {
-	if (!itemPtr) { return; };
-	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags | (addFlags));
-};
-
-/*
  *	Returns pointer to specific item instance in NPC's inventory
  *		slfInstance		NPC instance
  *		invCat			inventory category	
