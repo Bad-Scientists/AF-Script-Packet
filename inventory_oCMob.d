@@ -19,7 +19,7 @@
  *		itemPtr = oCMobContainer_GetItemPtrBySlot (her.focus_vob, 0);
  */
 func int oCMobContainer_GetItemPtrBySlot (var int mobPtr, var int itemSlot){
-	if (!mobPtr) { return 0 ; };
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return 0 ; };
 
 	var int ptr;
 	var int itmPtr;
@@ -55,7 +55,7 @@ func int oCMobContainer_GetItemPtrBySlot (var int mobPtr, var int itemSlot){
  *		Mob_RemoveAllItems (her.focus_vob);
  */
 func void Mob_RemoveAllItems (var int mobPtr){
-	if (!mobPtr) { return; };
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return; };
 
 	var int ptr;
 	var oCMobContainer container; container = _^(mobPtr);
@@ -85,7 +85,7 @@ func void Mob_RemoveAllItems (var int mobPtr){
  *		Mob_RemoveItems (her.focus_vob, ItarScrollFireBolt, 1);
  */
 func void Mob_RemoveItems (var int mobPtr, var int itemInstance, var int qty){
-	if (!mobPtr) { return; };
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return; };
 
 	var oCItem itm;
 
@@ -141,7 +141,7 @@ func void MobTransferItemPrintEvent_RemoveListener (var func f) {
 };
 
 func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
-	if (!mobPtr) { return; };
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return; };
 
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -180,4 +180,86 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 			ptr = container.containList_next;
 		};
 	end;
+};
+
+func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
+	if (!Hlp_Is_oCMobContainer (mobPtr1)) { return; };
+	if (!Hlp_Is_oCMobContainer (mobPtr2)) { return; };
+
+	var int i;
+
+	var int transferredItem;
+
+	var int ptr;
+	var oCMobContainer container; container = _^ (mobPtr1);
+	var zCListSort list;
+
+	ptr = container.containList_next;
+	
+	while (ptr != 0);
+		list = _^ (ptr);
+		var int itmPtr; itmPtr = list.data;
+		
+		if (itmPtr == 0) {
+			ptr  = list.next;
+		} else {
+			//Custom prints for transferred items
+			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
+				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			};
+
+			oCMobContainer_Insert (mobPtr2, itmPtr);
+			oCMobContainer_Remove (mobPtr1, itmPtr);
+	
+			ptr = container.containList_next;
+		};
+	end;
+};
+
+func void Mob_CopyItemsToMob (var int mobPtr1, var int mobPtr2){
+	if (!Hlp_Is_oCMobContainer (mobPtr1)) { return; };
+	if (!Hlp_Is_oCMobContainer (mobPtr2)) { return; };
+
+	var int i;
+
+	var int transferredItem;
+
+	var int ptr;
+	var oCMobContainer container; container = _^ (mobPtr1);
+	var zCListSort list;
+
+	ptr = container.containList_next;
+	
+	while (ptr != 0);
+		list = _^ (ptr);
+		var int itmPtr; itmPtr = list.data;
+		
+		if (itmPtr) {
+			//Custom prints for transferred items
+			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
+				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			};
+
+			oCMobContainer_Insert (mobPtr2, itmPtr);
+		};
+
+		ptr  = list.next;
+	end;
+};
+
+/*
+ *	Returns -1 mobPtr is either invalid or not oCMobContainer
+ *		 0 mobPtr is not empty
+ *		 1 mobPtr is empty
+ */
+func int Mob_IsEmpty (var int mobPtr) {
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return -1; };
+
+	var oCMobContainer container; container = _^ (mobPtr);
+
+	if (!container.containList_next) {
+		return TRUE;
+	};
+
+	return FALSE;
 };
