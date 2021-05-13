@@ -197,6 +197,40 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	//oCNpcInventory
 	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
 
+	//T will put item to hand - so player can throw it away
+	if (key == KEY_T) {
+		if (ECX) {
+			var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
+			
+			if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
+				if (npcInventory.inventory2_oCItemContainer_contents) {
+					var C_NPC slf; slf = _^ (npcInventory.inventory2_owner);
+					if (NPC_IsPlayer (slf)) {
+						var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+						//Put item to hand only if hand is empty!
+						if (!vobPtr) {
+							vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+							
+							if (vobPtr) {
+								//Take 1 piece
+								vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
+
+								//Put in hand
+								oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 4);
+
+								//Close inventory
+								const int oCNpcInventory__Close = 6734304;
+								CALL__thiscall (ECX, oCNpcInventory__Close);
+
+								cancel = TRUE;
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+
 	if (cancel) {
 		//EDI has to be also nulled
 		MEM_WriteInt (ESP + 4, 0);
