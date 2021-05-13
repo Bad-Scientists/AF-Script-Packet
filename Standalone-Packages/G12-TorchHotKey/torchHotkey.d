@@ -290,7 +290,9 @@ func void _eventGameState__TorchHotKey (var int state) {
 		};
 
 		//Resends triggers to all lit mobs
-		TorchesReSendTrigger__TorchHotKey ();
+		//TorchesReSendTrigger__TorchHotKey ();
+		//Function has to be called with frame function in game - if script was called immediately then mob status would be changed by object routines (Wld_SetObjectRoutine)
+		FF_ApplyOnceGT (TorchesReSendTrigger__TorchHotKey);
 	} else
 	//Level change event
 	if (state == Gamestate_ChangeLevel) {
