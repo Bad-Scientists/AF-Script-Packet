@@ -139,10 +139,11 @@ func void _eventNpcInventoryHandleEvent__QuickLoot (var int dummyVariable) {
 };
 
 func void G1_QuickLoot_Init (){
-	const int once = 0;
+	//const int once = 0;
 
 	G1_InventoryEvents_Init ();
 
+	//if (!once) {
 	//Chests & trade inventory containers
 	ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__QuickLoot);
 
@@ -154,5 +155,6 @@ func void G1_QuickLoot_Init (){
 	//Nothing happening here atm
 	//NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__QuickLoot);
 
-	once = 1;
+	//once = 1;
+	//};
 };
