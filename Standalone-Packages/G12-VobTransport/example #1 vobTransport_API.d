@@ -261,7 +261,7 @@ func int FocusVobCanBeSelected__VobTransport_API (var int vobPtr) {
 	var string portalName; portalName = Vob_GetPortalName (vobPtr);
 	if (Hlp_StrCmp (portalName, "hütte26")) {
 		//We wont allow NPC movement in this example (feature allows it!)
-		if (Hlp_Is_oCNpc (vobPtr)) {
+		if (!Hlp_Is_oCNpc (vobPtr)) {
 			return TRUE;
 		};
 	};
