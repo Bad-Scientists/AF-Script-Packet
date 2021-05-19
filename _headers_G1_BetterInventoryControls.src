@@ -1,5 +1,12 @@
+engine_addresses_G1.d
+
 EngineClasses_G1\oInventory.d
 
 game_Events_G1.d
+game_Events_G12.d
+
+functions_oCNpc_engine.d
+
+inventory_oCNpc_engine.d
 
 Standalone-Packages\G1-BetterInventoryControls\betterInventoryControls.d

@@ -2,14 +2,15 @@ engine_addresses_G2.d
 
 EngineClasses_G2\zEventMan.d
 
-vobFunctions.d
-
 eventManager_engine.d
 eventManager.d
 
 interface.d
 
 view.d
+
+vectors.d
+vobFunctions.d
 
 Standalone-Packages\G12-PickLockHelper\pickLockHelper_API.d
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d

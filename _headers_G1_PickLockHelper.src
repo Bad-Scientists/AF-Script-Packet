@@ -2,6 +2,7 @@ engine_addresses_G1.d
 
 EngineClasses_G1\zEventMan.d
 
+vectors.d
 vobFunctions.d
 
 eventManager_engine.d
