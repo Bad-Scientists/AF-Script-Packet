@@ -73,6 +73,8 @@ Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
 Enables better navigation in inventories
  - use home/end keys to navigate to first/last item
  - use page up/page down keys to scroll faster through inventory
+ - special move key (Alt) + key Up will put item to hand
+ - special move key (Alt) + key Down will drop item (1 piece) from inventory
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
