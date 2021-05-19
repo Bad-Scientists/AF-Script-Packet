@@ -733,7 +733,7 @@ func string Choice_RemoveModifierOverlayKeepInline (var string s) {
 	return s;
 };
 
-func string Choice_RemoveAllModifiers (var string s) {
+func string Choice_RemoveAllOverlays (var string s) {
 	var int lastLen; lastLen = -1;
 	var int len;
 	var int index;
@@ -753,6 +753,12 @@ func string Choice_RemoveAllModifiers (var string s) {
 
 		lastLen = len;
 	end;
+
+	return s;
+};
+
+func string Choice_RemoveAllModifiers (var string s) {
+	s = Choice_RemoveAllOverlays (s);
 
 	//
 	s = Choice_RemoveModifierFont (s);
@@ -972,7 +978,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 	var int loop; loop = MEM_StackPos.position;
 	
-	if (key == KEY_UPARROW)
+	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
 	//2057 - Wheel up
 	|| (key == 2057)
 	{
@@ -983,7 +989,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 		};
 	};
 
-	if (key == KEY_DOWNARROW)
+	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
 	//2058 - Wheel down
 	|| (key == 2058)
 	{
@@ -1001,7 +1007,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 	if (Choice_IsDisabled (s)) {
 		//Auto-scrolling
 		if (key == -1) {
-			key = KEY_DOWNARROW;
+			key = MEM_GetKey ("keyDown");
 			zCViewDialogChoice_SelectNext ();
 			MEM_StackPos.position = loop;
 		};
@@ -1010,7 +1016,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 		//Prevent infinite loops
 		if (nextChoiceIndex != lastChoiceIndex) {
-			if (key == KEY_UPARROW) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp"))) {
 				zCViewDialogChoice_SelectPrevious ();
 			} else {
 				zCViewDialogChoice_SelectNext ();
@@ -1267,12 +1273,14 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				cancel = TRUE;
 			};
 			
-			if (key == KEY_LEFTARROW) || (key == KEY_A) {
+			if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft")))
+			{
 				InfoManagerSpinnerValue -= 1;
 				cancel = TRUE;
 			};
 
-			if (key == KEY_RIGHTARROW) || (key == KEY_D) {
+			if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight")))
+			{
 				InfoManagerSpinnerValue += 1;
 				cancel = TRUE; //cancel input (just in case)
 			};
@@ -1437,8 +1445,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		};
 
 		//Skip disabled dialog choices
-		if (key == KEY_UPARROW)
-		|| (key == KEY_DOWNARROW)
+		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
+		|| ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
 		//2057 - Wheel up
 		|| (key == 2057)
 		//2058 - Wheel down
@@ -1570,7 +1578,7 @@ MEM_InformationMan.LastMethod:
 	var string dlgColor; dlgColor = InfoManagerDefaultColorDialogGrey;
 	var string dlgColorSelected; dlgColorSelected = InfoManagerDefaultDialogColorSelected;
 
-	var int alignment; alignment = InfoManagerDefaultDialogAlignment;
+	var int alignment; //alignment = InfoManagerDefaultDialogAlignment;
 	
 	arr = _^ (choiceView + 172);
 
@@ -1869,11 +1877,12 @@ MEM_InformationMan.LastMethod:
 					};
 
 					var string dlgDescriptionClean; dlgDescriptionClean = Choice_GetCleanText (dlgDescription);
+					var string dlgDescriptionNoOverlays; dlgDescriptionNoOverlays = Choice_RemoveAllOverlays (dlgDescription);
 
 					overlayConcat = "";
 
 					//Is this answer dialog ?
-					index = (STR_IndexOf (dlgDescription, "a@"));
+					index = STR_IndexOf (dlgDescription, "a@");
 
 					if (index > -1) {
 						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "a@");
@@ -1881,11 +1890,32 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//Is this disabled dialog ?
-					index = (STR_IndexOf (dlgDescription, "d@"));
+					index = STR_IndexOf (dlgDescription, "d@");
 
 					if (index > -1) {
 						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "d@");
 						properties = properties | dialogChoiceType_Disabled;
+					};
+					
+					//al@ align left
+					index = STR_IndexOf (dlgDescription, "al@");
+
+					if (index > -1) {
+						alignment = ALIGN_LEFT;
+					};
+
+					//ac@ align center
+					index = STR_IndexOf (dlgDescription, "ac@");
+
+					if (index > -1) {
+						alignment = ALIGN_CENTER;
+					};
+
+					//ar@ align right
+					index = STR_IndexOf (dlgDescription, "ar@");
+					
+					if (index > -1) {
+						alignment = ALIGN_RIGHT;
 					};
 
 					//var int originalPosX; originalPosX = txt.posX;
@@ -2379,7 +2409,7 @@ MEM_InformationMan.LastMethod:
 					};
 					
 					//Extract font name
-					index = (STR_IndexOf (dlgDescription, "f@"));
+					index = STR_IndexOf (dlgDescription, "f@");
 
 					if (index > -1) {
 						dlgFont = Choice_GetModifierFont (dlgDescription);
@@ -2387,7 +2417,7 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//Extract font selected name
-					index = (STR_IndexOf (dlgDescription, "fs@"));
+					index = STR_IndexOf (dlgDescription, "fs@");
 
 					if (index > -1) {
 						dlgFontSelected = Choice_GetModifierFontSelected (dlgDescription);
@@ -2395,7 +2425,7 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//Extract color grayed
-					index = (STR_IndexOf (dlgDescription, "h@"));
+					index = STR_IndexOf (dlgDescription, "h@");
 
 					if (index > -1) {
 						dlgColor = Choice_GetModifierColor (dlgDescription);
@@ -2403,7 +2433,7 @@ MEM_InformationMan.LastMethod:
 					};
 					
 					//Extract color selected
-					index = (STR_IndexOf (dlgDescription, "hs@"));
+					index = STR_IndexOf (dlgDescription, "hs@");
 
 					if (index > -1) {
 						dlgColorSelected = Choice_GetModifierColorSelected (dlgDescription);
@@ -2411,7 +2441,7 @@ MEM_InformationMan.LastMethod:
 					};
 					
 					//al@ align left
-					index = (STR_IndexOf (dlgDescription, "al@"));
+					index = STR_IndexOf (dlgDescription, "al@");
 
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
@@ -2419,7 +2449,7 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//ac@ align center
-					index = (STR_IndexOf (dlgDescription, "ac@"));
+					index = STR_IndexOf (dlgDescription, "ac@");
 
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
@@ -2427,7 +2457,7 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//ar@ align right
-					index = (STR_IndexOf (dlgDescription, "ar@"));
+					index = STR_IndexOf (dlgDescription, "ar@");
 					
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
@@ -2435,7 +2465,7 @@ MEM_InformationMan.LastMethod:
 					};
 
 					//spinner s@
-					index = (STR_IndexOf (dlgDescription, "s@"));
+					index = STR_IndexOf (dlgDescription, "s@");
 
 					if (index > -1) {
 						properties = properties | dialogChoiceType_Spinner;
