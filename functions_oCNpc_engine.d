@@ -537,3 +537,23 @@ func void oCNpc_SetRightHand (var int slfInstance, var int vobPtr) {
 		call = CALL_End();
 	};
 };
+
+func void oCNpc_SetLeftHand (var int slfInstance, var int vobPtr) {
+	//0x00697CC0 public: void __thiscall oCNpc::SetLeftHand(class oCVob *)
+	const int oCNpc__SetLeftHand_G1 = 6913216;
+	
+	//0x0073B0C0 public: void __thiscall oCNpc::SetLeftHand(class oCVob *)
+	const int oCNpc__SetLeftHand_G2 = 7581888;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetLeftHand_G1, oCNpc__SetLeftHand_G2));
+		call = CALL_End();
+	};
+};
