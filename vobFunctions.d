@@ -1,3 +1,6 @@
+/*
+ *
+ */
 func int oCMob_GetModel (var int mobPtr) {
 	//0x0067AD00 public: virtual class zCModel * __thiscall oCMOB::GetModel(void) 
 	const int oCMOB__GetModel_G1 = 6794496;
@@ -95,7 +98,12 @@ func int zCVob_GetVisual (var int vobPtr) {
 
 	if (!vobPtr) { return 0; };
 
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetVisual_G1, zCVob__GetVisual_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetVisual_G1, zCVob__GetVisual_G2));
+		call = CALL_End();
+	};
+
 	return CALL_RetValAsPtr ();
 };
 
@@ -218,8 +226,12 @@ func void zCVob_SetDrawBBox3D (var int vobPtr, var int enabled) {
 	
 	if (!vobPtr) { return; };
 	
-	CALL_IntParam (enabled);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__SetDrawBBox3D_G1, zCVob__SetDrawBBox3D_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (enabled));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetDrawBBox3D_G1, zCVob__SetDrawBBox3D_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -234,11 +246,15 @@ func void zCVob_Move (var int vobPtr, var int x, var int y, var int z) {
 
 	if (!vobPtr) { return; };
 
-	CALL_FloatParam (x);
-	CALL_FloatParam (y);
-	CALL_FloatParam (z);
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (x));
+		CALL_FloatParam (_@ (y));
+		CALL_FloatParam (_@ (z));
 
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__Move_G1, zCVob__Move_G2));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__Move_G1, zCVob__Move_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -280,8 +296,12 @@ func void zCVob_RotateLocalX (var int vobPtr, var int x) {
 
 	if (!vobPtr) { return; };
 
-	CALL_FloatParam (x);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__RotateLocalX_G1, zCVob__RotateLocalX_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (x));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__RotateLocalX_G1, zCVob__RotateLocalX_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -296,8 +316,12 @@ func void zCVob_RotateLocalY (var int vobPtr, var int y) {
 
 	if (!vobPtr) { return; };
 
-	CALL_FloatParam (y);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__RotateLocalY_G1, zCVob__RotateLocalY_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (y));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__RotateLocalY_G1, zCVob__RotateLocalY_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -312,8 +336,12 @@ func void zCVob_RotateLocalZ (var int vobPtr, var int z) {
 
 	if (!vobPtr) { return; };
 
-	CALL_FloatParam (z);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__RotateLocalZ_G1, zCVob__RotateLocalZ_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (z));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__RotateLocalZ_G1, zCVob__RotateLocalZ_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -339,8 +367,12 @@ func void zCVob_SetPhysicsEnabled (var int vobPtr, var int enabled) {
 	
 	if (!vobPtr) { return; };
 
-	CALL_IntParam (enabled);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__SetPhysicsEnabled_G1, zCVob__SetPhysicsEnabled_G2));	
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (enabled));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetPhysicsEnabled_G1, zCVob__SetPhysicsEnabled_G2));	
+		call = CALL_End();
+	};
 };
 
 /*
@@ -355,8 +387,30 @@ func void zCVob_SetSleeping (var int vobPtr, var int sleeping) {
 	
 	if (!vobPtr) { return; };
 
-	CALL_IntParam (sleeping);
-	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__SetSleeping_G1, zCVob__SetSleeping_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (sleeping));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetSleeping_G1, zCVob__SetSleeping_G2));
+		call = CALL_End();
+	};
+};
+
+func int zCVob_HasParentVob (var int vobPtr) {
+	//0x005EF620 public: int __thiscall zCVob::HasParentVob(void)const 
+	const int zCVob__HasParentVob_G1 = 6223392;
+	
+	//
+	const int zCVob__HasParentVob_G2 = 0;
+	
+	if (!vobPtr) { return FALSE; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__HasParentVob_G1, zCVob__HasParentVob_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
 };
 
 
@@ -486,4 +540,104 @@ func int Hlp_Is_zCMorphMesh (var int vobPtr) {
 	};
 	
 	return FALSE;
+};
+
+func int zCVob_GetVelocity (var int vobPtr) {
+	//0x005EFC50 public: class zVEC3 __thiscall zCVob::GetVelocity(void)
+	const int zCVob__GetVelocity_G1 = 6224976;
+	
+	//0x0061D1C0 public: class zVEC3 __thiscall zCVob::GetVelocity(void)
+	const int zCVob__GetVelocity_G2 = 6410688;
+
+	if (!vobPtr) { return 0; };
+	
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetVelocity_G1, zCVob__GetVelocity_G2));
+	return CALL_RetValAsPtr ();
+};
+
+func int Vob_IsMoving (var int vobPtr) {
+/*
+	This does not work ;-/
+
+	if (!itemPtr) { return 0; };
+	var oCItem itm; itm = _^ (itemPtr);
+	return + (itm._zCVob_bitfield[1] & zCVob_bitfield1_isInMovementMode);
+*/
+
+/*
+	if (!vobPtr) { return FALSE; };
+
+	var int vecPtr; vecPtr = zCVob_GetVelocity (vobPtr);
+
+	if (!vecPtr) { return FALSE; };
+
+	var int vec[3];
+
+	copyVector (vecPtr, _@ (vec));
+	
+	return + (magVector (_@ (vec)));
+*/
+	//0x004AC6C0 public: class zVEC3 & __thiscall zVEC3::NormalizeSafe(void)
+	const int zVEC3__NormalizeSafe_G1 = 4900544;
+	
+	//0x00498A20 public: class zVEC3 & __thiscall zVEC3::NormalizeSafe(void)
+	const int zVEC3__NormalizeSafe_G2 = 4819488;
+
+	var int vec[3];
+	var int vecPtr; vecPtr = zCVob_GetVelocity (vobPtr);
+
+	//CALL_RetValIsStruct (12);
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vecPtr), MEMINT_SwitchG1G2 (zVEC3__NormalizeSafe_G1, zVEC3__NormalizeSafe_G2));
+		call = CALL_End();
+	};
+
+	MEM_CopyBytes(CALL_RetValAsPtr(), _@ (vec), 12);
+
+	return + (magVector (_@ (vec)));
+};
+
+/*
+ *
+ */
+func void Vob_TriggerVobByName (var string vobName) {
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray(zarr.array, i);
+		MEM_TriggerVob (vobPtr);
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
+func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int onBits;
+	var int offBits;
+
+	onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
+	offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
+
+	var zCVob vob;
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray (zarr.array, i);
+		vob = _^ (vobPtr);
+		
+		vob.bitfield[0] = vob.bitfield[0] | (onBits);
+		vob.bitfield[0] = vob.bitfield[0] & ~ (offBits);
+	end;
+
+	MEM_ArrayFree (arr);
 };

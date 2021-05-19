@@ -8,7 +8,11 @@ func void oCMobInter_SendStateChange (var int mobPtr, var int fromState, var int
 
 	if (!mobPtr) { return; };
 
-	CALL_IntParam (toState);
-	CALL_IntParam (fromState);
-	CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMobInter__SendStateChange_G1, oCMobInter__SendStateChange_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (toState));
+		CALL_IntParam (_@ (fromState));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__SendStateChange_G1, oCMobInter__SendStateChange_G2));
+		call = CALL_End();
+	};
 };

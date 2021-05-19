@@ -72,6 +72,24 @@ func int magVector (var int v1)
 	return sqrtf (addf (addf (sqrf (MEM_ReadIntArray(v1,  0)), sqrf (MEM_ReadIntArray(v1,  1))), sqrf (MEM_ReadIntArray(v1,  2))));
 };
 
+func int zVEC3_NormalizeSafe (var int vecPtr)
+{
+	//0x004AC6C0 public: class zVEC3 & __thiscall zVEC3::NormalizeSafe(void)
+	const int zVEC3__NormalizeSafe_G1 = 4900544;
+	
+	//0x00498A20 public: class zVEC3 & __thiscall zVEC3::NormalizeSafe(void)
+	const int zVEC3__NormalizeSafe_G2 = 4819488;
+
+	//CALL_RetValIsStruct (12);
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vecPtr), MEMINT_SwitchG1G2 (zVEC3__NormalizeSafe_G1, zVEC3__NormalizeSafe_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr ();
+};
+
 //normalize vector
 //v - output pointer
 //v1 - pointer to vector 1

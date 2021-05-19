@@ -316,6 +316,11 @@ func int Hlp_Is_oCMsgConversation (var int ptr) {
 	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
 };
 
+func int Hlp_Is_oCMsgMovement (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgMovement_vtbl);
+};
+
 //0x007DE634 const oCMsgMagic::`vftable' 
 const int oCMsgMagic_vtbl		= 8250932;
 
