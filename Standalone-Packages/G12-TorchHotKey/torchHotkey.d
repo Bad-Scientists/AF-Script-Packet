@@ -218,11 +218,16 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 
 	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
 		//Get Ctrl key status
-		var int ctrlPressed; ctrlPressed = MEM_KeyState (KEY_LCONTROL);
-		
-		if ((ctrlPressed == KEY_PRESSED) || (ctrlPressed == KEY_HOLD)) {
+		var int ctrlKey; ctrlKey = MEM_GetKey ("keyAction");
+		var int ctrlSecondaryKey; ctrlSecondaryKey = MEM_GetKey ("keyAction");
+
+		ctrlKey = MEM_KeyState (ctrlKey);
+		ctrlSecondaryKey = MEM_KeyState (ctrlSecondaryKey);
+
+		if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
 			//Put torch to right hand
-			if (oCNpc_DoExchangeTorch (hero)) {
+			//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
+			if (NPC_DoExchangeTorch (hero)) {
 				cancel = TRUE;
 			};
 		} else {
