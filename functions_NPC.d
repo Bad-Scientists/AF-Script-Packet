@@ -620,3 +620,64 @@ func int NPC_CarriesTorch (var int slfinstance) {
 	
 	return FALSE;
 };
+
+/*
+ *	Function calls torch exchange & removes overlay when torch is not in ZS_LEFTHAND
+ */
+func int NPC_DoExchangeTorch (var int slfInstance) {
+	if (oCNpc_DoExchangeTorch (slfInstance)) {
+		if (!NPC_CarriesTorch (slfInstance)) {
+			if (NPC_HasOverlay (slfInstance, "HUMANS_TORCH.MDS")) {
+				//No need to validate slf - all functions above do the validation
+				var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+				Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
+			};
+		};
+
+		return TRUE;
+	};
+	return FALSE;
+};
+
+func int NPC_GetNode (var int slfInstance, var string nodeName) {
+	//0x00563F80 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G1 = 5652352;
+
+	//0x0057DFF0 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G2 = 5758960;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int model; model = oCNPC_GetModel (slfInstance);
+
+	if (!model) { return 0; };
+
+	CALL_zStringPtrParam (nodeName);
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
+
+	return CALL_RetValAsPtr ();
+};
+
+func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
+	//0x0055F8C0 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G1 = 5634240;
+
+	//0x00579140 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G2 = 5738816;
+
+	var int model; model = oCNPC_GetModel (slfInstance);
+	
+	if (!model) { return 0; };
+	
+	var int node; node = NPC_GetNode (slfInstance, nodeName);
+	
+	if (!node) { return 0; };
+
+	CALL_RetValIsStruct (12);
+	CALL_PtrParam (node);
+	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
+	
+	return CALL_RetValAsPtr ();
+};
