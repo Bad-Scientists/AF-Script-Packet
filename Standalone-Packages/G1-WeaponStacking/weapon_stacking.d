@@ -20,10 +20,18 @@ func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 	};
 };
 
-func void _hook_oCItemContainer_Activate__weaponStacking () {
-	//We cannot get oCItemContainer owner this address oCItemContainer.inventory2_oCItemContainer_npc == 0
-	//So let's call it on hero
-	NPC_SplitMultipleEquippedWeapons (hero);
+func void _eventoCItemContainerActivate_weaponStacking (var int dummyVariable) {
+	if (Hlp_Is_oCNpcInventory (ECX)) {
+		var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
+		
+		if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
+			var oCNpc slf; slf = _^ (npcInventory.inventory2_owner);
+
+			if (NPC_IsPlayer (slf)) {
+				NPC_SplitMultipleEquippedWeapons (slf);
+			};
+		};
+	};
 };
 
 func void _eventEquipItem_WeaponStacking (var int dummyVariable){
@@ -115,6 +123,10 @@ func void _hook_weaponSorting__weaponStacking (){
 
 func void G1_WeaponStacking_Init (){
 	const int once = 0;
+	
+	G1_ItemContainerActivateEvent_Init ();
+
+	ItemContainerActivate_AddListener (_eventoCItemContainerActivate_weaponStacking);
 
 	G12_GameEvents_Init ();
 
@@ -128,7 +140,7 @@ func void G1_WeaponStacking_Init (){
 		HookEngine (oCAniCtrl_Human__RemoveWeapon2, 6, "_hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking");
 
 		//Splits equipped weapons when opening inventory
-		HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer_Activate__weaponStacking");
+		//HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer_Activate__weaponStacking");
 
 		//Not good enough - splits weapons on second run only
 		//0066BDE0  .text     Debug data           ?Open@oCNpcInventory@@QAEXHH@Z
