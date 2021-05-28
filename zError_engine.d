@@ -1,10 +1,10 @@
 func void zERROR_SetFilterLevel (var int zErrorLevel) {
-	//008699D8  .data     Debug data           ?zerr@@3VzERROR@@A
+	//0x008699D8 class zERROR zerr
 	const int zERROR__zerr_G1 = 8821208;
 	//0x008CDCD0 class zERROR zerr
 	const int zERROR__zerr_G2 = 9231568;
 	
-	//00449680  .text     Debug data           ?SetFilterLevel@zERROR@@QAEXH@Z
+	//0x00449680 public: void __thiscall zERROR::SetFilterLevel(int)
 	const int zERROR__SetFilterLevel_G1 = 4494976;
 	//0x0044DDA0 public: void __thiscall zERROR::SetFilterLevel(int)
 	const int zERROR__SetFilterLevel_G2 = 4513184;
@@ -42,8 +42,10 @@ func void zERROR_SetFilterLevel (var int zErrorLevel) {
 //0x00449EB0 public: bool __thiscall zERROR::SearchForSpy(void) 
 
 func int zERROR_GetFilterLevel () {
-	const int zerr_G1 = 8821208; //0x8699D8
-	const int zerr_G2 = 9231568; //0x8CDCD0
+	//0x008699D8 class zERROR zerr
+	const int zerr_G1 = 8821208;
+	//0x008CDCD0 class zERROR zerr
+	const int zerr_G2 = 9231568;
 
 	//0x0057E350 public: int __thiscall zERROR::GetFilterLevel(void) 
 	const int zERROR__GetFilterLevel_G1 = 5759824;
