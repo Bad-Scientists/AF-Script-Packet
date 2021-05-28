@@ -25,7 +25,7 @@
 			FUNC VOID B_AssessSC () {
 
 				if (NPC_GetWalkMode (hero) != NPC_SNEAK)
-				|| (NPC_CanSeeNPC (self, hero) && (NPC_IsInAngleXNPC (self, hero, 60)))
+				|| (NPC_CanSeeNPC (self, hero) && (NPC_IsNpcInAngleX (self, hero, 60)))
 				{
 					if (PC_IsInState (ZS_PickPocketing))
 					{
