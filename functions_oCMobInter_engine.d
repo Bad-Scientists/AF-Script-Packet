@@ -1,12 +1,11 @@
-func void oCMobInter_SendStateChange (var int mobPtr, var int fromState, var int toState)
-{
+func void oCMobInter_SendStateChange (var int mobPtr, var int fromState, var int toState) {
 	//0x0067D8C0 protected: void __thiscall oCMobInter::SendStateChange(int,int) 
 	const int oCMobInter__SendStateChange_G1 = 6805696;
 	
 	//0x0071ED90 public: void __thiscall oCMobInter::SendStateChange(int,int)
 	const int oCMobInter__SendStateChange_G2 = 7466384;
 
-	if (!mobPtr) { return; };
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
