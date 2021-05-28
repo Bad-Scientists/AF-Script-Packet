@@ -5,6 +5,8 @@
  *	Added support for G1
  */
 
+var int PC_DefaultTurnSpeed;
+
 func void PC_SetTurnSpeed (var int f) {
 	//0x007D1110 __real@3dcccccd
 	const int G1_HeroTurnSpeedAdr = 8196368;
