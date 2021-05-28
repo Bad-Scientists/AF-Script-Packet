@@ -29,7 +29,7 @@ func void _hook_oCNpc_IsMunitionAvailable () {
 		
 		//No ammo
 		if (!count) {
-			var string instName; instName = oCItem_GetInstanceName (weapon.munition);
+			var string instName; instName = GetSymbolName (weapon.munition);
 
 			if (Hlp_StrCmp (instName, "ITAMARROW") || Hlp_StrCmp (instName, "ITRW_ARROW")) {
 				PrintS ("Došli mi šípy !");
