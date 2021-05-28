@@ -587,14 +587,18 @@ func int Vob_IsMoving (var int vobPtr) {
 	var int vec[3];
 	var int vecPtr; vecPtr = zCVob_GetVelocity (vobPtr);
 
+	//only supported in disposable calls
 	//CALL_RetValIsStruct (12);
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__thiscall (_@ (vecPtr), MEMINT_SwitchG1G2 (zVEC3__NormalizeSafe_G1, zVEC3__NormalizeSafe_G2));
 		call = CALL_End();
 	};
 
-	MEM_CopyBytes(CALL_RetValAsPtr(), _@ (vec), 12);
+	MEM_CopyBytes (CALL_RetValAsPtr(), _@ (vec), 12);
+
+	MEM_Free (vecPtr);
 
 	return + (magVector (_@ (vec)));
 };
@@ -640,4 +644,309 @@ func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int c
 	end;
 
 	MEM_ArrayFree (arr);
+};
+
+//0x005EF090 public: void __thiscall zCVob::SetHeadingLocal(class zVEC3 const &)
+//0x005EF150 public: void __thiscall zCVob::SetHeadingWorld(class zVEC3 const &)
+
+//0x005EF640 public: void __thiscall zCVob::SetHeadingAtWorld(class zVEC3 const &)
+
+
+//0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+
+
+func int zCVob_GetPositionWorld (var int vobPtr) {
+	//0x0051B3C0 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const 
+	const int zCVob__GetPositionWorld_G1 = 5354432;
+
+	//0x0052DC90 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
+	const int zCVob__GetPositionWorld_G2 = 5430416;
+
+	if (!vobPtr) { return 0; };
+	
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetPositionWorld_G1, zCVob__GetPositionWorld_G2));
+	return CALL_RetValAsPtr ();
+};
+
+func int zCVob_GetAtVectorWorld (var int vobPtr) {
+	//0x0051B3E0 public: class zVEC3 __thiscall zCVob::GetAtVectorWorld(void)const 
+	const int zCVob__GetAtVectorWorld_G1 = 5354464;
+
+	//0x0052DCB0 public: class zVEC3 __thiscall zCVob::GetAtVectorWorld(void)const 
+	const int zCVob__GetAtVectorWorld_G2 = 5430448;
+
+	if (!vobPtr) { return 0; };
+	
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetAtVectorWorld_G1, zCVob__GetAtVectorWorld_G2));
+	return CALL_RetValAsPtr ();
+};
+
+func int zCVob_GetUpVectorWorld (var int vobPtr) {
+	//0x0051B400 public: class zVEC3 __thiscall zCVob::GetUpVectorWorld(void)const 
+	const int zCVob__GetUpVectorWorld_G1 = 5354496;
+
+	//0x0052DCD0 public: class zVEC3 __thiscall zCVob::GetUpVectorWorld(void)const 
+	const int zCVob__GetUpVectorWorld_G2 = 5430480;
+
+	if (!vobPtr) { return 0; };
+	
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetUpVectorWorld_G1, zCVob__GetUpVectorWorld_G2));
+	return CALL_RetValAsPtr ();
+};
+
+func int zCVob_GetRightVectorWorld (var int vobPtr) {
+	//0x0051B420 public: class zVEC3 __thiscall zCVob::GetRightVectorWorld(void)const 
+	const int zCVob__GetRightVectorWorld_G1 = 5354528;
+
+	//0x0052DCF0 public: class zVEC3 __thiscall zCVob::GetRightVectorWorld(void)const 
+	const int zCVob__GetRightVectorWorld_G2 = 5430512;
+
+	if (!vobPtr) { return 0; };
+	
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetRightVectorWorld_G1, zCVob__GetRightVectorWorld_G2));
+	return CALL_RetValAsPtr ();
+};
+
+//
+func void zCVob_SetPositionWorld (var int vobPtr, var int vecPtr) {
+	//0x005EE650 public: void __thiscall zCVob::SetPositionWorld(class zVEC3 const &)
+	const int zCVob__SetPositionWorld_G1 = 6219344;
+	
+	//0x0061BB70 public: void __thiscall zCVob::SetPositionWorld(class zVEC3 const &)
+	const int zCVob__SetPositionWorld_G2 = 6404976;
+
+	if (!vobPtr) || (!vecPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vecPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetPositionWorld_G1, zCVob__SetPositionWorld_G2));
+		call = CALL_End();
+	};
+};
+
+func void zMAT4_SetAtVector (var int trafoPtr, var int vecPtr) {
+	//0x00497390 public: void __thiscall zMAT4::SetAtVector(class zVEC3 const &)
+	const int zMAT4__SetAtVector_G1 = 4813712;
+
+	//0x0056B960 public: void __thiscall zMAT4::SetAtVector(class zVEC3 const &)
+	const int zMAT4__SetAtVector_G2 = 5683552;
+
+	if (!trafoPtr) { return; };
+	if (!vecPtr) { return; };
+	
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vecPtr));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__SetAtVector_G1, zMAT4__SetAtVector_G2));
+		call = CALL_End();
+	};
+};
+
+func void zMAT4_SetUpVector (var int trafoPtr, var int vecPtr)
+{
+	//0x004973B0 public: void __thiscall zMAT4::SetUpVector(class zVEC3 const &)
+	const int zMAT4__SetUpVector_G1 = 4813744;
+
+	//0x004B9D90 public: void __thiscall zMAT4::SetUpVector(class zVEC3 const &)
+	const int zMAT4__SetUpVector_G2 = 4955536;
+
+	if (!trafoPtr) { return; };
+	if (!vecPtr) { return; };
+	
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vecPtr));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__SetUpVector_G1, zMAT4__SetUpVector_G2));
+		call = CALL_End();
+	};
+};
+
+func void zMAT4_SetRightVector (var int trafoPtr, var int vecPtr)
+{
+	//0x004973D0 public: void __thiscall zMAT4::SetRightVector(class zVEC3 const &)
+	const int zMAT4__SetRightVector_G1 = 4813776;
+
+	//0x004B9DB0 public: void __thiscall zMAT4::SetRightVector(class zVEC3 const &)
+	const int zMAT4__SetRightVector_G2 = 4955568;
+
+	if (!trafoPtr) { return; };
+	if (!vecPtr) { return; };
+	
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vecPtr));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__SetRightVector_G1, zMAT4__SetRightVector_G2));
+		call = CALL_End();
+	};
+};
+
+func void zCVob_SetTrafo (var int vobPtr, var int trafoPtr) {
+	//0x005EE6B0 public: void __thiscall zCVob::SetTrafo(class zMAT4 const &)
+	const int zCVob__SetTrafo_G1 = 6219440;
+
+	//0x0061BBD0 public: void __thiscall zCVob::SetTrafo(class zMAT4 const &)
+	const int zCVob__SetTrafo_G2 = 6405072;
+
+	if (!vobPtr) { return; };
+	if (!trafoPtr) { return; };
+	
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (trafoPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetTrafo_G1, zCVob__SetTrafo_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Miscellaneous mob attributes
+ */
+func void oCMob_SetMobName (var int mobPtr, var string mobName) {
+	if (!Hlp_Is_oCMob (mobPtr)) { return; };
+
+	var oCMob mob; mob = _^ (mobPtr);
+	mob.name = mobName;
+	mob.focusNameIndex = MEM_GetSymbolIndex (mobName);
+};
+
+func void oCMob_SetOwnerStr (var int mobPtr, var string ownerStr, var string ownerGuildStr) {
+	//0x0067ADA0 public: void __thiscall oCMOB::SetOwner(class zSTRING const &,class zSTRING const &)
+	const int oCMOB__SetOwner_G1 = 6794656;
+	
+	//0x0071BF80 public: void __thiscall oCMOB::SetOwner(class zSTRING const &,class zSTRING const &)
+	const int oCMOB__SetOwner_G2 = 7454592;
+
+	if (!mobPtr) { return; };
+
+	CALL_zStringPtrParam (ownerStr);
+	CALL_zStringPtrParam (ownerGuildStr);
+	CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMOB__SetOwner_G1, oCMOB__SetOwner_G2));
+};
+
+//0x0067AF90 public: void __thiscall oCMOB::SetOwner(int,int)
+//0x0071C170 public: void __thiscall oCMOB::SetOwner(int,int)
+
+//0x0067C790 public: virtual void __thiscall oCMobInter::SetUseWithItem(class zSTRING const &)
+
+func void oCMobInter_SetUseWithItem (var int mobPtr, var string itemInstanceName) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+	mob.useWithItem = itemInstanceName;
+};
+
+func void oCMobInter_SetTriggerTarget (var int mobPtr, var string triggerTarget) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+	mob.triggerTarget = triggerTarget;
+};
+
+func void oCMobInter_SetSceme (var int mobPtr, var string sceme) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+	mob.sceme = sceme;
+};
+
+func void oCMobInter_SetConditionFunc (var int mobPtr, var string conditionFunc) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+	mob.conditionFunc = conditionFunc;
+};
+
+func void oCMobInter_SetOnStateFuncName (var int mobPtr, var string onStateFuncName) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+	mob.onStateFuncName = onStateFuncName;
+};
+
+func void oCMobLockable_UpdateLock (var int mobPtr) {
+	if (!Hlp_Is_oCMobLockable (mobPtr)) { return; };
+
+	var oCMobLockable mob; mob = _^ (mobPtr);
+
+	//No key
+	if (STR_Len (mob.keyInstance) == 0) {
+		//No pickLockStr - unlock chest
+		if (STR_Len (mob.pickLockStr) == 0) {
+			mob.bitfield = (mob.bitfield & ~ oCMobLockable_bitfield_locked);
+		} else {
+			//Lock chest
+			mob.bitfield = (mob.bitfield | oCMobLockable_bitfield_locked);
+		};
+	} else {
+		//Lock chest
+		mob.bitfield = (mob.bitfield | oCMobLockable_bitfield_locked);
+	};
+};
+
+func void oCMobLockable_SetKeyInstance (var int mobPtr, var string keyInstance) {
+	if (!Hlp_Is_oCMobLockable (mobPtr)) { return; };
+
+	var oCMobLockable mob; mob = _^ (mobPtr);
+	mob.keyInstance = keyInstance;
+
+	oCMobLockable_UpdateLock (mobPtr);
+};
+
+func void oCMobLockable_SetPickLockStr (var int mobPtr, var string pickLockStr) {
+	if (!Hlp_Is_oCMobLockable (mobPtr)) { return; };
+
+	var oCMobLockable mob; mob = _^ (mobPtr);
+	mob.pickLockStr = pickLockStr;
+
+	oCMobLockable_UpdateLock (mobPtr);
+};
+
+func void oCMobDoor_SetAddName (var int mobPtr, var string addName) {
+	if (!Hlp_Is_oCMobDoor (mobPtr)) { return; };
+
+	var oCMobDoor mob; mob = _^ (mobPtr);
+	mob.addName = addName;
+};
+
+func void oCMobFire_SetFireSlot (var int mobPtr, var string fireSlot) {
+	if (!Hlp_Is_oCMobFire (mobPtr)) { return; };
+
+	var oCMobFire mob; mob = _^ (mobPtr);
+	mob.fireSlot = fireSlot;
+};
+
+func void oCMobFire_SetFireVobtreeName (var int mobPtr, var string fireVobtreeName) {
+	if (!Hlp_Is_oCMobFire (mobPtr)) { return; };
+
+	var oCMobFire mob; mob = _^ (mobPtr);
+	mob.fireVobtreeName = fireVobtreeName;
+};
+
+func void MOB_SetLock (var string mobName, var string keyInstance, var string pickLockStr) {
+	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
+	oCMobLockable_SetKeyInstance (mobPtr, keyInstance);
+	oCMobLockable_SetPickLockStr (mobPtr, pickLockStr);
+};
+
+/*
+ *	Created by Showdown & Lehona
+ *	Original post: https://forum.worldofplayers.de/forum/threads/1299679-Skriptpaket-Ikarus-4/page11?p=24735929&viewfull=1#post24735929
+ *	I just added G1 address
+ */
+func void SetRainThroughVobs (var int bool) {
+	const int Raincheck_G1 = 6000805;
+	const int Raincheck_G2 = 6169210;
+
+	MemoryProtectionOverride (MEMINT_SwitchG1G2(Raincheck_G1, Raincheck_G2), 4);
+	
+	if (!bool) {
+		MEM_WriteByte (MEMINT_SwitchG1G2 (Raincheck_G1, Raincheck_G2), 224);
+	} else {
+		MEM_WriteByte (MEMINT_SwitchG1G2 (Raincheck_G1, Raincheck_G2), 226);
+	};
 };
