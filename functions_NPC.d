@@ -681,3 +681,46 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 	
 	return CALL_RetValAsPtr ();
 };
+
+/*
+ *
+ */
+func int NPC_GetDistToPos (var int slfInstance, var int posPtr) {
+	if (!posPtr) { return -1; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	//Backup soundPosition
+	var int pos[3];
+	MEM_CopyBytes (_@ (slf.soundPosition), _@ (pos[0]), 12);
+
+	slf.soundPosition[0] = MEM_ReadIntArray (posPtr, 0);
+	slf.soundPosition[1] = MEM_ReadIntArray (posPtr, 1);
+	slf.soundPosition[2] = MEM_ReadIntArray (posPtr, 2);
+
+	//We will exploit this engine function to calculate
+	var int dist; dist = Snd_GetDistToSource (slf);
+
+	//Restore soundPosition
+	MEM_CopyBytes (_@ (pos[0]), _@ (slf.soundPosition), 12);
+
+	return dist;
+};
+
+func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
+	if (!vobPtr) { return -1; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+	
+	var zCVob vob; vob = _^(vobPtr);
+	
+	var int pos[3];
+	//TrfToPos (_@(vob.trafoObjToWorld), _@ (pos));
+	MEM_WriteIntArray(_@ (pos), 0, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  3));
+	MEM_WriteIntArray(_@ (pos), 1, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  7));
+	MEM_WriteIntArray(_@ (pos), 2, MEM_ReadIntArray(_@(vob.trafoObjToWorld), 11));
+	
+	return NPC_GetDistToPos (slf, _@ (pos));
+};
