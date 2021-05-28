@@ -32,6 +32,71 @@ func string CloneCreateNewName__VobTransport (var string vobName) {
 	return vobName;
 };
 
+func void CopyoCMobProperties__VobTransport (var int mobPtr1, var int mobPtr2) {
+	if (!Hlp_Is_oCMob (mobPtr1)) { return; };
+	if (!Hlp_Is_oCMob (mobPtr2)) { return; };
+
+	var oCMob mob1; mob1 = _^ (mobPtr1);
+	var oCMob mob2; mob2 = _^ (mobPtr2);
+	
+	mob2.name = mob1.name;
+	mob2.bitfield = mob1.bitfield;
+	mob2.visualDestroyed = mob1.visualDestroyed;
+	mob2.ownerStr = mob1.ownerStr;
+	mob2.ownerGuildStr = mob1.ownerGuildStr;
+	mob2.owner = mob1.owner;
+	mob2.ownerGuild = mob1.ownerGuild;
+	mob2.focusNameIndex = mob1.focusNameIndex;
+};
+
+func void CopyoCMobInterProperties__VobTransport (var int mobPtr1, var int mobPtr2) {
+	if (!Hlp_Is_oCMobInter (mobPtr1)) { return; };
+	if (!Hlp_Is_oCMobInter (mobPtr2)) { return; };
+
+	var oCMobInter mob1; mob1 = _^ (mobPtr1);
+	var oCMobInter mob2; mob2 = _^ (mobPtr2);
+
+	mob2.triggerTarget = mob1.triggerTarget;
+	mob2.useWithItem = mob1.useWithItem;
+	mob2.sceme = mob1.sceme;
+	mob2.conditionFunc = mob1.conditionFunc;
+	mob2.onStateFuncName = mob1.onStateFuncName;
+};
+
+func void CopyoCMobLockableProperties__VobTransport (var int mobPtr1, var int mobPtr2) {
+	if (!Hlp_Is_oCMobLockable (mobPtr1)) { return; };
+	if (!Hlp_Is_oCMobLockable (mobPtr2)) { return; };
+
+	var oCMobLockable mob1; mob1 = _^ (mobPtr1);
+	var oCMobLockable mob2; mob2 = _^ (mobPtr2);
+
+	mob2.bitfield = mob1.bitfield;
+	mob2.keyInstance = mob1.keyInstance;
+	mob2.pickLockStr = mob1.pickLockStr;
+};
+
+func void CopyozCTriggerProperties__VobTransport (var int triggerPtr1, var int triggerPtr2) {
+	if (!Hlp_Is_zCTrigger (triggerPtr1)) { return; };
+	if (!Hlp_Is_zCTrigger (triggerPtr2)) { return; };
+
+	var zCTrigger trigger1; trigger1 = _^ (triggerPtr1);
+	var zCTrigger trigger2; trigger2 = _^ (triggerPtr2);
+
+	trigger2.triggerTarget = trigger1.triggerTarget;
+	trigger2.bitfield = trigger1.bitfield;
+	trigger2.respondToVobName = trigger1.respondToVobName;
+	trigger2.numCanBeActivated = trigger1.numCanBeActivated;
+	trigger2.retriggerWaitSec = trigger1.retriggerWaitSec;
+	trigger2.damageThreshold = trigger1.damageThreshold;
+	trigger2.fireDelaySec = trigger1.fireDelaySec;
+	trigger2.nextTimeTriggerable = trigger1.nextTimeTriggerable;
+	trigger2.savedOtherVob = trigger1.savedOtherVob;
+	trigger2.countCanBeActivated = trigger1.countCanBeActivated;
+
+	MEM_CopyBytes (_@ (trigger1._zCVob_bbox3D_mins), _@ (trigger2._zCVob_bbox3D_mins), 12);
+	MEM_CopyBytes (_@ (trigger1._zCVob_bbox3D_maxs), _@ (trigger2._zCVob_bbox3D_maxs), 12);
+};
+
 func int CloneObject__VobTransport (var int vobPtr) {
 	var zCDecal decal;
 	var zCVob vob;
@@ -41,6 +106,14 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	var oCMobDoor mobDoor;
 	var oCMobInter mobLadder;
 	var oCMobLockable mobLockable;
+
+	//oCMobSwitch is same as oCMobInter
+	var oCMobInter mobSwitch;
+	//oCMobWheel is same as oCMobInter
+	var oCMobInter mobWheel;
+	//oCMobBed is same as oCMobInter
+	var oCMobInter mobBed;
+
 	var oCMob mob;
 	var oCMobInter mobInter;
 	var zCTrigger trigger;
@@ -71,6 +144,9 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		oCMobDoor		supported
 		oCMobLadder		supported
 		oCMobLockable		supported
+		oCMobSwitch		supported
+		oCMobWheel		supported
+		oCMobBed		supported
 		oCMobInter		supported
 		oCMob			supported
 
@@ -202,7 +278,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	if (Hlp_Is_oCItem (vobPtr)) {
 		itm = _^ (vobPtr);
 		amount = itm.amount;
-		instName = oCItem_GetInstanceName (Hlp_GetInstanceID (itm));
+		instName = GetSymbolName (Hlp_GetInstanceID (itm));
 
 		vobPtr = InsertItem (instName, amount, _@ (itm._zCVob_trafoObjToWorld));
 		
@@ -222,24 +298,9 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (mobContainer._zCVob_bitfield), _@ (newMobContainer._zCVob_bitfield), 20);
 
-		newMobContainer._oCMob_name = mobContainer._oCMob_name;
-		newMobContainer._oCMob_bitfield = mobContainer._oCMob_bitfield;
-		newMobContainer._oCMob_visualDestroyed = mobContainer._oCMob_visualDestroyed;
-		newMobContainer._oCMob_ownerStr = mobContainer._oCMob_ownerStr;
-		newMobContainer._oCMob_ownerGuildStr = mobContainer._oCMob_ownerGuildStr;
-		newMobContainer._oCMob_owner = mobContainer._oCMob_owner;
-		newMobContainer._oCMob_ownerGuild = mobContainer._oCMob_ownerGuild;
-		newMobContainer._oCMob_focusNameIndex = mobContainer._oCMob_focusNameIndex;
-
-		newMobContainer._oCMobInter_triggerTarget = mobContainer._oCMobInter_triggerTarget;
-		newMobContainer._oCMobInter_useWithItem = mobContainer._oCMobInter_useWithItem;
-		newMobContainer._oCMobInter_sceme = mobContainer._oCMobInter_sceme;
-		newMobContainer._oCMobInter_conditionFunc = mobContainer._oCMobInter_conditionFunc;
-		newMobContainer._oCMobInter_onStateFuncName = mobContainer._oCMobInter_onStateFuncName;
-
-		newMobContainer._oCMobLockable_bitfield = mobContainer._oCMobLockable_bitfield;
-		newMobContainer._oCMobLockable_keyInstance = mobContainer._oCMobLockable_keyInstance;
-		newMobContainer._oCMobLockable_pickLockStr = mobContainer._oCMobLockable_pickLockStr;
+		CopyoCMobProperties__VobTransport (_@ (mobContainer), _@ (newMobContainer));
+		CopyoCMobInterProperties__VobTransport (_@ (mobContainer), _@ (newMobContainer));
+		CopyoCMobLockableProperties__VobTransport (_@ (mobContainer), _@ (newMobContainer));
 
 		//
 		//Mob_TransferItemsToMob (_@ (mobContainer), _@ (newMobContainer));
@@ -270,22 +331,8 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (mobFire._zCVob_bitfield), _@ (newMobFire._zCVob_bitfield), 20);
 
-		newMobFire._oCMob_name = mobFire._oCMob_name;
-		newMobFire._oCMob_bitfield = mobFire._oCMob_bitfield;
-		newMobFire._oCMob_visualDestroyed = mobFire._oCMob_visualDestroyed;
-		newMobFire._oCMob_ownerStr = mobFire._oCMob_ownerStr;
-		newMobFire._oCMob_ownerGuildStr = mobFire._oCMob_ownerGuildStr;
-		newMobFire._oCMob_owner = mobFire._oCMob_owner;
-		newMobFire._oCMob_ownerGuild = mobFire._oCMob_ownerGuild;
-		newMobFire._oCMob_focusNameIndex = mobFire._oCMob_focusNameIndex;
-
-		newMobFire._oCMobInter_triggerTarget = mobFire._oCMobInter_triggerTarget;
-		newMobFire._oCMobInter_useWithItem = mobFire._oCMobInter_useWithItem;
-		newMobFire._oCMobInter_sceme = mobFire._oCMobInter_sceme;
-		newMobFire._oCMobInter_conditionFunc = mobFire._oCMobInter_conditionFunc;
-		newMobFire._oCMobInter_onStateFuncName = mobFire._oCMobInter_onStateFuncName;
-
-		newMobFire._oCMobInter_bitfield = mobFire._oCMobInter_bitfield;
+		CopyoCMobProperties__VobTransport (_@ (mobFire), _@ (newMobFire));
+		CopyoCMobInterProperties__VobTransport (_@ (mobFire), _@ (newMobFire));
 
 		newMobFire.fireSlot = mobFire.fireSlot;
 		newMobFire.fireVobtreeName = mobFire.fireVobtreeName;
@@ -305,23 +352,9 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		var oCMobDoor newMobDoor; newMobDoor = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobDoor._zCVob_bitfield), _@ (newMobDoor._zCVob_bitfield), 20);
-		
-		newMobDoor._oCMob_name = mobDoor._oCMob_name;
-		newMobDoor._oCMob_bitfield = mobDoor._oCMob_bitfield;
-		newMobDoor._oCMob_visualDestroyed = mobDoor._oCMob_visualDestroyed;
-		newMobDoor._oCMob_ownerStr = mobDoor._oCMob_ownerStr;
-		newMobDoor._oCMob_ownerGuildStr = mobDoor._oCMob_ownerGuildStr;
-		newMobDoor._oCMob_owner = mobDoor._oCMob_owner;
-		newMobDoor._oCMob_ownerGuild = mobDoor._oCMob_ownerGuild;
-		newMobDoor._oCMob_focusNameIndex = mobDoor._oCMob_focusNameIndex;
 
-		newMobDoor._oCMobInter_triggerTarget = mobDoor._oCMobInter_triggerTarget;
-		newMobDoor._oCMobInter_useWithItem = mobDoor._oCMobInter_useWithItem;
-		newMobDoor._oCMobInter_sceme = mobDoor._oCMobInter_sceme;
-		newMobDoor._oCMobInter_conditionFunc = mobDoor._oCMobInter_conditionFunc;
-		newMobDoor._oCMobInter_onStateFuncName = mobDoor._oCMobInter_onStateFuncName;
-
-		newMobDoor._oCMobInter_bitfield = mobDoor._oCMobInter_bitfield;
+		CopyoCMobProperties__VobTransport (_@ (mobDoor), _@ (newMobDoor));
+		CopyoCMobInterProperties__VobTransport (_@ (mobDoor), _@ (newMobDoor));
 
 		newMobDoor.addName = mobDoor.addName;
 		
@@ -342,23 +375,9 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (mobLadder._zCVob_bitfield), _@ (newMobLadder._zCVob_bitfield), 20);
 
-		newMobLadder._oCMob_name = mobLadder._oCMob_name;
-		newMobLadder._oCMob_bitfield = mobLadder._oCMob_bitfield;
-		newMobLadder._oCMob_visualDestroyed = mobLadder._oCMob_visualDestroyed;
-		newMobLadder._oCMob_ownerStr = mobLadder._oCMob_ownerStr;
-		newMobLadder._oCMob_ownerGuildStr = mobLadder._oCMob_ownerGuildStr;
-		newMobLadder._oCMob_owner = mobLadder._oCMob_owner;
-		newMobLadder._oCMob_ownerGuild = mobLadder._oCMob_ownerGuild;
-		newMobLadder._oCMob_focusNameIndex = mobLadder._oCMob_focusNameIndex;
+		CopyoCMobProperties__VobTransport (_@ (mobLadder), _@ (newMobLadder));
+		CopyoCMobInterProperties__VobTransport (_@ (mobLadder), _@ (newMobLadder));
 
-		newMobLadder.triggerTarget = mobLadder.triggerTarget;
-		newMobLadder.useWithItem = mobLadder.useWithItem;
-		newMobLadder.sceme = mobLadder.sceme;
-		newMobLadder.conditionFunc = mobLadder.conditionFunc;
-		newMobLadder.onStateFuncName = mobLadder.onStateFuncName;
-
-		newMobLadder.bitfield = mobLadder.bitfield;
-		
 		return vobPtr;
 	};
 
@@ -375,25 +394,71 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (mobLockable._zCVob_bitfield), _@ (newMobLockable._zCVob_bitfield), 20);
 
-		newMobLockable._oCMob_name = mobLockable._oCMob_name;
-		newMobLockable._oCMob_bitfield = mobLockable._oCMob_bitfield;
-		newMobLockable._oCMob_visualDestroyed = mobLockable._oCMob_visualDestroyed;
-		newMobLockable._oCMob_ownerStr = mobLockable._oCMob_ownerStr;
-		newMobLockable._oCMob_ownerGuildStr = mobLockable._oCMob_ownerGuildStr;
-		newMobLockable._oCMob_owner = mobLockable._oCMob_owner;
-		newMobLockable._oCMob_ownerGuild = mobLockable._oCMob_ownerGuild;
-		newMobLockable._oCMob_focusNameIndex = mobLockable._oCMob_focusNameIndex;
+		CopyoCMobProperties__VobTransport (_@ (mobLockable), _@ (newMobLockable));
+		CopyoCMobInterProperties__VobTransport (_@ (mobLockable), _@ (newMobLockable));
+		CopyoCMobLockableProperties__VobTransport (_@ (mobLockable), _@ (newMobLockable));
 
-		newMobLockable._oCMobInter_triggerTarget = mobLockable._oCMobInter_triggerTarget;
-		newMobLockable._oCMobInter_useWithItem = mobLockable._oCMobInter_useWithItem;
-		newMobLockable._oCMobInter_sceme = mobLockable._oCMobInter_sceme;
-		newMobLockable._oCMobInter_conditionFunc = mobLockable._oCMobInter_conditionFunc;
-		newMobLockable._oCMobInter_onStateFuncName = mobLockable._oCMobInter_onStateFuncName;
+		return vobPtr;
+	};
 
-		newMobLockable.bitfield = mobLockable.bitfield;
-		newMobLockable.keyInstance = mobLockable.keyInstance;
-		newMobLockable.pickLockStr = mobLockable.pickLockStr;
+	//
+	if (Hlp_Is_oCMobSwitch (vobPtr)) {
+		mobSwitch = _^ (vobPtr);
 		
+		visualName = Vob_GetVisualName (vobPtr);
+		objectName = CloneCreateNewName__VobTransport (mobSwitch._zCObject_objectName);
+
+		vobPtr = InsertObject ("oCMobSwitch", objectName, visualName, _@ (mobSwitch._zCVob_trafoObjToWorld), 0);
+
+		//oCMobSwitch is same as oCMobInter
+		var oCMobInter newMobSwitch; newMobSwitch = _^ (vobPtr);
+
+		MEM_CopyBytes (_@ (mobSwitch._zCVob_bitfield), _@ (newMobSwitch._zCVob_bitfield), 20);
+
+		CopyoCMobProperties__VobTransport (_@ (mobSwitch), _@ (newMobSwitch));
+		CopyoCMobInterProperties__VobTransport (_@ (mobSwitch), _@ (newMobSwitch));
+		CopyoCMobLockableProperties__VobTransport (_@ (mobSwitch), _@ (newMobSwitch));
+
+		return vobPtr;
+	};
+
+	//oCMobWheel
+	if (Hlp_Is_oCMobWheel (vobPtr)) {
+		mobWheel = _^ (vobPtr);
+		
+		visualName = Vob_GetVisualName (vobPtr);
+		objectName = CloneCreateNewName__VobTransport (mobWheel._zCObject_objectName);
+
+		vobPtr = InsertObject ("oCMobWheel", objectName, visualName, _@ (mobWheel._zCVob_trafoObjToWorld), 0);
+
+		//oCMobWheel is same as oCMobInter
+		var oCMobInter newMobWheel; newMobWheel = _^ (vobPtr);
+
+		MEM_CopyBytes (_@ (mobWheel._zCVob_bitfield), _@ (newMobWheel._zCVob_bitfield), 20);
+
+		CopyoCMobProperties__VobTransport (_@ (mobWheel), _@ (newMobWheel));
+		CopyoCMobInterProperties__VobTransport (_@ (mobWheel), _@ (newMobWheel));
+
+		return vobPtr;
+	};
+
+	//oCMobBed
+	if (Hlp_Is_oCMobBed (vobPtr)) {
+		mobBed = _^ (vobPtr);
+		
+		visualName = Vob_GetVisualName (vobPtr);
+		objectName = CloneCreateNewName__VobTransport (mobBed._zCObject_objectName);
+
+		vobPtr = InsertObject ("oCMobBed", objectName, visualName, _@ (mobBed._zCVob_trafoObjToWorld), 0);
+
+		//oCMobBed is same as oCMobInter
+		var oCMobInter newMobBed; newMobBed = _^ (vobPtr);
+
+		MEM_CopyBytes (_@ (mobBed._zCVob_bitfield), _@ (newMobBed._zCVob_bitfield), 20);
+
+		CopyoCMobProperties__VobTransport (_@ (mobBed), _@ (newMobBed));
+		CopyoCMobInterProperties__VobTransport (_@ (mobBed), _@ (newMobBed));
+
 		return vobPtr;
 	};
 
@@ -405,27 +470,14 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		objectName = CloneCreateNewName__VobTransport (mobInter._zCObject_objectName);
 
 		vobPtr = InsertObject ("oCMobInter", objectName, visualName, _@ (mobInter._zCVob_trafoObjToWorld), 0);
-		
+
+		//oCMobWheel is same as oCMobInter
 		var oCMobInter newMobInter; newMobInter = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobInter._zCVob_bitfield), _@ (newMobInter._zCVob_bitfield), 20);
 
-		newMobInter._oCMob_name = mobInter._oCMob_name;
-		newMobInter._oCMob_bitfield = mobInter._oCMob_bitfield;
-		newMobInter._oCMob_visualDestroyed = mobInter._oCMob_visualDestroyed;
-		newMobInter._oCMob_ownerStr = mobInter._oCMob_ownerStr;
-		newMobInter._oCMob_ownerGuildStr = mobInter._oCMob_ownerGuildStr;
-		newMobInter._oCMob_owner = mobInter._oCMob_owner;
-		newMobInter._oCMob_ownerGuild = mobInter._oCMob_ownerGuild;
-		newMobInter._oCMob_focusNameIndex = mobInter._oCMob_focusNameIndex;
-
-		newMobInter.triggerTarget = mobInter.triggerTarget;
-		newMobInter.useWithItem = mobInter.useWithItem;
-		newMobInter.sceme = mobInter.sceme;
-		newMobInter.conditionFunc = mobInter.conditionFunc;
-		newMobInter.onStateFuncName = mobInter.onStateFuncName;
-
-		newMobInter.bitfield = mobInter.bitfield;
+		CopyoCMobProperties__VobTransport (_@ (mobInter), _@ (newMobInter));
+		CopyoCMobInterProperties__VobTransport (_@ (mobInter), _@ (newMobInter));
 
 		return vobPtr;
 	};
@@ -443,18 +495,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (mob._zCVob_bitfield), _@ (newMob._zCVob_bitfield), 20);
 
-		newMob.name = mob.name;
-		newMob.bitfield = mob.bitfield;
-		newMob.visualDestroyed = mob.visualDestroyed;
-		newMob.ownerStr = mob.ownerStr;
-		newMob.ownerGuildStr = mob.ownerGuildStr;
-		newMob.owner = mob.owner;
-		newMob.ownerGuild = mob.ownerGuild;
-		newMob.focusNameIndex = mob.focusNameIndex;
+		CopyoCMobProperties__VobTransport (_@ (mob), _@ (newMob));
 
 		return vobPtr;
 	};
 
+	//NOT YET SUPPORTED
 	return 0;
 
 	//zCTrigger
@@ -470,19 +516,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (trigger._zCVob_bitfield), _@ (newTrigger._zCVob_bitfield), 20);
 
-		newTrigger.triggerTarget = trigger.triggerTarget;
-		newTrigger.bitfield = trigger.bitfield;
-		newTrigger.respondToVobName = trigger.respondToVobName;
-		newTrigger.numCanBeActivated = trigger.numCanBeActivated;
-		newTrigger.retriggerWaitSec = trigger.retriggerWaitSec;
-		newTrigger.damageThreshold = trigger.damageThreshold;
-		newTrigger.fireDelaySec = trigger.fireDelaySec;
-		newTrigger.nextTimeTriggerable = trigger.nextTimeTriggerable;
-		newTrigger.savedOtherVob = trigger.savedOtherVob;
-		newTrigger.countCanBeActivated = trigger.countCanBeActivated;
-
-		MEM_CopyBytes (_@ (trigger._zCVob_bbox3D_mins), _@ (newTrigger._zCVob_bbox3D_mins), 12);
-		MEM_CopyBytes (_@ (trigger._zCVob_bbox3D_maxs), _@ (newTrigger._zCVob_bbox3D_maxs), 12);
+		CopyozCTriggerProperties__VobTransport (_@ (trigger), _@ (newTrigger));
 
 		return vobPtr;
 	};
@@ -500,21 +534,10 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		MEM_CopyBytes (_@ (triggerScript._zCVob_bitfield), _@ (newTriggerScript._zCVob_bitfield), 20);
 
-		newTriggerScript._zCTrigger_triggerTarget = triggerScript._zCTrigger_triggerTarget;
-		newTriggerScript._zCTrigger_bitfield = triggerScript._zCTrigger_bitfield;
-		newTriggerScript._zCTrigger_respondToVobName = triggerScript._zCTrigger_respondToVobName;
-		newTriggerScript._zCTrigger_numCanBeActivated = triggerScript._zCTrigger_numCanBeActivated;
-		newTriggerScript._zCTrigger_retriggerWaitSec = triggerScript._zCTrigger_retriggerWaitSec;
-		newTriggerScript._zCTrigger_damageThreshold = triggerScript._zCTrigger_damageThreshold;
-		newTriggerScript._zCTrigger_fireDelaySec = triggerScript._zCTrigger_fireDelaySec;
-		newTriggerScript._zCTrigger_nextTimeTriggerable = triggerScript._zCTrigger_nextTimeTriggerable;
-		newTriggerScript._zCTrigger_savedOtherVob = triggerScript._zCTrigger_savedOtherVob;
-		newTriggerScript._zCTrigger_countCanBeActivated = triggerScript._zCTrigger_countCanBeActivated;
+		CopyozCTriggerProperties__VobTransport (_@ (trigger), _@ (newTrigger));
 
 		newTriggerScript.scriptFunc = triggerScript.scriptFunc;
 
-		MEM_CopyBytes (_@ (triggerScript._zCVob_bbox3D_mins), _@ (newTriggerScript._zCVob_bbox3D_mins), 12);
-		MEM_CopyBytes (_@ (triggerScript._zCVob_bbox3D_maxs), _@ (newTriggerScript._zCVob_bbox3D_maxs), 12);
 		return vobPtr;
 	};
 
