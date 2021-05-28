@@ -208,3 +208,13 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
 		AI_Function_SS (slf, oCGame_TriggerChangeLevel, levelName, vobName);
 	};
 };
+
+/*
+ *	An alternative that will turn to vob only when not within acceptable angle
+ */
+func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int angle) {
+	if (!NPC_IsNpcInAngleX (slfinstance, vobPtr, angle)) {
+		AI_TurnToVobPtr (slfinstance, vobPtr);
+	};
+};
+
