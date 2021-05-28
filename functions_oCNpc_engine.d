@@ -474,6 +474,30 @@ func int oCNPC_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight)
 	return CALL_RetValAsInt();
 };
 
+func int oCNPC_FreeLineOfSight (var int slfInstance, var int vobPtr){
+	//0x0069DE50 public: int __thiscall oCNpc::FreeLineOfSight(class zCVob *)
+	const int oCNPC__FreeLineOfSight_G1 = 6938192;
+
+	//0x007418E0 public: int __thiscall oCNpc::FreeLineOfSight(class zCVob *)
+	const int oCNPC__FreeLineOfSight_G2 = 7608544;
+
+	if (!vobPtr) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__FreeLineOfSight_G1, oCNPC__FreeLineOfSight_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt();
+};
+
 func int oCNpc_DoDropVob (var int slfInstance, var int vobPtr) {
 	//0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 	const int oCNpc__DoDropVob_G1 = 6951152;
@@ -556,4 +580,99 @@ func void oCNpc_SetLeftHand (var int slfInstance, var int vobPtr) {
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetLeftHand_G1, oCNpc__SetLeftHand_G2));
 		call = CALL_End();
 	};
+};
+
+/*	angleX
+ *	 - negative number vob is on lefthand-side
+ *	 - 0 vob is directly in front of npc
+ *	 - positive number vob is on righthand-side
+ *	angleY
+ *	 - negative number vob is below npc
+ *	 - 0 vob is directly in front of NPC
+ *	 - positive number vob is above npc
+ */
+func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angleXPtr, var int angleYPtr) {
+	//0x0074BD00 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
+	const int oCNPC__GetAnglesVob_G1 = 7651536;
+	
+	//0x00681680 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
+	const int oCNPC__GetAnglesVob_G2 = 6821504;
+	
+	if (!vobPtr) { return; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+
+		CALL_PtrParam (_@ (angleYPtr));
+		CALL_PtrParam (_@ (angleXPtr));
+		
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAnglesVob_G1, oCNPC__GetAnglesVob_G2));
+		call = CALL_End();
+	};
+};
+
+func int NPC_IsVobPtrInAngleX (var int slfInstance, var int vobPtr, var int angle) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	if (!vobPtr) { return FALSE; };
+
+	var int angleX;
+	var int angleY;
+
+	oCNpc_GetAnglesVob (slfInstance, vobPtr, _@ (angleX), _@ (angleY));
+	
+	if (gef (angleX, negf (mkf (angle))))
+	&& (lef (angleX, mkf (angle)))
+	{
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+func int NPC_IsVobPtrInAngleY (var int slfInstance, var int vobPtr, var int angle) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	if (!vobPtr) { return FALSE; };
+
+	var int angleX;
+	var int angleY;
+
+	oCNpc_GetAnglesVob (slfInstance, vobPtr, _@ (angleX), _@ (angleY));
+	
+	if (gef (angleY, negf (mkf (angle))))
+	&& (lef (angleY, mkf (angle)))
+	{
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+func int NPC_IsNpcInAngleX (var int slfInstance, var int npcInstance, var int angle) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var oCNPC npc; npc = Hlp_GetNPC (npcInstance);
+	if (!Hlp_IsValidNPC (npc)) { return FALSE; };
+
+	return + (NPC_IsVobPtrInAngleX (slfInstance, _@ (npc), angle));
+};
+
+func int NPC_IsNpcInAngleY (var int slfInstance, var int npcInstance, var int angle) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var oCNPC npc; npc = Hlp_GetNPC (npcInstance);
+	if (!Hlp_IsValidNPC (npc)) { return FALSE; };
+
+	return + (NPC_IsVobPtrInAngleY (slfInstance, _@ (npc), angle));
 };
