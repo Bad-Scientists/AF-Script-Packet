@@ -12,6 +12,7 @@ var int _TradeOnExit_Event_Break;
 var int _TradeHandleEvent_Event;
 var int _TradeHandleEvent_Event_Break;
 
+var int _ItemContainerActivate_Event;
 var int _ItemContainerHandleEvent_Event;
 var int _StealContainerHandleEvent_Event;
 var int _NpcContainerHandleEvent_Event;
@@ -39,6 +40,14 @@ func void TradeHandleEvent_AddListener (var func f) {
 
 func void TradeHandleEvent_RemoveListener (var func f) {
 	Event_Remove (_TradeHandleEvent_Event, f);
+};
+
+func void ItemContainerActivate_AddListener (var func f) {
+	Event_AddOnce (_ItemContainerActivate_Event, f);
+};
+
+func void ItemContainerActivate_RemoveListener (var func f) {
+	Event_Remove (_ItemContainerActivate_Event, f);
 };
 
 func void ItemContainerHandleEvent_AddListener (var func f) {
@@ -92,6 +101,10 @@ func void _hook_oCViewDialogTrade_HandleEvent () {
 
 //---
 
+func void _hook_oCItemContainer_Activate () {
+	Event_Execute (_ItemContainerActivate_Event, 0);
+};
+
 func void _hook_oCItemContainer_HandleEvent () {
 	Event_Execute (_ItemContainerHandleEvent_Event, 0);
 };
@@ -136,7 +149,21 @@ func void G1_TradeEvents_Init () {
 	};
 };
 
+func void G1_ItemContainerActivateEvent_Init () {
+	if (!_ItemContainerActivate_Event) {
+		_ItemContainerActivate_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer_Activate");
+		once = 1;
+	};
+};
+
 func void G1_InventoryEvents_Init () {
+	G1_ItemContainerActivateEvent_Init ();
+
 	if (!_ItemContainerHandleEvent_Event) {
 		_ItemContainerHandleEvent_Event = Event_Create ();
 	};
