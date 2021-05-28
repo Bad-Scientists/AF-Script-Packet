@@ -1060,6 +1060,9 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	};
 	*/
 
+	const int mem = 0;
+	if (!mem) { mem = MEM_Alloc(1); };
+
 	//cancel selection of dialog by KEY_TAB (causing auto-selection in combination with Alt + Tab)
 	if (key == KEY_TAB) {
 		cancel = TRUE;
@@ -1163,18 +1166,26 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 				if (key == KEY_SEMICOLON) { if (shift) { s = ":"; } else { s = ";"; }; };
 				if (key == KEY_APOSTROPHE) { if (shift) {
-					//Double quote
-					const int mem = 0;
-					if (!mem) { mem = MEM_Alloc(1); };
-					
-					MEM_WriteByte (mem, 34);
-					
-					s = STR_FromChar (mem);
-				} else { s = "'"; }; };
+						//Double quote
+						MEM_WriteByte (mem, 34);
+						s = STR_FromChar (mem);
+					} else {
+						s = "'";
+					};
+				};
 
 				if (key == KEY_GRAVE) { if (shift) { s = "~"; } else { s = "`"; }; };
 
-//				if (key == KEY_BACKSLASH) { if (shift) { s = "|"; } else { s = "\"; }; };
+				//I left backslash commented out, because it is escape character that caused my N++ to format rest of the code 'incorrectly' :)
+				//So this way we will have both nice code format as well as an option to write backslash :)
+				if (key == KEY_BACKSLASH) { if (shift) {
+						s = "|";
+					} else {
+						//Backslash
+						MEM_WriteByte (mem, 92);
+						s = STR_FromChar (mem);
+					};
+				};
 
 				if (key == KEY_Z) { if (shift) { s = "Z"; } else { s = "z"; }; };
 				if (key == KEY_X) { if (shift) { s = "X"; } else { s = "x"; }; };
@@ -1898,21 +1909,21 @@ MEM_InformationMan.LastMethod:
 					};
 					
 					//al@ align left
-					index = STR_IndexOf (dlgDescription, "al@");
+					index = STR_IndexOf (dlgDescriptionNoOverlays, "al@");
 
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
 					};
 
 					//ac@ align center
-					index = STR_IndexOf (dlgDescription, "ac@");
+					index = STR_IndexOf (dlgDescriptionNoOverlays, "ac@");
 
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
 					};
 
 					//ar@ align right
-					index = STR_IndexOf (dlgDescription, "ar@");
+					index = STR_IndexOf (dlgDescriptionNoOverlays, "ar@");
 					
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
