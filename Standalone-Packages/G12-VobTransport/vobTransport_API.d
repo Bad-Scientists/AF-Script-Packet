@@ -157,6 +157,110 @@ const int VOBTRANSPORT_CANBUY_VOBLIST_VALUE [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = 
 };
 
 /*
+ *
+ */
+const int VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX = 4;
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE [6] = {
+	"VOB_BUY_OC_BED_V1",				//BED_1_OC.ASC
+	"VOB_BUY_OC_BED_V2",				//BED_2_OC.ASC
+	"VOB_BUY_OC_TABLE_V1",				//OC_TABLE_V1.3DS
+	"VOB_BUY_OC_TABLE_V2",				//OC_TABLE_V2.3DS
+	"VOB_BUY_OC_CHAIR_V1",				//CHAIR_1_OC.ASC
+	"VOB_BUY_OC_CHAIR_V2"				//CHAIR_2_OC.ASC
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_CHESTS [10] = {
+	"VOB_BUY_OC_CHEST_V1",				//CHESTSMALL_OCCRATESMALL.MDS
+	"VOB_BUY_OC_CHEST_V2",				//CHESTSMALL_OCCRATESMALLLOCKED.MDS
+	"VOB_BUY_OC_CHEST_V9",				//CHESTBIG_OCCRATELARGE.MDS
+	"VOB_BUY_OC_CHEST_V10",				//CHESTBIG_OCCRATELARGELOCKED.MDS
+
+	"VOB_BUY_OC_CHEST_V3",				//CHESTSMALL_OCCHESTSMALL.MDS
+	"VOB_BUY_OC_CHEST_V4",				//CHESTSMALL_OCCHESTSMALLLOCKED.MDS
+	"VOB_BUY_OC_CHEST_V5",				//CHESTBIG_OCCHESTMEDIUM.MDS
+	"VOB_BUY_OC_CHEST_V6",				//CHESTBIG_OCCHESTMEDIUMLOCKED.MDS
+	"VOB_BUY_OC_CHEST_V7",				//CHESTBIG_OCCHESTLARGE.MDS
+	"VOB_BUY_OC_CHEST_V8"				//CHESTBIG_OCCHESTLARGELOCKED.MDS
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_DECORATION [7] = {
+	"VOB_BUY_OC_WEAPONSHELF_V1",			//OC_WEAPON_SHELF_EMPTY_V1.3DS
+	"VOB_BUY_OC_WEAPONSHELF_V2",			//OC_WEAPON_SHELF_EMPTY_V2.3DS
+	"VOB_BUY_OC_DECORATE_V1",			//OC_DECORATE_V1.3DS
+	"VOB_BUY_OC_DECORATE_V2",			//OC_DECORATE_V2.3DS
+	"VOB_BUY_OC_MOBSHELVES_V1",			//OC_MOB_SHELVES_BIG.3DS
+	"VOB_BUY_OC_SHELF_V4",				//OC_SHELF_V4.3DS
+	"VOB_BUY_OC_FIREPLACE_V1"			//FIREPLACE_MIDDLE.ASC
+};
+
+func void BuildBuyVobList__VobTransport (var int key) {
+	//Clear voblist
+	oCNpc_ClearVobList (hero);
+
+	var int vobPtr;
+	var string vobName;
+
+	if (key == KEY_DOWNARROW) {
+		vobTransportShowcaseVobVerticalIndex -= 1;
+
+		if (vobTransportShowcaseVobVerticalIndex < 0) {
+			vobTransportShowcaseVobVerticalIndex = 3;
+		};
+	};
+
+	if (key == KEY_UPARROW) {
+		vobTransportShowcaseVobVerticalIndex += 1;
+
+		if (vobTransportShowcaseVobVerticalIndex > 3) {
+			vobTransportShowcaseVobVerticalIndex = 0;
+		};
+	};
+
+	if (key == -1) {
+		vobTransportShowcaseVobVerticalIndex = 0;
+	};
+
+	var int i;
+
+	//All
+
+	if (vobTransportShowcaseVobVerticalIndex == 0) {
+		repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	//Special categories
+
+	if (vobTransportShowcaseVobVerticalIndex == 1) {
+		repeat (i, 6); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 2) {
+		repeat (i, 10);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_CHESTS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 3) {
+		repeat (i, 7);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_DECORATION, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+};
+
+/*
  *	VobCanBeBought__VobTransport_API
  *	 - this function recognizes which objects you can buy:
  *		- by default you can buy everything listed in VOBTRANSPORT_CANBUY_VOBLIST
@@ -164,11 +268,14 @@ const int VOBTRANSPORT_CANBUY_VOBLIST_VALUE [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = 
  */
 func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 	var zCVob vob;
+	var string s;
 	var string vobName;
 	var string objectName;
 	var int j;
+	var int vobCount;
 
 	//In this example - we will not allow buying
+	PrintS ("In this example there is nothing to be bought.");
 	return FALSE;
 
 	if (!vobPtr) { return FALSE; };
@@ -201,12 +308,22 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			sVobTransportBuyVobView_Line2 = "Your ore: ";
 			sVobTransportBuyVobView_Count2 = IntToString (oreTotal);
 
-			sVobTransportBuyVobView_Line4 = "Press L Bracket to select.";
-			sVobTransportBuyVobView_Line5 = "<-- Use arrows to change selection -->";
-			sVobTransportBuyVobView_Count5 = IntToString (i + 1); //index starts with 0
+			s = "Category: ";
+			if (vobTransportShowcaseVobVerticalIndex == 0) { s = ConcatStrings (s, "All"); vobCount = VOBTRANSPORT_CANBUY_VOBLIST_MAX; };
+			if (vobTransportShowcaseVobVerticalIndex == 1) { s = ConcatStrings (s, "Furniture"); vobCount = 6; };
+			if (vobTransportShowcaseVobVerticalIndex == 2) { s = ConcatStrings (s, "Chests"); vobCount = 10; };
+			if (vobTransportShowcaseVobVerticalIndex == 3) { s = ConcatStrings (s, "Decorations"); vobCount = 7; };
+
+			sVobTransportBuyVobView_Line4 = "Vob:";
+			sVobTransportBuyVobView_Count4 = IntToString (vobTransportShowcaseVobIndex + 1); //index starts with 0
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, "/");
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, IntToString (vobCount));
+
+			sVobTransportBuyVobView_Line5 = s;
+			sVobTransportBuyVobView_Count5 = IntToString (vobTransportShowcaseVobVerticalIndex + 1); //index starts with 0
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
-			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_MAX));
-			
+			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX));
+
 			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count3 = RGBA (255, 255, 255, 255);
