@@ -14,6 +14,7 @@ var int _EquipItem_Event;
 var int _UnEquipItem_Event;
 var int _DoTakeVob_Event;
 var int _DoDropVob_Event;
+var int _DoThrowVob_Event;
 var int _OpenDeadNPC_Event;
 
 var int _MobStartStateChange_Event;
@@ -76,6 +77,14 @@ func void DoDropVobEvent_AddListener (var func f) {
 
 func void DoDropVobEvent_RemoveListener (var func f) {
 	Event_Remove (_DoDropVob_Event, f);
+};
+
+func void DoThrowVobEvent_AddListener (var func f) {
+	Event_AddOnce (_DoThrowVob_Event, f);
+};
+
+func void DoThrowVobEvent_RemoveListener (var func f) {
+	Event_Remove (_DoThrowVob_Event, f);
 };
 
 func void OpenDeadNPCEvent_AddListener (var func f) {
@@ -190,7 +199,7 @@ func void _hook_oCMapScreen_Show () {
 //After some trial-error testing, we can safely use oCNpcInventory here
 func void _hook_oCItemContainer_TransferItem () {
 	if (!Hlp_Is_oCNpcContainer (ECX)) { return; };
-	if (_CloseInventory_Event) {
+	if (_TransferItem_Event) {
 		Event_Execute (_TransferItem_Event, 0);
 	};
 };
@@ -223,13 +232,27 @@ func void _hook_oCNpc_DoTakeVob () {
 	};
 };
 
+const int evDoDropVob = 1;			//'Standard' Gothic function oCNpc::DoDropVob(class zCVob *)
+						//Pointer to dropped item is in function parameter (ESP + 4)
+const int evDoDropVobBetterInvControls = 2;	//Item dropped using Better inventory controls
+						//Pointer to dropped item has to be obtained by checking vobs in hands ! Items are still in hand when this event is called!
+
 ////0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 func void _hook_oCNpc_DoDropVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	if (_DoDropVob_Event) {
-		Event_Execute (_DoDropVob_Event, 0);
+		Event_Execute (_DoDropVob_Event, evDoDropVob);
+	};
+};
+
+func void _hook_oCNpc_DoThrowVob () {
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+	var oCNPC slf; slf = _^ (ECX);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (_DoThrowVob_Event) {
+		Event_Execute (_DoThrowVob_Event, 0);
 	};
 };
 
@@ -295,7 +318,9 @@ func void _hook_oCGame_HandleEvent () {
 	var int key; key = MEM_ReadInt (ESP + 4);
 	var int cancel; cancel = FALSE;
 
-	Event_Execute (_GameHandleEvent_Event, key);
+	if (_GameHandleEvent_Event) {
+		Event_Execute (_GameHandleEvent_Event, key);
+	};
 };
 
 var int PC_PortalManager_OldPlayerRoom;
@@ -415,6 +440,23 @@ func void G12_DoDropVobEvent_Init () {
 		//[DoDropVob events]
 		HookEngine (oCNPC__DoDropVob, 6, "_hook_oCNpc_DoDropVob");
 		once = 1;
+	};
+};
+
+func void G12_DoThrowVobEvent_Init () {
+	if (!_DoThrowVob_Event) {
+		_DoThrowVob_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x006A13C0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
+		const int oCNpc__DoThrowVob_G1 = 6951872;
+
+		//0x007450B0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float
+		const int oCNpc__DoThrowVob_G2 = 7622832;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__DoThrowVob_G1, oCNpc__DoThrowVob_G1), 5, "_hook_oCNpc_DoThrowVob");
 	};
 };
 
@@ -538,6 +580,7 @@ func void G12_GameEvents_Init () {
 	G12_UnEquipItemEvent_Init ();
 	G12_DoTakeVobEvent_Init ();
 	G12_DoDropVobEvent_Init ();
+	G12_DoThrowVobEvent_Init ();
 	G12_OpenDeadNPCEvent_Init ();
 
 	G12_GameState_Extended_Init ();
