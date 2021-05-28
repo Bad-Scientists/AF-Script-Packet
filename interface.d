@@ -1,37 +1,3 @@
-//========================================
-// Interface scaling
-// Author: szapp (Mud-freak)
-//========================================
-
-//Not yet published, 
-func int _getInterfaceScaling () {
-    //Super cheap, but effective and versatile: Just take (actual width) / (default width) of the health bar
-    //MEM_InitGlobalInst();
-    var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-    return fracf(hpBar.zCView_vsizex, Print_ToVirtual(180, PS_X));
-};
-
-/*
- *	Changes screen color - taken from LeGo FocusNames
- */
-func void SetFontColor (var int col)
-{
-	//0x006FFD80 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
-	const int zCView__SetFontColor_G1 = 7339392;
-
-	//0x007A9910 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
-	const int zCView__SetFontColor_G2 = 8034576;
-
-	var int ptr; ptr = MEM_Alloc (4);
-
-	MEM_WriteInt (ptr, col);
-
-	CALL_PtrParam (ptr);
-	CALL__thiscall (MEM_ReadInt (screen_offset), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
-
-	MEM_Free (ptr);
-};
-
 /*
  *	Detection for Ctrl key
  */
