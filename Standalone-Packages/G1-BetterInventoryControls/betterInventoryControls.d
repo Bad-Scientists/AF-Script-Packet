@@ -206,11 +206,19 @@ func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
+	//return in G2A (I would not expect this to be called at any point, since this is in only G1 feature ... but just in case)
+	if (MEMINT_SwitchG1G2 (0, 1)) { return; };
+
+	//Call DoDropVob events
+	if (_DoDropVob_Event) {
+		Event_Execute (_DoDropVob_Event, evDoDropVobBetterInvControls);
+	};
+
 	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__RemoveFromHand_G1, oCNpc__RemoveFromHand_G2));
+		CALL__thiscall (_@ (slfPtr), oCNpc__RemoveFromHand_G1);
 		call = CALL_End();
 	};
 };
@@ -281,7 +289,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 							if (vobPtr) {
 								//Drop item - 1 piece
 								if (action == action_DropItem) {
-									//Take 1 piece from inventory, put i hand, remove from hand
+									//Take 1 piece from inventory, put in hand, remove from hand
 									vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
 									oCNpc_SetRightHand (slf, vobPtr);
 									oCNpc_RemoveFromHand__BetterInvControls (slf);
@@ -318,7 +326,10 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 /*
  *	If player had in hand item and switched to fight mode - then engine calls oCNpc_DoDropVob - this function drops not only item in hand but also 1 piece from inventory for some reason
  */
-func void _eventDoDropVob__BetterInvControls (var int dummyVariable) {
+func void _eventDoDropVob__BetterInvControls (var int eventType) {
+	//Prevent infinite loops - if event is called from oCNpc_RemoveFromHand__BetterInvControls
+	if (eventType == evDoDropVobBetterInvControls) { return; };
+
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
 	var oCNPC slf; slf = _^ (ECX);
