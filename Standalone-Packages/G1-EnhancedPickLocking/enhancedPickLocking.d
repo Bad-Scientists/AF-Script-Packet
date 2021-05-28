@@ -17,6 +17,7 @@ func void _hook_oCMobLockable_CanOpen () {
 
 	const int lastMobPtr = 0;
 
+	var int canOpen;
 	var int AlreadyValidated;
 
 	if (!PC_ActionButtonPressed) {
@@ -29,16 +30,10 @@ func void _hook_oCMobLockable_CanOpen () {
 		return;
 	};
 
-	if (slf.focus_vob != lastMobPtr) || (ECX != lastMobPtr) {
+	if ((slf.focus_vob != lastMobPtr) || (ECX != lastMobPtr)) {
 		AlreadyValidated = FALSE;
 	};
 	
-	if (AlreadyValidated) {
-		return;
-	};
-
-	AlreadyValidated = TRUE;
-
 	if (ECX == lastMobPtr) {
 		PC_PickLockOutputVariation += 1;
 	} else {
@@ -50,7 +45,7 @@ func void _hook_oCMobLockable_CanOpen () {
 	var C_NPC npc; npc = Hlp_GetNPC (slf);
 
 	//By default let's assume we can open this mob
-	var int canOpen; canOpen = TRUE;
+	canOpen = TRUE;
 	
 	var oCMobLockable mob; mob = _^ (ECX);
 
@@ -65,14 +60,14 @@ func void _hook_oCMobLockable_CanOpen () {
 		//No PickLocks required, only special key
 		if (STR_Len (mob.pickLockStr) == 0) {
 			//No PickLocks, no key ?
-			if (STR_Len (mob.keyinstance) == 0) {
+			if (STR_Len (mob.keyInstance) == 0) {
 				//Unlock - this is incorrectly flagged as locked
 				mob.bitfield = (mob.bitfield & ~ oCMobLockable_bitfield_locked);
 			} else {
 				lockType = requiresSpecialKey;
 
 				//Do we have key?
-				if (!NPC_HasItemInstanceName (slf, mob.keyinstance)) {
+				if (!NPC_HasItemInstanceName (slf, mob.keyInstance)) {
 					canOpen = FALSE;
 				};
 			};
@@ -104,18 +99,25 @@ func void _hook_oCMobLockable_CanOpen () {
 		//If we need to picklock this one - check if we know ho to do so !
 		if (lockType == requiresPickLock) {
 			//Do we need to learn anything ?
-			if (NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) {
-				G1_EnhancedPickLocking_MissingSkill (slf);
+			if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (PC_PickLockSkillRequired)) {
+				if (!AlreadyValidated) {
+					G1_EnhancedPickLocking_MissingSkill (slf);
+				};
+
 				canOpen = FALSE;
 			} else {
 				if (!canOpen) {
-					G1_EnhancedPickLocking_MissingLockPick (slf);
+					if (!AlreadyValidated) {
+						G1_EnhancedPickLocking_MissingLockPick (slf);
+					};
 				};
 			};
 		} else
 		if (lockType == requiresSpecialKey) {
 			if (!canOpen) {
-				G1_EnhancedPickLocking_MissingKey (slf);
+				if (!AlreadyValidated) {
+					G1_EnhancedPickLocking_MissingKey (slf);
+				};
 			};
 		} else
 		//If this one can be picklocked ...
@@ -123,14 +125,20 @@ func void _hook_oCMobLockable_CanOpen () {
 			//And we are not able to open it ... (as we don't have a key)
 			if (!canOpen) {
 				//Do we need to learn anything ?
-				if (NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) {
-					G1_EnhancedPickLocking_MissingSkill (slf);
+				if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (PC_PickLockSkillRequired)) {
+					if (!AlreadyValidated) {
+						G1_EnhancedPickLocking_MissingSkill (slf);
+					};
 				} else {
-					G1_EnhancedPickLocking_MissingLockPickOrKey (slf);
+					if (!AlreadyValidated) {
+						G1_EnhancedPickLocking_MissingLockPickOrKey (slf);
+					};
 				};
 			};
 		};
 	};
+
+	AlreadyValidated = TRUE;
 
 	if (!slf.focus_vob) {
 		AlreadyValidated = FALSE;
