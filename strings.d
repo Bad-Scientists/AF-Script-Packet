@@ -186,3 +186,15 @@ func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
     return -1;
 };
 
+func string STR_DoubleQuote () {
+	var int mem;
+
+	if (!mem) {
+		mem = MEM_Alloc (1);
+
+		//Double quote
+		MEM_WriteByte (mem, 34);
+	};
+
+	return STR_FromChar (mem);
+};
