@@ -31,6 +31,7 @@ func void DisplayProperties__VobTransport () {
 	|| (vobTransportMode == vobTransportMode_SelectPrev)
 	|| (vobTransportMode == vobTransportMode_SelectConfirm)
 	|| (vobTransportMode == vobTransportMode_Movement)
+	|| (vobTransportMode == vobTransportMode_Transform)
 	{
 		if (!vobTransportVobPtr) { return; };
 
@@ -86,65 +87,38 @@ func void DisplayProperties__VobTransport () {
 		
 		var int vtbl; vtbl = 0;
 
-		if (Hlp_Is_zCVob__VobTransport (vobTransportVobPtr)) {
-			vob = _^ (vobTransportVobPtr);
-			
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-			
-			collStatic = ((vob.bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((vob.bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
+		//--> Common attributes
+		vob = _^ (vobTransportVobPtr);
+		vtbl = MEM_ReadInt (vobTransportVobPtr);
 
+		s_objectName = vob._zCObject_objectName;
+		s_objectName = ConcatStrings ("name: ", s_objectName);
+
+		s_visualName = Vob_GetVisualName (vobTransportVobPtr);
+		s_visualName = ConcatStrings ("visual: ", s_visualName);
+
+		collStatic = ((vob.bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
+		collDynamic = ((vob.bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
+
+		s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
+		s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
+		//<--
+
+		if (Hlp_Is_zCVob__VobTransport (vobTransportVobPtr)) {
 			s_vtbl = ConcatStrings ("zCVob ", IntToString (vtbl));
-			s_objectName = vob._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			s_vobType = ConcatStrings ("vob type: ", IntToString (vob.type));
 		} else
 
 		//oCItem
 		if (Hlp_Is_oCItem (vobTransportVobPtr)) {
 			itm = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((itm._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((itm._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCItem ", IntToString (vtbl));
-
-			s_objectName = itm._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-
-			s_visualName = itm.visual;
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 		} else
 	
 		//oCMobContainer - chest
 		if (Hlp_Is_oCMobContainer (vobTransportVobPtr)) {
 			mobContainer = _^ (vobTransportVobPtr);
-			
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobContainer._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobContainer._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobContainer ", IntToString (vtbl));
-			s_objectName = mobContainer._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mobContainer._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobContainer._oCMob_ownerStr);
@@ -163,21 +137,7 @@ func void DisplayProperties__VobTransport () {
 		//oCMobFire
 		if (Hlp_Is_oCMobFire (vobTransportVobPtr)) {
 			mobFire = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobFire._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobFire._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobFire ", IntToString (vtbl));
-			s_objectName = mobFire._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mobFire._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobFire._oCMob_ownerStr);
@@ -196,21 +156,7 @@ func void DisplayProperties__VobTransport () {
 		//oCMobDoor
 		if (Hlp_Is_oCMobDoor (vobTransportVobPtr)) {
 			mobDoor = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobDoor._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobDoor._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobDoor ", IntToString (vtbl));
-			s_objectName = mobDoor._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mobDoor._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobDoor._oCMob_ownerStr);
@@ -229,21 +175,8 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobLadder (vobTransportVobPtr)) {
 			mobLadder = _^ (vobTransportVobPtr);
 
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobLadder._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobLadder._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobLadder ", IntToString (vtbl));
-			s_objectName = mobLadder._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobLadder._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobLadder._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobLadder._oCMob_ownerGuildStr);
@@ -258,21 +191,7 @@ func void DisplayProperties__VobTransport () {
 		//oCMobLockable
 		if (Hlp_Is_oCMobLockable (vobTransportVobPtr)) {
 			mobLockable = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobLockable._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobLockable._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobLockable ", IntToString (vtbl));
-			s_objectName = mobLockable._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mobLockable._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobLockable._oCMob_ownerStr);
@@ -285,24 +204,58 @@ func void DisplayProperties__VobTransport () {
 			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobLockable._oCMobInter_onStateFuncName);
 		} else
 
+		//oCMobSwitch
+		if (Hlp_Is_oCMobSwitch (vobTransportVobPtr)) {
+			mobInter = _^ (vobTransportVobPtr);
+			s_vtbl = ConcatStrings ("oCMobSwitch ", IntToString (vtbl));
+			
+			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
+			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
+			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
+
+			s_triggerTarget = ConcatStrings ("triggerTarget: ", mobInter.triggerTarget);
+			s_useWithItem = ConcatStrings ("useWithItem: ", mobInter.useWithItem);
+			s_sceme = ConcatStrings ("sceme: ", mobInter.sceme);
+			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobInter.conditionFunc);
+			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobInter.onStateFuncName);
+		} else
+
+		//oCMobWheel
+		if (Hlp_Is_oCMobWheel (vobTransportVobPtr)) {
+			mobInter = _^ (vobTransportVobPtr);
+			s_vtbl = ConcatStrings ("oCMobWheel ", IntToString (vtbl));
+			
+			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
+			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
+			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
+
+			s_triggerTarget = ConcatStrings ("triggerTarget: ", mobInter.triggerTarget);
+			s_useWithItem = ConcatStrings ("useWithItem: ", mobInter.useWithItem);
+			s_sceme = ConcatStrings ("sceme: ", mobInter.sceme);
+			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobInter.conditionFunc);
+			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobInter.onStateFuncName);
+		} else
+
+		//oCMobBed
+		if (Hlp_Is_oCMobBed (vobTransportVobPtr)) {
+			mobInter = _^ (vobTransportVobPtr);
+			s_vtbl = ConcatStrings ("oCMobBed ", IntToString (vtbl));
+			
+			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
+			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
+			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
+
+			s_triggerTarget = ConcatStrings ("triggerTarget: ", mobInter.triggerTarget);
+			s_useWithItem = ConcatStrings ("useWithItem: ", mobInter.useWithItem);
+			s_sceme = ConcatStrings ("sceme: ", mobInter.sceme);
+			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobInter.conditionFunc);
+			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobInter.onStateFuncName);
+		} else
+
 		//oCMobInter
 		if (Hlp_Is_oCMobInter (vobTransportVobPtr)) {
 			mobInter = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mobInter._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mobInter._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMobInter ", IntToString (vtbl));
-			s_objectName = mobInter._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
@@ -318,21 +271,7 @@ func void DisplayProperties__VobTransport () {
 		//oCMob
 		if (Hlp_Is_oCMob (vobTransportVobPtr)) {
 			mob = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((mob._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((mob._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("oCMob ", IntToString (vtbl));
-			s_objectName = mob._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
-			
-			s_visualName = Vob_GetVisualName (vobTransportVobPtr);
-			s_visualName = ConcatStrings ("visual: ", s_visualName);
-			
-			s_collStatic = ConcatStrings ("coll static: ", IntToString (collStatic));
-			s_collDynamic = ConcatStrings ("coll dynamic: ", IntToString (collDynamic));
 			
 			s_mobName = ConcatStrings ("mob name: ", mob.name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mob.ownerStr);
@@ -342,15 +281,7 @@ func void DisplayProperties__VobTransport () {
 		//zCTrigger
 		if (Hlp_Is_zCTrigger (vobTransportVobPtr)) {
 			trigger = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((trigger._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((trigger._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("zCTrigger ", IntToString (vtbl));
-			s_objectName = trigger._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
 			
 			s_triggerTarget = ConcatStrings ("triggerTarget: ", trigger.triggerTarget);
 			s_respondToVobName = ConcatStrings ("respondToVobName: ", trigger.respondToVobName);
@@ -359,15 +290,7 @@ func void DisplayProperties__VobTransport () {
 		//oCTriggerScript
 		if (Hlp_Is_oCTriggerScript (vobTransportVobPtr)) {
 			triggerScript = _^ (vobTransportVobPtr);
-
-			vtbl = MEM_ReadInt (vobTransportVobPtr);
-
-			collStatic = ((triggerScript._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionStatic) == zCVob_bitfield0_collDetectionStatic);
-			collDynamic = ((triggerScript._zCVob_bitfield[0] & zCVob_bitfield0_collDetectionDynamic) == zCVob_bitfield0_collDetectionDynamic);
-
 			s_vtbl = ConcatStrings ("zCTrigger ", IntToString (vtbl));
-			s_objectName = triggerScript._zCObject_objectName;
-			s_objectName = ConcatStrings ("name: ", s_objectName);
 			
 			s_triggerTarget = ConcatStrings ("triggerTarget: ", triggerScript._zCTrigger_triggerTarget);
 			s_respondToVobName = ConcatStrings ("respondToVobName: ", triggerScript._zCTrigger_respondToVobName);
@@ -383,6 +306,9 @@ func void DisplayProperties__VobTransport () {
 		if (vobTransportMode == vobTransportMode_SelectVob) {
 			s_Title = vobTransportView_TitleSelection;
 
+			SB (vobTransportView_InstructionRotate);
+			SB (Print_LineSeperator);
+
 			SB (vobTransportView_InstructionMove);
 			SB (Print_LineSeperator);
 
@@ -394,6 +320,86 @@ func void DisplayProperties__VobTransport () {
 
 			SB (vobTransportView_InstructionDelete);
 			SB (Print_LineSeperator);
+		};
+
+		if (vobTransportMode == vobTransportMode_Transform) {
+			if (vobTransportTransformationMode == vobTransportTransformation_None) {
+				s_Title = vobTransportView_TitleTransform;
+
+				SB (vobTransportView_InstructionConfirm);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_On) {
+				s_Title = vobTransportView_TitleRotation;
+
+				SB (vobTransportView_InstructionRotateXYZ);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionElevation);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionSpeed);
+				SBi (vobTransportMovementSpeed);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
+				s_Title = vobTransportView_TitleRotationX;
+
+				SB (vobTransportView_InstructionStopRotX);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionSpeed);
+				SBi (vobTransportMovementSpeed);
+				SB (Print_LineSeperator);
+
+				//X - orange
+				titleColor = RGBA (255, 128, 000, 255);
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				s_Title = vobTransportView_TitleRotationY;
+
+				SB (vobTransportView_InstructionStopRotY);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionSpeed);
+				SBi (vobTransportMovementSpeed);
+				SB (Print_LineSeperator);
+
+				//Y - white
+				titleColor = RGBA (255, 255, 255, 255);
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				s_Title = vobTransportView_TitleRotationZ;
+
+				SB (vobTransportView_InstructionStopRotZ);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionSpeed);
+				SBi (vobTransportMovementSpeed);
+				SB (Print_LineSeperator);
+
+				//Z - yellow
+				titleColor = RGBA (255, 255, 000, 255);
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
+				s_Title = vobTransportView_TitleElevation;
+
+				SB (vobTransportView_InstructionStopElevation);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionElevationLvl);
+				SBi (vobTransportElevationLevel);
+				SB (Print_LineSeperator);
+
+				SB (vobTransportView_InstructionSpeed);
+				SBi (vobTransportMovementSpeed);
+				SB (Print_LineSeperator);
+
+				//Elevation - light green
+				titleColor = RGBA (102, 255, 178, 255);
+			};
+
+			SetFontColor (titleColor);
 		};
 
 		if (vobTransportMode == vobTransportMode_Movement) {
