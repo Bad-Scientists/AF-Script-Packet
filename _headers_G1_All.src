@@ -18,6 +18,7 @@ EngineClasses_G1\oCViewDocument.d
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
 
+keys.d
 vectors.d
 vobFunctions.d
 
@@ -116,8 +117,15 @@ Standalone-Packages\G12-TorchHotKey\torchHotkey.d
 Standalone-Packages\G12-NoAmmoPrint\noAmmoPrint.d
 
 Standalone-Packages\G12-VobTransport\globals.d
-Standalone-Packages\G12-VobTransport\vobTransport_API.d
+Standalone-Packages\G12-VobTransport\insertVobCatalogue G1.d
+
+Standalone-Packages\G12-VobTransport\vobTransport_API
+Standalone-Packages\G12-VobTransport\example #1 vobTransport_API
+Standalone-Packages\G12-VobTransport\example #2 vobTransport_API
+Standalone-Packages\G12-VobTransport\example #3 vobTransport_API.d
+
 Standalone-Packages\G12-VobTransport\internalFunctions.d
 Standalone-Packages\G12-VobTransport\propertiesView.d
+Standalone-Packages\G12-VobTransport\printCodeTozSpy.d
 Standalone-Packages\G12-VobTransport\cloneFactory.d
 Standalone-Packages\G12-VobTransport\vobTransport.d
