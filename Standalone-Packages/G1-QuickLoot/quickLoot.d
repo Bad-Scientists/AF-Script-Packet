@@ -13,7 +13,7 @@ func void _eventItemContainerHandleEvent__QuickLoot (var int dummyVariable) {
 	var int cancel; cancel = FALSE;
 
 	//Left/Right Alt
-	if (key == KEY_LMENU) || (key == KEY_RMENU) {
+	if ((key == MEM_GetKey ("keySMove")) || (key == MEM_GetSecondaryKey ("keySMove"))) {
 
 		//Is player interacting with oCMobContainer ?
 		var oCNPC her; her = Hlp_GetNPC (hero);
