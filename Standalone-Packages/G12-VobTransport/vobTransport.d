@@ -14,17 +14,21 @@ func int VobCanBeDeleted__VobTransport (var int vobPtr) {
 	};
 
 	if (Hlp_Is_oCMob (vobPtr))
-	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCMobFire (vobPtr))
 	|| (Hlp_Is_oCMobLockable (vobPtr))
 	|| (Hlp_Is_oCMobContainer (vobPtr))
 	|| (Hlp_Is_oCMobDoor (vobPtr))
 	|| (Hlp_Is_oCMobLadder (vobPtr))
+	|| (Hlp_Is_oCMobSwitch (vobPtr))
+	|| (Hlp_Is_oCMobWheel (vobPtr))
+	|| (Hlp_Is_oCMobBed (vobPtr))
+	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
 
-//Not sure how to move these around properly
+//Not sure how to move these around properly (do I need to move _zCVob_bbox3D_mins & _zCVob_bbox3D_maxs ?)
 //	|| (Hlp_Is_zCTrigger (vobPtr))
 //	|| (Hlp_Is_oCTriggerScript (vobPtr))
+//	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob (supported by this feature)
 	{
@@ -45,12 +49,15 @@ func int FocusVobCanBeSelected__VobTransport (var int vobPtr) {
 	};
 
 	if (Hlp_Is_oCMob (vobPtr))
-	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCMobFire (vobPtr))
 	|| (Hlp_Is_oCMobLockable (vobPtr))
 	|| (Hlp_Is_oCMobContainer (vobPtr))
 	|| (Hlp_Is_oCMobDoor (vobPtr))
 	|| (Hlp_Is_oCMobLadder (vobPtr))
+	|| (Hlp_Is_oCMobSwitch (vobPtr))
+	|| (Hlp_Is_oCMobWheel (vobPtr))
+	|| (Hlp_Is_oCMobBed (vobPtr))
+	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
 
 	|| (Hlp_Is_oCNpc (vobPtr))
@@ -72,18 +79,23 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	};
 
 	if (Hlp_Is_oCMob (vobPtr))
-	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCMobFire (vobPtr))
 	|| (Hlp_Is_oCMobLockable (vobPtr))
 	|| (Hlp_Is_oCMobContainer (vobPtr))
 	|| (Hlp_Is_oCMobDoor (vobPtr))
 	|| (Hlp_Is_oCMobLadder (vobPtr))
+	|| (Hlp_Is_oCMobSwitch (vobPtr))
+	|| (Hlp_Is_oCMobWheel (vobPtr))
+	|| (Hlp_Is_oCMobBed (vobPtr))
+	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
 
 	|| (Hlp_Is_zCTrigger (vobPtr))
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
+	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
+
 	{
 		return TRUE;
 	};
@@ -101,12 +113,15 @@ func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 	};
 
 	if (Hlp_Is_oCMob (vobPtr))
-	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCMobFire (vobPtr))
 	|| (Hlp_Is_oCMobLockable (vobPtr))
 	|| (Hlp_Is_oCMobContainer (vobPtr))
 	|| (Hlp_Is_oCMobDoor (vobPtr))
 	|| (Hlp_Is_oCMobLadder (vobPtr))
+	|| (Hlp_Is_oCMobSwitch (vobPtr))
+	|| (Hlp_Is_oCMobWheel (vobPtr))
+	|| (Hlp_Is_oCMobBed (vobPtr))
+	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
 
 	|| (Hlp_Is_oCNpc (vobPtr))
@@ -114,6 +129,7 @@ func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 //Not sure how to move these around properly
 //	|| (Hlp_Is_zCTrigger (vobPtr))
 //	|| (Hlp_Is_oCTriggerScript (vobPtr))
+//	|| (Hlp_Is_zCVobSpot (vobPtr))	
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
 	{
@@ -171,21 +187,148 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 	zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[6], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
 };
 
-/*
- *	Add vobs that can be bought to hero's voblist
- */
-func void BuildBuyVobList__VobTransport () {
-	//Clear voblist
-	oCNpc_ClearVobList (hero);
+func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode) {
+	var int rotation;
+	var int cancel; cancel = FALSE;
 
-	var int vobPtr;
-	var string vobName;
-	
-	repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX); var int i;
-		vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST, i);
-		vobPtr = MEM_SearchVobByName (vobName);
-		oCNpc_InsertInVobList (hero, vobPtr);
-	end;
+	if (vobTransportTransformationMode != vobTransportTransformation_None) {
+		//Reset
+		rotation = 0;
+
+		//--- Space - movement speed increase
+
+		//Movement speed 1 > 10 > 20
+		if (key == KEY_SPACE) {
+			if (vobTransportMovementSpeed == 1) {
+				vobTransportMovementSpeed = 10;
+			} else
+			if (vobTransportMovementSpeed == 10) {
+				vobTransportMovementSpeed = 20;
+			} else {
+				vobTransportMovementSpeed = 1;
+			};
+
+			cancel = TRUE;
+		};
+
+		//--- X - rotate X axis
+
+		if (key == KEY_X) {
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
+				vobTransportTransformationMode = vobTransportTransformation_None;
+				if (mvmtMode) { PC_RemoveFromSleepingMode (); };
+			} else {
+				vobTransportTransformationMode = vobTransportTransformation_RotX;
+			};
+
+			cancel = TRUE;
+		};
+
+		//--- Y - rotate Y axis
+
+		if (key == KEY_Y) {
+			if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				vobTransportTransformationMode = vobTransportTransformation_None;
+				if (mvmtMode) { PC_RemoveFromSleepingMode (); };
+			} else {
+				vobTransportTransformationMode = vobTransportTransformation_RotY;
+			};
+
+			cancel = TRUE;
+		};
+
+		//--- Z - rotate Z axis
+
+		if (key == KEY_Z) {
+			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				vobTransportTransformationMode = vobTransportTransformation_None;
+				if (mvmtMode) { PC_RemoveFromSleepingMode (); };
+			} else {
+				vobTransportTransformationMode = vobTransportTransformation_RotZ;
+			};
+
+			cancel = TRUE;
+		};
+		
+		//--- E - elevate
+
+		if (key == KEY_E) {
+			if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
+				vobTransportTransformationMode = vobTransportTransformation_None;
+				if (mvmtMode) { PC_RemoveFromSleepingMode (); };
+			} else {
+				vobTransportTransformationMode = vobTransportTransformation_Elevation;
+			};
+
+			cancel = TRUE;
+		};
+
+		//2057 - Wheel up
+		//2058 - Wheel down
+
+		//--- Rotation
+
+		if ((vobTransportTransformationMode == vobTransportTransformation_RotX)
+		|| (vobTransportTransformationMode == vobTransportTransformation_RotY)
+		|| (vobTransportTransformationMode == vobTransportTransformation_RotZ)) {
+
+			//Left / down key
+			//if ((key == KEY_LEFTARROW) || (key == 2057) || (key == KEY_DOWNARROW)) {
+			if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft")) || (key == 2057)) {
+
+				rotation = -vobTransportMovementSpeed;
+				cancel = TRUE;
+			};
+
+			// right / up key
+			//if ((key == KEY_RIGHTARROW) || (key == 2058) || (key == KEY_UPARROW)) {
+			if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight")) || (key == 2058)) {
+				rotation = vobTransportMovementSpeed;
+				cancel = TRUE;
+			};
+		};
+		
+		//--- Elevation - up - down key
+
+		if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
+			//if (key == KEY_UPARROW) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+				vobTransportElevationLevel += vobTransportMovementSpeed;
+				cancel = TRUE;
+			};
+
+			//if (key == KEY_DOWNARROW) {
+			if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == 2058)) {
+				vobTransportElevationLevel -= vobTransportMovementSpeed;
+				cancel = TRUE;
+			};
+		};
+
+		if (rotation) {
+			//Safety checks for rotation (probably not required :))
+			if (rotation < 0) { rotation = 360 - (0 - rotation); };
+			if (rotation > 360) { rotation = rotation - 360; };
+
+			//Rotate
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
+				zCVob_RotateLocalX (vobTransportVobPtr, mkf (rotation));
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				zCVob_RotateLocalY (vobTransportVobPtr, mkf (rotation));
+			} else
+			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				zCVob_RotateLocalZ (vobTransportVobPtr, mkf (rotation));
+			};
+		};
+
+		//When player is moving object elevation is being adjusted automatically, here we have to move object 'manually'
+		if ((vobTransportElevationLevel) && (!mvmtMode)) {
+			zCVob_Move (vobTransportVobPtr, FLOATNULL, mkf (vobTransportElevationLevel), FLOATNULL);
+			vobTransportElevationLevel = 0;
+		};
+	};
+
+	return cancel;
 };
 
 func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
@@ -204,9 +347,10 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 	var zCVob vob;
 
 	var int retVal;
-	var int rotation;
 
 	var int ctrlPressed;
+
+	var int vobChanged; vobChanged = FALSE;
 
 	//--- Idle
 
@@ -223,7 +367,6 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				vobTransportTransformationMode = vobTransportTransformation_None;
 
 				if (!vobTransportMovementSpeed) { vobTransportMovementSpeed = 1; };
-
 				cancel = TRUE;
 			};
 		} else
@@ -234,7 +377,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			//Can we activate Vob transport ?
 			if (VobTransportCanBeActivated__VobTransport_API ()) {
 				//Do we have anything in vobList_array ?
-				BuildBuyVobList__VobTransport ();
+				BuildBuyVobList__VobTransport (-1);
 
 				her = Hlp_GetNPC (hero);
 				if ((her.vobList_numInArray > 0) && (her.vobList_array)) {
@@ -264,6 +407,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 							PrintS (vobTransportPrint_BuyVobActivated);
 
 							vobTransportMode = vobTransportMode_BuyVob;
+							vobChanged = TRUE;
 						} else {
 							PrintS (vobTransportPrint_BuyVobNothingToBuy);
 						};
@@ -272,6 +416,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 					PrintS (vobTransportPrint_BuyVobNothingToBuy);
 				};
 
+				if (!vobTransportMovementSpeed) { vobTransportMovementSpeed = 1; };
 				cancel = TRUE;
 			};
 		};
@@ -280,6 +425,10 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 	//--- Selection mode
 
 	if ((vobTransportMode == vobTransportMode_SelectVob) && (!cancel)) {
+		//Print to zSpy details relevant for object creation (via InsertAnything!)
+		if (key == KEY_P) {
+			PrintCodeTozSpy__VobTransport (vobTransportVobPtr);
+		};
 
 		if (key == KEY_LBRACKET) {
 			ctrlPressed = MEM_KeyState (KEY_LCONTROL);
@@ -304,6 +453,34 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			};
 		};
 
+		//--- Enter - enter Transform mode
+
+		if (key == KEY_RETURN) {
+			vobTransportTransformationMode = vobTransportTransformation_RotY;
+			vobTransportMode = vobTransportMode_Transform;
+
+			vob = _^ (vobTransportVobPtr);
+			MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
+
+			vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
+			vobTransportOriginalAlpha = vob.visualAlpha;
+
+			//Backup collision bitfields
+			vobTransportOriginalCollisions = Vob_GetCollBits (vobTransportVobPtr);
+
+			//Remove active collisions
+			Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+
+			//Update alpha
+			vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
+			//Don't adjust alpha for zCDecal - they are already difficult to spot :)
+			if (!Hlp_Is_zCDecal (vobTransportVobPtr)) {
+				vob.visualAlpha = divf (mkf (50), mkf (100));
+			};
+
+			cancel = TRUE;
+		};
+
 		//--- Move object
 
 		if (key == KEY_M) {
@@ -314,15 +491,17 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//2057 - Wheel up
 		//2058 - Wheel down
-	
+
 		//Select previous vob
-		if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		//if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft"))) {
 			vobTransportMode = vobTransportMode_SelectPrev;
 			cancel = TRUE;
 		};
 
 		//Select next vob
-		if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		//if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight"))) {
 			vobTransportMode = vobTransportMode_SelectNext;
 			cancel = TRUE;
 		};
@@ -369,11 +548,44 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			};
 				
 			PC_RemoveFromSleepingMode ();
-
-			vobTransportTransformationMode = vobTransportTransformation_None;
 			vobTransportMode = vobTransportMode_Idle;
 
 			cancel = TRUE;
+		};
+	};
+
+	//--- Transform
+
+	if ((vobTransportMode == vobTransportMode_Transform) && (!cancel)) {
+		if ((key == KEY_RETURN) || (key == KEY_LBRACKET)) {
+			vobTransportMode = vobTransportMode_SelectVob;
+			vobTransportTransformationMode = vobTransportTransformation_None;
+			cancel = TRUE;
+		};
+
+		if ((key == KEY_ESCAPE) || (key == KEY_RBRACKET)) {
+			vobTransportMode = vobTransportMode_SelectVob;
+			vobTransportTransformationMode = vobTransportTransformation_None;
+
+			if (vobTransportVobPtr) {
+				AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
+
+				vob = _^ (vobTransportVobPtr);
+
+				//Reset Alpha
+				vob.visualAlpha = vobTransportOriginalAlpha;
+				if (!vobTransportOriginalAlphaEnabled) {
+					vob.bitfield[0] = vob.bitfield[0] & ~ zCVob_bitfield0_visualAlphaEnabled;
+				};
+
+				Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+			};
+
+			cancel = TRUE;
+		};
+
+		if (!cancel) {
+			cancel = HandleElevationAndRotation__VobTransport (key, FALSE);
 		};
 	};
 
@@ -493,7 +705,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		if (key == KEY_RETURN) {
 			if (vobTransportTransformationMode == vobTransportTransformation_None) {
-				vobTransportTransformationMode = vobTransportTransformation_On;
+				vobTransportTransformationMode = vobTransportTransformation_RotY;
 				PC_PutInSleepingMode ();
 			} else {
 				vobTransportTransformationMode = vobTransportTransformation_None;
@@ -503,131 +715,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		if (vobTransportTransformationMode != vobTransportTransformation_None) {
-			//Reset
-			rotation = 0;
-
-			//--- Space - movement speed increase
-
-			//Movement speed 1 > 10 > 20
-			if (key == KEY_SPACE) {
-				if (vobTransportMovementSpeed == 1) {
-					vobTransportMovementSpeed = 10;
-				} else
-				if (vobTransportMovementSpeed == 10) {
-					vobTransportMovementSpeed = 20;
-				} else {
-					vobTransportMovementSpeed = 1;
-				};
-
-				cancel = TRUE;
-			};
-
-			//--- X - rotate X axis
-
-			if (key == KEY_X) {
-				if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-					vobTransportTransformationMode = vobTransportTransformation_None;
-					PC_RemoveFromSleepingMode ();
-				} else {
-					vobTransportTransformationMode = vobTransportTransformation_RotX;
-				};
-
-				cancel = TRUE;
-			};
-
-			//--- Y - rotate Y axis
-
-			if (key == KEY_Y) {
-				if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-					vobTransportTransformationMode = vobTransportTransformation_None;
-					PC_RemoveFromSleepingMode ();
-				} else {
-					vobTransportTransformationMode = vobTransportTransformation_RotY;
-				};
-
-				cancel = TRUE;
-			};
-
-			//--- Z - rotate Z axis
-
-			if (key == KEY_Z) {
-				if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-					vobTransportTransformationMode = vobTransportTransformation_None;
-					PC_RemoveFromSleepingMode ();
-				} else {
-					vobTransportTransformationMode = vobTransportTransformation_RotZ;
-				};
-
-				cancel = TRUE;
-			};
-			
-			//--- E - elevate
-
-			if (key == KEY_E) {
-				if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
-					vobTransportTransformationMode = vobTransportTransformation_None;
-					PC_RemoveFromSleepingMode ();
-				} else {
-					vobTransportTransformationMode = vobTransportTransformation_Elevation;
-				};
-
-				cancel = TRUE;
-			};
-
-			//2057 - Wheel up
-			//2058 - Wheel down
-
-			//--- Rotation
-
-			if ((vobTransportTransformationMode == vobTransportTransformation_RotX)
-			|| (vobTransportTransformationMode == vobTransportTransformation_RotY)
-			|| (vobTransportTransformationMode == vobTransportTransformation_RotZ)) {
-
-				//Left / down key
-				if ((key == KEY_LEFTARROW) || (key == 2057) || (key == KEY_DOWNARROW)) {
-
-					rotation = -vobTransportMovementSpeed;
-					cancel = TRUE;
-				};
-
-				// right / up key
-				if ((key == KEY_RIGHTARROW) || (key == 2058) || (key == KEY_UPARROW)) {
-					rotation = vobTransportMovementSpeed;
-					cancel = TRUE;
-				};
-			};
-			
-			//--- Elevation - up - down key
-
-			if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
-				if (key == KEY_UPARROW) {
-					vobTransportElevationLevel += vobTransportMovementSpeed;
-					cancel = TRUE;
-				};
-
-				if (key == KEY_DOWNARROW) {
-					vobTransportElevationLevel -= vobTransportMovementSpeed;
-					cancel = TRUE;
-				};
-			};
-
-			if (rotation) {
-				//Safety checks for rotation (probably not required :))
-				if (rotation < 0) { rotation = 360 - (0 - rotation); };
-				if (rotation > 360) { rotation = rotation - 360; };
-
-				//Rotate
-				if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-					zCVob_RotateLocalX (vobTransportVobPtr, mkf (rotation));
-				} else
-				if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-					zCVob_RotateLocalY (vobTransportVobPtr, mkf (rotation));
-				} else
-				if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-					zCVob_RotateLocalZ (vobTransportVobPtr, mkf (rotation));
-				};
-			};
+		if (!cancel) {
+			cancel = HandleElevationAndRotation__VobTransport (key, TRUE);
 		};
 	};
 
@@ -659,7 +748,64 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//--- Select previous object
 	
-		if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+			BuildBuyVobList__VobTransport (KEY_UPARROW);
+				her = Hlp_GetNPC (hero);
+				if ((her.vobList_numInArray > 0) && (her.vobList_array)) {
+
+					if (vobTransportShowcaseVobIndex < 0) { vobTransportShowcaseVobIndex = 0; };
+					if (vobTransportShowcaseVobIndex >= her.vobList_numInArray) { vobTransportShowcaseVobIndex = her.vobList_numInArray - 1; };
+					
+					vobPtr = MEM_ReadIntArray (her.vobList_array, vobTransportShowcaseVobIndex);
+					
+					if (VobCanBeBought__VobTransport_API (vobPtr)) {
+						vob = _^ (vobPtr);
+						objectName = vob._zCObject_objectName;
+						visualName = Vob_GetVisualName (vobPtr);
+
+						zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
+						vob = _^ (vobTransportShowcaseVobPtr);
+						vob._zCObject_objectName = objectName;
+						vobChanged = TRUE;
+					} else {
+						PrintS (vobTransportPrint_BuyVobNothingToBuy);
+					};
+				} else {
+					PrintS (vobTransportPrint_BuyVobNothingToBuy);
+				};
+			cancel = TRUE;
+		};
+
+		if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == 2058)) {
+			BuildBuyVobList__VobTransport (KEY_DOWNARROW);
+				her = Hlp_GetNPC (hero);
+				if ((her.vobList_numInArray > 0) && (her.vobList_array)) {
+
+					if (vobTransportShowcaseVobIndex < 0) { vobTransportShowcaseVobIndex = 0; };
+					if (vobTransportShowcaseVobIndex >= her.vobList_numInArray) { vobTransportShowcaseVobIndex = her.vobList_numInArray - 1; };
+					
+					vobPtr = MEM_ReadIntArray (her.vobList_array, vobTransportShowcaseVobIndex);
+					
+					if (VobCanBeBought__VobTransport_API (vobPtr)) {
+						vob = _^ (vobPtr);
+						objectName = vob._zCObject_objectName;
+						visualName = Vob_GetVisualName (vobPtr);
+
+						zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
+						vob = _^ (vobTransportShowcaseVobPtr);
+						vob._zCObject_objectName = objectName;
+						vobChanged = TRUE;
+					} else {
+						PrintS (vobTransportPrint_BuyVobNothingToBuy);
+					};
+				} else {
+					PrintS (vobTransportPrint_BuyVobNothingToBuy);
+				};
+			cancel = TRUE;
+		};
+
+		//if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft"))) {
 			vobTransportShowcaseVobIndex -= 1;
 
 			her = Hlp_GetNPC (hero);
@@ -674,6 +820,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
 				vob = _^ (vobTransportShowcaseVobPtr);
 				vob._zCObject_objectName = objectName;
+				vobChanged = TRUE;
 			};
 
 			cancel = TRUE;
@@ -681,7 +828,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//--- Select next object
 
-		if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		//if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight"))) {
 			vobTransportShowcaseVobIndex += 1;
 
 			her = Hlp_GetNPC (hero);
@@ -696,6 +844,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
 				vob = _^ (vobTransportShowcaseVobPtr);
 				vob._zCObject_objectName = objectName;
+				vobChanged = TRUE;
 			};
 
 			cancel = TRUE;
@@ -725,13 +874,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		//Using const in order to force first reset (at the beginning index will be 0, if I would use variable, it would also be 0)
-		const int lastvobTPtrIndex = -1;
-		
-		if ((vobTransportShowcaseVobIndex != lastvobTPtrIndex) && (vobTransportShowcaseVobPtr)) {
+		if ((vobChanged) && (vobTransportShowcaseVobPtr)) {
 			//Call API function to get update on all texts for propertiesView.d
 			retVal = VobCanBeBought__VobTransport_API (vobTransportShowcaseVobPtr);
-			lastvobTPtrIndex = vobTransportShowcaseVobIndex;
 		};
 	};
 
@@ -976,9 +1121,8 @@ func void FrameFunction__VobTransport () {
 		if (VobCanBeMovedAround__VobTransport (vobTransportVobPtr)) {
 			//Disable BBox
 			zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-			
-			vob = _^ (vobTransportVobPtr);
 
+			vob = _^ (vobTransportVobPtr);
 			MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
 
 			vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
