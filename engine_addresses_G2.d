@@ -280,3 +280,57 @@ const int oCNpc__IsMunitionAvailable = 7587552;
 
 //0x00832084 const zCDecal::`vftable'
 const int zCDecal_vtbl = 8593540;
+
+//0x0083E434 const zCVobSpot::`vftable'
+const int zCVobSpot_vtbl = 8643636;
+
+func int Hlp_Is_zCVobSpot (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
+};
+
+
+//========================================
+// Interface scaling
+// Author: szapp (Mud-freak)
+//========================================
+
+//Not yet published, 
+func int _getInterfaceScaling () {
+    //Super cheap, but effective and versatile: Just take (actual width) / (default width) of the health bar
+    //MEM_InitGlobalInst();
+    var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
+    return fracf(hpBar.zCView_vsizex, Print_ToVirtual(180, PS_X));
+};
+
+/*
+ *	Changes screen color - taken from LeGo FocusNames
+ */
+func void SetFontColor (var int col)
+{
+	//0x006FFD80 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G1 = 7339392;
+
+	//0x007A9910 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G2 = 8034576;
+
+	var int ptr; ptr = MEM_Alloc (4);
+
+	MEM_WriteInt (ptr, col);
+
+	CALL_PtrParam (ptr);
+	CALL__thiscall (MEM_ReadInt (screen_offset), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
+
+	MEM_Free (ptr);
+};
+
+func string GetSymbolName (var int symbolIndex) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+		return symb.name;
+	};
+
+	return "";
+};
