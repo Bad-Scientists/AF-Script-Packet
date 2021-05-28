@@ -27,6 +27,9 @@ instance colorHelpo1 (C_Npc)
 	Mdl_SetVisual (self, "HUMANS.MDS");
 	Mdl_SetVisualBody (self, "hum_body_Naked0", 4, 1, "Hum_Head_Pony", 9, 0, -1);
 
+	attribute [ATR_HITPOINTS] = 1;
+	attribute [ATR_HITPOINTS_MAX] = 1;
+
 	// reset
 	colorHelperR = 255;
 	colorHelperG = 255;
