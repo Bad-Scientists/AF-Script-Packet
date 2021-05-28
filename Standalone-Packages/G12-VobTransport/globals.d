@@ -8,7 +8,9 @@ var int vobTransportOriginalAlpha;
 var int vobTransportOriginalCollisions;
 
 var int vobTransportShowcaseVobPtr;
+
 var int vobTransportShowcaseVobIndex;
+var int vobTransportShowcaseVobVerticalIndex;
 var int vobTransportShowcaseVobBuyValue;
 
 var int vobTransportMode;
@@ -20,10 +22,11 @@ var int vobTransportMode;
 	const int vobTransportMode_SelectPrev		= 4;
 	const int vobTransportMode_SelectConfirm	= 5;
 
-	const int vobTransportMode_Movement		= 6;
-	const int vobTransportMode_Done			= 7;
+	const int vobTransportMode_Transform		= 6;
+	const int vobTransportMode_Movement		= 7;
+	const int vobTransportMode_Done			= 8;
 
-	const int vobTransportMode_BuyVob		= 8;
+	const int vobTransportMode_BuyVob		= 9;
 
 var int vobTransportActionMode;
 	const int vobTransportActionMode_Clone		= 0;
