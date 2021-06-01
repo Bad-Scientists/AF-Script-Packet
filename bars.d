@@ -12,3 +12,52 @@ func void Bar_Top (var int bar) {
 	View_Top(b.v0);
 	View_Top(b.v1);
 };
+
+/*
+ *	Creates View for bar preview
+ */
+func int Bar_CreatePreview (var int bHnd, var string textureName) {
+	if(!Hlp_IsValidHandle(bHnd)) { return 0; };
+
+	var int vHnd;
+
+	var _bar b; b = get(bHnd);
+	var zCView v; v = View_Get(b.v1);
+
+	vHnd = View_CreatePxl(v.pposx, v.pposy, v.pposx + b.barW, v.pposy + v.psizey);
+	View_SetTexture (vHnd, textureName);
+
+	return vHnd;
+};
+
+/*
+ *	Resizes View bar preview
+ */
+func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue) {
+	if(!Hlp_IsValidHandle(bHnd)) { return; };
+	if(!Hlp_IsValidHandle(vHnd)) { return; };
+
+	if (_Bar_PlayerStatus ()) {
+		var _bar b; b = get(bHnd);
+
+		if (previewValue > 1000) { previewValue = 1000; };
+
+		if (previewValue) {
+			previewValue = ((previewValue * 1000) / b.valMax);
+		};
+
+		View_Resize (vHnd, (previewValue * b.barW) / 1000, -1);
+
+		var zCView v; v = View_Get(b.v1);
+		View_MoveTo (vHnd, v.vposx, v.vposy);
+
+		View_Open (vHnd);
+
+		//Re-arrange views - first background texture view, second 'preview' view and finally bar texture view
+		View_Top(b.v0);
+		View_Top(vHnd);
+		View_Top(b.v1);
+	} else {
+		View_Close (vHnd);
+	};
+};
