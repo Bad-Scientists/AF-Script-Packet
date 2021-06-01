@@ -80,6 +80,12 @@ Enables better navigation in inventories
     * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
 1. Call `G1_BetterInventoryControls_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
+### Gothic 1 Inventory Item preview
+This feature updates global variables `PC_ItemPreviewMana` and `PC_ItemPreviewHealth` with HP and Mana values read out of `oCItem.count[]` property using `oCItem.text[]` property to recognize relevant values.
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_InvItemPreview.src`
+1. Call `G1_InvItemPreview_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
 ### Gothic 1 & 2 Enhanced Information Manager
 Package adds several features for dialogues (Information manager):
  - Simple dialog color/font/text alignment control - using dialog description.
@@ -203,3 +209,17 @@ Allows player to move/clone/delete or buy objects (Vobs, Mobs, Items etc.) in ga
 1. Requires LeGo flags: LeGo_FrameFunctions | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
 
     [![Gothic 1 & 2 Vob Transport](https://img.youtube.com/vi/S4mboOKGvHo/0.jpg)](https://www.youtube.com/watch?v=S4mboOKGvHo)
+
+### Gothic 1 & 2 Focus
+Slightly improved version of LeGo focusnames feature:
+ - color of focus is changed:
+    * to orange if chest/mob is locked by special key, cannot be picklocked and player does not have key
+    * to yellow if chest/mob is locked by special key and player does not have key, or can be picklocked
+    * to yellow if chest/mob can be picklocked
+ - renames chest from MOBNAME_CHEST to MOBNAME_CHEST_EMPTY and crates from MOBNAME_CRATE to MOBNAME_CRATE_EMPTY when they are empty and vice versa
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_Focus.src` for G1
+    * `AF-Script-Packet\_headers_G2_Focus.src` for G2A
+1. Call `G12_Focus_Init ();` from your `Init_Global();` function in `Startup.d` file.
+1. Should not be used together with LeGo flag LeGo_Focusnames.
