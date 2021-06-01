@@ -283,12 +283,13 @@ func void FrameFunction__SprintMode () {
 
 	var int posX;
 	var int posY;
+	var int scaleF; scaleF = _getInterfaceScaling ();
 
 	//Move bar right underneath health bar (if modder didn't define his own values)
 	if (PC_SprintModeBar_PPosY == -1) {
 		if (MEM_Game.hpBar) {
 			var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-			//Bar_MoveTo (hStaminaBar, hpBar.zCView_vposx + hpBar.zCView_vsizex / 2, hpBar.zCView_vposy - hpBar.zCView_vsizey / 2);
+
 			//These LeGo bars have weird positions :-/
 			posX = hpBar.zCView_pposx + (hpBar.zCView_psizex / 2);
 			posY = hpBar.zCView_pposy + (hpBar.zCView_psizey / 2) * 2;
@@ -309,7 +310,8 @@ func void FrameFunction__SprintMode () {
 		posY = PC_SprintModeBar_VPosY;
 	};
 
-	Bar_MoveTo (hStaminaBar, posX, posY);
+	//Bar_MoveTo (hStaminaBar, posX, posY);
+	_Bar_MoveTo_Internal (hStaminaBar, posX, posY);
 
 	//Flash stamina bar if in cool down
 	if (PC_SprintModeCooldown) {
