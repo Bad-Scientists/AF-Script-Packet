@@ -348,3 +348,19 @@ func string NPC_EM_GetActiveEventName (var int slfinstance){
 
 	return eventName;
 };
+
+func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	if (!zCEventManager_GetNumMessages (eMgr)) { return 0; };
+
+	//Get Event Message
+	return zCEventManager_GetEventMessage (eMgr, index);
+};
