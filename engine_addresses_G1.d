@@ -300,6 +300,11 @@ const int oCMsgState_vtbl		= 8250620;
 //0x007DE564 const oCMsgManipulate::`vftable' 
 const int oCMsgManipulate_vtbl		= 8250724;
 
+func int Hlp_Is_oCMsgManipulate (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
+};
+
 //0x007DE5CC const oCMsgConversation::`vftable' 
 const int oCMsgConversation_vtbl	= 8250828;
 
@@ -451,4 +456,15 @@ func string GetSymbolName (var int symbolIndex) {
 	};
 
 	return "";
+};
+
+func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (bodystate & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) {
+		return TRUE;
+	};
+
+	return FALSE;
 };
