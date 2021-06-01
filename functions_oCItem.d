@@ -124,3 +124,27 @@ func int oCItem_SplitItemPtr (var int itemPtr, var int qty){
 
 	return CALL_RetValAsPtr();
 };
+
+func string GetItemTextByIndex (var int itemPtr, var int index) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return ""; };
+
+	//Safety check for index boundaries
+	if ((index < 0) || (index > 5)) { return ""; };
+
+	var oCItem itm; itm = _^ (itemPtr);
+
+	return MEM_ReadStringArray (_@s(itm.text), index);
+};
+
+func int GetItemCountValue (var int itemPtr, var string text) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	var oCItem itm; itm = _^ (itemPtr);
+
+	//Check item texts - return count value - search by 'text'
+	repeat (i, ITM_TEXT_MAX); var int i;
+		if (Hlp_StrCmp (GetItemTextByIndex (itemPtr, i), text)) { return MEM_ReadIntArray (_@ (itm.count[0]), i); };
+	end;
+
+	return 0;
+};
