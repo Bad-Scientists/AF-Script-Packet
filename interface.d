@@ -23,9 +23,12 @@ func void G12_GetActionButton_Init () {
 
 var int PC_IgnoreAnimations;
 
+var int _PlayerUseItemToStateStart_Event;
+var int _PlayerUseItemToStateUse_Event;
+
 //0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *) 
 func void _hook_oCNpc_OnMessage () {
-	if (!PC_IgnoreAnimations) { return; };
+//	if (!PC_IgnoreAnimations) { return; };
 
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
@@ -85,7 +88,6 @@ func void _hook_oCNpc_OnMessage () {
 	if (PC_IgnoreAnimations) {
 		if (NPC_IsPlayer (npc)) {
 			if (Hlp_Is_oCMsgConversation (eMsg)) {
-				var oCMsgConversation msgConversation; msgConversation = _^ (eMsg);
 				/*
 				enum TConversationSubType {
 					EV_PLAYANISOUND,
@@ -113,16 +115,94 @@ func void _hook_oCNpc_OnMessage () {
 
 				//EV_PLAYANI
 				if (eMsg_MD_GetSubType (eMsg) == 1) {
-				//&& (Hlp_StrCmp (msgConversation.name, "T_DONTKNOW")) {
+					var oCMsgConversation msgConversation; msgConversation = _^ (eMsg);
+					//&& (Hlp_StrCmp (msgConversation.name, "T_DONTKNOW")) {
 					PC_IgnoreAnimations -= 1;
 					msgConversation.name = "";
 				};
 			};
 		};
 	};
+
+	//Item interaction
+	if (NPC_IsPlayer (npc)) {
+		var int eventUseItemToState;
+
+		if (Hlp_Is_oCMsgManipulate (eMsg)) {
+			/*
+			enum TManipulateSubType {
+				EV_TAKEVOB,
+				EV_DROPVOB,
+				EV_THROWVOB,
+				EV_EXCHANGE,
+				EV_USEMOB,
+				EV_USEITEM,
+				EV_INSERTINTERACTITEM,
+				EV_REMOVEINTERACTITEM,
+				EV_CREATEINTERACTITEM,
+				EV_DESTROYINTERACTITEM,
+				EV_PLACEINTERACTITEM,
+				EV_EXCHANGEINTERACTITEM,
+				EV_USEMOBWITHITEM,
+				EV_CALLSCRIPT,
+				EV_EQUIPITEM,
+				EV_USEITEMTOSTATE,
+				EV_TAKEMOB,
+				EV_DROPMOB,
+				EV_MANIP_MAX
+			};
+			*/
+			//EV_USEITEMTOSTATE
+			if (eMsg_MD_GetSubType (eMsg) == 15) {
+				var oCMsgManipulate msgManipulate; msgManipulate = _^ (eMsg);
+				if (msgManipulate.npcSlot == 0) {
+					if (eventUseItemToState == 0) {
+						eventUseItemToState = 1;
+						if (_PlayerUseItemToStateStart_Event) {
+							Event_Execute (_PlayerUseItemToStateStart_Event, 0);
+						};
+					};
+				} else
+				if (msgManipulate.npcSlot == -1) {
+					if (eventUseItemToState == 1) {
+						eventUseItemToState = 0;
+						if (_PlayerUseItemToStateUse_Event) {
+							Event_Execute (_PlayerUseItemToStateUse_Event, 0);
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+func void PlayerUseItemToStateStartEvent_AddListener (var func f) {
+	Event_AddOnce (_PlayerUseItemToStateStart_Event, f);
+};
+
+func void PlayerUseItemToStateStartEvent_RemoveListener (var func f) {
+	Event_Remove (_PlayerUseItemToStateStart_Event, f);
+};
+
+func void PlayerUseItemToStateUseEvent_AddListener (var func f) {
+	Event_AddOnce (_PlayerUseItemToStateUse_Event, f);
+};
+
+func void PlayerUseItemToStateUseEvent_RemoveListener (var func f) {
+	Event_Remove (_PlayerUseItemToStateUse_Event, f);
 };
 
 func void G12_InterceptNpcEventMessages_Init () {
+	//Special events detecting item usage event type EV_USEITEMTOSTATE - start and actual item usage (when onstate[0] function is called)
+	//These will be called only for player!!
+	if (!_PlayerUseItemToStateStart_Event) {
+		_PlayerUseItemToStateStart_Event = Event_Create ();
+	};
+
+	if (!_PlayerUseItemToStateUse_Event) {
+		_PlayerUseItemToStateUse_Event = Event_Create ();
+	};
+
 	const int once = 0;
 	if (!once) {
 		HookEngine (oCNpc__OnMessage, 7, "_hook_oCNpc_OnMessage");
