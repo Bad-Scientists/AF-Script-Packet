@@ -223,6 +223,7 @@ func int oCNpc_GetFromInv (var int slfInstance, var int itemInstance, var int qt
 	return CALL_RetValAsPtr ();
 };
 
+//G1 only
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
 	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
 	const int oCNpc__SwitchToCategory_G1 = 6741600;
@@ -239,6 +240,22 @@ func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCa
 	if (CALL_Begin(call)) {
 		CALL_IntParam (_@ (invCategory));
 		CALL__thiscall (_@ (npcInventoryPtr), oCNpc__SwitchToCategory_G1);
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
+//G1 only
+func int oCItemContainer_IsActive (var int ptr) {
+	//0x006665A0 public: virtual int __thiscall oCItemContainer::IsActive(void)
+	const int oCItemContainer__IsActive = 6710688;
+
+	if (!ptr) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), oCItemContainer__IsActive);
 		call = CALL_End();
 	};
 
