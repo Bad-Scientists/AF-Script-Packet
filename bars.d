@@ -13,6 +13,17 @@ func void Bar_Top (var int bar) {
 	View_Top(b.v1);
 };
 
+func void Bar_SetValueSafe (var int bar, var int val) {
+	if (!Hlp_IsValidHandle(bar)) { return; };
+		var _bar b; b = get(bar);
+	if ((val) && (b.valMax)) {
+		Bar_SetPromille(bar, (val * 1000) / b.valMax);
+	}
+	else {
+		Bar_SetPromille(bar, 0);
+	};
+};
+
 /*
  *	Creates View for bar preview
  */
@@ -42,8 +53,10 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 
 		if (previewValue > 1000) { previewValue = 1000; };
 
-		if (previewValue) {
+		if ((previewValue) && (b.valMax)) {
 			previewValue = ((previewValue * 1000) / b.valMax);
+		} else {
+			previewValue = 0;
 		};
 
 		View_Resize (vHnd, (previewValue * b.barW) / 1000, -1);
