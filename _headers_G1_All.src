@@ -41,6 +41,8 @@ functions_oCMobInter_engine.d
 functions_oCNPC_engine.d
 functions_NPC.d
 
+console.d
+
 interface.d
 
 game_Events_G1.d
@@ -131,3 +133,4 @@ Standalone-Packages\G12-VobTransport\cloneFactory.d
 Standalone-Packages\G12-VobTransport\vobTransport.d
 Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
+Standalone-Packages\G1-InvItemPreview\invItemPreview.d
