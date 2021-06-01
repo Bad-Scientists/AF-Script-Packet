@@ -279,35 +279,37 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 			
 			if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
 				if (npcInventory.inventory2_oCItemContainer_contents) {
-					slf = _^ (npcInventory.inventory2_owner);
-					if (NPC_IsPlayer (slf)) {
-						vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-						//Put item to hand only if hand is empty!
-						if (!vobPtr) {
-							vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
-							
-							if (vobPtr) {
-								//Drop item - 1 piece
-								if (action == action_DropItem) {
-									//Take 1 piece from inventory, put in hand, remove from hand
-									vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
-									oCNpc_SetRightHand (slf, vobPtr);
-									oCNpc_RemoveFromHand__BetterInvControls (slf);
-								} else
-								//Put in hand
-								if (action == action_PutInHand) {
-									//Take 1 piece from inventory, put in hand
-									vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
-									oCNpc_SetRightHand (slf, vobPtr);
-									//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
+					if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
+						slf = _^ (npcInventory.inventory2_owner);
+						if (NPC_IsPlayer (slf)) {
+							vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+							//Put item to hand only if hand is empty!
+							if (!vobPtr) {
+								vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+								
+								if (vobPtr) {
+									//Drop item - 1 piece
+									if (action == action_DropItem) {
+										//Take 1 piece from inventory, put in hand, remove from hand
+										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
+										oCNpc_SetRightHand (slf, vobPtr);
+										oCNpc_RemoveFromHand__BetterInvControls (slf);
+									} else
+									//Put in hand
+									if (action == action_PutInHand) {
+										//Take 1 piece from inventory, put in hand
+										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
+										oCNpc_SetRightHand (slf, vobPtr);
+										//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
 
-									//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
-									//Close inventory
-									const int oCNpcInventory__Close = 6734304;
-									//CALL__thiscall (ECX, oCNpcInventory__Close);
+										//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
+										//Close inventory
+										const int oCNpcInventory__Close = 6734304;
+										//CALL__thiscall (ECX, oCNpcInventory__Close);
+									};
+
+									cancel = TRUE;
 								};
-
-								cancel = TRUE;
 							};
 						};
 					};
