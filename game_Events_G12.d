@@ -139,8 +139,12 @@ func void _hook_oCNPC_OpenInventory () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_OpenInventory_Event) {
-		Event_Execute (_OpenInventory_Event, evOpenInventory);
+
+	//Event was called when there was an attempt to open inventory - if player was jumping/falling/running inventory was not actually opened
+	if ((!NPC_BodyStateContains (slf, BS_JUMP)) && (!NPC_BodyStateContains (slf, BS_FALL)) && (!NPC_BodyStateContains (slf, BS_DEAD)) && (!NPC_BodyStateContains (slf, BS_RUN))) {
+		if (_OpenInventory_Event) {
+			Event_Execute (_OpenInventory_Event, evOpenInventory);
+		};
 	};
 };
 
