@@ -131,7 +131,7 @@ func void DisableExhausted_SprintMode () {
 		PC_SprintModeBarFlashingFadeOut = TRUE;
 	};
 
-	PC_SprintModeBarFlashingTimer = 40;
+	PC_SprintModeBarFlashingTimer = 80;
 };
 
 func void FrameFunction__SprintMode () {
@@ -312,13 +312,15 @@ func void FrameFunction__SprintMode () {
 
 	//Bar_MoveTo (hStaminaBar, posX, posY);
 	_Bar_MoveTo_Internal (hStaminaBar, posX, posY);
+};
 
+func void FrameFunction_FlashBar__SprintMode () {
 	//Flash stamina bar if in cool down
 	if (PC_SprintModeCooldown) {
 		if (PC_SprintModeBarFlashingFadeOut) {
-			PC_SprintModeBarAlpha -= 64;
+			PC_SprintModeBarAlpha -= 32;
 		} else {
-			PC_SprintModeBarAlpha += 64;
+			PC_SprintModeBarAlpha += 32;
 		};
 		
 		if (PC_SprintModeBarAlpha < 0) {
@@ -346,6 +348,7 @@ func void FrameFunction__SprintMode () {
 func void G12_SprintMode_Init () {
 	//Add frame function (8/1s)
 	FF_ApplyOnceExtGT (FrameFunction__SprintMode, 125, -1);
+	FF_ApplyOnceExtGT (FrameFunction_FlashBar__SprintMode, 60, -1);
 
 	//Create stamina bar
 	if (!Hlp_IsValidHandle(hStaminaBar)) {
