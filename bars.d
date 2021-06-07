@@ -15,7 +15,11 @@ func void Bar_Top (var int bar) {
 
 func void Bar_SetValueSafe (var int bar, var int val) {
 	if (!Hlp_IsValidHandle(bar)) { return; };
-		var _bar b; b = get(bar);
+
+	var _bar b; b = get(bar);
+
+	if (val < 0) { val = 0; };
+
 	if ((val) && (b.valMax)) {
 		Bar_SetPromille(bar, (val * 1000) / b.valMax);
 	}
@@ -48,9 +52,9 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 	if(!Hlp_IsValidHandle(bHnd)) { return; };
 	if(!Hlp_IsValidHandle(vHnd)) { return; };
 
-	if (_Bar_PlayerStatus ()) {
-		var _bar b; b = get(bHnd);
+	var _bar b; b = get(bHnd);
 
+	if (_Bar_PlayerStatus () && (!b.hidden)) {
 		if (previewValue > 1000) { previewValue = 1000; };
 
 		if ((previewValue) && (b.valMax)) {
@@ -65,6 +69,7 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 		View_MoveTo (vHnd, v.vposx, v.vposy);
 
 		View_Open (vHnd);
+		View_SetAlpha (vHnd, v.alpha);
 
 		//Re-arrange views - first background texture view, second 'preview' view and finally bar texture view
 		View_Top(b.v0);
