@@ -80,12 +80,6 @@ Enables better navigation in inventories
     * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
 1. Call `G1_BetterInventoryControls_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
-### Gothic 1 Inventory Item preview
-This feature updates global variables `PC_ItemPreviewMana` and `PC_ItemPreviewHealth` with HP and Mana values read out of `oCItem.count[]` property using `oCItem.text[]` property to recognize relevant values.
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_InvItemPreview.src`
-1. Call `G1_InvItemPreview_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
 ### Gothic 1 & 2 Enhanced Information Manager
 Package adds several features for dialogues (Information manager):
  - Simple dialog color/font/text alignment control - using dialog description.
@@ -223,3 +217,9 @@ Slightly improved version of LeGo focusnames feature:
     * `AF-Script-Packet\_headers_G2_Focus.src` for G2A
 1. Call `G12_Focus_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Should not be used together with LeGo flag LeGo_Focusnames.
+
+### Gothic 1 & 2 Inventory Item preview
+This feature updates global variables `PC_ItemPreviewMana` and `PC_ItemPreviewHealth` with HP and Mana values read out of `oCItem.count[]` property using `oCItem.text[]` property to recognize relevant values.
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G12_InvItemPreview.src`
+1. Call `G12_InvItemPreview_Init ();` from your `Init_Global();` function in `Startup.d` file.
