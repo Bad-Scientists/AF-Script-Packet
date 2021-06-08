@@ -27,6 +27,7 @@ var int _PlayerUseItemToStateStart_Event;
 var int _PlayerUseItemToStateUse_Event;
 
 //0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *) 
+//0x0074B020 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
 func void _hook_oCNpc_OnMessage () {
 //	if (!PC_IgnoreAnimations) { return; };
 
