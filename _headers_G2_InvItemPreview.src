@@ -1,7 +1,7 @@
-EngineClasses_G1\zEventMan.d
-EngineClasses_G1\oInventory.d
+EngineClasses_G2\zEventMan.d
+EngineClasses_G2\oInventory.d
 
-engine_addresses_G1.d
+engine_addresses_G2.d
 
 eventManager_engine.d
 eventManager.d

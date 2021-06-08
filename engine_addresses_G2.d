@@ -138,14 +138,6 @@ const int oCNPC__DoTakeVob			= 7621056;
 //0x00744DD0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 const int oCNpc__DoDropVob = 7622096;
 
-//0x0083C644 const oCNpcContainer::`vftable' 
-const int oCNPCContainer_vtbl = 8635972;
-
-func int Hlp_Is_oCNpcContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
-};
-
 /*
  *	Sprint mode
  */
@@ -292,6 +284,38 @@ const int zCVobSpot_vtbl = 8643636;
 func int Hlp_Is_zCVobSpot (var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
+};
+
+//0x0083C574 const oCStealContainer::`vftable'
+const int oCStealContainer_vtbl = 8635764;
+
+func int Hlp_Is_oCStealContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
+};
+
+//0x0083C4AC const oCItemContainer::`vftable'
+const int oCItemContainer_vtbl = 8635564;
+
+func int Hlp_Is_oCItemContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
+};
+
+//0x0083C644 const oCNpcContainer::`vftable'
+const int oCNPCContainer_vtbl = 8635972;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
+
+//0x0083C714 const oCNpcInventory::`vftable'
+const int oCNpcInventory_vtbl = 8636180;
+
+func int Hlp_Is_oCNpcInventory (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
 };
 
 

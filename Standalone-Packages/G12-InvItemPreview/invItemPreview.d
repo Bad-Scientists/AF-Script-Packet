@@ -78,8 +78,9 @@ func void _hook_oCItemContainer_CheckSelectedItem () {
 	};
 };
 
-func void G1_InvItemPreview_Init () {
+func void G12_InvItemPreview_Init () {
 	G12_OpenInventoryEvent_Init ();
+	G12_CloseInventoryEvent_Init ();
 
 	OpenInventoryEvent_AddListener (_eventOpenInventory__InvItemPreview);
 	CloseInventoryEvent_AddListener (_eventCloseInventory__InvItemPreview);
@@ -95,8 +96,11 @@ func void G1_InvItemPreview_Init () {
 
 	const int once = 0;
 	if (!once) {
-		const int oCItemContainer__CheckSelectedItem = 6722912;
-		HookEngine (oCItemContainer__CheckSelectedItem, 5, "_hook_oCItemContainer_CheckSelectedItem");
+		//0x00669560 protected: virtual void __thiscall oCItemContainer::CheckSelectedItem(void)
+		const int oCItemContainer__CheckSelectedItem_G1 = 6722912;
+		//0x00709660 protected: virtual void __thiscall oCItemContainer::CheckSelectedItem(void)
+		const int oCItemContainer__CheckSelectedItem_G2 = 7378528;
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__CheckSelectedItem_G1, oCItemContainer__CheckSelectedItem_G2), 5, "_hook_oCItemContainer_CheckSelectedItem");
 		once = 1;
 	};
 };
