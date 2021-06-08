@@ -155,6 +155,7 @@ func void _hook_oCNpc_CloseInventory () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
+
 	if (_CloseInventory_Event) {
 		Event_Execute (_CloseInventory_Event, evCloseInventory);
 	};
@@ -167,6 +168,7 @@ func void _hook_oCNPC_EV_DrawWeapon () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
+
 	if (_CloseInventory_Event) {
 		Event_Execute (_CloseInventory_Event, evDrawWeapon);
 	};
@@ -366,7 +368,9 @@ func void G12_CloseInventoryEvent_Init () {
 	if (!once) {
 		//[Close inventory events]
 		//Function is called when inventory is closed
-		HookEngine (oCNPC__CloseInventory, 6, "_hook_oCNpc_CloseInventory");
+		//G2A HookLen 9
+		const int oCNPC__CloseInventory_G2 = 7742480;
+		HookEngine (MEMINT_SwitchG1G2 (oCNPC__CloseInventory, oCNPC__CloseInventory_G2), MEMINT_SwitchG1G2 (6, 9), "_hook_oCNpc_CloseInventory");
 		
 		//Weapon drawing closes inventory
 		HookEngine (oCNPC__EV_DrawWeapon, 6, "_hook_oCNPC_EV_DrawWeapon");
@@ -416,7 +420,8 @@ func void G12_UnEquipItemEvent_Init () {
 	const int once = 0;
 	if (!once) {
 		//[UnEquip item events]
-		HookEngine (oCNPC__UnEquipItem, 7, "_hook_oCNPC_UnEquipItem");
+		//HookLen G2A 6
+		HookEngine (oCNPC__UnEquipItem, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_UnEquipItem");
 		once = 1;
 	};
 };
@@ -461,6 +466,7 @@ func void G12_DoThrowVobEvent_Init () {
 		const int oCNpc__DoThrowVob_G2 = 7622832;
 
 		HookEngine (MEMINT_SwitchG1G2 (oCNpc__DoThrowVob_G1, oCNpc__DoThrowVob_G1), 5, "_hook_oCNpc_DoThrowVob");
+		once = 1;
 	};
 };
 
@@ -472,6 +478,7 @@ func void G12_OpenDeadNPCEvent_Init () {
 	const int once = 0;
 	if (!once) {
 		//[OpenDeadNPC events]
+		//HookLen G2A 6
 		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
 		once = 1;
 	};
