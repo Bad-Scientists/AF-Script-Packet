@@ -246,16 +246,18 @@ func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCa
 	return CALL_RetValAsInt ();
 };
 
-//G1 only
 func int oCItemContainer_IsActive (var int ptr) {
 	//0x006665A0 public: virtual int __thiscall oCItemContainer::IsActive(void)
-	const int oCItemContainer__IsActive = 6710688;
+	const int oCItemContainer__IsActive_G1 = 6710688;
+
+	//0x007050D0 public: virtual int __thiscall oCItemContainer::IsActive(void)
+	const int oCItemContainer__IsActive_G2 = 7360720;
 
 	if (!ptr) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (ptr), oCItemContainer__IsActive);
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__IsActive_G1, oCItemContainer__IsActive_G2));
 		call = CALL_End();
 	};
 
