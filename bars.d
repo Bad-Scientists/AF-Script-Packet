@@ -69,7 +69,9 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 		View_MoveTo (vHnd, v.vposx, v.vposy);
 
 		View_Open (vHnd);
-		View_SetAlpha (vHnd, v.alpha);
+		if (v.alpha != 255) {
+			View_SetAlpha (vHnd, v.alpha);
+		};
 
 		//Re-arrange views - first background texture view, second 'preview' view and finally bar texture view
 		View_Top(b.v0);
