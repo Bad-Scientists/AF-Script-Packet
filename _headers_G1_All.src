@@ -133,4 +133,5 @@ Standalone-Packages\G12-VobTransport\cloneFactory.d
 Standalone-Packages\G12-VobTransport\vobTransport.d
 Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
-Standalone-Packages\G1-InvItemPreview\invItemPreview.d
+Standalone-Packages\G12-InvItemPreview\invItemPreview.d
+Standalone-Packages\G12-BetterBars\betterBars.d
