@@ -221,5 +221,22 @@ Slightly improved version of LeGo focusnames feature:
 ### Gothic 1 & 2 Inventory Item preview
 This feature updates global variables `PC_ItemPreviewMana` and `PC_ItemPreviewHealth` with HP and Mana values read out of `oCItem.count[]` property using `oCItem.text[]` property to recognize relevant values.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G12_InvItemPreview.src`
+    * `AF-Script-Packet\_headers_G1_InvItemPreview.src` for G1
+    * `AF-Script-Packet\_headers_G2_InvItemPreview.src` for G2A
 1. Call `G12_InvItemPreview_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+### Gothic 1 & 2 Better Bars
+This feature 'replaces' original Gothic health and mana bars with LeGo bars (with LeGo bars we can control textures, alpha values and when bars will be displayed)
+By default this feature adds 3 visualisation options for new bars:
+ - standard (same as in vanilla Gothic)
+ - dynamic:
+    * health bar is visible: if player is hurt, in fight mode, in inventory, when health changes
+    * mana bar is visible: in magic fight mode, in inventory, when mana changes
+ - always on
+
+In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover.
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_BetterBars.src` for G1
+    * `AF-Script-Packet\_headers_G2_BetterBars.src` for G2A
+1. Call `G12_BetterBars_Init ();` from your `Init_Global();` function in `Startup.d` file.
