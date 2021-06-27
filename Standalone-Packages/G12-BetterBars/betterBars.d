@@ -1,7 +1,15 @@
 /*
  *	Requires another package from AFSP: G12-InvItemPreview
  *
- *	This feature 
+ *	This feature 'replaces' original Gothic health and mana bars with LeGo bars (with LeGo bars we can control textures, alpha values and when bars will be displayed)
+ *	By default this feature adds 3 visualisation options for new bars:
+ *	 - standard (same as in vanilla Gothic)
+ *	 - dynamic:
+ *	    - health bar is visible: if player is hurt, in fight mode, in inventory, when health changes
+ *	    - mana bar is visible: in magic fight mode, in inventory, when mana changes
+ *	 - always on
+ *
+ *	In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover
  */
 const int BarType_HealthBar = 0;
 const int BarType_ManaBar = 1;
@@ -69,7 +77,7 @@ func int BarGetOnDesk (var int barType) {
 	//Health bar
 	if (barType == BarType_HealthBar) {
 		//If in 'standard display' - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
-		if (healthBarDisplayMethod & BarDisplay_Standard) {
+		if (healthBarDisplayMethod == BarDisplay_Standard) {
 			if (hpBar.zCView_ondesk) {
 				return TRUE;
 			};
@@ -100,7 +108,6 @@ func int BarGetOnDesk (var int barType) {
 
 	return FALSE;
 };
-
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (BarGetOnDesk (BarType_HealthBar)) {
@@ -326,8 +333,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
-		if ((!(healthBarDisplayMethod & BarDisplay_AlwaysOn)) && (!healthBarOnDesk)) {
-			if (healthBarDisplayMethod & BarDisplay_DynamicUpdate) {
+		if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk)) {
+			if (healthBarDisplayMethod == BarDisplay_DynamicUpdate) {
 				if (!healthBarDisplayTime) {
 					healthBarDisplayTime = 120;
 				} else
@@ -344,12 +351,12 @@ func void FrameFunction_EachFrame__BetterBars () {
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutHealthBar__BetterBars, 60, -1);
 	};
 
-	if ((healthBarDisplayMethod & BarDisplay_AlwaysOn) || (healthBarOnDesk) || (healthBarDisplayTime)) {
+	if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (healthBarDisplayTime)) {
 		if (!healthBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hHealthBar, 0);
 
-				if ((healthBarDisplayMethod & BarDisplay_AlwaysOn) || (healthBarOnDesk)) {
+				if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk)) {
 					if (!healthBarDisplayTime) {
 						Bar_SetAlpha (hHealthBar, 255);
 					};
@@ -361,7 +368,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((!(healthBarDisplayMethod & BarDisplay_AlwaysOn)) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
+	if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
 		if (healthBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hHealthBar);
@@ -429,8 +436,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 		manaBarLastValue = hero.attribute [ATR_MANA];
 
 		//
-		if ((!(manaBarDisplayMethod & BarDisplay_AlwaysOn)) && (!manaBarOnDesk)) {
-			if (manaBarDisplayMethod & BarDisplay_DynamicUpdate) {
+		if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk)) {
+			if (manaBarDisplayMethod == BarDisplay_DynamicUpdate) {
 				if (!manaBarDisplayTime) {
 					manaBarDisplayTime = 120;
 				};
@@ -444,12 +451,12 @@ func void FrameFunction_EachFrame__BetterBars () {
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutManaBar__BetterBars, 60, -1);
 	};
 
-	if ((manaBarDisplayMethod & BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime)) {
+	if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime)) {
 		if (!manaBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hManaBar, 0);
 
-				if ((manaBarDisplayMethod & BarDisplay_AlwaysOn) || (manaBarOnDesk)) {
+				if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk)) {
 					if (!manaBarDisplayTime) {
 						Bar_SetAlpha (hManaBar, 255);
 					};
@@ -461,7 +468,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((!(manaBarDisplayMethod & BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime)) {
+	if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime)) {
 		if (manaBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hManaBar);
@@ -472,15 +479,15 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 	Bar_PreviewSetValue (hManaBar, vManaPreview, previewValueManaBar);
 
-//Zmenit alpha nepomoze - asi je tu ina funkcia, ktora to updatne po nasej frame funkcii
+//When I tried to change alpha of Gothic bar I was not able to do so
 	//View_SetAlpha (hpBarAddress, 0);
 	//View_SetAlpha (hpBar.range_bar, 0);
 	//View_SetAlpha (hpBar.value_bar, 0);
 
-//Odstranit sa neda
+//I was also not able to remove Gothic bar
 	//ViewStatusBar_Remove (hpBarAddress);
 	
-//jedine presun mimo obrazovku nas zbavi originalneho health baru
+//Only option which was possible - moving original Gothic bars outside of screen
 	hpBar.zCView_vposy = 8192 * 2;
 	manaBar.zCView_vposy = 8192 * 2;
 };
