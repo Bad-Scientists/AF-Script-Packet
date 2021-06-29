@@ -32,3 +32,21 @@ func int oCGame_GetHeroStatus () {
 
 	return CALL_RetValAsInt ();
 };
+
+/*
+ *	Function removes NPC from world
+ */
+func void oCSpawnManager_DeleteNpc (var int slfInstance) {
+	//0x006D0DE0 public: void __thiscall oCSpawnManager::DeleteNpc(class oCNpc *)
+	const int oCSpawnManager__DeleteNpc_G1 = 7146976;
+
+	//0x00779690 public: void __thiscall oCSpawnManager::DeleteNpc(class oCNpc *)
+	const int oCSpawnManager__DeleteNpc_G2 = 7837328;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	CALL_PtrParam (_@ (slf));
+	CALL__thiscall (_@ (MEM_SpawnManager), MEMINT_SwitchG1G2 (oCSpawnManager__DeleteNpc_G1, oCSpawnManager__DeleteNpc_G2));
+};
