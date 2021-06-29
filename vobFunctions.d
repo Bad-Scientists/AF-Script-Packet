@@ -950,3 +950,25 @@ func void SetRainThroughVobs (var int bool) {
 		MEM_WriteByte (MEMINT_SwitchG1G2 (Raincheck_G1, Raincheck_G2), 226);
 	};
 };
+
+/*
+ *	Check if vob pointer is in active voblist array
+ */
+func int VobPtr_IsInActiveVobList (var int vobPtr) {
+	if (!vobPtr) { return 0; };
+
+	var int i; i = 0;
+	var int loop; loop = MEM_World.activeVobList_numInArray;
+
+	while (i < loop);
+		var int ptr; ptr = MEM_ReadIntArray(MEM_World.activeVobList_array, i);
+
+		if (vobPtr == ptr) {
+			return TRUE;
+		};
+
+		i += 1;
+	end;
+
+	return FALSE;
+};
