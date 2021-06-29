@@ -373,7 +373,7 @@ func void oCNpc_CreateVobList (var int slfInstance, var int rangeF) {
 
 /*
  *	oCNpc_ClearVobList (var int slfInstance)
- *	Clears slf.vobList_array - not sure if this useful - I never used it :)
+ *	Clears slf.vobList_array
  */
 func void oCNpc_ClearVobList (var int slfInstance) {
 	//0x006B6EB0 public: void __thiscall oCNpc::ClearVobList(void) 
