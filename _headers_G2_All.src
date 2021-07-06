@@ -2,6 +2,7 @@ constants.d
 
 engine_addresses_G2.d
 
+EngineClasses_G2\oInventory.d
 EngineClasses_G2\zEventMan.d
 EngineClasses_G2\zCViewDialog.d
 EngineClasses_G2\oNpcStates.d
