@@ -1,0 +1,1579 @@
+/*
+ *	EXAMPLE #3
+ *	 - player can manipulate anything in Marvin mode
+ * 	 - there is complete Vob catalogue available in buying mode (for G1)
+ */
+
+const string vobTransportFontName			= "font_old_10_white.tga";
+const string vobTransportViewTexture			= "DLG_NOISE.TGA";
+
+//Default values
+const int vobTransportPropertiesView_PPosX		= 0;		//if not defined (-1) it will go to the middle of screen on X axis. In pixels
+const int vobTransportPropertiesView_PPosY		= -1;		//if not defined (-1) it will go to the middle of screen on Y axis. In pixels
+//Virtual positions have higher prio than pixel positions.
+const int vobTransportPropertiesView_VPosX		= -1;		//if not defined (-1) then vobTransportPropertiesView_PPosX will be taken into consideration. Virtual coordinates
+const int vobTransportPropertiesView_VPosY		= -1;		//if not defined (-1) then vobTransportPropertiesView_VPosY will be taken into consideration. Virtual coordinates
+
+const int vobTransportPropertiesView_WidthPxl		= 360;		//In pixels
+const int vobTransportPropertiesView_Lines		= 25;		//24 lines + 1 empty delimiter
+
+const int vobTransportBuyVobViewPPosX			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
+const int vobTransportBuyVobViewPPosY			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
+//Virtual positions have higher prio than pixel positions.
+const int vobTransportBuyVobViewVPosX			= -1;		//if not defined (-1) then vobTransportBuyVobViewPPosX will be taken into consideration. Virtual coordinates (max 8192)
+const int vobTransportBuyVobViewVPosY			= 6600;		//if not defined (-1) then vobTransportBuyVobViewPPosY will be taken into consideration. Virtual coordinates (max 8192)
+
+const int vobTransportBuyVobView_WidthPxl		= 540;
+const int vobTransportBuyVobView_Lines			= 7;		//7 lines
+
+//Interaction prints
+const string vobTransportPrint_BuyVobActivated		= "Select objects which you would like to buy.";
+const string vobTransportPrint_BuyVobNothingToBuy	= "Nothing to buy.";
+const string vobTransportPrint_ContainerContentsDeleted	= "oCMobContainer contents deleted.";
+const string vobTransportPrint_ItemDropped		= "Item dropped.";
+const string vobTransportPrint_NoObjectsDetected	= "No objects detected.";
+const string vobTransportPrint_CannotBeCloned		= "Object cannot be cloned.";
+const string vobTransportPrint_Cloned			= "Object cloned.";
+const string vobTransportPrint_MoveVobActivated		= "Object moving.";
+const string vobTransportPrint_CannotBeClonedMoved	= "Object cannot be cloned or moved.";
+
+//Vob transport modes
+const string vobTransportView_TitleSelection		= "<< Selection mode >>";
+ const string vobTransportView_InstructionMove		= "Press M to move.";
+ const string vobTransportView_InstructionClone		= "Press L Bracket to clone.";
+ const string vobTransportView_InstructionCancel	= "Press R Bracket to cancel.";
+ const string vobTransportView_InstructionDelete	= "Press Delete to delete.";
+ const string vobTransportView_InstructionDropItem	= "Ctrl + L BRACKET to drop item.";
+
+const string vobTransportView_TitleTransform		= "<< Transform mode >>";
+ const string vobTransportView_InstructionConfirm	= "Press L Bracket to confirm position.";
+ const string vobTransportView_InstructionRotate	= "Press ENTER for Rotation mode.";
+
+const string vobTransportView_TitleRotation		= "<< Rotation mode >>";
+ const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z for axis rotation.";
+ const string vobTransportView_InstructionElevation	= "Press E for elevation adjustment.";
+ const string vobTransportView_InstructionSpeed		= "Press SPACE to adjust speed: ";
+
+const string vobTransportView_TitleRotationX		= "<< Rotation mode >> X axis";
+ const string vobTransportView_InstructionStopRotX	= "Press X to stop.";
+
+const string vobTransportView_TitleRotationY		= "<< Rotation mode >> Y axis";
+ const string vobTransportView_InstructionStopRotY	= "Press Y to stop.";
+
+const string vobTransportView_TitleRotationZ		= "<< Rotation mode >> Z axis";
+ const string vobTransportView_InstructionStopRotZ	= "Press Z to stop.";
+
+const string vobTransportView_TitleElevation		= "<< Elevation mode >>";
+ const string vobTransportView_InstructionStopElevation	= "Press E to stop.";
+ const string vobTransportView_InstructionElevationLvl	= "Elevation: ";
+
+ const string vobTransportView_InstructionAlign		= "R Bracket - align to surface.";
+ const string vobTransportView_InstructionDontAlign	= "R Bracket - don't align to surface.";
+
+const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 462;
+
+const string VOBTRANSPORT_CANBUY_VOBLIST [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = {
+	"VOB_BUY_FIREPLACE_GROUND",
+	"VOB_BUY_FIREPLACE_GROUND2",
+	"VOB_BUY_FIREPLACE_HIGH",
+	"VOB_BUY_FIREPLACE_HIGH2",
+	"VOB_BUY_FIREPLACE_MIDDLE",
+	"VOB_BUY_FIREPLACE_NCSTONE",
+	"VOB_BUY_FIREPLACE_NCSTONE2",
+	"VOB_BUY_FIREPLACE_PCHIGH",
+	"VOB_BUY_FIREPLACE_PCHIGH2",
+	"VOB_BUY_FIREPLACE_ORCSTAND",
+	"VOB_BUY_CRYSTALLIGHT",
+
+	"VOB_BUY_LADDER_2",
+	"VOB_BUY_LADDER_3",
+	"VOB_BUY_LADDER_4",
+	"VOB_BUY_LADDER_5",
+	"VOB_BUY_LADDER_6",
+	"VOB_BUY_LADDER_7",
+	"VOB_BUY_LADDER_8",
+	"VOB_BUY_LADDER_9",
+	"VOB_BUY_LADDER_10",
+
+	"VOB_BUY_CRATE_V1",
+	"VOB_BUY_CRATE_V2",
+	"VOB_BUY_CRATE_V3",
+	"VOB_BUY_CRATE_V4",
+	"VOB_BUY_CHEST_V5",
+	"VOB_BUY_CHEST_V6",
+	"VOB_BUY_CHEST_V7",
+	"VOB_BUY_CHEST_V8",
+	"VOB_BUY_CHEST_V9",
+	"VOB_BUY_CHEST_V10",
+	"VOB_BUY_ORC_MUMMY",
+
+	"VOB_BUY_BED_V1",
+	"VOB_BUY_BED_V2",
+	"VOB_BUY_BEDHIGH_1_OC",
+	"VOB_BUY_BEDHIGH_2_OC",
+	"VOB_BUY_BEDHIGH_PC",
+	"VOB_BUY_BEDHIGH_PSI",
+	"VOB_BUY_BEDLOW_NC",
+	"VOB_BUY_BEDLOW_OC",
+	"VOB_BUY_BEDLOW_PC",
+	"VOB_BUY_BEDLOW_PSI",
+
+	"VOB_BUY_CHAIR_1_OC",
+	"VOB_BUY_CHAIR_1_NC",
+	"VOB_BUY_CHAIR_1_PC",
+	"VOB_BUY_CHAIR_2_OC",
+	"VOB_BUY_CHAIR_2_NC",
+	"VOB_BUY_CHAIR_3_OC",
+	"VOB_BUY_CHAIR_3_PC",
+	"VOB_BUY_CHAIR_THRONE",
+	"VOB_BUY_BENCH_THRONE",
+
+	"VOB_BUY_GRINDSTONE",
+	"VOB_BUY_ANVIL",
+	"VOB_BUY_BSFIRE",
+	"VOB_BUY_BSCOOL",
+	"VOB_BUY_BARBQ_SCAV",
+	"VOB_BUY_PAN",
+	"VOB_BUY_CAULDRON",
+	"VOB_BUY_LAB_PSI",
+	"VOB_BUY_HERB_PSI",
+	"VOB_BUY_SMOKE_WATERPIPE",
+	"VOB_BUY_BOOKSTAND",
+	"VOB_BUY_BENCH_OC_V1",
+	"VOB_BUY_BENCH_OC_V2",
+	"VOB_BUY_BENCH_OC_V3",
+	"VOB_BUY_BENCH_NC_V1",
+	"VOB_BUY_DOOR_WOODEN",
+	"VOB_BUY_REPAIR_PLANK",
+	"VOB_BUY_WHEEL",
+
+	"VOB_BUY_ORE_GROUND",
+	"VOB_BUY_STOMPER",
+	"VOB_BUY_STONEMILL",
+	"VOB_BUY_BELLOW_MINE",
+	"VOB_BUY_PRIESTGRAVE_OT",
+	"VOB_BUY_EXCALIBUR_1",
+	"VOB_BUY_SPORTAL_SLEEPER",
+	"VOB_BUY_ORCDRUM_1",
+	"VOB_BUY_TOUCHPLATE_STONE",
+	"VOB_BUY_TURNSWITCH_BLOCK",
+	"VOB_BUY_LEVER",
+
+	"VOB_BUY_BATHTUB_WOODEN",
+	"VOB_BUY_BABEBED_1",
+	"VOB_BUY_LOVEBED_OC",
+	"VOB_BUY_BARRELO_OC",
+
+	/*
+	"VOB_BUY_BACKPACK_1",
+	"VOB_BUY_BARREL_1_OC",
+	"VOB_BUY_BARREL_2_OC",
+	"VOB_BUY_BARRELMOUNTED_OC",
+	"VOB_BUY_BASKET_RICE",
+	"VOB_BUY_ROPEWAY_OW",
+
+	"VOB_BUY_DRUM_IE",
+	"VOB_BUY_M2PIPE_IE",
+	"VOB_BUY_MCELLO_IE",
+	"VOB_BUY_MDRUMSCHEIT_IE",
+	"VOB_BUY_MHARP_IE",
+	"VOB_BUY_MLUTE_IE",
+	"VOB_BUY_MPIPE_IE",
+	"VOB_BUY_PAUKE_IE",
+
+	"VOB_BUY_MOB_GONG",
+	"VOB_BUY_MOB_PAUKE",
+
+	"VOB_BUY_FIREPLACE_GROUND_USE",
+	"VOB_BUY_GRAVE_ORC_1",
+	"VOB_BUY_GRAVE_ORC_2",
+	"VOB_BUY_GRAVE_ORC_3",
+	"VOB_BUY_GRAVE_ORC_4",
+	"VOB_BUY_GROUND_SLOT",
+	"VOB_BUY_IDOL_SLEEPER3_PC",
+	"VOB_BUY_IDOL_PILLAR_7M",
+	"VOB_BUY_IDOL_PILLAR_ORC",
+	"VOB_BUY_PUSH_STONE",
+	"VOB_BUY_PUSH_STONE_M01",
+	"VOB_BUY_SCAV_MEAT",
+	"VOB_BUY_SECRETDOOR_STONE",
+	"VOB_BUY_THRONE_BIG",
+	"VOB_BUY_VOBBOX_1",
+	"VOB_BUY_WASH_SLOT",
+	*/
+
+	"VOB_BUY_SOLDIERSHUT",
+	"VOB_BUY_OLDSAWHOUSE_V1",
+	"VOB_BUY_ORC_TOWER_V1",
+	"VOB_BUY_BROKENHUT",
+
+	"VOB_BUY_LONEHUT",
+	"VOB_BUY_LOOKOUT",
+	"VOB_BUY_LAKEHUT",
+	"VOB_BUY_PLANKHUTII",
+	"VOB_BUY_SHIPWRECK_BUG",
+	"VOB_BUY_SHIPWRECK_TAIL",
+
+	"VOB_BUY_BEAM_G",
+	"VOB_BUY_BEAM_ML",
+	"VOB_BUY_BEAM_MS",
+	"VOB_BUY_BEAM_T",
+	"VOB_BUY_HANDRAIL_V1",
+	"VOB_BUY_HANDRAIL_V2",
+	"VOB_BUY_HANDRAIL_V3",
+	"VOB_BUY_PLANKS_2X3M",
+	"VOB_BUY_PLANKS_2X4M",
+	"VOB_BUY_PLANKS_2X5M",
+	"VOB_BUY_PLANKS_3X7M",
+	"VOB_BUY_PLANKS_3X11M",
+	"VOB_BUY_NC_HOUSEPLANKS",
+	"VOB_BUY_NC_LOG_V1",
+	"VOB_BUY_NC_LOG_V2",
+	"VOB_BUY_NC_LOG_V3",
+	"VOB_BUY_NC_PLANKS_V1",
+	"VOB_BUY_BARONSLEDGE_V1",
+	"VOB_BUY_DUNGEON_PLANKS",
+	"VOB_BUY_PLANK_INDOOR",
+	"VOB_BUY_PLANK_INDOOR_BIG",
+	"VOB_BUY_PLANK_INDOOR_LARGE",
+	"VOB_BUY_PLANKBROKEN_SMALL",
+	"VOB_BUY_PLANKBROKEN_SMALL2",
+	"VOB_BUY_MOB_BRAKER",
+	"VOB_BUY_STABLE_PLANKS",
+	"VOB_BUY_ORC_PLANKS_2X3M",
+	"VOB_BUY_ORC_SQUAREPLANKS_2X3M",
+	"VOB_BUY_FENCE_V1",
+	"VOB_BUY_FENCE_V2",
+	"VOB_BUY_FENCE_V3",
+	"VOB_BUY_WOODPLANKS_V1",
+	"VOB_BUY_WOODPLANKS_V2",
+	"VOB_BUY_WOODPLANKS_V3",
+	"VOB_BUY_WOODPLANKS_V4",
+	"VOB_BUY_WOODPLANKS_V5",
+	"VOB_BUY_ORETRAIL_PLANK_V1",
+	"VOB_BUY_ORETRAIL_PLANK_V2",
+	"VOB_BUY_PALISSADE",
+	"VOB_BUY_TROLLPALISSADE",
+	"VOB_BUY_TUNNELCOVER",
+	"VOB_BUY_PC_LOG_V1",
+	"VOB_BUY_PC_LOG_V2",
+
+	"VOB_BUY_STANDINGWORKPLANK_5X7M",
+	"VOB_BUY_WINKELSTEG",
+	"VOB_BUY_WORKPLANK_4X6M",
+	"VOB_BUY_WORKPLANK_5X7M",
+
+	"VOB_BUY_COVER_4X7M",
+	"VOB_BUY_MELTER",
+
+	"VOB_BUY_NC_OREHEAP",
+	"VOB_BUY_NC_OREHEAP_PFX",
+	"VOB_BUY_OREHEAP_SMALL_01",
+
+	"VOB_BUY_DT_BED_V1",
+	"VOB_BUY_DT_BOOKS_V1",
+	"VOB_BUY_DT_CARPET_ROUND_01",
+	"VOB_BUY_DT_CHAINBOX",
+	"VOB_BUY_DT_CRATE_V1",
+	"VOB_BUY_DT_CRATE_V2",
+	"VOB_BUY_DT_FIREPLACE_V1",
+	"VOB_BUY_DT_FIREPLACE_V2",
+	"VOB_BUY_DT_SHELF_V1",
+	"VOB_BUY_DT_TABLE_V1",
+	"VOB_BUY_DT_TABLE_V2",
+	"VOB_BUY_DT_TABLE_V3",
+	"VOB_BUY_NC_BAR_TABLE_V1",
+	"VOB_BUY_NICE_V1",
+	"VOB_BUY_NICE_V2",
+	"VOB_BUY_NC_TABLE_V1",
+	"VOB_BUY_NC_TABLE_V2",
+	"VOB_BUY_OC_DECOWALL_V1",
+	"VOB_BUY_OC_DECOWALL_V2",
+	"VOB_BUY_FIREPLACE_HUGE",
+	"VOB_BUY_SHELF_V1",
+	"VOB_BUY_TABLE_EBA",
+	"VOB_BUY_TABLE_HEAVY",
+	"VOB_BUY_TABLE_HEAVY_LONG",
+	"VOB_BUY_DESK",
+	"VOB_BUY_SHELVES_BIG",
+	"VOB_BUY_SHELVES_MEDIUM",
+	"VOB_BUY_SHELVES_SMALL",
+	"VOB_BUY_TABLE_NORMAL_DEFECT",
+	"VOB_BUY_OC_PICTURE_V1",
+	"VOB_BUY_OC_PICTURE_V2",
+	"VOB_BUY_OC_SHELF_V1",
+	"VOB_BUY_OC_SHELF_V2",
+	"VOB_BUY_OC_SHELF_V3",
+	"VOB_BUY_OC_SHELF_V4",
+	"VOB_BUY_OC_TABLE_V1",
+	"VOB_BUY_OC_TABLE_V1_DESTR",
+	"VOB_BUY_OC_TABLE_V2",
+	"VOB_BUY_OC_TABLE_V2_DESTR",
+	"VOB_BUY_OC_TABLE_V3",
+	"VOB_BUY_OC_THRONE_GROUND",
+	"VOB_BUY_ARMORHOLDER",
+	"VOB_BUY_ARMORSHOES",
+	"VOB_BUY_WSE_V1",
+	"VOB_BUY_WSE_V2",
+	"VOB_BUY_WSE_NEW_V1",
+	"VOB_BUY_WSE_NEW_V2",
+	"VOB_BUY_WSE_OLD_V1",
+	"VOB_BUY_WSE_OLD_V2",
+	"VOB_BUY_WALLARMOR",
+	"VOB_BUY_ORETABLE",
+	"VOB_BUY_ORC_BED_V1",
+	"VOB_BUY_ORC_E_BED",
+	"VOB_BUY_ORC_VASE_V1",
+	"VOB_BUY_PC_FIREPLACE",
+	"VOB_BUY_PC_TABLE_V1",
+	"VOB_BUY_PC_TABLE_V2",
+	"VOB_BUY_PC_SHOP_V1",
+	"VOB_BUY_TPL_DECOHEAD_V1",
+	"VOB_BUY_TPL_DOORDECO_V1",
+
+	"VOB_BUY_DT_SKELETON_V01",
+	"VOB_BUY_DT_SKELETON_V01_HEAD",
+	"VOB_BUY_DT_SKELETON_V02",
+	"VOB_BUY_NC_BIRDFRIGHTENER",
+	"VOB_BUY_OC_GALGEN",
+	"VOB_BUY_OC_GALGEN_V2",
+	"VOB_BUY_ORC_E_DEKO_02",
+	"VOB_BUY_ORC_SKELETON_V1",
+	"VOB_BUY_ORC_SKELETON_V2",
+	"VOB_BUY_ORC_SKELETON_V3",
+	"VOB_BUY_ORC_SKELETON_V4",
+	"VOB_BUY_ORC_SKULLSONFLOOR",
+	"VOB_BUY_ORC_SKULLSONSTAFF",
+
+	"VOB_BUY_FMC_BRIDGE_BOTTOM",
+	"VOB_BUY_FMC_BRIDGE_TOP",
+	"VOB_BUY_BRIDGE_30M",
+	"VOB_BUY_BRIDGE_4X4M",
+	"VOB_BUY_BRIDGE_ANGEL_4M",
+	"VOB_BUY_BRIDGERAMP",
+	"VOB_BUY_BRIDGESTAND",
+	"VOB_BUY_BRIDGESTAND_02",
+	"VOB_BUY_BRIDGE_3X4M",
+	"VOB_BUY_BIGBRIDGE",
+	"VOB_BUY_BIGBRIDGEMIDDLE",
+	"VOB_BUY_PC_BRIDGE_V1",
+	"VOB_BUY_PC_BRIDGE_V2",
+	"VOB_BUY_PC_BRIDGE_V3",
+	"VOB_BUY_PC_BRIDGE_V4",
+	"VOB_BUY_PC_BRIDGE_ROOF_1",
+	"VOB_BUY_PC_LOB_BRIDGE",
+	"VOB_BUY_PC_LOB_BRIDGE2",
+	"VOB_BUY_PC_LOB_BRIDGE3",
+	"VOB_BUY_PC_BRIDGE_PLANK_BIG",
+	"VOB_BUY_PC_BRIDGE_PLANK_HUGE",
+	"VOB_BUY_PC_BRIDGE_PLANK_MINI",
+	"VOB_BUY_PC_BRIDGE_PLANK_SMALL",
+	"VOB_BUY_TPL_BRIDGE_V1",
+	"VOB_BUY_TPL_BRIDGE_V2",
+	"VOB_BUY_TPL_BRIDGEBROKEN_V1",
+	"VOB_BUY_TPL_BRIDGEFUNCTIONAL_V1",
+	"VOB_BUY_TPL_BRIDGESTONE_V1",
+	"VOB_BUY_TPL_BRIDGESTONE_V2",
+	"VOB_BUY_TPL_BRIDGEWHEEL_V1",
+
+	"VOB_BUY_BUSHES_V1",
+	"VOB_BUY_BUSH_REED_V1",
+	"VOB_BUY_BUSH_V1",
+	"VOB_BUY_BUSH_V2",
+	"VOB_BUY_BUSH_V4",
+	"VOB_BUY_BUSH_V5",
+	"VOB_BUY_BUSH_V7",
+	"VOB_BUY_BUSH_V8",
+	"VOB_BUY_BUSH_WATER_V1",
+	"VOB_BUY_DEADTREE_07",
+	"VOB_BUY_PSIBUSHES_V1",
+	"VOB_BUY_RICEPLANT_COUPLE",
+	"VOB_BUY_RICEPLANT_ONE",
+	"VOB_BUY_MUSHROOM_V1",
+	"VOB_BUY_MUSHROOM_V2",
+
+	"VOB_BUY_HANGHIM_TREE_V3",
+	"VOB_BUY_DEADTREE_04",
+	"VOB_BUY_DEADTREE_06",
+	"VOB_BUY_DEADTREE_07",
+	"VOB_BUY_TREE_DESTROYED_V2",
+	"VOB_BUY_TREE_ROOT_V1",
+	"VOB_BUY_TREE_ROOT_V2",
+	"VOB_BUY_TREE_V13",
+	"VOB_BUY_FOREST_TREE_V1",
+	"VOB_BUY_FOREST_TREE_V2",
+	"VOB_BUY_FOREST_TREE_V3",
+	"VOB_BUY_FOREST_TREE_V4",
+	"VOB_BUY_FOREST_TREE_V5",
+	"VOB_BUY_TREE_V2",
+	"VOB_BUY_TREE_V3",
+	"VOB_BUY_TREE_V4",
+	"VOB_BUY_TREE_V5",
+	"VOB_BUY_TREE_V6",
+	"VOB_BUY_TREE_V8",
+	"VOB_BUY_TREE_V9",
+	"VOB_BUY_TREE_V10",
+	"VOB_BUY_TREE_V11",
+	"VOB_BUY_TREE_V12",
+	"VOB_BUY_TREEGROUP_V1",
+	"VOB_BUY_TREEGROUP_V2",
+	"VOB_BUY_TREEGROUP_V3",
+
+	"VOB_BUY_BARRELHOLDER_V1",
+	"VOB_BUY_BARREL_V1",
+	"VOB_BUY_BARREL_V1_DESTROYED",
+	"VOB_BUY_BARREL_V2",
+	"VOB_BUY_BARREL_V2_DESTROYED",
+	"VOB_BUY_BARRELS_REIHE",
+	"VOB_BUY_BARRELS_STRUBBELIG",
+	"VOB_BUY_CHICKENSTICK_CHICKEN_V1",
+	"VOB_BUY_CHICKENSTICK_V1",
+	"VOB_BUY_CHICKENSTICK_V2",
+	"VOB_BUY_CHIMNEY_V1",
+	"VOB_BUY_CHIMNEY_V2",
+	"VOB_BUY_OC_DECORATE_V1",
+	"VOB_BUY_OC_DECORATE_V2",
+	"VOB_BUY_OC_DECORATE_V3",
+	"VOB_BUY_OC_DECORATE_V4",
+	"VOB_BUY_OC_DECORATE_V5",
+	"VOB_BUY_OC_DECOROOF_V1",
+	"VOB_BUY_OC_DECOROOF_V2",
+	"VOB_BUY_OC_FIREPLACE_V1",
+	"VOB_BUY_OC_FIREPLACE_V2",
+	"VOB_BUY_OC_FIREPLACE_V3",
+	"VOB_BUY_OC_FIREPLACE_V5",
+	"VOB_BUY_FIREPLACEBIG_V1",
+	"VOB_BUY_FIREPLACEBIG_CHICKEN_V1",
+	"VOB_BUY_FIREWOOD_V1",
+	"VOB_BUY_FIREWOOD_V2",
+	"VOB_BUY_FIREWOOD_V3",
+	"VOB_BUY_GARBAGE_V1",
+	"VOB_BUY_KITCHENSTUFF_V1",
+	"VOB_BUY_LEATHERSTAND_V1",
+	"VOB_BUY_BOWTRAIN",
+	"VOB_BUY_CHAIN",
+	"VOB_BUY_CHAIN_ALONE",
+	"VOB_BUY_FLAG_SMALL",
+	"VOB_BUY_WASTER",
+	"VOB_BUY_OC_SACK_V1",
+	"VOB_BUY_OC_SACK_V2",
+	"VOB_BUY_OC_SACK_V3",
+	"VOB_BUY_OC_SAECKE_V1",
+	"VOB_BUY_OC_SAECKE_V2",
+	"VOB_BUY_OC_WELL_V1",
+	"VOB_BUY_OREBOX_01",
+	"VOB_BUY_BROKENCART",
+
+	"VOB_BUY_COLDUMMY",
+	"VOB_BUY_OPENEGG",
+	"VOB_BUY_SLIME",
+	"VOB_BUY_FIREPLACE_V1",
+	"VOB_BUY_ORC_E_WALL_V1",
+	"VOB_BUY_ORC_E_WALL_V2",
+	"VOB_BUY_ORC_MASTERTHRONE",
+	"VOB_BUY_CAVEWEBS_V1",
+	"VOB_BUY_CAVEWEBS_V2",
+	"VOB_BUY_FOCUS_V1",
+	"VOB_BUY_FOCUS_V2",
+
+	"VOB_BUY_FOCUSPLATTFORM",
+	"VOB_BUY_PENTAGRAM_V1",
+	"VOB_BUY_PENTAGRAM_V2",
+	"VOB_BUY_DT_LIGHTER_PENTAGRAM",
+	"VOB_BUY_DT_TORCH_V1",
+	"VOB_BUY_NC_LIGHTER",
+	"VOB_BUY_OC_BIGLIGHTER_V1",
+	"VOB_BUY_TORCHHOLDER_FILLED",
+	"VOB_BUY_LIGHTER_HUGE3",
+	"VOB_BUY_ORC_FIREPLACE_V1",
+	"VOB_BUY_ORC_FIREPLACE_V2",
+	"VOB_BUY_ORC_FIREPLACE_V3",
+	"VOB_BUY_ORC_FIREPLACE_V4",
+	"VOB_BUY_ORC_FIREPLACE_V5",
+	"VOB_BUY_ORC_FIREPLACE_V6",
+	"VOB_BUY_ORC_STANDING_LAMP",
+	"VOB_BUY_ORC_STANDING_LAMP_LARGE",
+	"VOB_BUY_ORC_WALL_FIRE_V1",
+	"VOB_BUY_ORC_WALL_FIRE_V2",
+	"VOB_BUY_MAGICSTAFF_V1",
+	"VOB_BUY_PC_CRYSTALLIGHT_V2",
+	"VOB_BUY_PC_FIREBOWL",
+	"VOB_BUY_TPL_LIGHTER_V1",
+	"VOB_BUY_TPL_LIGHTER_V2",
+
+	"VOB_BUY_STONE_V1_10",
+	"VOB_BUY_STONE_V2_10",
+	"VOB_BUY_STONE_V3_10",
+	"VOB_BUY_COUPLESTONES",
+	"VOB_BUY_STOMPERSTAND",
+	"VOB_BUY_STONE_V1_30",
+	"VOB_BUY_STONE_V2_30",
+	"VOB_BUY_STONE_V3_30",
+	"VOB_BUY_STONE_V3_40",
+	"VOB_BUY_STONE_V3_50",
+	"VOB_BUY_STONE_V1_20",
+	"VOB_BUY_STONE_V2_20",
+	"VOB_BUY_STONE_V3_20",
+
+	"VOB_BUY_ORE_BIG_V1",
+	"VOB_BUY_ORE_BIG_V2",
+
+	"VOB_BUY_ORC_STATUE_V1",
+	"VOB_BUY_ORC_STATUE_V2",
+	"VOB_BUY_ORC_STATUE_V3",
+	"VOB_BUY_OSTA_AXE2",
+
+	"VOB_BUY_ORC_E_COLUMN",
+
+	"VOB_BUY_PC_SLEEPER_V2",
+	"VOB_BUY_PC_SLEEPER_V3",
+	"VOB_BUY_PC_SLEEPER_V4",
+	"VOB_BUY_TPL_ORCSTATUE",
+	"VOB_BUY_CASTLE_FLOOR_V1",
+	"VOB_BUY_CASTLE_FLOOR_V2",
+	"VOB_BUY_CASTLE_FLOOR_V3",
+	"VOB_BUY_CASTLE_FLOOR_V4",
+	"VOB_BUY_CASTLE_FLOOR_V5",
+	"VOB_BUY_CASTLE_PLATE",
+	"VOB_BUY_CASTLE_LIFT_V1",
+	"VOB_BUY_CASTLE_LIFT_V2",
+	"VOB_BUY_CASTLE_LIFT_V3",
+	"VOB_BUY_DECOSTONE_01_DAEMON",
+	"VOB_BUY_DECOSTONE_01_DOORS_V1",
+	"VOB_BUY_DECOSTONE_01_DOORS_V2",
+	"VOB_BUY_DECOSTONE_01_MUMMY",
+	"VOB_BUY_DECOSTONE_01_TARGET",
+	"VOB_BUY_TPL_PILLAR_V1",
+	"VOB_BUY_TPL_STONECEILING_V1",
+	"VOB_BUY_OC_STONE",
+	"VOB_BUY_OC_STONEBROKEN",
+	"VOB_BUY_ORC_BROKEN_COLUMN",
+	"VOB_BUY_ORC_MOVER_01_3X5XM",
+	"VOB_BUY_ORC_MOVER_01_5X9M",
+	"VOB_BUY_TPL_ELEVATOR_V1",
+	"VOB_BUY_TPL_ELEVATORSTONE_1X1M",
+	"VOB_BUY_TPL_HINT_V1",
+	"VOB_BUY_TPL_HINT_V2",
+	"VOB_BUY_TPL_JUMPPLATE_V1",
+	"VOB_BUY_TPL_NORMALSTONE_1X1M",
+	"VOB_BUY_TPL_PLATEFIRE_V1",
+	"VOB_BUY_TPL_PLATEMOON_V1",
+	"VOB_BUY_TPL_PLATESUN_V1",
+	"VOB_BUY_TPL_PLATEWATER_V1",
+	"VOB_BUY_TPL_PURPURSKULLSTONE_1X1M",
+	"VOB_BUY_TPL_SECRETSTONE_V1",
+	"VOB_BUY_TPL_SECRETWALL_V1",
+	"VOB_BUY_TPL_SECRETWALL_V2",
+	"VOB_BUY_TPL_TARGETSTONE_V1",
+
+	"VOB_BUY_NC_MAINGATE01",
+	"VOB_BUY_OC_MAINGATE01_V1",
+	"VOB_BUY_OC_MAINGATE01_V2",
+	"VOB_BUY_OC_MAINGATE01_V3",
+	"VOB_BUY_OC_MAINGATE02_V1",
+	"VOB_BUY_OC_MAINGATE02_V2",
+	"VOB_BUY_OC_MAINGATE02_V3",
+	"VOB_BUY_GITTERKAEFIG_4X4M",
+	"VOB_BUY_GITTERKAEFIG_4X5M",
+	"VOB_BUY_NC_OREHEAP_FENCE",
+	"VOB_BUY_OC_GATE_KITCHEN",
+	"VOB_BUY_OC_GATE_WELL",
+	"VOB_BUY_OC_CAGE",
+	"VOB_BUY_OC_CAGE2",
+	"VOB_BUY_OC_GATE_BIG",
+	"VOB_BUY_OC_GATE_SMALL",
+	"VOB_BUY_OC_GATE_SMALL2",
+	"VOB_BUY_OC_GATE_SMALL3",
+	"VOB_BUY_ORC_GATE_5X5M",
+	"VOB_BUY_OW_ARENA_FENCE",
+
+	"VOB_BUY_METALTHORNS_2X2X05M",
+	"VOB_BUY_METALTHORNS_4X4X4M",
+	"VOB_BUY_METALTHORNS_DEADLY",
+
+	"VOB_BUY_ARCH_V1",
+	"VOB_BUY_ARCH_V2",
+	"VOB_BUY_BOOKSHELF_V1",
+	"VOB_BUY_BOOKSHELF_V2",
+
+	"VOB_BUY_NC_STAIRS_V1",
+	"VOB_BUY_OC_STAIRS_V1",
+	"VOB_BUY_OC_STAIRS_V2",
+	"VOB_BUY_OC_STAIRS_V3",
+	"VOB_BUY_OC_STAIRS_V5",
+	"VOB_BUY_OC_STAIRS_V10",
+	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+};
+
+/*
+ *
+ */
+const int VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX = 17;
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_MOBS_FIREPLACES [11] = {
+	"VOB_BUY_FIREPLACE_GROUND",
+	"VOB_BUY_FIREPLACE_GROUND2",
+	"VOB_BUY_FIREPLACE_HIGH",
+	"VOB_BUY_FIREPLACE_HIGH2",
+	"VOB_BUY_FIREPLACE_MIDDLE",
+	"VOB_BUY_FIREPLACE_NCSTONE",
+	"VOB_BUY_FIREPLACE_NCSTONE2",
+	"VOB_BUY_FIREPLACE_PCHIGH",
+	"VOB_BUY_FIREPLACE_PCHIGH2",
+	"VOB_BUY_FIREPLACE_ORCSTAND",
+	"VOB_BUY_CRYSTALLIGHT"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_MOBS_LADDERS [9] = {
+	"VOB_BUY_LADDER_2",
+	"VOB_BUY_LADDER_3",
+	"VOB_BUY_LADDER_4",
+	"VOB_BUY_LADDER_5",
+	"VOB_BUY_LADDER_6",
+	"VOB_BUY_LADDER_7",
+	"VOB_BUY_LADDER_8",
+	"VOB_BUY_LADDER_9",
+	"VOB_BUY_LADDER_10"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_MOBS_CHESTS [11] = {
+	"VOB_BUY_CRATE_V1",
+	"VOB_BUY_CRATE_V2",
+	"VOB_BUY_CRATE_V3",
+	"VOB_BUY_CRATE_V4",
+	"VOB_BUY_CHEST_V5",
+	"VOB_BUY_CHEST_V6",
+	"VOB_BUY_CHEST_V7",
+	"VOB_BUY_CHEST_V8",
+	"VOB_BUY_CHEST_V9",
+	"VOB_BUY_CHEST_V10",
+	"VOB_BUY_ORC_MUMMY"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_MOBS_OTHERS [52] = {
+	"VOB_BUY_BED_V1",
+	"VOB_BUY_BED_V2",
+	"VOB_BUY_BEDHIGH_1_OC",
+	"VOB_BUY_BEDHIGH_2_OC",
+	"VOB_BUY_BEDHIGH_PC",
+	"VOB_BUY_BEDHIGH_PSI",
+	"VOB_BUY_BEDLOW_NC",
+	"VOB_BUY_BEDLOW_OC",
+	"VOB_BUY_BEDLOW_PC",
+	"VOB_BUY_BEDLOW_PSI",
+
+	"VOB_BUY_CHAIR_1_OC",
+	"VOB_BUY_CHAIR_1_NC",
+	"VOB_BUY_CHAIR_1_PC",
+	"VOB_BUY_CHAIR_2_OC",
+	"VOB_BUY_CHAIR_2_NC",
+	"VOB_BUY_CHAIR_3_OC",
+	"VOB_BUY_CHAIR_3_PC",
+	"VOB_BUY_CHAIR_THRONE",
+	"VOB_BUY_BENCH_THRONE",
+
+	"VOB_BUY_GRINDSTONE",
+	"VOB_BUY_ANVIL",
+	"VOB_BUY_BSFIRE",
+	"VOB_BUY_BSCOOL",
+	"VOB_BUY_BARBQ_SCAV",
+	"VOB_BUY_PAN",
+	"VOB_BUY_CAULDRON",
+	"VOB_BUY_LAB_PSI",
+	"VOB_BUY_HERB_PSI",
+	"VOB_BUY_SMOKE_WATERPIPE",
+	"VOB_BUY_BOOKSTAND",
+	"VOB_BUY_BENCH_OC_V1",
+	"VOB_BUY_BENCH_OC_V2",
+	"VOB_BUY_BENCH_OC_V3",
+	"VOB_BUY_BENCH_NC_V1",
+	"VOB_BUY_DOOR_WOODEN",
+	"VOB_BUY_REPAIR_PLANK",
+	"VOB_BUY_WHEEL",
+	"VOB_BUY_ORE_GROUND",
+	"VOB_BUY_STOMPER",
+	"VOB_BUY_STONEMILL",
+	"VOB_BUY_BELLOW_MINE",
+	"VOB_BUY_PRIESTGRAVE_OT",
+	"VOB_BUY_EXCALIBUR_1",
+	"VOB_BUY_SPORTAL_SLEEPER",
+	"VOB_BUY_ORCDRUM_1",
+	"VOB_BUY_TOUCHPLATE_STONE",
+	"VOB_BUY_TURNSWITCH_BLOCK",
+	"VOB_BUY_LEVER",
+
+	"VOB_BUY_BATHTUB_WOODEN",
+	"VOB_BUY_BABEBED_1",
+	"VOB_BUY_LOVEBED_OC",
+	"VOB_BUY_BARRELO_OC"
+/*
+	"VOB_BUY_BACKPACK_1",
+	"VOB_BUY_BARREL_1_OC",
+	"VOB_BUY_BARREL_2_OC",
+	"VOB_BUY_BARRELMOUNTED_OC",
+
+	"VOB_BUY_BASKET_RICE",
+	"VOB_BUY_ROPEWAY_OW",
+
+	"VOB_BUY_DRUM_IE",
+	"VOB_BUY_M2PIPE_IE",
+	"VOB_BUY_MCELLO_IE",
+	"VOB_BUY_MDRUMSCHEIT_IE",
+	"VOB_BUY_MHARP_IE",
+	"VOB_BUY_MLUTE_IE",
+	"VOB_BUY_MPIPE_IE",
+	"VOB_BUY_PAUKE_IE",
+
+	"VOB_BUY_MOB_GONG",
+	"VOB_BUY_MOB_PAUKE",
+
+	"VOB_BUY_FIREPLACE_GROUND_USE",
+	"VOB_BUY_GRAVE_ORC_1",
+	"VOB_BUY_GRAVE_ORC_2",
+	"VOB_BUY_GRAVE_ORC_3",
+	"VOB_BUY_GRAVE_ORC_4",
+	"VOB_BUY_GROUND_SLOT",
+	"VOB_BUY_IDOL_SLEEPER3_PC",
+	"VOB_BUY_IDOL_PILLAR_7M",
+	"VOB_BUY_IDOL_PILLAR_ORC",
+	"VOB_BUY_PUSH_STONE",
+	"VOB_BUY_PUSH_STONE_M01",
+	"VOB_BUY_SCAV_MEAT",
+	"VOB_BUY_SECRETDOOR_STONE",
+	"VOB_BUY_THRONE_BIG",
+	"VOB_BUY_VOBBOX_1",
+	"VOB_BUY_WASH_SLOT"
+*/
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_STRUCTURES [10] = {
+	"VOB_BUY_SOLDIERSHUT",
+	"VOB_BUY_OLDSAWHOUSE_V1",
+	"VOB_BUY_ORC_TOWER_V1",
+	"VOB_BUY_BROKENHUT",
+
+	"VOB_BUY_LONEHUT",
+	"VOB_BUY_LOOKOUT",
+	"VOB_BUY_LAKEHUT",
+	"VOB_BUY_PLANKHUTII",
+	"VOB_BUY_SHIPWRECK_BUG",
+	"VOB_BUY_SHIPWRECK_TAIL"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_PLANKS [52] = {
+	"VOB_BUY_BEAM_G",
+	"VOB_BUY_BEAM_ML",
+	"VOB_BUY_BEAM_MS",
+	"VOB_BUY_BEAM_T",
+	"VOB_BUY_HANDRAIL_V1",
+	"VOB_BUY_HANDRAIL_V2",
+	"VOB_BUY_HANDRAIL_V3",
+	"VOB_BUY_PLANKS_2X3M",
+	"VOB_BUY_PLANKS_2X4M",
+	"VOB_BUY_PLANKS_2X5M",
+	"VOB_BUY_PLANKS_3X7M",
+	"VOB_BUY_PLANKS_3X11M",
+	"VOB_BUY_NC_HOUSEPLANKS",
+	"VOB_BUY_NC_LOG_V1",
+	"VOB_BUY_NC_LOG_V2",
+	"VOB_BUY_NC_LOG_V3",
+	"VOB_BUY_NC_PLANKS_V1",
+	"VOB_BUY_BARONSLEDGE_V1",
+	"VOB_BUY_DUNGEON_PLANKS",
+	"VOB_BUY_PLANK_INDOOR",
+	"VOB_BUY_PLANK_INDOOR_BIG",
+	"VOB_BUY_PLANK_INDOOR_LARGE",
+	"VOB_BUY_PLANKBROKEN_SMALL",
+	"VOB_BUY_PLANKBROKEN_SMALL2",
+	"VOB_BUY_MOB_BRAKER",
+	"VOB_BUY_STABLE_PLANKS",
+	"VOB_BUY_ORC_PLANKS_2X3M",
+	"VOB_BUY_ORC_SQUAREPLANKS_2X3M",
+	"VOB_BUY_FENCE_V1",
+	"VOB_BUY_FENCE_V2",
+	"VOB_BUY_FENCE_V3",
+	"VOB_BUY_WOODPLANKS_V1",
+	"VOB_BUY_WOODPLANKS_V2",
+	"VOB_BUY_WOODPLANKS_V3",
+	"VOB_BUY_WOODPLANKS_V4",
+	"VOB_BUY_WOODPLANKS_V5",
+	"VOB_BUY_ORETRAIL_PLANK_V1",
+	"VOB_BUY_ORETRAIL_PLANK_V2",
+	"VOB_BUY_PALISSADE",
+	"VOB_BUY_TROLLPALISSADE",
+	"VOB_BUY_TUNNELCOVER",
+	"VOB_BUY_PC_LOG_V1",
+	"VOB_BUY_PC_LOG_V2",
+
+	"VOB_BUY_STANDINGWORKPLANK_5X7M",
+	"VOB_BUY_WINKELSTEG",
+	"VOB_BUY_WORKPLANK_4X6M",
+	"VOB_BUY_WORKPLANK_5X7M",
+
+	"VOB_BUY_COVER_4X7M",
+	"VOB_BUY_MELTER",
+
+	"VOB_BUY_NC_OREHEAP",
+	"VOB_BUY_NC_OREHEAP_PFX",
+	"VOB_BUY_OREHEAP_SMALL_01"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE [60] = {
+	"VOB_BUY_DT_BED_V1",
+	"VOB_BUY_DT_BOOKS_V1",
+	"VOB_BUY_DT_CARPET_ROUND_01",
+	"VOB_BUY_DT_CHAINBOX",
+	"VOB_BUY_DT_CRATE_V1",
+	"VOB_BUY_DT_CRATE_V2",
+	"VOB_BUY_DT_FIREPLACE_V1",
+	"VOB_BUY_DT_FIREPLACE_V2",
+	"VOB_BUY_DT_SHELF_V1",
+	"VOB_BUY_DT_TABLE_V1",
+	"VOB_BUY_DT_TABLE_V2",
+	"VOB_BUY_DT_TABLE_V3",
+	"VOB_BUY_NC_BAR_TABLE_V1",
+	"VOB_BUY_NICE_V1",
+	"VOB_BUY_NICE_V2",
+	"VOB_BUY_NC_TABLE_V1",
+	"VOB_BUY_NC_TABLE_V2",
+	"VOB_BUY_OC_DECOWALL_V1",
+	"VOB_BUY_OC_DECOWALL_V2",
+	"VOB_BUY_FIREPLACE_HUGE",
+	"VOB_BUY_SHELF_V1",
+	"VOB_BUY_TABLE_EBA",
+	"VOB_BUY_TABLE_HEAVY",
+	"VOB_BUY_TABLE_HEAVY_LONG",
+	"VOB_BUY_DESK",
+	"VOB_BUY_SHELVES_BIG",
+	"VOB_BUY_SHELVES_MEDIUM",
+	"VOB_BUY_SHELVES_SMALL",
+	"VOB_BUY_TABLE_NORMAL_DEFECT",
+	"VOB_BUY_OC_PICTURE_V1",
+	"VOB_BUY_OC_PICTURE_V2",
+	"VOB_BUY_OC_SHELF_V1",
+	"VOB_BUY_OC_SHELF_V2",
+	"VOB_BUY_OC_SHELF_V3",
+	"VOB_BUY_OC_SHELF_V4",
+	"VOB_BUY_OC_TABLE_V1",
+	"VOB_BUY_OC_TABLE_V1_DESTR",
+	"VOB_BUY_OC_TABLE_V2",
+	"VOB_BUY_OC_TABLE_V2_DESTR",
+	"VOB_BUY_OC_TABLE_V3",
+	"VOB_BUY_OC_THRONE_GROUND",
+	"VOB_BUY_ARMORHOLDER",
+	"VOB_BUY_ARMORSHOES",
+	"VOB_BUY_WSE_V1",
+	"VOB_BUY_WSE_V2",
+	"VOB_BUY_WSE_NEW_V1",
+	"VOB_BUY_WSE_NEW_V2",
+	"VOB_BUY_WSE_OLD_V1",
+	"VOB_BUY_WSE_OLD_V2",
+	"VOB_BUY_WALLARMOR",
+	"VOB_BUY_ORETABLE",
+	"VOB_BUY_ORC_BED_V1",
+	"VOB_BUY_ORC_E_BED",
+	"VOB_BUY_ORC_VASE_V1",
+	"VOB_BUY_PC_FIREPLACE",
+	"VOB_BUY_PC_TABLE_V1",
+	"VOB_BUY_PC_TABLE_V2",
+	"VOB_BUY_PC_SHOP_V1",
+	"VOB_BUY_TPL_DECOHEAD_V1",
+	"VOB_BUY_TPL_DOORDECO_V1"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_SKELETONS [13] = {
+	"VOB_BUY_DT_SKELETON_V01",
+	"VOB_BUY_DT_SKELETON_V01_HEAD",
+	"VOB_BUY_DT_SKELETON_V02",
+	"VOB_BUY_NC_BIRDFRIGHTENER",
+	"VOB_BUY_OC_GALGEN",
+	"VOB_BUY_OC_GALGEN_V2",
+	"VOB_BUY_ORC_E_DEKO_02",
+	"VOB_BUY_ORC_SKELETON_V1",
+	"VOB_BUY_ORC_SKELETON_V2",
+	"VOB_BUY_ORC_SKELETON_V3",
+	"VOB_BUY_ORC_SKELETON_V4",
+	"VOB_BUY_ORC_SKULLSONFLOOR",
+	"VOB_BUY_ORC_SKULLSONSTAFF"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_BRIDGES [30] = {
+	"VOB_BUY_FMC_BRIDGE_BOTTOM",
+	"VOB_BUY_FMC_BRIDGE_TOP",
+	"VOB_BUY_BRIDGE_30M",
+	"VOB_BUY_BRIDGE_4X4M",
+	"VOB_BUY_BRIDGE_ANGEL_4M",
+	"VOB_BUY_BRIDGERAMP",
+	"VOB_BUY_BRIDGESTAND",
+	"VOB_BUY_BRIDGESTAND_02",
+	"VOB_BUY_BRIDGE_3X4M",
+	"VOB_BUY_BIGBRIDGE",
+	"VOB_BUY_BIGBRIDGEMIDDLE",
+	"VOB_BUY_PC_BRIDGE_V1",
+	"VOB_BUY_PC_BRIDGE_V2",
+	"VOB_BUY_PC_BRIDGE_V3",
+	"VOB_BUY_PC_BRIDGE_V4",
+	"VOB_BUY_PC_BRIDGE_ROOF_1",
+	"VOB_BUY_PC_LOB_BRIDGE",
+	"VOB_BUY_PC_LOB_BRIDGE2",
+	"VOB_BUY_PC_LOB_BRIDGE3",
+	"VOB_BUY_PC_BRIDGE_PLANK_BIG",
+	"VOB_BUY_PC_BRIDGE_PLANK_HUGE",
+	"VOB_BUY_PC_BRIDGE_PLANK_MINI",
+	"VOB_BUY_PC_BRIDGE_PLANK_SMALL",
+	"VOB_BUY_TPL_BRIDGE_V1",
+	"VOB_BUY_TPL_BRIDGE_V2",
+	"VOB_BUY_TPL_BRIDGEBROKEN_V1",
+	"VOB_BUY_TPL_BRIDGEFUNCTIONAL_V1",
+	"VOB_BUY_TPL_BRIDGESTONE_V1",
+	"VOB_BUY_TPL_BRIDGESTONE_V2",
+	"VOB_BUY_TPL_BRIDGEWHEEL_V1"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_PLANTS [15] = {
+	"VOB_BUY_BUSHES_V1",
+	"VOB_BUY_BUSH_REED_V1",
+	"VOB_BUY_BUSH_V1",
+	"VOB_BUY_BUSH_V2",
+	"VOB_BUY_BUSH_V4",
+	"VOB_BUY_BUSH_V5",
+	"VOB_BUY_BUSH_V7",
+	"VOB_BUY_BUSH_V8",
+	"VOB_BUY_BUSH_WATER_V1",
+	"VOB_BUY_DEADTREE_07",
+	"VOB_BUY_PSIBUSHES_V1",
+	"VOB_BUY_RICEPLANT_COUPLE",
+	"VOB_BUY_RICEPLANT_ONE",
+	"VOB_BUY_MUSHROOM_V1",
+	"VOB_BUY_MUSHROOM_V2"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_TREES [26] = {
+	"VOB_BUY_HANGHIM_TREE_V3",
+	"VOB_BUY_DEADTREE_04",
+	"VOB_BUY_DEADTREE_06",
+	"VOB_BUY_DEADTREE_07",
+	"VOB_BUY_TREE_DESTROYED_V2",
+	"VOB_BUY_TREE_ROOT_V1",
+	"VOB_BUY_TREE_ROOT_V2",
+	"VOB_BUY_TREE_V13",
+	"VOB_BUY_FOREST_TREE_V1",
+	"VOB_BUY_FOREST_TREE_V2",
+	"VOB_BUY_FOREST_TREE_V3",
+	"VOB_BUY_FOREST_TREE_V4",
+	"VOB_BUY_FOREST_TREE_V5",
+	"VOB_BUY_TREE_V2",
+	"VOB_BUY_TREE_V3",
+	"VOB_BUY_TREE_V4",
+	"VOB_BUY_TREE_V5",
+	"VOB_BUY_TREE_V6",
+	"VOB_BUY_TREE_V8",
+	"VOB_BUY_TREE_V9",
+	"VOB_BUY_TREE_V10",
+	"VOB_BUY_TREE_V11",
+	"VOB_BUY_TREE_V12",
+	"VOB_BUY_TREEGROUP_V1",
+	"VOB_BUY_TREEGROUP_V2",
+	"VOB_BUY_TREEGROUP_V3"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_DECORATIVES [79] = {
+	"VOB_BUY_BARRELHOLDER_V1",
+	"VOB_BUY_BARREL_V1",
+	"VOB_BUY_BARREL_V1_DESTROYED",
+	"VOB_BUY_BARREL_V2",
+	"VOB_BUY_BARREL_V2_DESTROYED",
+	"VOB_BUY_BARRELS_REIHE",
+	"VOB_BUY_BARRELS_STRUBBELIG",
+	"VOB_BUY_CHICKENSTICK_CHICKEN_V1",
+	"VOB_BUY_CHICKENSTICK_V1",
+	"VOB_BUY_CHICKENSTICK_V2",
+	"VOB_BUY_CHIMNEY_V1",
+	"VOB_BUY_CHIMNEY_V2",
+	"VOB_BUY_OC_DECORATE_V1",
+	"VOB_BUY_OC_DECORATE_V2",
+	"VOB_BUY_OC_DECORATE_V3",
+	"VOB_BUY_OC_DECORATE_V4",
+	"VOB_BUY_OC_DECORATE_V5",
+	"VOB_BUY_OC_DECOROOF_V1",
+	"VOB_BUY_OC_DECOROOF_V2",
+	"VOB_BUY_OC_FIREPLACE_V1",
+	"VOB_BUY_OC_FIREPLACE_V2",
+	"VOB_BUY_OC_FIREPLACE_V3",
+	"VOB_BUY_OC_FIREPLACE_V5",
+	"VOB_BUY_FIREPLACEBIG_V1",
+	"VOB_BUY_FIREPLACEBIG_CHICKEN_V1",
+	"VOB_BUY_FIREWOOD_V1",
+	"VOB_BUY_FIREWOOD_V2",
+	"VOB_BUY_FIREWOOD_V3",
+	"VOB_BUY_GARBAGE_V1",
+	"VOB_BUY_KITCHENSTUFF_V1",
+	"VOB_BUY_LEATHERSTAND_V1",
+	"VOB_BUY_BOWTRAIN",
+	"VOB_BUY_CHAIN",
+	"VOB_BUY_CHAIN_ALONE",
+	"VOB_BUY_FLAG_SMALL",
+	"VOB_BUY_WASTER",
+	"VOB_BUY_OC_SACK_V1",
+	"VOB_BUY_OC_SACK_V2",
+	"VOB_BUY_OC_SACK_V3",
+	"VOB_BUY_OC_SAECKE_V1",
+	"VOB_BUY_OC_SAECKE_V2",
+	"VOB_BUY_OC_WELL_V1",
+	"VOB_BUY_OREBOX_01",
+	"VOB_BUY_BROKENCART",
+
+	"VOB_BUY_COLDUMMY",
+	"VOB_BUY_OPENEGG",
+	"VOB_BUY_SLIME",
+	"VOB_BUY_FIREPLACE_V1",
+	"VOB_BUY_ORC_E_WALL_V1",
+	"VOB_BUY_ORC_E_WALL_V2",
+	"VOB_BUY_ORC_MASTERTHRONE",
+	"VOB_BUY_CAVEWEBS_V1",
+	"VOB_BUY_CAVEWEBS_V2",
+	"VOB_BUY_FOCUS_V1",
+	"VOB_BUY_FOCUS_V2",
+
+	"VOB_BUY_FOCUSPLATTFORM",
+	"VOB_BUY_PENTAGRAM_V1",
+	"VOB_BUY_PENTAGRAM_V2",
+	"VOB_BUY_DT_LIGHTER_PENTAGRAM",
+	"VOB_BUY_DT_TORCH_V1",
+	"VOB_BUY_NC_LIGHTER",
+	"VOB_BUY_OC_BIGLIGHTER_V1",
+	"VOB_BUY_TORCHHOLDER_FILLED",
+	"VOB_BUY_LIGHTER_HUGE3",
+	"VOB_BUY_ORC_FIREPLACE_V1",
+	"VOB_BUY_ORC_FIREPLACE_V2",
+	"VOB_BUY_ORC_FIREPLACE_V3",
+	"VOB_BUY_ORC_FIREPLACE_V4",
+	"VOB_BUY_ORC_FIREPLACE_V5",
+	"VOB_BUY_ORC_FIREPLACE_V6",
+	"VOB_BUY_ORC_STANDING_LAMP",
+	"VOB_BUY_ORC_STANDING_LAMP_LARGE",
+	"VOB_BUY_ORC_WALL_FIRE_V1",
+	"VOB_BUY_ORC_WALL_FIRE_V2",
+	"VOB_BUY_MAGICSTAFF_V1",
+	"VOB_BUY_PC_CRYSTALLIGHT_V2",
+	"VOB_BUY_PC_FIREBOWL",
+	"VOB_BUY_TPL_LIGHTER_V1",
+	"VOB_BUY_TPL_LIGHTER_V2"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_STONES [15] = {
+	"VOB_BUY_STONE_V1_10",
+	"VOB_BUY_STONE_V2_10",
+	"VOB_BUY_STONE_V3_10",
+	"VOB_BUY_COUPLESTONES",
+	"VOB_BUY_STOMPERSTAND",
+	"VOB_BUY_STONE_V1_30",
+	"VOB_BUY_STONE_V2_30",
+	"VOB_BUY_STONE_V3_30",
+	"VOB_BUY_STONE_V3_40",
+	"VOB_BUY_STONE_V3_50",
+	"VOB_BUY_STONE_V1_20",
+	"VOB_BUY_STONE_V2_20",
+	"VOB_BUY_STONE_V3_20",
+
+	"VOB_BUY_ORE_BIG_V1",
+	"VOB_BUY_ORE_BIG_V2"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_STATUES [45] = {
+	"VOB_BUY_ORC_STATUE_V1",
+	"VOB_BUY_ORC_STATUE_V2",
+	"VOB_BUY_ORC_STATUE_V3",
+	"VOB_BUY_OSTA_AXE2",
+
+	"VOB_BUY_ORC_E_COLUMN",
+
+	"VOB_BUY_PC_SLEEPER_V2",
+	"VOB_BUY_PC_SLEEPER_V3",
+	"VOB_BUY_PC_SLEEPER_V4",
+	"VOB_BUY_TPL_ORCSTATUE",
+	"VOB_BUY_CASTLE_FLOOR_V1",
+	"VOB_BUY_CASTLE_FLOOR_V2",
+	"VOB_BUY_CASTLE_FLOOR_V3",
+	"VOB_BUY_CASTLE_FLOOR_V4",
+	"VOB_BUY_CASTLE_FLOOR_V5",
+	"VOB_BUY_CASTLE_PLATE",
+	"VOB_BUY_CASTLE_LIFT_V1",
+	"VOB_BUY_CASTLE_LIFT_V2",
+	"VOB_BUY_CASTLE_LIFT_V3",
+	"VOB_BUY_DECOSTONE_01_DAEMON",
+	"VOB_BUY_DECOSTONE_01_DOORS_V1",
+	"VOB_BUY_DECOSTONE_01_DOORS_V2",
+	"VOB_BUY_DECOSTONE_01_MUMMY",
+	"VOB_BUY_DECOSTONE_01_TARGET",
+	"VOB_BUY_TPL_PILLAR_V1",
+	"VOB_BUY_TPL_STONECEILING_V1",
+	"VOB_BUY_OC_STONE",
+	"VOB_BUY_OC_STONEBROKEN",
+	"VOB_BUY_ORC_BROKEN_COLUMN",
+	"VOB_BUY_ORC_MOVER_01_3X5XM",
+	"VOB_BUY_ORC_MOVER_01_5X9M",
+	"VOB_BUY_TPL_ELEVATOR_V1",
+	"VOB_BUY_TPL_ELEVATORSTONE_1X1M",
+	"VOB_BUY_TPL_HINT_V1",
+	"VOB_BUY_TPL_HINT_V2",
+	"VOB_BUY_TPL_JUMPPLATE_V1",
+	"VOB_BUY_TPL_NORMALSTONE_1X1M",
+	"VOB_BUY_TPL_PLATEFIRE_V1",
+	"VOB_BUY_TPL_PLATEMOON_V1",
+	"VOB_BUY_TPL_PLATESUN_V1",
+	"VOB_BUY_TPL_PLATEWATER_V1",
+	"VOB_BUY_TPL_PURPURSKULLSTONE_1X1M",
+	"VOB_BUY_TPL_SECRETSTONE_V1",
+	"VOB_BUY_TPL_SECRETWALL_V1",
+	"VOB_BUY_TPL_SECRETWALL_V2",
+	"VOB_BUY_TPL_TARGETSTONE_V1"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS [23] = {
+	"VOB_BUY_NC_MAINGATE01",
+	"VOB_BUY_OC_MAINGATE01_V1",
+	"VOB_BUY_OC_MAINGATE01_V2",
+	"VOB_BUY_OC_MAINGATE01_V3",
+	"VOB_BUY_OC_MAINGATE02_V1",
+	"VOB_BUY_OC_MAINGATE02_V2",
+	"VOB_BUY_OC_MAINGATE02_V3",
+	"VOB_BUY_GITTERKAEFIG_4X4M",
+	"VOB_BUY_GITTERKAEFIG_4X5M",
+	"VOB_BUY_NC_OREHEAP_FENCE",
+	"VOB_BUY_OC_GATE_KITCHEN",
+	"VOB_BUY_OC_GATE_WELL",
+	"VOB_BUY_OC_CAGE",
+	"VOB_BUY_OC_CAGE2",
+	"VOB_BUY_OC_GATE_BIG",
+	"VOB_BUY_OC_GATE_SMALL",
+	"VOB_BUY_OC_GATE_SMALL2",
+	"VOB_BUY_OC_GATE_SMALL3",
+	"VOB_BUY_ORC_GATE_5X5M",
+	"VOB_BUY_OW_ARENA_FENCE",
+
+	"VOB_BUY_METALTHORNS_2X2X05M",
+	"VOB_BUY_METALTHORNS_4X4X4M",
+	"VOB_BUY_METALTHORNS_DEADLY"
+};
+
+const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [11] = {
+	"VOB_BUY_ARCH_V1",
+	"VOB_BUY_ARCH_V2",
+	"VOB_BUY_BOOKSHELF_V1",
+	"VOB_BUY_BOOKSHELF_V2",
+
+	"VOB_BUY_NC_STAIRS_V1",
+	"VOB_BUY_OC_STAIRS_V1",
+	"VOB_BUY_OC_STAIRS_V2",
+	"VOB_BUY_OC_STAIRS_V3",
+	"VOB_BUY_OC_STAIRS_V5",
+	"VOB_BUY_OC_STAIRS_V10",
+	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+};
+
+func int BuildBuyVobListGetCategoryCount () {
+	if (vobTransportShowcaseVobVerticalIndex >= VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX) {
+		vobTransportShowcaseVobVerticalIndex = 0;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 0) { return VOBTRANSPORT_CANBUY_VOBLIST_MAX; };
+	if (vobTransportShowcaseVobVerticalIndex == 1) { return 11; };	//VOBTRANSPORT_CANBUY_VOBLIST_MOBS_FIREPLACES
+	if (vobTransportShowcaseVobVerticalIndex == 2) { return 9; };	//VOBTRANSPORT_CANBUY_VOBLIST_MOBS_LADDERS
+	if (vobTransportShowcaseVobVerticalIndex == 3) { return 11; };	//VOBTRANSPORT_CANBUY_VOBLIST_MOBS_CHESTS
+	if (vobTransportShowcaseVobVerticalIndex == 4) { return 52; };	//VOBTRANSPORT_CANBUY_VOBLIST_MOBS_OTHERS
+	if (vobTransportShowcaseVobVerticalIndex == 5) { return 10; };	//VOBTRANSPORT_CANBUY_VOBLIST_STRUCTURES
+	if (vobTransportShowcaseVobVerticalIndex == 6) { return 60; };	//VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE
+	if (vobTransportShowcaseVobVerticalIndex == 7) { return 52; };	//VOBTRANSPORT_CANBUY_VOBLIST_PLANKS
+	if (vobTransportShowcaseVobVerticalIndex == 8) { return 30; };	//VOBTRANSPORT_CANBUY_VOBLIST_BRIDGES
+	if (vobTransportShowcaseVobVerticalIndex == 9) { return 13; };	//VOBTRANSPORT_CANBUY_VOBLIST_SKELETONS
+	if (vobTransportShowcaseVobVerticalIndex == 10) { return 15; };	//VOBTRANSPORT_CANBUY_VOBLIST_PLANTS
+	if (vobTransportShowcaseVobVerticalIndex == 11) { return 26; };	//VOBTRANSPORT_CANBUY_VOBLIST_TREES
+	if (vobTransportShowcaseVobVerticalIndex == 12) { return 79; };	//VOBTRANSPORT_CANBUY_VOBLIST_DECORATIVES
+	if (vobTransportShowcaseVobVerticalIndex == 13) { return 15; };	//VOBTRANSPORT_CANBUY_VOBLIST_STONES
+	if (vobTransportShowcaseVobVerticalIndex == 14) { return 45; };	//VOBTRANSPORT_CANBUY_VOBLIST_STATUES
+	if (vobTransportShowcaseVobVerticalIndex == 15) { return 23; };	//VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS
+	if (vobTransportShowcaseVobVerticalIndex == 16) { return 11; };	//VOBTRANSPORT_CANBUY_VOBLIST_OTHERS
+
+	return 0;
+};
+
+func void BuildBuyVobList__VobTransport (var int key) {
+	//Clear voblist
+	oCNpc_ClearVobList (hero);
+
+	var int vobPtr;
+	var string vobName;
+
+	//Remember index in each category
+	var int indexList[255];
+
+	if (key == KEY_DOWNARROW) {
+		//Save old index
+		MEM_WriteIntArray (_@ (indexList), vobTransportShowcaseVobVerticalIndex, vobTransportShowcaseVobIndex);
+
+		vobTransportShowcaseVobVerticalIndex -= 1;
+
+		if (vobTransportShowcaseVobVerticalIndex < 0) {
+			vobTransportShowcaseVobVerticalIndex = VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX - 1;
+		};
+
+		//Load new index
+		vobTransportShowcaseVobIndex = MEM_ReadIntArray (_@ (indexList), vobTransportShowcaseVobVerticalIndex);
+	};
+
+	if (key == KEY_UPARROW) {
+		//Save old index
+		MEM_WriteIntArray (_@ (indexList), vobTransportShowcaseVobVerticalIndex, vobTransportShowcaseVobIndex);
+
+		vobTransportShowcaseVobVerticalIndex += 1;
+
+		if (vobTransportShowcaseVobVerticalIndex >= VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX) {
+			vobTransportShowcaseVobVerticalIndex = 0;
+		};
+
+		//Load new index
+		vobTransportShowcaseVobIndex = MEM_ReadIntArray (_@ (indexList), vobTransportShowcaseVobVerticalIndex);
+	};
+
+	var int i;
+	var int count;
+
+	count = BuildBuyVobListGetCategoryCount ();
+
+	//All
+
+	if (vobTransportShowcaseVobVerticalIndex == 0) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	//Special categories
+
+	if (vobTransportShowcaseVobVerticalIndex == 1) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_FIREPLACES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 2) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_LADDERS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 3) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_CHESTS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 4) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_OTHERS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 5) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_STRUCTURES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 6) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 7) {
+		repeat (i, count); 
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_PLANKS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 8) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_BRIDGES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 9) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_SKELETONS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 10) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_PLANTS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 11) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_TREES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 12) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_DECORATIVES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 13) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_STONES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 14) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_STATUES, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 15) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 16) {
+		repeat (i, count);
+			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_OTHERS, i);
+			vobPtr = MEM_SearchVobByName (vobName);
+			oCNpc_InsertInVobList (hero, vobPtr);
+		end;
+	};
+};
+
+/*
+ *	VobCanBeBought__VobTransport_API
+ *	 - this function recognizes which objects you can buy:
+ *		- by default you can buy everything listed in VOBTRANSPORT_CANBUY_VOBLIST
+ *	 	- then you can buy 'clones' - if you try to clone bought object - you can clone it and buy it again
+ */
+func int VobCanBeBought__VobTransport_API (var int vobPtr) {
+	var zCVob vob;
+	var string s;
+	var string vobName;
+	var string objectName;
+	var string visualName;
+	var int j;
+	var int vobCount;
+
+	if (!vobPtr) { return FALSE; };
+	
+	vob = _^ (vobPtr);
+
+	repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX); var int i;
+		vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST, i);
+		objectName = vob._zCObject_objectName;
+		visualName = Vob_GetVisualName (vobPtr);
+
+		//Original		clone - we will let player to buy again clones
+		//VOB_BUY_OC_BED_V1	VOB_BUY_OC_BED_V1_CLONE_001
+		j = STR_IndexOf (objectName, "_CLONE_");
+		if (j > -1) {
+			objectName = mySTR_SubStr (objectName, 0, j);
+		};
+
+		if (Hlp_StrCmp (objectName, vobName)) {
+			//Update description
+			//sVobTransportBuyVobView_Description = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_DESCRIPTION, i);
+			sVobTransportBuyVobView_Description = visualName;
+
+			//Value
+			//vobTransportShowcaseVobBuyValue = MEM_ReadIntArray (_@ (VOBTRANSPORT_CANBUY_VOBLIST_VALUE), i);
+
+			//Planks and pieces of wood
+
+			//Update texts
+			//sVobTransportBuyVobView_Line1 = "Price: ";
+			//sVobTransportBuyVobView_Count1 = IntToString (vobTransportShowcaseVobBuyValue);
+
+			//var int oreTotal; oreTotal = NPC_HasItemInstanceName (hero, "ItMiNugget");
+
+			//sVobTransportBuyVobView_Line2 = "Your ore: ";
+			//sVobTransportBuyVobView_Count2 = IntToString (oreTotal);
+			
+			sVobTransportBuyVobView_Line1 = "Use arrows to select objects / switch between categories.";
+			sVobTransportBuyVobView_Line2 = "L Bracket to confirm.";
+
+			s = "Category: ";
+			vobCount = BuildBuyVobListGetCategoryCount ();
+			if (vobTransportShowcaseVobVerticalIndex == 0) { s = ConcatStrings (s, "All objects"); };
+			if (vobTransportShowcaseVobVerticalIndex == 1) { s = ConcatStrings (s, "Fire places/torches"); };
+			if (vobTransportShowcaseVobVerticalIndex == 2) { s = ConcatStrings (s, "Ladders"); };
+			if (vobTransportShowcaseVobVerticalIndex == 3) { s = ConcatStrings (s, "Chests"); };
+			if (vobTransportShowcaseVobVerticalIndex == 4) { s = ConcatStrings (s, "Other interactive mobs"); };
+			if (vobTransportShowcaseVobVerticalIndex == 5) { s = ConcatStrings (s, "Structures"); };
+			if (vobTransportShowcaseVobVerticalIndex == 6) { s = ConcatStrings (s, "Furniture"); };
+			if (vobTransportShowcaseVobVerticalIndex == 7) { s = ConcatStrings (s, "Planks, pieces of wood & mine stuff"); };
+			if (vobTransportShowcaseVobVerticalIndex == 8) { s = ConcatStrings (s, "Bridges"); };
+			if (vobTransportShowcaseVobVerticalIndex == 9) { s = ConcatStrings (s, "Skeletons"); };
+			if (vobTransportShowcaseVobVerticalIndex == 10) { s = ConcatStrings (s, "Plants"); };
+			if (vobTransportShowcaseVobVerticalIndex == 11) { s = ConcatStrings (s, "Trees"); };
+			if (vobTransportShowcaseVobVerticalIndex == 12) { s = ConcatStrings (s, "Decorative stuff"); };
+			if (vobTransportShowcaseVobVerticalIndex == 13) { s = ConcatStrings (s, "Stones and ores"); };
+			if (vobTransportShowcaseVobVerticalIndex == 14) { s = ConcatStrings (s, "Statues and processed stone"); };
+			if (vobTransportShowcaseVobVerticalIndex == 15) { s = ConcatStrings (s, "Metal cages & grids"); };
+			if (vobTransportShowcaseVobVerticalIndex == 16) { s = ConcatStrings (s, "Other misc. stuff"); };
+
+			sVobTransportBuyVobView_Line4 = "Vob:";
+			sVobTransportBuyVobView_Count4 = IntToString (vobTransportShowcaseVobIndex + 1); //index starts with 0
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, "/");
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, IntToString (vobCount));
+
+			sVobTransportBuyVobView_Line5 = s;
+			sVobTransportBuyVobView_Count5 = IntToString (vobTransportShowcaseVobVerticalIndex + 1); //index starts with 0
+			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
+			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX));
+			
+			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
+			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
+			colorVobTransportBuyVobView_Count3 = RGBA (255, 255, 255, 255);
+			colorVobTransportBuyVobView_Count4 = RGBA (255, 255, 255, 255);
+			colorVobTransportBuyVobView_Count5 = RGBA (255, 255, 255, 255);
+			
+			//if (oreTotal >= vobTransportShowcaseVobBuyValue) {
+			//	colorVobTransportBuyVobView_Count2 = RGBA (102, 255, 102, 255);
+			//} else {
+			//	colorVobTransportBuyVobView_Count2 = RGBA (255, 070, 070, 255);
+			//};
+
+			return TRUE;
+		};
+	end;
+	
+	return FALSE;
+};
+
+/*
+ *	VobTransportCanBeActivated__VobTransport_API
+ *	 - here you can define where & when vob transport can be activated
+ */
+func int VobTransportCanBeActivated__VobTransport_API () {
+	if (!Hlp_IsValidNPC (hero)) { return FALSE; };
+
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	VobCanBeDeleted__VobTransport_API
+ *	 - here you can define where & when objects can be deleted
+ */
+func int VobCanBeDeleted__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	FocusVobCanBeSelected__VobTransport_API
+ *	 - here you can define where & when focusable objects can be selected byt this feature
+ */
+func int FocusVobCanBeSelected__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	VobCanBeSelected__VobTransport_API
+ *	 - here you can define which objects can be selected by this feature
+ */
+func int VobCanBeSelected__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	VobCanBeMovedAround__VobTransport_API
+ *	 - here you can define which objects can be moved around
+ *	 - we need to have this one with a little bit different rules than VobCanBeSelected__VobTransport_API - because of vobs that can be bought
+ */
+func int VobCanBeMovedAround__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	VobCanBeCloned__VobTransport_API
+ *	 - here you can define which objects can be cloned
+ */
+func int VobCanBeCloned__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};
+
+/*
+ *	VobCanBePlaced__VobTransport_API
+ *	 - here you can define which objects can be placed
+ */
+func int VobCanBePlaced__VobTransport_API (var int vobPtr) {
+	//Allow in Marvin mode
+	if (MEM_Game.game_testmode) {
+		return TRUE;
+	};
+	
+	return FALSE;
+};

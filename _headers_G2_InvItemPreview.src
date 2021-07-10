@@ -1,0 +1,17 @@
+EngineClasses_G2\zEventMan.d
+EngineClasses_G2\oInventory.d
+
+engine_addresses_G2.d
+
+eventManager_engine.d
+eventManager.d
+
+game_Events_G12.d
+
+interface.d
+
+functions_oCItem.d
+
+inventory_oCNpc_engine.d
+
+Standalone-Packages\G12-InvItemPreview\invItemPreview.d

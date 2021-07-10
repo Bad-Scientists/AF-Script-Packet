@@ -1,3 +1,18 @@
+/*
+class zCVisual {
+    var int    _vtbl;
+    var int    _zCObject_refCtr;
+    var int    _zCObject_hashIndex;
+    var int    _zCObject_hashNext;
+    var string _zCObject_objectName;
+
+    var int nextLODVisual;	//zCVisual*
+    var int prevLODVisual;	//zCVisual*    
+    var int lodFarDistance;	//zREAL    
+    var int lodNearFadeOutDistance;	//zREAL
+};
+*/
+
 //007D4054  .rdata    Debug data           ??_7zCVisualAnimate@@6B@
 //007DB4D4  .rdata    Debug data           ??_7zCVisual@@6B@
 
@@ -35,6 +50,7 @@ class zCVisualAnimate {
 
 class zCModel {
 
+	//class zCVisualAnimate : public zCVisual {
 	//class zCVisual {
 	var int _vtbl;					//0
 
@@ -63,8 +79,6 @@ class zCModel {
 	//var int s_visualClassList_numAlloc;		//
 	//var int s_visualClassList_numInArray;		//
 	//};
-
-	//class zCVisualAnimate : public zCVisual {
 	//}; 
 
 	/*
@@ -247,4 +261,34 @@ class zCModel {
 	
 	var int timeScale;				//464	float timeScale;
 	var int aniHistoryListl;			//468	zCModelAni** aniHistoryList;
+};
+
+
+//class zCDecal : public zCVisual {
+//};
+class zCDecal {
+	var int _vtbl;					//0
+
+	//class zCObject {
+	var int refCtr;					//4	int refCtr;
+	var int hashIndex;				//8	unsigned short hashIndex;
+	var int hashNext;				//12	zCObject* hashNext;
+	var string objectName;				//16	zSTRING objectName 
+	//};
+
+	var int nextLODVisual;				//36	zCVisual* nextLODVisual;
+	var int prevLODVisual;				//40	zCVisual* prevLODVisual;
+	var int lodFarDistance;				//44	float lodFarDistance;
+	var int lodNearFadeOutDistance;			//48	float lodNearFadeOutDistance;
+
+	var int decalMaterial;				//52	zCMaterial* decalMaterial;
+	var int xdim;					//56	float xdim;
+	var int ydim;					//60	float ydim;
+	var int xoffset;				//64	float xoffset;
+	var int yoffset;				//68	float yoffset;
+	var int decal2Sided;				//72	int decal2Sided;
+
+	// static properties
+	//static zCMesh*& decalMesh1Sided;
+	//static zCMesh*& decalMesh2Sided;
 };

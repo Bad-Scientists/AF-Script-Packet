@@ -4,7 +4,6 @@
  *
  *	They were modified to change multipliers for both inventory containers in case of both buying / selling containers.
  *
- *	TODO: still dirty - becuase of oCNpcInventory
  */
 
 /*
@@ -200,14 +199,17 @@ func void _hook_oCViewDialogTrade_OnTransfer__EnhancedTrading () {
 
 };
 
-func void _hook_oCViewDialogTrade_OnExit__EnhancedTrading () {
+func void _eventTradeOnExit__EnhancedTrading (var int dummyVariable) {
+	if (_TradeOnExit_Event_Break) { return; };
+
 	//Reset values
 	Trade_ResetBuySellValue ();
 	TradeForceTransferAccept = 0;
 };
 
-func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
-{
+func void _eventTradeHandleEvent__EnhancedTrading (var int dummyVariable) {
+	if (_TradeHandleEvent_Event_Break) { return; };
+
 	var int key; key = MEM_ReadInt (ESP + 4);
 
 	//Check if trader / buyer have enough ore to sell / buy stuff
@@ -215,14 +217,13 @@ func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
 		return;
 	};
 
-	var int ptr;
-	
 	var oCNpcInventory container_Trader;
 	var oCItemContainer container_Trader_Offer;
 	var oCItemContainer container_Buyer_Offer;
 	var oCNpcInventory container_Buyer;
 	
 //--- Get Item containers (oCItemContainer)
+	var int ptr;
 
 	//Traders Inventory
 	ptr = MEMINT_oCInformationManager_Address;
@@ -335,8 +336,9 @@ func void _hook_oCViewDialogTrade_HandleEvent__EnhancedTrading ()
 	};
 };
 
-func void _hook_oCViewDialogTrade_OnAccept__EnhancedTrading ()
-{
+func void _eventTradeOnAccept__EnhancedTrading (var int dummyVariable) {
+	if (_TradeOnAccept_Event_Break) { return; };
+
 	var int ptr;
 	
 	var oCNpcInventory container_Trader;
@@ -463,19 +465,25 @@ func void _hook_oCViewDialogTrade_OnAccept__EnhancedTrading ()
 func void G1_EnhancedTrading_Init(){
 	const int once = 0;
 	
+	G1_TradeEvents_Init ();
+
+	TradeOnExitEvent_AddListener (_eventTradeOnExit__EnhancedTrading);
+	TradeOnAcceptEvent_AddListener (_eventTradeOnAccept__EnhancedTrading);
+	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
+
 	if (!once) {
 		//Hooked functions checks whether NPC wants to buy an item or not. Also it cahnges selling/buying multiplier values
 		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_oCViewDialogTrade_OnTransfer__EnhancedTrading");
 		HookEngine (oCViewDialogTrade__OnTransferRight, 10, "_hook_oCViewDialogTrade_OnTransfer__EnhancedTrading");
 
 		//Called when exiting trading
-		HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit__EnhancedTrading");
+		//HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit__EnhancedTrading");
 
 		//Obsluha obchodovania - automaticke dorovnavanie rudy
-		HookEngine (oCViewDialogTrade__OnAccept, 6, "_hook_oCViewDialogTrade_OnAccept__EnhancedTrading");
+		//HookEngine (oCViewDialogTrade__OnAccept, 6, "_hook_oCViewDialogTrade_OnAccept__EnhancedTrading");
 
 		//10
-		HookEngine (oCViewDialogTrade__HandleEvent, 7, "_hook_oCViewDialogTrade_HandleEvent__EnhancedTrading");
+		//HookEngine (oCViewDialogTrade__HandleEvent, 7, "_hook_oCViewDialogTrade_HandleEvent__EnhancedTrading");
 
 		once = 1;
 	};

@@ -20,15 +20,27 @@ func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 	};
 };
 
-func void _hook_oCItemContainer__Activate__weaponStacking () {
-	//We cannot get oCItemContainer owner this address oCItemContainer.inventory2_oCItemContainer_npc == 0
-	//So let's call it on hero
-	NPC_SplitMultipleEquippedWeapons (hero);
+func void _eventoCItemContainerActivate_weaponStacking (var int dummyVariable) {
+	if (Hlp_Is_oCNpcInventory (ECX)) {
+		var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
+		
+		if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
+			var oCNpc slf; slf = _^ (npcInventory.inventory2_owner);
+
+			if (NPC_IsPlayer (slf)) {
+				NPC_SplitMultipleEquippedWeapons (slf);
+			};
+		};
+	};
 };
 
-func void _hook_oCNPC_Equip__weaponStacking (){
+func void _eventEquipItem_WeaponStacking (var int dummyVariable){
+	//Seems like we can still use registers (ECX, ESP + 4) from listeners - yuppiii !!
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
-	if ((!ECX) || (!itemPtr)) { return; };
+
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	if (!Hlp_Is_oCItem (itemPtr)) { return; };
 
 	var oCNPC slf; slf = _^ (ECX);
 	var oCItem itm; itm = _^ (itemPtr);
@@ -63,7 +75,7 @@ func void _hook_oCNPC_Equip__weaponStacking (){
 	};
 };
 
-func void _hook_oCNPC_UnequipItem__weaponStacking (){
+func void _eventUnEquipItem_WeaponStacking (var int dummyVariable){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 
 	if (!ECX) || (!itemPtr) { return; };
@@ -87,7 +99,7 @@ func void _hook_oCNPC_UnequipItem__weaponStacking (){
 	};
 };
 
-func void _hook_oCNpc_DoTakeVob__weaponStacking (){
+func void _eventDoTakeVob_WeaponStacking (var int dummyVariable){
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!ECX) || (!itemPtr)) { return; };
 
@@ -111,6 +123,16 @@ func void _hook_weaponSorting__weaponStacking (){
 
 func void G1_WeaponStacking_Init (){
 	const int once = 0;
+	
+	G1_ItemContainerActivateEvent_Init ();
+
+	ItemContainerActivate_AddListener (_eventoCItemContainerActivate_weaponStacking);
+
+	G12_GameEvents_Init ();
+
+	EquipItemEvent_AddListener (_eventEquipItem_WeaponStacking);
+	UnEquipItemEvent_AddListener (_eventUnEquipItem_WeaponStacking);
+	DoTakeVobEvent_AddListener (_eventDoTakeVob_WeaponStacking);
 
 	if (!once){
 		//Splits equipped weapons on weapon removal.
@@ -118,7 +140,7 @@ func void G1_WeaponStacking_Init (){
 		HookEngine (oCAniCtrl_Human__RemoveWeapon2, 6, "_hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking");
 
 		//Splits equipped weapons when opening inventory
-		HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer__Activate__weaponStacking");
+		//HookEngine (oCItemContainer__Activate, 7, "_hook_oCItemContainer_Activate__weaponStacking");
 
 		//Not good enough - splits weapons on second run only
 		//0066BDE0  .text     Debug data           ?Open@oCNpcInventory@@QAEXHH@Z
@@ -131,13 +153,13 @@ func void G1_WeaponStacking_Init (){
 		//HookEngine (oCNPC__OpenInventory, 6, "_hook_oCNPC_OpenInventory__weaponStacking");
 
 		//Splits weapons on equipping. Removes ITEM_MULTI flag and re-inserts to inventory
-		HookEngine (oCNPC__Equip, 5, "_hook_oCNPC_Equip__weaponStacking");
+		//HookEngine (oCNPC__Equip, 5, "_hook_oCNPC_Equip__weaponStacking");
 
 		//'Merges' weapons on unequipping. Applies ITEM_MULTI flag and re-inserts to inventory
-		HookEngine (oCNPC__UnequipItem, 7, "_hook_oCNPC_UnequipItem__weaponStacking");
+		//HookEngine (oCNPC__UnequipItem, 7, "_hook_oCNPC_UnequipItem__weaponStacking");
 
 		//Applies ITEM_MULTI flag when picking items
-		HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNpc_DoTakeVob__weaponStacking");
+		//HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNpc_DoTakeVob__weaponStacking");
 		
 		//Hook on oCNpc__DoDropVob applying back on weapons ITEM_MULTI when dropping is not supported. (When weapon was equipped it messed up oCNPC__UnequipItem hook)
 		//It is probably not required. We can rethink this later if needed.

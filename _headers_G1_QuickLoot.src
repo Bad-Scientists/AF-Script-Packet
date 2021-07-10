@@ -1,0 +1,14 @@
+EngineClasses_G1\oInventory.d
+
+functions_oCNpc_engine.d
+functions_oCMobInter_engine.d
+
+inventory_oCNpc_engine.d
+inventory_oCNpc.d
+
+inventory_oCMob_engine.d
+inventory_oCMob.d
+
+game_Events_G1.d
+
+Standalone-Packages\G1-QuickLoot\quickLoot.d

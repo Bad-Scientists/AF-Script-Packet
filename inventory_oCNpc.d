@@ -5,28 +5,6 @@
  */
  
 /*
- *	Removes flags from oCItem pointer
- *		itemPtr			item pointer
- *		removeFlags		flag(s) to be removed
- */
-func void oCItem_RemoveFlags (var int itemPtr, var int removeFlags) {
-	if (!itemPtr) { return; };
-	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags & ~ (removeFlags));
-};
-
-/*
- *	Adds flags to oCItem pointer
- *		itemPtr			item pointer
- *		addFlags		flag(s) to be added
- */
-func void oCItem_AddFlags (var int itemPtr, var int addFlags) {
-	if (!itemPtr) { return; };
-	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags | (addFlags));
-};
-
-/*
  *	Returns pointer to specific item instance in NPC's inventory
  *		slfInstance		NPC instance
  *		invCat			inventory category	
@@ -96,11 +74,11 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 
 /*
  *	Returns number of items in inventory by item instance name
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *		instanceName		item instance name
  */
-func int NPC_HasItemInstanceName (var int slfinstance, var string instanceName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+func int NPC_HasItemInstanceName (var int slfInstance, var string instanceName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int symbID; symbID = MEM_GetSymbolIndex (instanceName);
@@ -112,4 +90,146 @@ func int NPC_HasItemInstanceName (var int slfinstance, var string instanceName) 
 	};
 	
 	return 0;
+};
+
+func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCategory, var int flagsKeepItems, var int mainFlagsKeepItems) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int amount;
+	var int itmInstance;
+	
+	var int itmSlot; itmSlot = 0;
+
+	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+
+	while (amount > 0);
+		itmInstance = Hlp_GetinstanceID (item);
+
+		//Chceme tieto itemy odstranit ?
+		//Zbroj - neodstranujeme taku, co je equipnuta
+		if ((item.Flags & flagsKeepItems) || (item.MainFlag & mainFlagsKeepItems) || ((invCategory == INV_ARMOR) && (NPC_GetArmor (slf) == itmInstance)))
+		{
+			itmSlot += 1;
+			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+			continue;
+		};
+
+		var int ptr; ptr = _@ (item);
+		
+		var oCItem itm; itm = _^ (ptr);
+		
+		if (itm.amount == 1) {
+			oCNPC_UnequipItemPtr (slf, ptr);
+			NPC_RemoveInvItem (slf, itmInstance);
+		} else {
+			NPC_RemoveInvItems (slf, itmInstance, itm.amount);
+		};
+
+		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	end;
+};
+
+func void NPC_RemoveInventory (var C_NPC slf, var int flagsKeepItems, var int mainFlagsKeepItems) {
+	NPC_RemoveInventoryCategory (slf, INV_WEAPON, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_ARMOR, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_RUNE, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_MAGIC, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_FOOD, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_POTION, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_DOC, flagsKeepItems, mainFlagsKeepItems);
+	NPC_RemoveInventoryCategory (slf, INV_MISC, flagsKeepItems, mainFlagsKeepItems);
+};
+
+var int _NpcTransferItemPrint_Event;
+var int _NpcTransferItemPrint_Event_Enabled;
+
+func void NpcTransferItemPrintEvent_Init () {
+	if (!_NpcTransferItemPrint_Event) {
+		_NpcTransferItemPrint_Event = Event_Create ();
+	};
+};
+
+func void NpcTransferItemPrintEvent_AddListener (var func f) {
+	Event_AddOnce (_NpcTransferItemPrint_Event, f);
+};
+
+func void NpcTransferItemPrintEvent_RemoveListener (var func f) {
+	Event_Remove (_NpcTransferItemPrint_Event, f);
+};
+
+func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCategory, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+	if (!Hlp_IsValidNPC (oth)) { return; };
+
+	var int amount;
+	var int itmInstance;
+	
+	var int itmSlot; itmSlot = 0;
+	
+	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+
+	while (amount > 0);
+		itmInstance = Hlp_GetinstanceID (item);
+
+		//Ignore equipped armor
+		if (!transferEquippedArmor)
+		&& (NPC_GetArmor (slf) == itmInstance) //&& (item.Flags & ITEM_ACTIVE_LEGO))
+		{
+			itmSlot += 1;
+			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+			continue;
+		};
+
+		//Ignore equipped items
+		if (!transferEquippedItems)
+		&& (((NPC_GetMeleeWeapon (slf) == itmInstance) || (NPC_GetRangedWeapon (slf) == itmInstance)) && (item.Flags & ITEM_ACTIVE_LEGO))
+		{
+			itmSlot += 1;
+			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+			continue;
+		};
+		
+		//Ignore mission items
+		if (!transferMissionItems)
+		&& (item.Flags & ITEM_MISSION)
+		{
+			itmSlot += 1;
+			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+			continue;
+		};
+
+		//Convert to oCItem to get amount property
+		var int itmPtr; itmPtr = _@ (item);
+		var oCItem itm; itm = _^ (itmPtr);
+
+		//Custom prints for transferred items
+		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
+			Event_Execute (_NpcTransferItemPrint_Event, itmPtr);
+		};
+		
+		if (itm.amount == 1) {
+			CreateInvItem (oth, itmInstance);
+			NPC_RemoveInvItem (slf, itmInstance);
+		} else {
+			CreateInvItems (oth, itmInstance, itm.amount);
+			NPC_RemoveInvItems (slf, itmInstance, itm.amount);
+		};
+
+		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	end;
+};
+
+func void NPC_TransferInventory (var int slfInstance, var int othInstance, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_WEAPON, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_ARMOR, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_RUNE, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MAGIC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_FOOD, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_POTION, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_DOC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MISC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
 };

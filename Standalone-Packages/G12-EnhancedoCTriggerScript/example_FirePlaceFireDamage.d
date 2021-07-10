@@ -96,7 +96,7 @@ func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
 			};
 
 			//Is it NPC ?
-			if (Hlp_Is_oCNPC (vobPtr)) {
+			if (Hlp_Is_oCNpc (vobPtr)) {
 				var oCNpc slf; slf = _^ (vobPtr);
 
 				//Safety check
@@ -177,7 +177,7 @@ func void FirePlace_AddFireDamageTriggers () {
 //	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
-			MEM_Info ("No zCVisual objects found.");
+			MEM_Info ("No zCVob objects found.");
 			return;
 		};
 //	};

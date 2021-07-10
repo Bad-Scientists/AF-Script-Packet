@@ -1,5 +1,6 @@
 /*
  *	Copied from Ikarus --> MEM_Error & MEM_Warn calls removed
+ *	MEM_Error will eventually cause Gothic to crash in my experience
  */
 func string mySTR_SubStr (var string str, var int start, var int count) {
     if (start < 0) || (count < 0) {
@@ -157,5 +158,43 @@ func string STR_TrimR(var string str, var string tok) {
     };
 };
 
+/*
+ *	Copied from Ikarus --> added startFrom
+ */
+func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
+    var zString zStr; zStr = _^(_@s(str));
+    var zString zTok; zTok = _^(_@s(tok));
+    
+    if(zTok.len == 0) {
+        return 0;
+    };
+    if (zStr.len == 0) {
+        return -1;
+    };
+    
+    var int startPos; startPos = zStr.ptr + startFrom;
+    var int startMax; startMax = zStr.ptr + zStr.len - zTok.len;
+    
+    var int loopPos; loopPos = MEM_StackPos.position;
+    if (startPos <= startMax) {
+        if (MEM_CompareBytes(startPos, zTok.ptr, zTok.len)) {
+            return startPos - zStr.ptr;
+        };
+        startPos += 1;
+        MEM_StackPos.position = loopPos;
+    };
+    return -1;
+};
 
+func string STR_DoubleQuote () {
+	var int mem;
 
+	if (!mem) {
+		mem = MEM_Alloc (1);
+
+		//Double quote
+		MEM_WriteByte (mem, 34);
+	};
+
+	return STR_FromChar (mem);
+};

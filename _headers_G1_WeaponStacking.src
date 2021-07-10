@@ -1,7 +1,15 @@
 engine_addresses_G1.d
+
 EngineClasses_G1\oInventory.d
+
 inventory_sorting_logic_G1.d
 inventory_oCNPC_engine.d
 inventory_oCNPC.d
+
+game_Events_G1.d
+game_Events_G12.d
+
+functions_oCItem.d
+
 Standalone-Packages\G1-WeaponStacking\inventory.d
 Standalone-Packages\G1-WeaponStacking\weapon_stacking.d

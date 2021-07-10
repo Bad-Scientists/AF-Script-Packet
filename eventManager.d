@@ -3,6 +3,8 @@
  */
 func int eMsg_MD_GetSubType (var int eMsg) {
 	if (!eMsg) { return -1; };
+	
+	var int subType; subType = zCEventMessage_GetSubType (eMsg);
 
 	/*
 	0		0
@@ -49,16 +51,6 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	//var zCEventMessage eventMessage;
 	//eventMessage = _^ (eMsg);
 	//return eventMessage.subType;
-	return zCEventMessage_GetSubType (eMsg);
-};
-
-/*
- *	Wrapper for *MD_GetSubTypeString functions
- */
-func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
-	if (!eMsg) { return ""; };
-	if (subType < 0) { return ""; };
-
 	const int bit6 = 1 << 6;	//64
 	const int bit7 = 1 << 7;	//128
 	const int bit8 = 1 << 8;	//256
@@ -84,7 +76,7 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	const int bit28 = 1 << 28;
 	const int bit29 = 1 << 29;
 	const int bit30 = 1 << 30;	//1073741824
-	
+
 	/*
 	eventMessage.subType sometimes has huge values - idk why.
 	Are these some 'bitwise flags' that we can remove?
@@ -116,6 +108,16 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	if (subType & bit8) { subType = (subType & ~ bit8); };
 	if (subType & bit7) { subType = (subType & ~ bit7); };
 	if (subType & bit6) { subType = (subType & ~ bit6); };
+
+	return subType;
+};
+
+/*
+ *	Wrapper for *MD_GetSubTypeString functions
+ */
+func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
+	if (!eMsg) { return ""; };
+	if (subType < 0) { return ""; };
 
 	var int vtbl; vtbl = MEM_ReadInt (eMsg);
 
@@ -345,4 +347,20 @@ func string NPC_EM_GetActiveEventName (var int slfinstance){
 	eventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
 
 	return eventName;
+};
+
+func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	if (!zCEventManager_GetNumMessages (eMgr)) { return 0; };
+
+	//Get Event Message
+	return zCEventManager_GetEventMessage (eMgr, index);
 };

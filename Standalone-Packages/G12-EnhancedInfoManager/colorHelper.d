@@ -1,17 +1,17 @@
-FUNC VOID ZS_ColorHelper_Hangaround () {
+func void ZS_ColorHelper_Hangaround () {
 	NPC_PercEnable (self, PERC_ASSESSTALK, B_AssessTalk);
 };
 
-FUNC VOID ZS_ColorHelper_Hangaround_Loop () {};
+func void ZS_ColorHelper_Hangaround_Loop () {};
 
-FUNC VOID ZS_ColorHelper_Hangaround_End () {};
+func void ZS_ColorHelper_Hangaround_End () {};
 
 var int colorHelperR;
 var int colorHelperG;
 var int colorHelperB;
 var int colorHelperA;
 
-instance colorHelpo1 (Npc_Default)
+instance colorHelpo1 (C_Npc)
 {
 	Name[0]		= "Color Helper";
 	NPCType		= NPCType_Main;
@@ -26,6 +26,9 @@ instance colorHelpo1 (Npc_Default)
 
 	Mdl_SetVisual (self, "HUMANS.MDS");
 	Mdl_SetVisualBody (self, "hum_body_Naked0", 4, 1, "Hum_Head_Pony", 9, 0, -1);
+
+	attribute [ATR_HITPOINTS] = 1;
+	attribute [ATR_HITPOINTS_MAX] = 1;
 
 	// reset
 	colorHelperR = 255;

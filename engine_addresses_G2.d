@@ -50,11 +50,6 @@ func int Hlp_Is_oCTriggerScript (var int ptr) {
     return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
 }; 
 
-func int Hlp_Is_zCParticleFX (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
-};
-
 /*
  *	Enable Player States
  */
@@ -91,3 +86,291 @@ const int oCNPC__OpenDeadNPC = 7743856;
 
 //0x00699F60 protected: int __thiscall oCAIHuman::PC_ActionMove(int)
 const int oCAIHuman__PC_ActionMove = 6922080;
+
+//0x0074B020 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
+const int oCNpc__OnMessage = 7647264;
+
+
+/*
+ *	game_Events_G12.d
+ */
+
+//Already defined in LeGo
+//0x00762410 public: void __thiscall oCNpc::CloseInventory(void)
+//const int oCNPC__CloseInventory = 7742480;
+
+//0x0074CC10 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *)
+//Already defined in LeGo 2.7.1
+//const int oCNPC__EV_DrawWeapon		= 7654416;
+//0x0074D2E0 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *)
+//Already defined in LeGo 2.7.1
+//const int oCNPC__EV_DrawWeapon1		= 7656160;
+//0x0074D580 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon2		= 7656832;
+
+//0x0047ED60 public: void __thiscall oCStatusScreen::Show(void)
+const int oCStatusScreen__Show = 4713824;
+
+//0x0047F3E0 public: void __thiscall oCLogScreen::Show(void)
+const int oCLogScreen__Show = 4715488;
+
+//0x0047F9C0 public: void __thiscall oCMapScreen::Show(int)
+const int oCMapScreen__Show = 4716992;
+
+//0x00709F40 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int)
+const int oCItemContainer__TransferItem = 7380800;
+
+//0x00739C90 public: void __thiscall oCNpc::Equip(class oCItem *)
+//Already defined in LeGo
+//const int oCNPC__Equip			= 7576720;
+
+//0x007326C0 public: void __thiscall oCNpc::UnequipItem(class oCItem *)
+//Already defined in LeGo
+//const int oCNPC__UnequipItem			= 7546560;
+
+//0x007449C0 public: virtual int __thiscall oCNpc::DoTakeVob(class zCVob *)
+const int oCNPC__DoTakeVob			= 7621056;
+
+//0x00762250 public: void __thiscall oCNPC::OpenInventory(int)
+//Already defined in LeGo
+//const int oCNPC__OpenInventory = 7742032;
+
+//0x00744DD0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
+const int oCNpc__DoDropVob = 7622096;
+
+/*
+ *	Sprint mode
+ */
+
+//0x006AD500 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int)
+const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
+
+/*
+ *	Event Manager
+ */
+
+//0x00832214 const zCMaterial::`vftable' 
+
+//0x0082E89C const zCObject::`vftable' 
+//const int zCObject_vtbl		= 8579228;
+ 
+//0x0082ED78 const zCCSBlockPosition::`vftable' 
+//const int zCCSBlockPosition_vtbl	= 8580472;
+
+//0x0082F00C const zCCSProps::`vftable' 
+//const int zCCSProps_vtbl		= 8581132;
+
+//0x0082E904 const oCCSPlayer::`vftable'{for `zCObject'} 
+//const int zCObject__oCCSPlayer_vtbl	= 8579332;
+
+//0x0082E75C const zCEventMessage::`vftable' 
+const int zCEventMessage_vtbl		= 8578908;
+
+//0x0083E23C const zCEventManager::`vftable' 
+const int zCEventManager_vtbl		= 8643132;
+
+func int Hlp_Is_zCEventManager (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
+};
+
+//0x0082EA4C const zCCSCutsceneContext::`vftable' 
+const int zCCSCutsceneContext_vtbl	= 8579660;
+
+func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
+};
+
+//0x0083DA8C const oCNpcMessage::`vftable' 
+const int oCNpcMessage_vtbl		= 8641164;
+
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
+};
+
+//0x0083DAFC const oCMsgDamage::`vftable' 
+const int oCMsgDamage_vtbl		= 8641276;
+
+//0x0083DB6C const oCMsgWeapon::`vftable' 
+const int oCMsgWeapon_vtbl		= 8641388;
+
+//0x0083DBDC const oCMsgMovement::`vftable' 
+const int oCMsgMovement_vtbl		= 8641500;
+
+//0x0083DC4C const oCMsgAttack::`vftable' 
+const int oCMsgAttack_vtbl		= 8641612;
+
+//0x0083DCBC const oCMsgUseItem::`vftable' 
+const int oCMsgUseItem_vtbl		= 8641724;
+
+//0x0083DD2C const oCMsgState::`vftable' 
+const int oCMsgState_vtbl		= 8641836;
+
+//0x0083DD9C const oCMsgManipulate::`vftable' 
+const int oCMsgManipulate_vtbl		= 8641948;
+
+func int Hlp_Is_oCMsgManipulate (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
+};
+
+//0x0083DE0C const oCMsgConversation::`vftable' 
+const int oCMsgConversation_vtbl	= 8642060;
+
+func int Hlp_Is_oCMsgConversation (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
+};
+
+//0x0083DE7C const oCMsgMagic::`vftable' 
+const int oCMsgMagic_vtbl		= 8642172;
+
+//0x0083AF34 const zCEventMusicControler::`vftable' 
+const int zCEventMusicControler_vtbl	= 8630068;
+
+//0x0082E7BC const zCEventCore::`vftable' 
+const int zCEventCore_vtbl		= 8579004;
+
+//0x0083096C const zCCSCamera_EventMsg::`vftable' 
+//0x0082E6FC const zCCSCamera_EventMsgActivate::`vftable' 
+//0x0082E7BC const zCEventCore::`vftable' 
+//0x0082ED14 const zCEvMsgCutscene::`vftable' 
+
+//0x0083A2DC const zCEventCommon::`vftable' 
+//0x0083A33C const zCEventMover::`vftable' 
+//0x0083A39C const zCEventScreenFX::`vftable' 
+
+//0x0083D474 const oCMobMsg::`vftable' 
+const int oCMobMsg_vtbl			= 8639604;
+
+
+/*
+ *	TriggerChangeLevel event
+ */
+
+//0x006C7AF0 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
+const int oCGame__TriggerChangeLevel = 7109360;
+
+
+/*
+ *	Gamestate extended events
+ */
+
+//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+const int oCNpc__PreSaveGameProcessing = 7637120;
+
+//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+const int oCNpc__PostSaveGameProcessing = 7637904;
+
+//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+//Already defined in LeGo
+//const int oCGame__ChangeLevel = 7107216;
+
+/*
+ *	No Ammo print
+ */
+//0x0073C6E0 public: int __thiscall oCNpc::IsMunitionAvailable(class oCItem *) 
+const int oCNpc__IsMunitionAvailable = 7587552;
+
+
+//0x00832084 const zCDecal::`vftable'
+const int zCDecal_vtbl = 8593540;
+
+//0x0083E434 const zCVobSpot::`vftable'
+const int zCVobSpot_vtbl = 8643636;
+
+func int Hlp_Is_zCVobSpot (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
+};
+
+//0x0083C574 const oCStealContainer::`vftable'
+const int oCStealContainer_vtbl = 8635764;
+
+func int Hlp_Is_oCStealContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
+};
+
+//0x0083C4AC const oCItemContainer::`vftable'
+const int oCItemContainer_vtbl = 8635564;
+
+func int Hlp_Is_oCItemContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
+};
+
+//0x0083C644 const oCNpcContainer::`vftable'
+const int oCNPCContainer_vtbl = 8635972;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
+
+//0x0083C714 const oCNpcInventory::`vftable'
+const int oCNpcInventory_vtbl = 8636180;
+
+func int Hlp_Is_oCNpcInventory (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
+};
+
+
+//========================================
+// Interface scaling
+// Author: szapp (Mud-freak)
+//========================================
+
+//Not yet published, 
+func int _getInterfaceScaling () {
+    //Super cheap, but effective and versatile: Just take (actual width) / (default width) of the health bar
+    //MEM_InitGlobalInst();
+    var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
+    return fracf(hpBar.zCView_vsizex, Print_ToVirtual(180, PS_X));
+};
+
+/*
+ *	Changes screen color - taken from LeGo FocusNames
+ */
+func void SetFontColor (var int col)
+{
+	//0x006FFD80 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G1 = 7339392;
+
+	//0x007A9910 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G2 = 8034576;
+
+	var int ptr; ptr = MEM_Alloc (4);
+
+	MEM_WriteInt (ptr, col);
+
+	CALL_PtrParam (ptr);
+	CALL__thiscall (MEM_ReadInt (screen_offset), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
+
+	MEM_Free (ptr);
+};
+
+func string GetSymbolName (var int symbolIndex) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+		return symb.name;
+	};
+
+	return "";
+};
+
+func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (bodystate & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) {
+		return TRUE;
+	};
+
+	return FALSE;
+};

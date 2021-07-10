@@ -1,5 +1,5 @@
 func string oCWorld_GetWorldFilename () {
-	//0063B680  .text     Debug data           ?GetWorldFilename@oCWorld@@QAE?AVzSTRING@@XZ
+	//0x0063B680 public: class zSTRING __thiscall oCWorld::GetWorldFilename(void) 
 	const int oCWorld__GetWorldFilename_G1 = 6534784;
 	
 	//0x0068DE60 public: class zSTRING __thiscall oCWorld::GetWorldFilename(void)

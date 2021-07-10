@@ -1,14 +1,19 @@
 engine_addresses_G1.d
 
+EngineClasses_G1\zEventMan.d
+
 functions_oCNpc_engine.d
 
+inventory_oCNpc_engine.d
 inventory_oCNpc.d
+
+eventManager_engine.d
+eventManager.d
 
 interface.d
 
-vobFunctions.d
-
 vectors.d
+vobFunctions.d
 
 Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking_API.d
 Standalone-Packages\G1-EnhancedPickLocking\enhancedPickLocking.d

@@ -2,13 +2,22 @@ constants.d
 
 engine_addresses_G2.d
 
+EngineClasses_G2\oInventory.d
+EngineClasses_G2\zEventMan.d
 EngineClasses_G2\zCViewDialog.d
 EngineClasses_G2\oNpcStates.d
+EngineClasses_G2\oNpc.d
+EngineClasses_G2\zCVisual.d
 EngineClasses_G2\oSDamageDescriptor.d
 
-functions_oCNpc_engine.d
+ObjectFactory\zCDecal.d
+ObjectFactory\zCMaterial.d
+
+keys.d
 
 vectors.d
+vobFunctions.d
+
 vobFunctions.d
 
 ScriptBin\insertAnything.d
@@ -16,14 +25,39 @@ ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\strings.d
 ScriptBin\convert.d
+ScriptBin\removeoCVobSafe.d
+
+anims_engine.d
+
+bars.d
 
 infoManager_engine.d
+infoManager.d
 
-vobFunctions.d
+eventManager_engine.d
+eventManager.d
+
+functions_oCNpc_engine.d
+functions_NPC.d
+
+functions_PC.d
+
+functions_oCItem.d
+
+inventory_oCMob_engine.d
+inventory_oCMob.d
+
+inventory_oCNpc_engine.d
+inventory_oCNpc.d
+
 interface.d
+
+game_Events_G12.d
 
 game_engine.d
 world_engine.d
+
+portals.d
 
 strings.d
 
@@ -31,9 +65,12 @@ view.d
 
 AI_Functions.d
 
+zError_engine.d
+
 Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d
 
+Standalone-Packages\G12-PickLockHelper\pickLockHelper_API.d
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d
@@ -45,3 +82,24 @@ Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
+
+Standalone-Packages\G12-SprintMode\sprintMode_API.d
+Standalone-Packages\G12-SprintMode\sprintMode.d
+
+Standalone-Packages\G12-TorchHotKey\torchHotkey_API.d
+Standalone-Packages\G12-TorchHotKey\torchHotkey.d
+
+Standalone-Packages\G12-NoAmmoPrint\noAmmoPrint.d
+
+Standalone-Packages\G12-VobTransport\globals.d
+Standalone-Packages\G12-VobTransport\insertVobCatalogue
+Standalone-Packages\G12-VobTransport\vobTransport_API.d
+Standalone-Packages\G12-VobTransport\internalFunctions.d
+Standalone-Packages\G12-VobTransport\propertiesView.d
+Standalone-Packages\G12-VobTransport\printCodeTozSpy.d
+Standalone-Packages\G12-VobTransport\cloneFactory.d
+Standalone-Packages\G12-VobTransport\vobTransport.d
+Standalone-Packages\G12-Focus\focus_API.d
+Standalone-Packages\G12-Focus\focus.d
+Standalone-Packages\G12-InvItemPreview\invItemPreview.d
+Standalone-Packages\G12-BetterBars\betterBars.d

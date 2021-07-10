@@ -1,4 +1,4 @@
-func void _hook_oCNPC_OpenDeadNPC () {
+func void _eventOpenDeadNPC (var int dummyVariable) {
 	if (!Hlp_Is_oCNPC (ECX)) { return; };
 
 	var oCNPC slf; slf = _^ (ECX);
@@ -15,10 +15,8 @@ func void _hook_oCNPC_OpenDeadNPC () {
 };
 
 func void G12_PreventLooting_Init () {
-	const int once = 0;
+	G12_OpenDeadNPCEvent_Init ();
 
-	if (!once) {
-		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
-		once = 1;
-	};
+	//HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
+	OpenDeadNPCEvent_AddListener (_eventOpenDeadNPC);
 };

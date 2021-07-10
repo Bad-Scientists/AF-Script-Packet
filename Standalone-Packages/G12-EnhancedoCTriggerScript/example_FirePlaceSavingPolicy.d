@@ -66,7 +66,7 @@ func void FirePlace_AddSavingPolicy () {
 	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
-			MEM_Info ("No zCVisual objects found.");
+			MEM_Info ("No zCVob objects found.");
 			return;
 		};
 	};

@@ -3,6 +3,8 @@ engine_addresses_G1.d
 inventory_oCNPC_engine.d
 inventory_oCNPC.d
 
+game_Events_G12.d
+
 Standalone-Packages\G1-PlayerMap\playerMap_API.d
 Standalone-Packages\G1-PlayerMap\playerMap.d
 

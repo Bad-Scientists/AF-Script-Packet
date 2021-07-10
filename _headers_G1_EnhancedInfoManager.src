@@ -9,3 +9,4 @@ engine_addresses_G1.d
 infoManager_engine.d
 strings.d
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
+Standalone-Packages\G12-EnhancedInfoManager\colorHelper.d

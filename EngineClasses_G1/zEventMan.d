@@ -178,11 +178,12 @@ class oCMsgWeapon {
 	*/
 
 	var int targetMode;		//68	int targetMode;
-	//int duringRun       : 1;
-	//int initDone        : 1;
-	//int firstTime       : 1;
-	//int useFist         : 1;
-	//int showMagicCircle : 1;
+	//int duringRun       : 1;	1
+	//int initDone        : 1;	2
+	//int firstTime       : 1;	4
+	//int useFist         : 1;	8
+	//int showMagicCircle : 1;	16
+	
 	var int bitfield_oCMsgWeapon;	//72
 	var int ani;			//76	int ani
 };

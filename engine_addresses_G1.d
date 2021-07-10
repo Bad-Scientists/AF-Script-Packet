@@ -114,11 +114,6 @@ func int Hlp_Is_oCTriggerScript (var int ptr) {
     return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
 };
 
-func int Hlp_Is_zCParticleFX (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCParticleFX_vtbl);
-};
-
 /*
  *	Enable Player States
  */
@@ -166,6 +161,9 @@ const int oCDocumentManager__CreateMap = 7489232;
 //0x00613A60 protected: int __thiscall oCAIHuman::PC_ActionMove(int) 
 const int oCAIHuman__PC_ActionMove = 6371936;
 
+//0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *) 
+const int oCNpc__OnMessage = 6973920;
+
 /*
  *	Enhnaced PickLocking
  */
@@ -173,3 +171,300 @@ const int oCAIHuman__PC_ActionMove = 6371936;
 //0x006827C0 public: int __thiscall oCMobLockable::CanOpen(class oCNpc *) 
 const int oCMobLockable__CanOpen = 6825920;
 
+
+/*
+ *	Enhanced PickPocketing
+ */
+//Already defined in LeGo (Lego 7058164) 
+//0x006BB2F0 public: void __thiscall oCNpc::CloseInventory(void) 
+//const int oCNPC__CloseInventory = 7058160;
+
+//0x00669780 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int) 
+const int oCItemContainer__TransferItem = 6723456;
+
+/*
+ *	game_Events_G12.d
+ */
+
+//0x006A8500 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *) 
+const int oCNPC__EV_DrawWeapon		= 6980864;
+//0x006A8B80 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *) 
+const int oCNPC__EV_DrawWeapon1		= 6982528;
+//0x006A8E20 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
+const int oCNPC__EV_DrawWeapon2		= 6983200;
+
+//0x00477830 public: void __thiscall oCStatusScreen::Show(void) 
+const int oCStatusScreen__Show = 4683824;
+
+//0x00477EC0 public: void __thiscall oCLogScreen::Show(void) 
+const int oCLogScreen__Show = 4685504;
+
+//0x00478490 public: void __thiscall oCMapScreen::Show(void)
+const int oCMapScreen__Show = 4686992;
+
+//0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void)
+//Already defined in LeGo
+//const int oCNPC__OpenInventory = 7057568;
+
+//0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
+const int oCNpc__DoDropVob = 6951152;
+
+/*
+ *	game_Events_G1.d
+ */
+
+//0x00669DD0 protected: virtual int __thiscall oCItemContainer::HandleEvent(int) 
+const int oCItemContainer__HandleEvent = 6725072;
+//G2A HookLen 6
+
+//0x0066A730 public: virtual int __thiscall oCStealContainer::HandleEvent(int) 
+const int oCStealContainer__HandleEvent = 6727472;
+//0x0066ACD0 public: virtual int __thiscall oCNpcContainer::HandleEvent(int) 
+
+const int oCNpcContainer__HandleEvent = 6728912;
+//G2A HookLen 7
+
+//0x0066E390 public: virtual int __thiscall oCNpcInventory::HandleEvent(int) 
+const int oCNpcInventory__HandleEvent = 6742928;
+
+/*
+ *	Sprint mode
+ */
+
+//0x00624E30 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int) 
+const int oCAniCtrl_Human__ToggleWalkMode = 6442544;
+
+/*
+ *	Event Manager
+ */
+
+//0x007D3ECC const zCMaterial::`vftable' 
+
+//0x007D0894 const zCObject::`vftable' 
+//const int zCObject_vtbl		= 8194196;
+ 
+//0x007D0D44 const zCCSBlockPosition::`vftable' 
+//const int zCCSBlockPosition_vtbl	= 8195396;
+
+//0x007D0FAC const zCCSProps::`vftable'
+//const int zCCSProps_vtbl		= 8196012;
+
+//0x007D08F4 const oCCSPlayer::`vftable'{for `zCObject'}
+//const int zCObject__oCCSPlayer_vtbl	= 8194292;
+
+//0x007D0754 const zCEventMessage::`vftable' 
+const int zCEventMessage_vtbl		= 8193876;
+
+//0x007DE97C const zCEventManager::`vftable' 
+const int zCEventManager_vtbl		= 8251772;
+
+func int Hlp_Is_zCEventManager (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
+};
+
+//0x007D0A24 const zCCSCutsceneContext::`vftable' 
+const int zCCSCutsceneContext_vtbl	= 8194596;
+
+func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
+};
+
+//0x007DE28C const oCNpcMessage::`vftable' 
+const int oCNpcMessage_vtbl		= 8249996;
+
+func int Hlp_Is_oCNpcMessage (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
+};
+
+//0x007DE2F4 const oCMsgDamage::`vftable' 
+const int oCMsgDamage_vtbl		= 8250100;
+
+//0x007DE35C const oCMsgWeapon::`vftable' 
+const int oCMsgWeapon_vtbl		= 8250204;
+
+//0x007DE3C4 const oCMsgMovement::`vftable' 
+const int oCMsgMovement_vtbl		= 8250308;
+
+//0x007DE42C const oCMsgAttack::`vftable' 
+const int oCMsgAttack_vtbl		= 8250412;
+
+//0x007DE494 const oCMsgUseItem::`vftable' 
+const int oCMsgUseItem_vtbl		= 8250516;
+
+//0x007DE4FC const oCMsgState::`vftable' 
+const int oCMsgState_vtbl		= 8250620;
+
+//0x007DE564 const oCMsgManipulate::`vftable' 
+const int oCMsgManipulate_vtbl		= 8250724;
+
+func int Hlp_Is_oCMsgManipulate (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
+};
+
+//0x007DE5CC const oCMsgConversation::`vftable' 
+const int oCMsgConversation_vtbl	= 8250828;
+
+func int Hlp_Is_oCMsgConversation (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
+};
+
+func int Hlp_Is_oCMsgMovement (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgMovement_vtbl);
+};
+
+//0x007DE634 const oCMsgMagic::`vftable' 
+const int oCMsgMagic_vtbl		= 8250932;
+
+//0x007DEDDC const zCEventMusicControler::`vftable' 
+const int zCEventMusicControler_vtbl	= 8252892;
+
+//0x007D07B4 const zCEventCore::`vftable' 
+const int zCEventCore_vtbl		= 8193972;
+
+//0x007D284C const zCCSCamera_EventMsg::`vftable' 
+//0x007D06F4 const zCCSCamera_EventMsgActivate::`vftable' 
+//0x007D07B4 const zCEventCore::`vftable' 
+//0x007D0CE4 const zCEvMsgCutscene::`vftable' 
+
+//0x007DBE0C const zCEventCommon::`vftable' 
+//0x007DBE6C const zCEventMover::`vftable' 
+//0x007DBECC const zCEventScreenFX::`vftable' 
+
+//0x007DDC9C const oCMobMsg::`vftable' 
+const int oCMobMsg_vtbl			= 8248476;
+
+/*
+ *	TriggerChangeLevel event
+ */
+ 
+//0x0063D480 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &) 
+const int oCGame__TriggerChangeLevel = 6542464;
+
+
+/*
+ *	Gamestate extended events
+ */
+
+//0x006A4500 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+const int oCNpc__PreSaveGameProcessing = 6964480;
+
+//0x006A4810 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+const int oCNpc__PostSaveGameProcessing = 6965264;
+
+//0x0063CD60 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+//Already defined in LeGo
+//const int oCGame__ChangeLevel = 6540640;
+
+/*
+ *	No Ammo print
+ */
+//0x00699290 public: int __thiscall oCNpc::IsMunitionAvailable(class oCItem *) 
+const int oCNpc__IsMunitionAvailable = 6918800;
+
+
+//0x007D3E04 const zCDecal::`vftable'
+//Already defined in Ikarus - but has incorrect value !! const int zCDecal_vtbl= 8241804;
+//const int zCDecal_vtbl = 8207876;
+
+//0x007DCDFC const oCItemContainer::`vftable'
+const int oCItemContainer_vtbl = 8244732;
+
+func int Hlp_Is_oCItemContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
+};
+
+//0x007DCEA4 const oCStealContainer::`vftable'
+const int oCStealContainer_vtbl = 8244900;
+
+func int Hlp_Is_oCStealContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
+};
+
+//0x007DCF54 const oCNpcContainer::`vftable' 
+const int oCNPCContainer_vtbl = 8245076;
+
+func int Hlp_Is_oCNpcContainer (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
+};
+
+//0x007DD004 const oCNpcInventory::`vftable'
+const int oCNpcInventory_vtbl = 8245252;
+
+func int Hlp_Is_oCNpcInventory (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
+};
+
+//0x007DEB3C const zCVobSpot::`vftable'
+const int zCVobSpot_vtbl = 8252220;
+
+func int Hlp_Is_zCVobSpot (var int ptr) {
+    if (!ptr) { return 0; };
+    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
+};
+
+
+//========================================
+// Interface scaling
+// Author: szapp (Mud-freak)
+//========================================
+
+//Not yet published, 
+func int _getInterfaceScaling () {
+    //Super cheap, but effective and versatile: Just take (actual width) / (default width) of the health bar
+    //MEM_InitGlobalInst();
+    var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
+    return fracf(hpBar.zCView_vsizex, Print_ToVirtual(180, PS_X));
+};
+
+/*
+ *	Changes screen color - taken from LeGo FocusNames
+ */
+func void SetFontColor (var int col)
+{
+	//0x006FFD80 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G1 = 7339392;
+
+	//0x007A9910 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
+	const int zCView__SetFontColor_G2 = 8034576;
+
+	var int ptr; ptr = MEM_Alloc (4);
+
+	MEM_WriteInt (ptr, col);
+
+	CALL_PtrParam (ptr);
+	CALL__thiscall (MEM_ReadInt (screen_offset), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
+
+	MEM_Free (ptr);
+};
+
+func string GetSymbolName (var int symbolIndex) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+		return symb.name;
+	};
+
+	return "";
+};
+
+func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (bodystate & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
