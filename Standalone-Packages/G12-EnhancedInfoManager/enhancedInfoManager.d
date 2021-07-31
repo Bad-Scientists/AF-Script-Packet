@@ -1556,7 +1556,10 @@ MEM_InformationMan.LastMethod:
 
 	var int dialogProperties[DIALOG_MAX];			//dialog properties: answer, spinner, disabled
 	var int properties;
-	
+
+	var string dialogFont[DIALOG_MAX];
+	var string dialogFontSelected[DIALOG_MAX];
+
 	const int dialogChoiceType_Answer	= 1;
 	const int dialogChoiceType_Spinner	= 2;
 	const int dialogChoiceType_Disabled	= 4;
@@ -2117,7 +2120,7 @@ MEM_InformationMan.LastMethod:
 						//thisID += 1;
 						thisID = ConcatStrings (thisID, ".1");
 						
-						flagAdd = true;
+						flagAdd = TRUE;
 						
 						if (!STR_Len (overlayText)) {
 							flagAdd = FALSE;
@@ -2550,16 +2553,29 @@ MEM_InformationMan.LastMethod:
 					properties = properties | dialogChoiceType_AlignRight;
 				};
 
-				MEM_WriteIntArray (_@ (dialogProperties), i, properties);
-				MEM_WriteIntArray (_@ (dialogColor), i, color);
-				MEM_WriteIntArray (_@ (dialogColorSelected), i, colorSelected);
+				if (i < DIALOG_MAX) {
+					MEM_WriteIntArray (_@ (dialogProperties), i, properties);
+					MEM_WriteIntArray (_@ (dialogColor), i, color);
+					MEM_WriteIntArray (_@ (dialogColorSelected), i, colorSelected);
+					MEM_WriteStringArray (_@s (dialogFont), i, dlgFont);
+					MEM_WriteStringArray (_@s (dialogFontSelected), i, dlgFontSelected);
 
-				InfoManagerUpdateState = cIM_UpdateState_Changed;
+					InfoManagerUpdateState = cIM_UpdateState_Changed;
+				};
 			};
 			//};
 
 			//Recalculate offsetTextpy and posY for dialog items in case fonts changed
 			if (i < dlg.Choices) {
+				//Get font
+				if (i < DIALOG_MAX) {
+					if (i == dlg.ChoiceSelected) {
+						dlgFont = MEM_ReadStringArray (_@s (dialogFontSelected), i);
+					} else {
+						dlgFont = MEM_ReadStringArray (_@s (dialogFont), i);
+					};
+				};
+
 				if (i == 0) {
 					nextPosY = txt.posY;
 					dlg.offsetTextpy = 0;
