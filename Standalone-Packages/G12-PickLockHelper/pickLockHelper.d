@@ -5,17 +5,20 @@
 //Last and Current PickLock combinations
 var string pickLockHelper_LastCombination;
 var string pickLockHelper_CurrentCombination;
+var string pickLockHelper_LastKey;
+var int pickLockHelper_LastKeyPos;
 
 //View handles
 var int hPickLockHelper_Frame;
 var int hPickLockHelper_LastCombination;
 var int hPickLockHelper_CurrentCombination;
+var int hpickLockHelper_LastKey;
 
 /*
  *
  */
 
-func void PickLockHelper_Show () {
+func int PickLockHelper_GetPosX () {
 	//Recalculate size and positions
 	var int scaleF; scaleF = _getInterfaceScaling ();
 
@@ -42,6 +45,13 @@ func void PickLockHelper_Show () {
 	//Position does not have to be 'scaled'
 	//posX = roundf (mulf (mkf (posX), scaleF));
 
+	return posX;
+};
+
+func int PickLockHelper_GetPosY () {
+	var int fontHeight; fontHeight = Print_GetFontHeight (pickLockHelper_FontName);
+	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+
 	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
@@ -52,7 +62,7 @@ func void PickLockHelper_Show () {
 	} else {
 		posY = Print_ToVirtual (pickLockHelper_PPosY, PS_Y);
 	};
-	
+
 	if (pickLockHelper_VPosY > -1) {
 		posY = pickLockHelper_VPosY;
 	};
@@ -60,7 +70,24 @@ func void PickLockHelper_Show () {
 	//Position does not have to be 'scaled'
 	//posY = roundf (mulf (mkf (posY), scaleF));
 
-	//---
+	return posY;
+};
+
+func void PickLockHelper_Show () {
+	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", pickLockHelper_FontName);
+	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
+
+	var int scaleF; scaleF = _getInterfaceScaling ();
+
+	var int fontHeight; fontHeight = Print_GetFontHeight (pickLockHelper_FontName);
+	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+
+	var int viewWidth;
+	viewWidth = Print_ToVirtual(pickLockHelper_WidthPxl, PS_X);
+	viewWidth = roundf (mulf (mkf (viewWidth), scaleF));
+
+	var int posX; posX = PickLockHelper_GetPosX ();
+	var int posY; posY = PickLockHelper_GetPosY ();
 
 	if (!Hlp_IsValidHandle (hPickLockHelper_Frame)) {
 		hPickLockHelper_Frame = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
@@ -86,14 +113,27 @@ func void PickLockHelper_Show () {
 		hPickLockHelper_CurrentCombination = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
 		View_AddText (hPickLockHelper_CurrentCombination, 00, 00, pickLockHelper_CurrentCombination, pickLockHelper_FontName);
 	};
-	
+
 	View_Open (hPickLockHelper_CurrentCombination);
 	View_MoveTo (hPickLockHelper_CurrentCombination, posX, posY);
 	View_Resize (hPickLockHelper_CurrentCombination, viewWidth, fontHeight);
 	zcView_SetText (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, spaceWidth);
+
+	if (!Hlp_IsValidHandle (hpickLockHelper_LastKey)) {
+		hpickLockHelper_LastKey = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
+		View_AddText (hpickLockHelper_LastKey, 00, 00, pickLockHelper_LastKey, pickLockHelper_FontName);
+	};
+
+	posX += Print_ToVirtual (Print_GetStringWidth (pickLockHelper_LastCombination, pickLockHelper_FontName), PS_X);
+
+	View_Open (hpickLockHelper_LastKey);
+	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
+	View_Resize (hpickLockHelper_LastKey, viewWidth, fontHeight);
+	zcView_SetText (hpickLockHelper_LastKey, pickLockHelper_LastKey, spaceWidth);
 };
 
 func void PickLockHelper_Hide () {
+	if (Hlp_IsValidHandle (hpickLockHelper_LastKey)) { View_Close (hpickLockHelper_LastKey); };
 	if (Hlp_IsValidHandle (hPickLockHelper_LastCombination)) { View_Close (hPickLockHelper_LastCombination); };
 	if (Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) { View_Close (hPickLockHelper_CurrentCombination); };
 	if (Hlp_IsValidHandle (hPickLockHelper_Frame)) { View_Close (hPickLockHelper_Frame); };
@@ -120,6 +160,15 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 	zcView_SetTextAndFontColor (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, RGBA (255, 255, 255, 64), spaceWidth);
 	zcView_SetTextAndFontColor (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, RGBA (096, 255, 096, 255), spaceWidth);
 
+	var int posX; posX = PickLockHelper_GetPosX ();
+	var int posY; posY = PickLockHelper_GetPosY ();
+
+	posX += Print_ToVirtual (Print_GetStringWidth (pickLockHelper_LastCombination, pickLockHelper_FontName), PS_X);
+
+	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
+
+	zcView_SetTextAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
+
 	//Continue with original function
 	PassArgumentI (bSuccess);
 	PassArgumentI (bBrokenOpen);
@@ -144,16 +193,38 @@ func void _hook_oCMobLockable_PickLock () {
 	};
 
 //---
+	//Localization support - switch to 'standard' L R combination
+	pickLockHelper_CurrentCombination = STR_ReplaceAll (pickLockHelper_CurrentCombination, pickLockHelper_LeftKey, "L");
+	pickLockHelper_CurrentCombination = STR_ReplaceAll (pickLockHelper_CurrentCombination, pickLockHelper_RightKey, "R");
 
 	if (c == 76) {
 		if (Hlp_StrCmp(ConcatStrings (pickLockHelper_CurrentCombination, "L"), pickLockString)) {
 			pickLockHelper_CurrentCombination = pickLockString;
+		} else {
+			if ((!pickLockHelper_LastKeyPos) && (pickLockHelper_ShowFailedAttempt)) {
+				pickLockHelper_LastKey = pickLockHelper_LeftKey;
+				pickLockHelper_LastKeyPos = STR_Len (pickLockHelper_CurrentCombination);
+			};
 		};
 	} else
 	if (c == 82) {
 		if (Hlp_StrCmp(ConcatStrings (pickLockHelper_CurrentCombination, "R"), pickLockString)) {
 			pickLockHelper_CurrentCombination = pickLockString;
+		} else {
+			if ((!pickLockHelper_LastKeyPos) && (pickLockHelper_ShowFailedAttempt)) {
+				pickLockHelper_LastKey = pickLockHelper_RightKey;
+				pickLockHelper_LastKeyPos = STR_Len (pickLockHelper_CurrentCombination);
+			};
 		};
+	};
+
+	//Localization support - replace back to 'localized' version
+	pickLockHelper_CurrentCombination = STR_ReplaceAll (pickLockHelper_CurrentCombination, "L", pickLockHelper_LeftKey);
+	pickLockHelper_CurrentCombination = STR_ReplaceAll (pickLockHelper_CurrentCombination, "R", pickLockHelper_RightKey);
+
+	if (STR_Len (pickLockHelper_CurrentCombination) > pickLockHelper_LastKeyPos) {
+		pickLockHelper_LastKey = "";
+		pickLockHelper_LastKeyPos = 0;
 	};
 
 //---
@@ -176,6 +247,8 @@ func void _hook_oCMobInter_StartInteraction () {
 	if (pickLockHelper_LastMob != ECX) {
 		pickLockHelper_CurrentCombination = "";
 		pickLockHelper_LastCombination = "";
+		pickLockHelper_LastKey = "";
+		pickLockHelper_LastKeyPos = 0;
 	};
 	
 	pickLockHelper_LastMob = ECX;
