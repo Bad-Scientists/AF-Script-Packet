@@ -148,21 +148,21 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (MEM_ReadInt (vobPtr) == MEMINT_SwitchG1G2 (zCVob_vtbl_G1, zCVob_vtbl_G2)) {
 		//InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, "zCVob");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 		MEM_Info (msg);
 	} else
@@ -171,11 +171,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		itm = _^ (vobPtr);
 
 		msg = "vobPtr = InsertItem (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
 		msg = ConcatStrings (msg, IntToString (itm.amount));
 		msg = ConcatStrings (msg, ", _@ (trafo));");
@@ -184,17 +184,17 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobContainer (vobPtr)) {
 		//vobPtr = InsertMobContainer ("CRATE_ADDEDBYSCRIPT_01", "CHESTSMALL_OCCRATESMALL.MDS", _@ (trafo));
 		msg = "vobPtr = InsertMobContainer (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo));");
 
 		MEM_Info (msg);
@@ -202,17 +202,17 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobFire (vobPtr)) {
 		//vobPtr = InsertMobFire (s_objectName, s_visualName, _@ (trafo));
 		msg = "vobPtr = InsertMobFire (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo));");
 
 		MEM_Info (msg);
@@ -220,17 +220,17 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobDoor (vobPtr)) {
 		//vobPtr = InsertMobDoor (objectName, visualName, _@ (trafo));
 		msg = "vobPtr = InsertMobDoor (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo));");
 
 		MEM_Info (msg);
@@ -238,23 +238,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobLadder (vobPtr)) {
 		//vobPtr = InsertObject ("oCMobLadder", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobLadder");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -262,23 +262,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobSwitch (vobPtr)) {
 		//vobPtr = InsertObject ("oCMobSwitch", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobSwitch");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -286,23 +286,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobWheel (vobPtr)) {
 		//vobPtr = InsertObject ("oCMobWheel", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobWheel");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -310,23 +310,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobBed (vobPtr)) {
 		//vobPtr = InsertObject ("oCMobBed", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobBed");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -334,23 +334,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMobInter (vobPtr)) {
 		//vobPtr = InsertObject ("oCMobInter", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobInter");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -358,23 +358,23 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	if (Hlp_Is_oCMob (vobPtr)) {
 		//vobPtr = InsertObject ("oCMob", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMob");
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_visualName);
 
-		msg = ConcatStrings (msg, STR_DoubleQuote());
+		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
 
 		MEM_Info (msg);
@@ -398,11 +398,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			s_variableName = GetSymbolName (mob.focusNameIndex);
 
 			msg = "oCMob_SetMobName (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, s_variableName);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 			
 			msg = ConcatStrings (msg, ");");
 
@@ -414,17 +414,17 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMob_SetOwnerStr (vobPtr, mob.ownerStr, mob.ownerGuildStr);
 			
 			msg = "oCMob_SetOwnerStr (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mob.ownerStr);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 			msg = ConcatStrings (msg, ", ");
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mob.ownerGuildStr);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -442,11 +442,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobInter_SetTriggerTarget (vobPtr, mobInter.triggerTarget);
 
 			msg = "oCMobInter_SetTriggerTarget (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobInter.triggerTarget);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -458,11 +458,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobInter_SetUseWithItem (vobPtr, mobInter.useWithItem);
 
 			msg = "oCMobInter_SetUseWithItem (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobInter.useWithItem);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -474,11 +474,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobInter_SetSceme (vobPtr, mobInter.sceme);
 
 			msg = "oCMobInter_SetSceme (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobInter.sceme);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -490,11 +490,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobInter_SetConditionFunc (vobPtr, mobInter.conditionFunc);
 
 			msg = "oCMobInter_SetConditionFunc (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobInter.conditionFunc);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -506,11 +506,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobInter_SetOnStateFuncName (vobPtr, mobInter.onStateFuncName);
 
 			msg = "oCMobInter_SetOnStateFuncName (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobInter.onStateFuncName);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -528,11 +528,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobLockable_SetKeyInstance (vobPtr, mobLockable.keyInstance);
 
 			msg = "oCMobLockable_SetKeyInstance (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobLockable.keyInstance);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -544,11 +544,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobLockable_SetPickLockStr (vobPtr, mobLockable.pickLockStr);
 
 			msg = "oCMobLockable_SetPickLockStr (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobLockable.pickLockStr);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -566,11 +566,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobDoor_SetAddName (vobPtr, mobDoor.addName);
 
 			msg = "oCMobDoor_SetAddName (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobDoor.addName);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -588,11 +588,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobFire_SetFireSlot (vobPtr, mobFire.fireSlot);
 
 			msg = "oCMobFire_SetFireSlot (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobFire.fireSlot);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
@@ -604,11 +604,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			//oCMobFire_SetFireVobtreeName (vobPtr, mobFire.fireVobtreeName);
 
 			msg = "oCMobFire_SetFireVobtreeName (vobPtr, ";
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, mobFire.fireVobtreeName);
 
-			msg = ConcatStrings (msg, STR_DoubleQuote());
+			msg = ConcatStrings (msg, BtoC(34));
 
 			msg = ConcatStrings (msg, ");");
 
