@@ -11,15 +11,15 @@
 
 //const string TEXT_TRADE_BUYER_NOTENOUGHORE		= "You don't have enough ore!";
 const string TEXT_TRADE_BUYER_NOTENOUGHORE		= "Nemáš dost rudy!";
-const int POSY_TRADE_BUYER_NOTENOUGHORE			= _YPOS_MESSAGE_LOGENTRY;
+const int POSY_TRADE_BUYER_NOTENOUGHORE			= 45; //_YPOS_MESSAGE_LOGENTRY;
 
 //const string TEXT_TRADE_TRADER_NOTENOUGHORE		= "Trader doesn't have enough ore!";
 const string TEXT_TRADE_TRADER_NOTENOUGHORE		= "Obchodník nemá dost rudy!";
-const int POSY_TRADE_TRADER_NOTENOUGHORE		= _YPOS_MESSAGE_LOGENTRY;
+const int POSY_TRADE_TRADER_NOTENOUGHORE		= 45; //_YPOS_MESSAGE_LOGENTRY;
 
 //const string TEXT_TRADE_TRADER_NOTENOUGHORE_CONFIRM	= "You will loose ore with this trade. Do you really want to accept?";
 const string TEXT_TRADE_TRADER_NOTENOUGHORE_CONFIRM	= "Na tomhle obchodu proděláš. Opravdu uskutečnit obchod ?";
-const int POSY_TRADE_TRADER_NOTENOUGHORE_CONFIRM	= _YPOS_MESSAGE_XPGAINED;
+const int POSY_TRADE_TRADER_NOTENOUGHORE_CONFIRM	= 50; //_YPOS_MESSAGE_XPGAINED;
 
 func void _additionalSubtitlesForTrading () {
 	//AI_Output (self, self, "DIA_Trade_NotInterrested");	//I am not interrested
@@ -89,30 +89,35 @@ func int NPC_GetSellMultiplierF (var int slfinstance, var int itemPtr) {
 
 // -->	YOU CAN DEFINE NPC-SPECIFIC TRADE SELLING MULTIPLIER RULES HERE
 
+	var string npcInstName; npcInstName = GetSymbolName (Hlp_GetInstanceID (slf));
+	var string itmInstName; itmInstName = GetSymbolName (Hlp_GetInstanceID (itm));
+
 	//Wolf will trade furs and skins in 1 x 1 ratio
-	if (Hlp_GetinstanceID (slf) == ORG_855_Wolf) {
-		if (Hlp_GetinstanceID (itm) == Wolf_Skin)
-		|| (Hlp_GetinstanceID (itm) == Warg_Skin)
-		|| (Hlp_GetinstanceID (itm) == ShadowBeast_Skin)
-		|| (Hlp_GetinstanceID (itm) == Troll_Skin)
-		|| (Hlp_GetinstanceID (itm) == BlackTroll_Skin)
-		|| (Hlp_GetinstanceID (itm) == Lurker_Skin)
-		|| (Hlp_GetinstanceID (itm) == Swampshark_Skin)
+	if (Hlp_StrCmp (npcInstName, "ORG_855_WOLF")) {
+		if ((Hlp_StrCmp (itmInstName, "WOLF_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "WARG_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "SHADOWBEAST_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "TROLL_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "BLACKTROLL_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "LURKER_SKIN"))
+		|| (Hlp_StrCmp (itmInstName, "SWAMPSHARK_SKIN"))
+
+		|| (Hlp_StrCmp (itmInstName, "ITAT_WOLF_01")))
 		{
 			multiplier = FLOATONE;
 		};
 	};
 
 	//Cipher will buy swamp weed in 1 x 1 ratio
-	if (Hlp_GetinstanceID (slf) == ORG_873_Cipher) {
-		if (Hlp_GetinstanceID (itm) == ItMi_Plants_Swampherb_01)
+	if (Hlp_StrCmp (npcInstName, "ORG_873_CIPHER")) {
+		if (Hlp_StrCmp (itmInstName, "ITMI_PLANTS_SWAMPHERB_01"))
 		{
 			multiplier = FLOATONE;
 		};
 	};
 
 	//
-	if (Hlp_GetinstanceID (slf) == NOV_1357_Fortuno) {
+	if (Hlp_StrCmp (npcInstName, "NOV_1357_FORTUNO")) {
 	};
 
 	//ARMOR - set to 100%
