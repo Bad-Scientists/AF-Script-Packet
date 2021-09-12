@@ -186,15 +186,22 @@ func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
     return -1;
 };
 
-func string STR_DoubleQuote () {
-	var int mem;
+/*
+ *	Converts char to byte value, 'A' to 64, 'a' to 96
+ */
+func int CtoB (var string s) {
+	var int buf; buf = STR_toChar (s);
+	var int chr; chr = MEM_ReadInt (buf) & 255;
+	return chr;
+};
 
-	if (!mem) {
-		mem = MEM_Alloc (1);
+/*
+ *	Converts byte back to char, 96 to 'a', 64 to 'A'
+ */
+func string BtoC (var int i) {
+	const int mem = 0;
+	if (!mem) { mem = MEM_Alloc (1); };
 
-		//Double quote
-		MEM_WriteByte (mem, 34);
-	};
-
+	MEM_WriteByte (mem, i);
 	return STR_FromChar (mem);
 };
