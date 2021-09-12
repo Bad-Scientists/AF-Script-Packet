@@ -17,6 +17,9 @@ EngineClasses_G1\oCViewDocument.d
 
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
+ObjectFactory\zCTexture.d
+
+files.d
 
 keys.d
 vectors.d

@@ -13,6 +13,8 @@ EngineClasses_G2\oSDamageDescriptor.d
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
 
+files.d
+
 keys.d
 
 vectors.d
