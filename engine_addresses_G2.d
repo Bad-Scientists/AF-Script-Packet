@@ -208,7 +208,7 @@ const int oCMsgUseItem_vtbl		= 8641724;
 //0x0083DD2C const oCMsgState::`vftable' 
 const int oCMsgState_vtbl		= 8641836;
 
-//0x0083DD9C const oCMsgManipulate::`vftable' 
+//0x0083DD9C const oCMsgManipulate::`vftable'
 const int oCMsgManipulate_vtbl		= 8641948;
 
 func int Hlp_Is_oCMsgManipulate (var int ptr) {
