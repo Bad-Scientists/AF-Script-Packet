@@ -29,6 +29,8 @@ ScriptBin\strings.d
 ScriptBin\convert.d
 ScriptBin\removeoCVobSafe.d
 
+mobFunctions.d
+
 anims_engine.d
 
 bars.d

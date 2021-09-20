@@ -32,6 +32,8 @@ ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
 
+mobFunctions.d
+
 anims_engine.d
 
 bars.d
