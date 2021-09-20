@@ -1,4 +1,7 @@
 engine_addresses_G1.d
+
+EngineClasses_G1\zCViewDialog.d
+
 functions_oCNpc_engine.d
 
 game_Events_G12.d
