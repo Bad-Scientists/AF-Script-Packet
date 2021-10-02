@@ -27,7 +27,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	var int oldErrorLevel; oldErrorLevel = zERROR_GetFilterLevel ();
 	zERROR_SetFilterLevel (3);
 
-//--- 
+//---
 
 	vob = _^ (vobPtr);
 	s_objectName = vob._zCObject_objectName;
@@ -39,6 +39,8 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = s_visualName;
 	};
 
+	//This should serve as a comment
+	msg = ConcatStrings ("//", msg);
 	msg = ConcatStrings (msg, " insert code:");
 	MEM_Info (msg);
 
@@ -61,7 +63,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 
 	//pos[0] = 3684.757080; pos[1] = 6424.923340; pos[2] = 32131.988281;
 	msg = "pos[0] = ";
-	
+
 	msg = ConcatStrings (msg, toStringF (vec[0]));
 	msg = ConcatStrings (msg, "; pos[1] = ");
 
@@ -78,7 +80,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 //---
 
 	msg = "at[0] = ";
-	
+
 	msg = ConcatStrings (msg, toStringF (vec[0]));
 	msg = ConcatStrings (msg, "; at[1] = ");
 
@@ -95,7 +97,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 //---
 
 	msg = "up[0] = ";
-	
+
 	msg = ConcatStrings (msg, toStringF (vec[0]));
 	msg = ConcatStrings (msg, "; up[1] = ");
 
@@ -112,7 +114,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	MEM_CopyBytes (zCVob_GetRightVectorWorld (vobPtr), _@ (vec), 12);
 
 	msg = "right[0] = ";
-	
+
 	msg = ConcatStrings (msg, toStringF (vec[0]));
 	msg = ConcatStrings (msg, "; right[1] = ");
 
@@ -403,16 +405,16 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 			msg = ConcatStrings (msg, s_variableName);
 
 			msg = ConcatStrings (msg, BtoC(34));
-			
+
 			msg = ConcatStrings (msg, ");");
 
 			MEM_Info (msg);
 		};
-		
+
 		//ownerStr & ownerGuildStr
 		if ((STR_Len (mob.ownerStr)) || (STR_Len (mob.ownerGuildStr))) {
 			//oCMob_SetOwnerStr (vobPtr, mob.ownerStr, mob.ownerGuildStr);
-			
+
 			msg = "oCMob_SetOwnerStr (vobPtr, ";
 			msg = ConcatStrings (msg, BtoC(34));
 
