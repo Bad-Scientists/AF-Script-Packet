@@ -2,13 +2,35 @@
  *	Function will return specific instance of dialog option (includes C_Info.important dialogs, which are not listed in Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
-func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
-	//00664E50  .text     Debug data           ?GetInfo@oCInfoManager@@QAEPAVoCInfo@@PAVoCNPC@@0H@Z
+func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int index) {
+	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
 	const int oCInfoManager__GetInfo_G1 = 6704720;
 
 	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfo_G2 = 7351648;
-	
+
+	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
+	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (index));
+		CALL_PtrParam (_@ (slfPtr));
+		CALL_PtrParam (_@ (othPtr));
+		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfo_G1, oCInfoManager__GetInfo_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr();
+};
+
+func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
+	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
+	const int oCInfoManager__GetInfo_G1 = 6704720;
+
+	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
+	const int oCInfoManager__GetInfo_G2 = 7351648;
+
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
@@ -25,7 +47,7 @@ func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var in
 		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfo_G1, oCInfoManager__GetInfo_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr();
 };
 
@@ -33,18 +55,40 @@ func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var in
  *	Function will return specific instance of dialog option (does not include C_Info.important dialogs. Will return only dialog which is listed Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
-func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
-	//00665120  .text     Debug data           ?GetInfoUnimportant@oCInfoManager@@QAEPAVoCInfo@@PAVoCNPC@@0H@Z
+func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr, var int index) {
+	//0x00665120 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNpc *,class oCNpc *,int)
 	const int oCInfoManager__GetInfoUnimportant_G1 = 6705440;
 
 	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
-	
+
+	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
+	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (index));
+		CALL_PtrParam (_@ (slfPtr));
+		CALL_PtrParam (_@ (othPtr));
+		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoUnimportant_G1, oCInfoManager__GetInfoUnimportant_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr();
+};
+
+func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
+	//0x00665120 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNpc *,class oCNpc *,int)
+	const int oCInfoManager__GetInfoUnimportant_G1 = 6705440;
+
+	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
+	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
+
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
 	if (!Hlp_IsValidNPC (oth)) { return 0; };
-	
+
 	var int slfPtr; slfPtr = _@ (slf);
 	var int othPtr; othPtr = _@ (oth);
 
@@ -56,7 +100,7 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
 		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoUnimportant_G1, oCInfoManager__GetInfoUnimportant_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr();
 };
 
@@ -64,7 +108,7 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
  *	Function returns number of dialog instances which are available between slfinstance & othinstance
  */
 func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
-	//00664A30  .text     Debug data           ?GetInfoCount@oCInfoManager@@QAEHPAVoCNPC@@0@Z
+	//0x00664A30 public: int __thiscall oCInfoManager::GetInfoCount(class oCNpc *,class oCNpc *)
 	const int oCInfoManager__GetInfoCount_G1 = 6703664;
 
 	//0x00702940 public: int __thiscall oCInfoManager::GetInfoCount(class oCNPC *,class oCNPC *)
@@ -74,7 +118,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
 	if (!Hlp_IsValidNPC (oth)) { return 0; };
-	
+
 	var int slfPtr; slfPtr = _@ (slf);
 	var int othPtr; othPtr = _@ (oth);
 
@@ -85,7 +129,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoCount_G1, oCInfoManager__GetInfoCount_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt();
 };
 
@@ -93,7 +137,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
  *	Toggles debug informations for dialogs
  */
 func void oCInformationManager_ToggleStatus () {
-	//0072B360  .text     Debug data           ?ToggleStatus@oCInformationManager@@QAIXXZ
+	//0x0072B360 public: void __fastcall oCInformationManager::ToggleStatus(void)
 	const int oCInformationManager__ToggleStatus_G1 = 7517024;
 
 	//0x0065FF20 public: void __fastcall oCInformationManager::ToggleStatus(void)
@@ -110,7 +154,7 @@ func void oCInformationManager_ToggleStatus () {
 
 //??
 func void oCInformationManager_PrintStatus () {
-	//0072B3B0  .text     Debug data           ?PrintStatus@oCInformationManager@@IAIXXZ
+	//0x0072B3B0 protected: void __fastcall oCInformationManager::PrintStatus(void)
 	const int oCInformationManager__PrintStatus_G1 = 7517104;
 
 	//0x0065FF70 protected: void __fastcall oCInformationManager::PrintStatus(void)
@@ -129,7 +173,7 @@ func void oCInformationManager_PrintStatus () {
  *	Triggers process infos process ?
  */
 func void oCInformationManager_Update () {
-	//0072BE90  .text     Debug data           ?Update@oCInformationManager@@QAIXXZ
+	//0x0072BE90 public: void __fastcall oCInformationManager::Update(void)
 	const int oCInformationManager__Update_G1 = 7519888;
 
 	//0x00660BB0 public: void __fastcall oCInformationManager::Update(void)
@@ -148,7 +192,7 @@ func void oCInformationManager_Update () {
  *	Starts dialog camera
  */
 func void oCInformationManager_CameraStart () {
-	//0072C690  .text     Debug data           ?CameraStart@oCInformationManager@@IAIXXZ
+	//0x0072C690 protected: void __fastcall oCInformationManager::CameraStart(void)
 	const int oCInformationManager__CameraStart_G1 = 7521936;
 
 	//0x006613A0 protected: void __fastcall oCInformationManager::CameraStart(void)
@@ -170,7 +214,7 @@ func void oCInformationManager_CameraStart () {
  *	Stops dialog camera
  */
 func void oCInformationManager_CameraStop () {
-	//0072C810  .text     Debug data           ?CameraStop@oCInformationManager@@IAIXXZ
+	//0x0072C810 protected: void __fastcall oCInformationManager::CameraStop(void)
 	const int oCInformationManager__CameraStop_G1 = 7522320;
 
 	//0x00661520 protected: void __fastcall oCInformationManager::CameraStop(void)
@@ -187,7 +231,7 @@ func void oCInformationManager_CameraStop () {
 
 //?
 func void oCInformationManager_CameraRefresh () {
-	//0072C880  .text     Debug data           ?CameraRefresh@oCInformationManager@@IAIXXZ
+	//0x0072C880 protected: void __fastcall oCInformationManager::CameraRefresh(void)
 	const int oCInformationManager__CameraRefresh_G1 = 7522432;
 
 	//0x00661590 protected: void __fastcall oCInformationManager::CameraRefresh(void)
@@ -206,7 +250,7 @@ func void oCInformationManager_CameraRefresh () {
  *	Exits Information manager
  */
 func void oCInformationManager_Exit () {
-	//0072C530  .text     Debug data           ?Exit@oCInformationManager@@QAIXXZ
+	//0x0072C530 public: void __fastcall oCInformationManager::Exit(void)
 	const int oCInformationManager__Exit_G1 = 7521584;
 
 	//0x00661240 public: void __fastcall oCInformationManager::Exit(void)
@@ -248,7 +292,7 @@ func void oCInformationManager_Exit () {
 
 //?
 func void zCViewDialogChoice_HighlightSelected () {
-	//007594A0  .text     Debug data           ?HighlightSelected@zCViewDialogChoice@@IAIXXZ
+	//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
 	const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
 
 	//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
@@ -265,12 +309,12 @@ func void zCViewDialogChoice_HighlightSelected () {
 
 //?
 func void zCViewDialogChoice_BlitText () {
-	//00758E70  .text     Debug data           ?BlitText@zCViewDialogChoice@@MAIXXZ
+	//0x00758E70 protected: virtual void __fastcall zCViewDialogChoice::BlitText(void)
 	const int zCViewDialogChoice__BlitText_G1 = 7704176;
 
 	//0x0068EFE0 protected: virtual void __fastcall zCViewDialogChoice::BlitText(void)
 	const int zCViewDialogChoice__BlitText_G2 = 6877152;
-	
+
 	const int null = 0;
 
 	const int call = 0;
@@ -284,12 +328,12 @@ func void zCViewDialogChoice_BlitText () {
  *	Selects dialog choice - index starts at 0
  */
 func void zCViewDialogChoice_Select (var int index) {
-	//007592C0  .text     Debug data           ?Select@zCViewDialogChoice@@IAIXH@Z
+	//0x007592C0 protected: void __fastcall zCViewDialogChoice::Select(int)
 	const int zCViewDialogChoice__Select_G1 = 7705280;
 
 	//0x0068F440 protected: void __fastcall zCViewDialogChoice::Select(int)
 	const int zCViewDialogChoice__Select_G2 = 6878272;
-	
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (index), MEMINT_SwitchG1G2 (zCViewDialogChoice__Select_G1, zCViewDialogChoice__Select_G2));
@@ -301,7 +345,7 @@ func void zCViewDialogChoice_Select (var int index) {
  *	Selects previous dialog choice
  */
 func void zCViewDialogChoice_SelectPrevious () {
-	//007590A0  .text     Debug data           ?SelectPrevious@zCViewDialogChoice@@IAIXXZ
+	//0x007590A0 protected: void __fastcall zCViewDialogChoice::SelectPrevious(void)
 	const int zCViewDialogChoice__SelectPrevious_G1		= 7704736;
 	//0x0068F220 protected: void __fastcall zCViewDialogChoice::SelectPrevious(void)
 	const int zCViewDialogChoice__SelectPrevious_G2		= 6877728;
@@ -319,13 +363,13 @@ func void zCViewDialogChoice_SelectPrevious () {
  *	Selects next dialog choice
  */
 func void zCViewDialogChoice_SelectNext () {
-	//007591B0  .text     Debug data           ?SelectNext@zCViewDialogChoice@@IAIXXZ
+	//0x007591B0 protected: void __fastcall zCViewDialogChoice::SelectNext(void)
 	const int zCViewDialogChoice__SelectNext_G1 = 7705008;
 	//0x0068F330 protected: void __fastcall zCViewDialogChoice::SelectNext(void)
 	const int zCViewDialogChoice__SelectNext_G2 = 6878000;
 
 	const int null = 0;
-	
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (null), MEMINT_SwitchG1G2 (zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
@@ -335,7 +379,7 @@ func void zCViewDialogChoice_SelectNext () {
 
 //???
 func void zCViewDialogChoice_RemoveChoice (var int index) {
-	//00759800  .text     Debug data           ?RemoveChoice@zCViewDialogChoice@@QAIXH@Z
+	//0x00759800 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G1 = 7706624;
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
