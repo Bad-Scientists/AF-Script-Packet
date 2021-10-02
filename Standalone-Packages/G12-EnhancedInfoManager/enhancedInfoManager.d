@@ -899,6 +899,56 @@ func string Choice_GetCleanText (var string s) {
 	return s;
 };
 
+func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string spinnerID) {
+	if (InfoManager_HasFinished ()) { return; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	var zCArray arr; arr = _^ (choiceView + 172);
+
+	if (arr.array) {
+		//Choices - have to be extracted from oCInfo.listChoices_next
+		//MEM_InformationMan.Info is oCInfo pointer
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+			if (MEM_InformationMan.Info) {
+				var oCInfo dlgInstance;
+				dlgInstance = _^ (MEM_InformationMan.Info);
+
+				if (dlgInstance.listChoices_next) {
+
+					var int list; list = dlgInstance.listChoices_next;
+					var zCList l;
+
+					var int i; i = 0;
+					while (list);
+						l = _^ (list);
+
+						if (l.data) {
+							var oCInfoChoice dlgChoice;
+							dlgChoice = _^ (l.data);
+
+							If (Hlp_StrCmp (Choice_GetModifierSpinnerID (dlgChoice.text), spinnerID)) {
+								dlgChoice.Text = text;
+								return;
+							};
+						};
+
+						list = l.next;
+						i += 1;
+					end;
+				};
+			};
+		};
+	};
+};
+
 func string InfoManager_GetChoiceDescription (var int index) {
 //	if (!MEM_InformationMan.IsWaitingForSelection) { return ""; };
 
@@ -1719,6 +1769,8 @@ MEM_InformationMan.LastMethod:
 		InfoManager_SkipDisabledDialogChoices (-1);
 	};
 
+	var int retVal;
+
 	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
 	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
 
@@ -1790,7 +1842,6 @@ MEM_InformationMan.LastMethod:
 					dlgInstance = _^ (infoPtr);
 
 					//--> re-evaluate dialog conditions
-					var int retVal;
 					MEM_CallByID (dlgInstance.conditions);
 					retVal = MEMINT_PopInt();
 					//<--
@@ -1803,10 +1854,16 @@ MEM_InformationMan.LastMethod:
 			//Choices - have to be extracted from oCInfo.listChoices_next
 			//MEM_InformationMan.Info is oCInfo pointer
 			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+
 				infoPtr = MEM_InformationMan.Info;
 
 				if (infoPtr) {
 					dlgInstance = _^ (infoPtr);
+
+					//--> re-evaluate dialog conditions
+					MEM_CallByID (dlgInstance.conditions);
+					retVal = MEMINT_PopInt();
+					//<--
 
 					infoPtr = 0;
 
