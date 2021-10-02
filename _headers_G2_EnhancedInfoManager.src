@@ -3,6 +3,7 @@ ScriptBin\strings.d
 ScriptBin\convert.d
 
 EngineClasses_G2\zCViewDialog.d
+EngineClasses_G2\oViewDialogTrade.d
 
 engine_addresses_G2.d
 
