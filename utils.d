@@ -12,3 +12,13 @@ func int abs (var int i) {
 	if (i < 0) { i = 0 - i; };
 	return i;
 };
+
+func string addString (var string s, var string s1, var string separator) {
+	if (STR_Len (s) > 0) {
+		s = ConcatStrings (s, separator);
+	};
+
+	s = ConcatStrings (s, s1);
+
+	return s;
+};
