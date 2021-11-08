@@ -68,7 +68,7 @@ const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want 
 const int InfoManagerNumKeysControls = 1;				//Set to TRUE if you want to enable num key support for dialogs
 const int InfoManagerNumKeysNumbers = 0;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
-const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;			//ALPHA_FUNC_NONE
+const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;			//ALPHA_FUNC_NONE, ALPHA_FUNC_ADD (is kinda nicer :) )
 
 const int cIM_RememberSelectedChoice_None	= 0;			//Does nothing (default vanilla behaviour)
 const int cIM_RememberSelectedChoice_All	= 1;			//Moves cursor to last selected choice
@@ -949,7 +949,7 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 	};
 };
 
-func string InfoManager_GetChoiceDescription (var int index) {
+func string InfoManager_GetChoiceDescription_EIM (var int index) {
 //	if (!MEM_InformationMan.IsWaitingForSelection) { return ""; };
 
 	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
@@ -1062,7 +1062,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 		};
 	};
 
-	s = InfoManager_GetChoiceDescription (nextChoiceIndex);
+	s = InfoManager_GetChoiceDescription_EIM (nextChoiceIndex);
 
 	InfoManagerChoiceDisabled = FALSE;
 
@@ -2759,6 +2759,10 @@ MEM_InformationMan.LastMethod:
 					txt.color = color;
 					txt.alpha = GetAlpha (color);
 				};
+
+				//Apply alpha function
+				txt.enabledBlend = TRUE;
+				txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
 
 				i += 1;
 			end;
