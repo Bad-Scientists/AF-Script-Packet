@@ -1,0 +1,15 @@
+EngineClasses_G2\oNpc.d
+
+_headers_G2_EnhancedInfoManager.src
+
+utils.d
+
+infoManager_engine.d
+infoManager.d
+
+anims_engine.d
+functions_oCNpc_engine.d
+functions_NPC.d
+
+Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\showAI.d

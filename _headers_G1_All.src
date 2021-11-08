@@ -19,6 +19,7 @@ ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
 ObjectFactory\zCTexture.d
 
+utils.d
 files.d
 
 keys.d
@@ -140,3 +141,6 @@ Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
 Standalone-Packages\G12-InvItemPreview\invItemPreview.d
 Standalone-Packages\G12-BetterBars\betterBars.d
+
+Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\showAI.d

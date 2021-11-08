@@ -5,6 +5,7 @@ engine_addresses_G2.d
 EngineClasses_G2\oInventory.d
 EngineClasses_G2\zEventMan.d
 EngineClasses_G2\zCViewDialog.d
+EngineClasses_G2\oViewDialogTrade.d
 EngineClasses_G2\oNpcStates.d
 EngineClasses_G2\oNpc.d
 EngineClasses_G2\zCVisual.d
@@ -13,6 +14,7 @@ EngineClasses_G2\oSDamageDescriptor.d
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
 
+utils.d
 files.d
 
 keys.d
@@ -107,3 +109,6 @@ Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
 Standalone-Packages\G12-InvItemPreview\invItemPreview.d
 Standalone-Packages\G12-BetterBars\betterBars.d
+
+Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\showAI.d
