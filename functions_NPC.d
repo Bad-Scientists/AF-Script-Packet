@@ -1,4 +1,9 @@
 /*
+ *	Dependencies:
+ *	EngineClasses_G1\oNpc.d, anims_engine.d, functions_oCNpc_engine.d
+ */
+
+/*
  *	NPC_GetWalkMode
  *	Author: Dalai Zoll
  *	Original post: https://forum.worldofplayers.de/forum/threads/1090721-Testschleichen?p=17909902&viewfull=1#post17909902
@@ -11,7 +16,7 @@
 const int NPC_INWATER = 3;
 
 func int NPC_GetWalkMode (var int slfInstance) {
-	//00622730  .text     Debug data           ?GetWalkModeString@oCAniCtrl_Human@@QAE?AVzSTRING@@XZ
+	//0x00622730 public: class zSTRING __thiscall oCAniCtrl_Human::GetWalkModeString(void)
 	const int oCAniCtrl_Human__GetWalkModeString_G1 = 6432560;
 
 	//0x006AAE40 public: class zSTRING __thiscall oCAniCtrl_Human::GetWalkModeString(void)
@@ -40,6 +45,24 @@ func int NPC_GetWalkMode (var int slfInstance) {
 /*
  *
  */
+
+func int NPC_IsStanding (var int slfInstance) {
+	//0x006255E0 public: int __thiscall oCAniCtrl_Human::IsStanding(void)
+	const int oCAniCtrl_Human__IsStanding_G1 = 6444512;
+
+	//0x006ADEE0 public: int __thiscall oCAniCtrl_Human::IsStanding(void)
+	const int oCAniCtrl_Human__IsStanding_G2 = 7003872;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	if (!slf.AniCtrl) { return FALSE; };
+
+	CALL__thiscall(slf.AniCtrl, MEMINT_SwitchG1G2 (oCAniCtrl_Human__IsStanding_G1, oCAniCtrl_Human__IsStanding_G2));
+
+	return CALL_RetValAsInt ();
+};
 
 func int NPC_IsWalking (var int slfInstance) {
 	//0x006257E0 public: int __thiscall oCAniCtrl_Human::IsWalking(void)
