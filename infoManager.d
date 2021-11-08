@@ -235,7 +235,6 @@ func int InfoManager_GetSelectedInfoChoice () {
 
 				if (dlgInstance.listChoices_next) {
 
-					var oCInfoChoice dlgChoice;
 					var int list; list = dlgInstance.listChoices_next;
 					var zCList l;
 
@@ -258,4 +257,132 @@ func int InfoManager_GetSelectedInfoChoice () {
 	};
 
 	return 0;
+};
+
+func void InfoManager_SetInfoChoiceText (var int index, var string text) {
+	if (InfoManager_HasFinished ()) { return; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	var zCArray arr; arr = _^ (choiceView + 172);
+
+	if (arr.array) {
+		//Choices - have to be extracted from oCInfo.listChoices_next
+		//MEM_InformationMan.Info is oCInfo pointer
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+			if (MEM_InformationMan.Info) {
+				var oCInfo dlgInstance;
+				dlgInstance = _^ (MEM_InformationMan.Info);
+
+				if (dlgInstance.listChoices_next) {
+
+					var int list; list = dlgInstance.listChoices_next;
+					var zCList l;
+
+					var int i; i = 0;
+					while (list);
+						l = _^ (list);
+
+						if (l.data) {
+							if (i == index) {
+								var oCInfoChoice dlgChoice;
+								dlgChoice = _^ (l.data);
+								dlgChoice.Text = text;
+								return;
+							};
+						};
+
+						list = l.next;
+						i += 1;
+					end;
+				};
+			};
+		};
+	};
+};
+
+func int InfoManager_GetSelectedChoiceIndex () {
+	if (InfoManager_HasFinished ()) { return -1; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return -1; };
+
+	var zCViewDialogChoice dlg; dlg = _^ (choiceView);
+
+	return dlg.ChoiceSelected;
+};
+
+func string InfoManager_GetChoiceDescription (var int index) {
+	if (InfoManager_HasFinished ()) { return ""; };
+
+	if (index < 0) { return ""; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return ""; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	var zCArray arr; arr = _^ (choiceView + 172);
+
+	if ((arr.array) && (index < arr.numInArray)) {
+		var int infoPtr;
+		var oCInfo dlgInstance;
+
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO)
+		{
+			infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, index);
+
+			if (infoPtr) {
+				dlgInstance = _^ (infoPtr);
+				return dlgInstance.description;
+			};
+		} else
+		//Choices - have to be extracted from oCInfo.listChoices_next
+		//MEM_InformationMan.Info is oCInfo pointer
+		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+			infoPtr = MEM_InformationMan.Info;
+
+			if (infoPtr) {
+				dlgInstance = _^ (infoPtr);
+
+				if (dlgInstance.listChoices_next) {
+					//loop counter for all Choices
+					var int i; i = 0;
+
+					var oCInfoChoice dlgChoice;
+
+					var int list; list = dlgInstance.listChoices_next;
+					var zCList l;
+
+					while (list);
+						l = _^ (list);
+						if (l.data) {
+							//if our dialog option is dialog choice - put text to dlgDescription
+							if (i == index) {
+								dlgChoice = _^ (l.data);
+								return dlgChoice.Text;
+							};
+						};
+
+						list = l.next;
+						i += 1;
+					end;
+				};
+			};
+		};
+	};
+
+	return "";
 };
