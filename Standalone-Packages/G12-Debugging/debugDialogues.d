@@ -251,6 +251,9 @@ func string CC_DebugDialogues (var string param) {
 	var oCNpc npc; npc = _^ (her.focus_vob);
 	var int npcInstance; npcInstance = Hlp_GetInstanceID (npc);
 
+	//Hide console
+	zCConsole_Hide ();
+
 	//Enable DIA_Debug_Dialogues
 	debugDialoguesEnabled = TRUE;
 
