@@ -243,10 +243,12 @@ const int zCEventMusicControler_vtbl	= 8630068;
 //0x0082E7BC const zCEventCore::`vftable'
 const int zCEventCore_vtbl		= 8579004;
 
+//0x0082ED14 const zCEvMsgCutscene::`vftable'
+const int zCEvMsgCutscene_vtbl		= 8580372;
+
 //0x0083096C const zCCSCamera_EventMsg::`vftable'
 //0x0082E6FC const zCCSCamera_EventMsgActivate::`vftable'
-//0x0082E7BC const zCEventCore::`vftable'
-//0x0082ED14 const zCEvMsgCutscene::`vftable'
+
 
 //0x0083A2DC const zCEventCommon::`vftable'
 //0x0083A33C const zCEventMover::`vftable'
