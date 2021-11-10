@@ -56,6 +56,7 @@ inventory_oCMob.d
 inventory_oCNpc_engine.d
 inventory_oCNpc.d
 
+console.d
 interface.d
 
 game_Events_G12.d
