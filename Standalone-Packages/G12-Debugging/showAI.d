@@ -3,32 +3,32 @@
  *	- will display AI details for NPC in focus
  */
 
+var int showAI_LastFocus;
+
 func string CC_ShowAI (var string param) {
 	var string msg;
 
 	var oCNPC npc;
 	var oCNPC her; her = Hlp_GetNPC (hero);
 
-	const int lastFocus = 0;
-
-	if (Hlp_Is_oCNpc (lastFocus)) {
-		npc = _^ (lastFocus);
+	if (Hlp_Is_oCNpc (showAI_LastFocus)) {
+		npc = _^ (showAI_LastFocus);
 
 		if (NPC_GetShowAI (npc)) {
 			NPC_SetShowAI (npc, 0);
 			msg = "Hiding AI info.";
-			lastFocus = 0;
+			showAI_LastFocus = 0;
 			return msg;
 		};
 	};
 
-	lastFocus = 0;
+	showAI_LastFocus = 0;
 
 	if (her.focus_vob) {
-		lastFocus = her.focus_vob;
+		showAI_LastFocus = her.focus_vob;
 
-		if (Hlp_Is_oCNpc (lastFocus)) {
-			npc = _^ (lastFocus);
+		if (Hlp_Is_oCNpc (showAI_LastFocus)) {
+			npc = _^ (showAI_LastFocus);
 
 			if (NPC_GetShowAI (npc)) {
 				NPC_SetShowAI (npc, 0);
@@ -49,4 +49,6 @@ func string CC_ShowAI (var string param) {
 
 func void CC_ShowAI_Init () {
 	CC_Register (CC_ShowAI, "show AI", "Show AI for NPC in focus.");
+	//Reset last focus
+	showAI_LastFocus = 0;
 };
