@@ -13,7 +13,7 @@ func void Game_InitConsole () {
 
 /*
  *	Evaluate console command
- *	 - console has to be initialized first Game_InitConsole
+ *	 - console has to be initialized first with Game_InitConsole
  *	Usage: zCConsole_Evaluate ("toggle desktop")
  */
 func void zCConsole_Evaluate (var string command) {
@@ -28,6 +28,32 @@ func void zCConsole_Evaluate (var string command) {
 
 	CALL_zStringPtrParam (command);
 	CALL__thiscall (zcon_address, MEMINT_SwitchG1G2 (zCConsole__Evaluate_G1, zCConsole__Evaluate_G2));
+};
+
+/*
+ *	Shows console
+ */
+func void zCConsole_Show () {
+	//0x006DA2D0 public: void __thiscall zCConsole::Show(void)
+	const int zCConsole__Show_G1 = 7185104;
+
+	//0x00783460 public: void __thiscall zCConsole::Show(void)
+	const int zCConsole__Show_G2 = 7877728;
+
+	CALL__thiscall (zcon_address, MEMINT_SwitchG1G2 (zCConsole__Show_G1, zCConsole__Show_G2));
+};
+
+/*
+ *	Hides console
+ */
+func void zCConsole_Hide () {
+	//0x006DA530 public: void __thiscall zCConsole::Hide(void)
+	const int zCConsole__Hide_G1 = 7185712;
+
+	//0x007836B0 public: void __thiscall zCConsole::Hide(void)
+	const int zCConsole__Hide_G2 = 7878320;
+
+	CALL__thiscall (zcon_address, MEMINT_SwitchG1G2 (zCConsole__Hide_G1, zCConsole__Hide_G2));
 };
 
 /*
