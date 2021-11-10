@@ -1,0 +1,14 @@
+EngineClasses_G1\zEventMan.d
+
+engine_addresses_G1.d
+
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+eventManager_engine.d
+eventManager.d
+
+strings.d
+
+Standalone-Packages\G12-LogDialogues\logDialogues_API.d
+Standalone-Packages\G12-LogDialogues\logDialogues.d
