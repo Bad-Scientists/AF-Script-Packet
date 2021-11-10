@@ -23,7 +23,7 @@ func void _hook_oCNPC_OpenScreen_Map () {
 
 		//Is there any specific map that player should open ?
 		var int mapInstanceName; mapInstanceName = GetPlayerMapInstance ();
-	
+
 		//Get item
 		if (NPC_GetInvItem (slf, mapInstanceName)) {
 			//t_MAP_Stand_2_S0
@@ -31,7 +31,7 @@ func void _hook_oCNPC_OpenScreen_Map () {
 			AI_UseItemToState (slf, item, 0);
 			return;
 		};
-	
+
 		//Reopen last map
 		//Get item
 		if (NPC_GetInvItem (slf, oCDocumentManager_LastMapInstance)) {
@@ -64,7 +64,7 @@ func void _hook_oCNPC_OpenScreen_Map () {
 		var int count;
 
 		count = NPC_GetInvItemBySlot (slf, INV_DOC, itmSlot);
-		
+
 		while (count);
 			if (Hlp_StrCmp (item.scemeName, "MAP")) {
 				//t_MAP_Stand_2_S0
@@ -91,5 +91,7 @@ func void G1_PlayerMap_Init () {
 
 		//Replace original function for opening map
 		ReplaceEngineFunc (oCNPC__OpenScreen_Map, 0, "_hook_oCNPC_OpenScreen_Map");
+
+		once = 1;
 	};
 };
