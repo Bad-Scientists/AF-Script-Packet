@@ -12,6 +12,7 @@ func void G12_GetActionButton_Init () {
 	if (!once) {
 		//G1 hook len 13, G2A hook len = 9
 		HookEngine (oCAIHuman__PC_ActionMove, MEMINT_SwitchG1G2 (13, 9), "_hook_oCAIHuman_PC_ActionMove");
+		once = 1;
 	};
 };
 
@@ -26,7 +27,7 @@ var int PC_IgnoreAnimations;
 var int _PlayerUseItemToStateStart_Event;
 var int _PlayerUseItemToStateUse_Event;
 
-//0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *) 
+//0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
 //0x0074B020 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
 func void _hook_oCNpc_OnMessage () {
 //	if (!PC_IgnoreAnimations) { return; };
@@ -66,11 +67,11 @@ func void _hook_oCNpc_OnMessage () {
 		if (eMsg_MD_GetSubType (eMsg) == 15) {
 			var int model; model = oCNPC_GetModel (npc);
 			var int aniID; aniID = zCModel_GetAniIdFromAniName (model, "T_FISTJUMPB");
-			
+
 			PrintS (ConcatStrings ("aniID ", IntToString (aniID)));
 
 			var oCMsgMovement msgMovement; msgMovement = _^ (eMsg);
-			
+
 			MEM_Info (ConcatStrings ("objectName ", msgMovement.objectName));
 			MEM_Info (ConcatStrings ("targetVobName ", msgMovement.targetVobName));
 			MEM_Info (ConcatStrings ("targetName ", msgMovement.targetName));
@@ -81,7 +82,7 @@ func void _hook_oCNpc_OnMessage () {
 			MEM_Info (ConcatStrings ("timer ", toStringF (msgMovement.timer)));
 			MEM_Info (ConcatStrings ("targetMode ", IntToString (msgMovement.targetMode)));
 			MEM_Info (ConcatStrings ("ani ", IntToString (msgMovement.ani)));
-			
+
 			msgMovement.ani = aniID;
 		};
 	};
@@ -207,5 +208,6 @@ func void G12_InterceptNpcEventMessages_Init () {
 	const int once = 0;
 	if (!once) {
 		HookEngine (oCNpc__OnMessage, 7, "_hook_oCNpc_OnMessage");
+		once = 1;
 	};
 };
