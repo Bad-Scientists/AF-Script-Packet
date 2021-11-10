@@ -117,9 +117,10 @@ var int InfoManagerSpinnerIndicator;
 var int InfoManagerAnswerIndicator;
 
 var int InfoManagerDialogInstPtr[255];
+var int InfoManagerDialogInstPtrCount;
 
 func int oCInfoManager_GetInfoPtr__EIM (var int index) {
-	if ((index < 0) || (index >= 255)) {
+	if ((index < 0) || (index >= InfoManagerDialogInstPtrCount)) {
 		return 0;
 	};
 
@@ -1564,11 +1565,15 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	//zCInputCallback_SetHandleEventTop (ECX);
 };
 
-func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
-{
+func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 	if (MEM_InformationMan.IsDone) { return; };
 
 	if (!MEM_InformationMan.DlgChoice) { return; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
 
 	//Don't run during trading
 	if (MEM_InformationMan.Mode == cINFO_MGR_MODE_TRADE) { return; };
@@ -1596,11 +1601,6 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager ()
 	var int infoPtr;
 	var int choicePtr;
 	var oCInfo dlgInstance;
-
-	const int cINFO_MGR_MODE_IMPORTANT	= 0;
-	const int cINFO_MGR_MODE_INFO		= 1;
-	const int cINFO_MGR_MODE_CHOICE		= 2;
-	const int cINFO_MGR_MODE_TRADE		= 3;
 
 /*
 MEM_InformationMan.LastMethod:
@@ -1685,14 +1685,22 @@ MEM_InformationMan.LastMethod:
 
 	//MEM_Info (MEM_InformationMan.LastMethod);
 
+	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "OnExit")) {
+		InfoManagerDialogInstPtrCount = 0;
+	};
+
 	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos")) {
 		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
 			i = 0;
 			loop = dlg.Choices;
 
+			InfoManagerDialogInstPtrCount = 0;
+
 			while (i < loop);
 				infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, i);
 				MEM_WriteIntArray (_@ (InfoManagerDialogInstPtr), i, infoPtr);
+
+				InfoManagerDialogInstPtrCount += 1;
 				i += 1;
 			end;
 		};
@@ -3087,7 +3095,6 @@ func void _hook_oCInformationManager_CollectChoices () {
 
 //Remove hidden@ dialogues
 func void _hook_oCInformationManager_CollectInfos () {
-
 	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
 	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
 
