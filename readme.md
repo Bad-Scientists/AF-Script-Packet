@@ -20,15 +20,19 @@ Emulates G2A inventory behaviour for weapons in G1 --> Stackable weapons (with f
     * `AF-Script-Packet\_headers_G1_WeaponStacking.src`
 1. Call `G1_WeaponStacking_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
+    [![Gothic 1 Weapon stacking / splitting](https://img.youtube.com/vi/V3EHcfDa3GY/0.jpg)](https://www.youtube.com/watch?v=V3EHcfDa3GY)
+
 ### Gothic 1 Ever looming barrier
 Hooks Barrier render function and prevents Barrier from disappearing completely.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_BarrierEverlooming.src`
 1. Call `G1_BarrierEverlooming_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
-### Gothic 1 Enhanced Trading 
+    [![Gothic 1 Ever looming barrier](https://img.youtube.com/vi/ZEyFpN-f0Y8/0.jpg)](https://www.youtube.com/watch?v=ZEyFpN-f0Y8)
+
+### Gothic 1 Enhanced Trading
 Improves G1 trading:
- - ore is exchanged automatically 
+ - ore is exchanged automatically
  - you can easily control selling/buying multiplier and define NPC/item-specific rules separately for every NPC. (for example Wolf can buy furs from you for 100% item value)
  - you can easily prevent selling items to NPC. (for example Huno will not buy from you anything but weapons)
 
@@ -97,7 +101,7 @@ Package adds several features for dialogues (Information manager):
 
 ### Gothic 1 & 2 Enhanced oCTriggerScript
 Package adds new features for oCTriggerScript objects:
- - zCTrigger_bitfield_callEventFuncs flag - which will cause call additional event functions: oCTriggerScript.scriptFunc + _OnTouch, _OnTrigger, _OnContact, _OnUnTouch 
+ - zCTrigger_bitfield_callEventFuncs flag - which will cause call additional event functions: oCTriggerScript.scriptFunc + _OnTouch, _OnTrigger, _OnContact, _OnUnTouch
  - zCTrigger_bitfield_reactToOnContact flag - custom event replacing _OnTouch & _OnTrigger event. It is repeatedly fired as long as there is any object in oCTriggerScript._zCVob_touchVobList_numInArray.
 
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
@@ -236,7 +240,36 @@ By default this feature adds 3 visualisation options for new bars:
 
 In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover.
 
+    [![Gothic 1 & 2 Better Bars](https://img.youtube.com/vi/4hbQxHU-Utw/0.jpg)](https://www.youtube.com/watch?v=4hbQxHU-Utw)
+
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
     * `AF-Script-Packet\_headers_G1_BetterBars.src` for G1
     * `AF-Script-Packet\_headers_G2_BetterBars.src` for G2A
 1. Call `G12_BetterBars_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+### Gothic 1 & 2 Log Dialogues
+Simple feature that writes all dialogues as LOG_NOTE into player's log.
+
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_LogDialogue.src` for G1
+    * `AF-Script-Packet\_headers_G2_LogDialogue.src` for G2A
+1. Call `G12_LogDialogue_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+    [![Gothic 1 & 2 Log Dialogues](https://img.youtube.com/vi/RG1UBn53ZpY/0.jpg)](https://www.youtube.com/watch?v=RG1UBn53ZpY)
+
+### Gothic 1 & 2 Debugging
+Several debugging features:
+1. Console command `show AI`
+    * will display AI of NPC in focus.
+1. Console command `debug dialogues`
+    * will give you access to all dialogues which are assigned to NPC.
+    * also will allow you to change dialogues to told/untold.
+
+In order to enable these:
+1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
+    * `AF-Script-Packet\_headers_G1_Debugging.src` for G1
+    * `AF-Script-Packet\_headers_G2_Debugging.src` for G2A
+1. Call `CC_ShowAI_Init ();` from your `Init_Global();` function in `Startup.d` file.
+1. Call `CC_DebugDialogues_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+    [![Gothic 1 & 2 Debugging](https://img.youtube.com/vi/T0Dm3VQXX40/0.jpg)](https://www.youtube.com/watch?v=T0Dm3VQXX40)
