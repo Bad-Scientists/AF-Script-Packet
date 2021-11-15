@@ -11,7 +11,7 @@ func string mySTR_SubStr (var string str, var int start, var int count) {
     /* Hole Adressen von zwei Strings, Source und Destination (für Kopieroperation) */
     var zString zStrSrc;
     var zString zStrDst; var string dstStr; dstStr = "";
-    
+
     zStrSrc = _^(_@s(str));
     zStrDst = _^(_@s(dstStr));
 
@@ -19,7 +19,7 @@ func string mySTR_SubStr (var string str, var int start, var int count) {
         if (zStrSrc.len < start) {
             //MEM_Warn ("STR_SubStr: The desired start of the substring lies beyond the end of the string.");
             return "";
-            
+
         } else {
             /* The start is in valid bounds. The End is shitty. */
             /* Careful! MEM_Warn will use STR_SubStr (but will never use it in a way that would produce a warning) */
@@ -57,12 +57,12 @@ func int HEX2RGBA (var string hex) {
 	var int G; G = 255;
 	var int B; B = 255;
 	var int A; A = 255;
-	
+
 	if (STR_Len(hex) > 1) { R = hex2dec (mySTR_SubStr (hex, 0, 2)); };
 	if (STR_Len(hex) > 3) { G = hex2dec (mySTR_SubStr (hex, 2, 2)); };
 	if (STR_Len(hex) > 5) { B = hex2dec (mySTR_SubStr (hex, 4, 2)); };
 	if (STR_Len(hex) > 7) { A = hex2dec (mySTR_SubStr (hex, 6, 2)); };
-	
+
 	return RGBA (R, G, B, A);
 };
 
@@ -111,7 +111,6 @@ func string STR_TrimL(var string str, var string tok) {
     };
 };
 
-
 func string STR_TrimR(var string str, var string tok) {
     var int lenS; lenS = STR_Len(str);
     var int lenT; lenT = STR_Len(tok);
@@ -121,10 +120,9 @@ func string STR_TrimR(var string str, var string tok) {
     var int cont;
     var int t;
 
-    // Start from the beginning
+    // Start from the end
     var int endP; endP = lenS-1;
 
-    // Start from the end
     while(endP >= 0);
         ss = STR_Substr(str, endP, 1);
         cont = FALSE;
@@ -164,17 +162,17 @@ func string STR_TrimR(var string str, var string tok) {
 func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
     var zString zStr; zStr = _^(_@s(str));
     var zString zTok; zTok = _^(_@s(tok));
-    
+
     if(zTok.len == 0) {
         return 0;
     };
     if (zStr.len == 0) {
         return -1;
     };
-    
+
     var int startPos; startPos = zStr.ptr + startFrom;
     var int startMax; startMax = zStr.ptr + zStr.len - zTok.len;
-    
+
     var int loopPos; loopPos = MEM_StackPos.position;
     if (startPos <= startMax) {
         if (MEM_CompareBytes(startPos, zTok.ptr, zTok.len)) {
