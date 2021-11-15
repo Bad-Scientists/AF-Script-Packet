@@ -1,13 +1,88 @@
 /*
- *	Detection for Ctrl key
+ *	Detection for Action key press
  */
-var int PC_ActionButtonPressed;
+var int PC_ActionKeyPressed;
+var int PC_ActionKeyPressedLast;
+var int PC_ActionKeyHeld;
 
+var int _PlayerActionKeyHeld_Event;
+var int _PlayerActionKeyReleased_Event;
+
+func void FF_CheckActionKey () {
+	var int actionKey; actionKey = MEM_GetKey ("keyAction"); actionKey = MEM_KeyState (actionKey);
+	var int secondaryActionKey; secondaryActionKey = MEM_GetSecondaryKey ("keyAction"); secondaryActionKey = MEM_KeyState (secondaryActionKey);
+
+	PC_ActionKeyPressed = FALSE;
+
+	if (((actionKey == KEY_PRESSED) || (actionKey == KEY_HOLD)) || ((secondaryActionKey == KEY_PRESSED) || (secondaryActionKey == KEY_HOLD))) {
+		PC_ActionKeyPressed = TRUE;
+	};
+
+	if (PC_ActionKeyPressed != PC_ActionKeyPressedLast) {
+		if (!PC_ActionKeyPressed) {
+			if (_PlayerActionKeyReleased_Event) {
+				Event_Execute (_PlayerActionKeyReleased_Event, 0);
+			};
+		};
+	} else {
+		if (PC_ActionKeyPressed) {
+			PC_ActionKeyHeld = TRUE;
+			if (_PlayerActionKeyHeld_Event) {
+				Event_Execute (_PlayerActionKeyHeld_Event, 0);
+			};
+		};
+	};
+
+	PC_ActionKeyPressedLast = PC_ActionKeyPressed;
+
+	if (!PC_ActionKeyPressed) {
+		FF_Remove (FF_CheckActionKey);
+	};
+};
+
+/*
+ *
+ */
 func void _hook_oCAIHuman_PC_ActionMove () {
-	PC_ActionButtonPressed = MEM_ReadInt (ESP + 4);
+	PC_ActionKeyPressed = MEM_ReadInt (ESP + 4);
+
+	//If actionKey is pressed together with other keys ... then this function no longer register actionKey as pressed :-/
+	//So we will add frame function that will check if keyAction is pressed held there
+	if (PC_ActionKeyPressed) {
+		if (PC_ActionKeyPressed != PC_ActionKeyPressedLast) {
+			FF_ApplyOnceExtGT (FF_CheckActionKey, 0, -1);
+		};
+	};
+};
+
+func void PlayerActionKeyHeldEvent_AddListener (var func f) {
+	Event_AddOnce (_PlayerActionKeyHeld_Event, f);
+};
+
+func void PlayerActionKeyHeldEvent_RemoveListener (var func f) {
+	Event_Remove (_PlayerActionKeyHeld_Event, f);
+};
+
+func void PlayerActionKeyReleasedEvent_AddListener (var func f) {
+	Event_AddOnce (_PlayerActionKeyReleased_Event, f);
+};
+
+func void PlayerActionKeyReleasedEvent_RemoveListener (var func f) {
+	Event_Remove (_PlayerActionKeyReleased_Event, f);
 };
 
 func void G12_GetActionButton_Init () {
+	PC_ActionKeyPressed = 0;
+	PC_ActionKeyPressedLast = PC_ActionKeyPressed;
+
+	if (!_PlayerActionKeyHeld_Event) {
+		_PlayerActionKeyHeld_Event = Event_Create ();
+	};
+
+	if (!_PlayerActionKeyReleased_Event) {
+		_PlayerActionKeyReleased_Event = Event_Create ();
+	};
+
 	const int once = 0;
 	if (!once) {
 		//G1 hook len 13, G2A hook len = 9
