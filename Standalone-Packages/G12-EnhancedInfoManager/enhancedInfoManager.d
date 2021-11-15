@@ -181,8 +181,13 @@ func void InfoManagerSpinnerAnimate (var int animate) {
 func void InfoManagerSpinnerAniFunction () {
 	InfoManagerSpinnerAnimate (TRUE);
 
+	//If user exits dialogue with F8 with spinner saves/loads game then pointer to InfoManagerSpinnerIndicator is invalid
+	if (MEM_InformationMan.IsDone) {
+		InfoManagerSpinnerPossible = FALSE;
+	};
+
 	//Remove if not required
-	if (!InfoManagerSpinnerPossible) {
+	if ((!InfoManagerSpinnerPossible) || (!InfoManagerSpinnerIndicator)) {
 		FF_Remove (InfoManagerSpinnerAniFunction);
 	} else {
 		//Animate
@@ -3154,6 +3159,10 @@ func void _hook_oCInformationManager_CollectInfos () {
 };
 
 func void G12_EnhancedInfoManager_Init () {
+	//Reset pointers
+	InfoManagerSpinnerIndicator = 0;
+	InfoManagerAnswerIndicator = 0;
+
 	const int once = 0;
 	if (!once) {
 		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
