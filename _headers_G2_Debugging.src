@@ -12,5 +12,8 @@ anims_engine.d
 functions_oCNpc_engine.d
 functions_NPC.d
 
+vobFunctions.d
+
 Standalone-Packages\G12-Debugging\debugDialogues.d
 Standalone-Packages\G12-Debugging\showAI.d
+Standalone-Packages\G12-Debugging\setSleepingMode.d

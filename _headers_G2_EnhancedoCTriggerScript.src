@@ -10,6 +10,7 @@ ScriptBin\searchVobs.d
 game_engine.d
 world_engine.d
 
+functions_oCNpc_engine.d
 AI_Functions.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d
