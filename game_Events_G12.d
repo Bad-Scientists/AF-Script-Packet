@@ -271,7 +271,7 @@ func void _hook_oCNPC_OpenDeadNPC () {
 	};
 };
 
-//protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int) 
+//protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
 func void _hook_oCMobInter_StartStateChange () {
 	if (!Hlp_Is_oCMobInter (ECX)) { return; };
 	if (_MobStartStateChange_Event) {
@@ -335,7 +335,7 @@ func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
 	if (!MEM_Game.portalman) { return; };
 
 	var oCPortalRoomManager portalManager; portalManager = _^ (MEM_Game.portalman);
-	
+
 	if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
 		PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
 		if (_PlayerPortalRoomChange_Event) {
@@ -358,7 +358,7 @@ func void G12_OpenInventoryEvent_Init () {
 		once = 1;
 	};
 };
-	
+
 func void G12_CloseInventoryEvent_Init () {
 	if (!_CloseInventory_Event) {
 		_CloseInventory_Event = Event_Create ();
@@ -371,7 +371,7 @@ func void G12_CloseInventoryEvent_Init () {
 		//G2A HookLen 9
 		const int oCNPC__CloseInventory_G2 = 7742480;
 		HookEngine (MEMINT_SwitchG1G2 (oCNPC__CloseInventory, oCNPC__CloseInventory_G2), MEMINT_SwitchG1G2 (6, 9), "_hook_oCNpc_CloseInventory");
-		
+
 		//Weapon drawing closes inventory
 		HookEngine (oCNPC__EV_DrawWeapon, 6, "_hook_oCNPC_EV_DrawWeapon");
 		HookEngine (oCNPC__EV_DrawWeapon1, 5, "_hook_oCNPC_EV_DrawWeapon");
@@ -462,10 +462,10 @@ func void G12_DoThrowVobEvent_Init () {
 		//0x006A13C0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
 		const int oCNpc__DoThrowVob_G1 = 6951872;
 
-		//0x007450B0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float
+		//0x007450B0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
 		const int oCNpc__DoThrowVob_G2 = 7622832;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCNpc__DoThrowVob_G1, oCNpc__DoThrowVob_G1), 5, "_hook_oCNpc_DoThrowVob");
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__DoThrowVob_G1, oCNpc__DoThrowVob_G2), 5, "_hook_oCNpc_DoThrowVob");
 		once = 1;
 	};
 };
@@ -496,7 +496,7 @@ func void G12_GameState_Extended_Init () {
 
 		/*
 		--> oCGame::PreSaveGameProcessing is not called ?!
-		
+
 		//0x0063AC50 private: void __thiscall oCGame::PreSaveGameProcessing(int)
 		const int oCGame__PreSaveGameProcessing_G1 = 6532176;
 
@@ -505,10 +505,10 @@ func void G12_GameState_Extended_Init () {
 
 		//HookEngine (MEMINT_SwitchG1G2 (oCGame__PreSaveGameProcessing_G1, oCGame__PreSaveGameProcessing_G2), 6, "_hook_oCGame_PreSaveGameProcessing");
 
-		//0x0063ACF0 private: void __thiscall oCGame::PostSaveGameProcessing(void) 
+		//0x0063ACF0 private: void __thiscall oCGame::PostSaveGameProcessing(void)
 		const int oCGame__PostSaveGameProcessing_G1 = 6532336;
 
-		//0x006C51C0 private: void __thiscall oCGame::PostSaveGameProcessing(void) 
+		//0x006C51C0 private: void __thiscall oCGame::PostSaveGameProcessing(void)
 		const int oCGame__PostSaveGameProcessing_G2 = 7098816;
 
 		//HookEngine (MEMINT_SwitchG1G2 (oCGame__PostSaveGameProcessing_G1, oCGame__PostSaveGameProcessing_G2), 6, "_hook_oCGame_PostSaveGameProcessing");
@@ -517,7 +517,7 @@ func void G12_GameState_Extended_Init () {
 		//Called before change level
 		//This one is already hooked by LeGo (LeGo_Saves), but it seems like LeGo 2.7.1 does not mind (let's hope for the best!)
 		HookEngine (oCGame__ChangeLevel, 7, "_hook_oCGame_ChangeLevel");
-		
+
 		once = 1;
 	};
 };
@@ -531,10 +531,10 @@ func void G12_MobStartStateChangeEvent_Init () {
 	if (!once) {
 		//0x0067E6E0 protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
 		const int oCMobInter__StartStateChange_G1 = 6809312;
-		
+
 		//0x0071FEA0 public: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
 		const int oCMobInter__StartStateChange_G2 = 7470752;
-		
+
 		//[Mob Start state change events]
 		HookEngine (MEMINT_SwitchG1G2 (oCMobInter__StartStateChange_G1, oCMobInter__StartStateChange_G2), 7, "_hook_oCMobInter_StartStateChange");
 		once = 1;
@@ -595,7 +595,7 @@ func void G12_GameEvents_Init () {
 	G12_OpenDeadNPCEvent_Init ();
 
 	G12_GameState_Extended_Init ();
-	
+
 	G12_MobStartStateChangeEvent_Init ();
 
 	G12_PlayerPortalRoomChangeEvent_Init ();
