@@ -1,4 +1,8 @@
 /*
+ *	Dependencies: vectors.d
+ */
+
+/*
  *
  */
 func int oCMob_GetModel (var int mobPtr) {
@@ -378,7 +382,7 @@ func void zCVob_SetPhysicsEnabled (var int vobPtr, var int enabled) {
 /*
  *
  */
-func void zCVob_SetSleeping (var int vobPtr, var int sleeping) {
+func void zCVob_SetSleeping (var int vobPtr, var int sleepingMode) {
 	//0x005D7250 public: void __thiscall zCVob::SetSleeping(int)
 	const int zCVob__SetSleeping_G1 = 6124112;
 
@@ -389,18 +393,42 @@ func void zCVob_SetSleeping (var int vobPtr, var int sleeping) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_IntParam (_@ (sleeping));
+		CALL_IntParam (_@ (sleepingMode));
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetSleeping_G1, zCVob__SetSleeping_G2));
 		call = CALL_End();
 	};
+};
+
+/*
+ *
+ */
+func int zCVob_IsSleeping (var int vobPtr) {
+	if (!vobPtr) { return 0; };
+
+/*
+	enum zTVobSleepingMode {
+		zVOB_SLEEPING,			//0
+		zVOB_AWAKE,			//1
+		zVOB_AWAKE_DOAI_ONLY		//2
+	};
+*/
+
+	var zCVob vob; vob = _^ (vobPtr);
+	return ((vob.bitfield[2] & zCVob_bitfield2_sleepingMode) == 0);
+
+	//Put in sleeping mode
+	//vob.bitfield[2] = (vob.bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 0;
+
+	//Remove from sleeping mode
+	//vob.bitfield[2] = (vob.bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 1;
 };
 
 func int zCVob_HasParentVob (var int vobPtr) {
 	//0x005EF620 public: int __thiscall zCVob::HasParentVob(void)const
 	const int zCVob__HasParentVob_G1 = 6223392;
 
-	//
-	const int zCVob__HasParentVob_G2 = 0;
+	//0x0061CBA0 public: int __thiscall zCVob::HasParentVob(void)const
+	const int zCVob__HasParentVob_G2 = 6409120;
 
 	if (!vobPtr) { return FALSE; };
 
@@ -785,6 +813,63 @@ func void zMAT4_SetRightVector (var int trafoPtr, var int vecPtr)
 	};
 };
 
+/*
+ *
+ */
+func void zMAT4__PostRotateX (var int trafoPtr, var int degrees) {
+	//0x00507A40 public: void __thiscall zMAT4::PostRotateX(float)
+	const int zMAT4__PostRotateX_G1 = 5274176;
+
+	//0x00517730 public: void __thiscall zMAT4::PostRotateX(float)
+	const int zMAT4__PostRotateX_G2 = 5338928;
+
+	if (!trafoPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (degrees));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2(zMAT4__PostRotateX_G1, zMAT4__PostRotateX_G2));
+		call = CALL_End();
+	};
+};
+
+func void zMAT4__PostRotateY (var int trafoPtr, var int degrees) {
+	//0x00507A90 public: void __thiscall zMAT4::PostRotateY(float)
+	const int zMAT4__PostRotateY_G1 = 5274256;
+
+	//0x00517780 public: void __thiscall zMAT4::PostRotateY(float)
+	const int zMAT4__PostRotateY_G2 = 5339008;
+
+	if (!trafoPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (degrees));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2(zMAT4__PostRotateY_G1, zMAT4__PostRotateY_G2));
+		call = CALL_End();
+	};
+};
+
+func void zMAT4__PostRotateZ (var int trafoPtr, var int degrees) {
+	//0x00507AE0 public: void __thiscall zMAT4::PostRotateZ(float)
+	const int zMAT4__PostRotateZ_G1 = 5274336;
+
+	//0x005177D0 public: void __thiscall zMAT4::PostRotateZ(float)
+	const int zMAT4__PostRotateZ_G2 = 5339088;
+
+	if (!trafoPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (degrees));
+		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2(zMAT4__PostRotateZ_G1, zMAT4__PostRotateZ_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *
+ */
 func void zCVob_SetTrafo (var int vobPtr, var int trafoPtr) {
 	//0x005EE6B0 public: void __thiscall zCVob::SetTrafo(class zMAT4 const &)
 	const int zCVob__SetTrafo_G1 = 6219440;
@@ -842,3 +927,43 @@ func int VobPtr_IsInActiveVobList (var int vobPtr) {
 
 	return FALSE;
 };
+
+/*
+ *
+ */
+func int zCVob_GetRigidBody (var int vobPtr) {
+	//0x005D37A0 public: class zCRigidBody * __thiscall zCVob::GetRigidBody(void)
+	const int zCVob__GetRigidBody_G1 = 6109088;
+
+	//0x005FE960 public: class zCRigidBody * __thiscall zCVob::GetRigidBody(void)
+	const int zCVob__GetRigidBody_G2 = 6285664;
+
+	if (!vobPtr) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetRigidBody_G1, zCVob__GetRigidBody_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr ();
+};
+
+func void zCRigidBody_SetVelocity (var int rigidBodyPtr, var int vecPtr) {
+	//0x00595380 public: void __thiscall zCRigidBody::SetVelocity(class zVEC3 const &)
+	const int zCRigidBody__SetVelocity_G1 = 5854080;
+
+	//0x005B66D0 public: void __thiscall zCRigidBody::SetVelocity(class zVEC3 const &)
+	const int zCRigidBody__SetVelocity_G2 = 5990096;
+
+	if (!rigidBodyPtr) || (!vecPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vecPtr));
+		CALL__thiscall (_@ (rigidBodyPtr), MEMINT_SwitchG1G2 (zCRigidBody__SetVelocity_G1, zCRigidBody__SetVelocity_G2));
+		call = CALL_End();
+	};
+};
+
+
