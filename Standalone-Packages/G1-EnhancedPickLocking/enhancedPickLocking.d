@@ -158,7 +158,7 @@ func void _hook_oCMobLockable_CanOpen () {
 };
 
 func void G1_EnhancedPickLocking_Init () {
-	G12_GetActionButton_Init ();
+	G12_GetActionKey_Init ();
 
 	const int once = 0;
 	if (!once) {
