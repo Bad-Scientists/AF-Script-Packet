@@ -30,8 +30,8 @@ func void zCDecal_SetDecalDim (var int ptr, var int dimX, var int dimY) {
 	//0x00556970 public: void __thiscall zCDecal::SetDecalDim(float,float)
 	const int zCDecal__SetDecalDim_G2 = 5597552;
 
-	CALL_FloatParam (dimX);
 	CALL_FloatParam (dimY);
+	CALL_FloatParam (dimX);
 	CALL__thiscall (ptr, MEMINT_SwitchG1G2 (zCDecal__SetDecalDim_G1, zCDecal__SetDecalDim_G2));
 };
 
@@ -49,9 +49,9 @@ instance zCDecal@ (zCDecal);
 
 func int zCDecal_Create (var string textureName, var int dimX, var int dimY) {
 	var int ptr; ptr = create (zCDecal@);
-	
+
 	_zCDecalPtr_CreateIntoPtr (ptr);
-	
+
 	zCDecal_SetTexture (ptr, textureName);
 	zCDecal_SetDecalDim (ptr, dimX, dimY);
 
