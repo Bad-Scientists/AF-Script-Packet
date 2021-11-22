@@ -71,7 +71,7 @@ func void PlayerActionKeyReleasedEvent_RemoveListener (var func f) {
 	Event_Remove (_PlayerActionKeyReleased_Event, f);
 };
 
-func void G12_GetActionButton_Init () {
+func void G12_GetActionKey_Init () {
 	PC_ActionKeyPressed = 0;
 	PC_ActionKeyPressedLast = PC_ActionKeyPressed;
 
@@ -284,5 +284,41 @@ func void G12_InterceptNpcEventMessages_Init () {
 	if (!once) {
 		HookEngine (oCNpc__OnMessage, 7, "_hook_oCNpc_OnMessage");
 		once = 1;
+	};
+};
+
+var int _MouseUpdate_Event;
+
+func void MouseUpdateEvent_AddListener (var func f) {
+	Event_AddOnce (_MouseUpdate_Event, f);
+};
+
+func void MouseUpdateEvent_RemoveListener (var func f) {
+	Event_Remove (_MouseUpdate_Event, f);
+};
+
+func void _hook_mouseUpdate_Event () {
+	if (_MouseUpdate_Event) {
+		Event_Execute (_MouseUpdate_Event, 0);
+	};
+};
+
+func void G12_MouseUpdate_Init () {
+	if (!_MouseUpdate_Event) {
+		_MouseUpdate_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		/*
+			Code used here was originally created by mud-freak (@szapp)
+			Originally this was used in Gothic Free Aim
+			mud-freak's repository:
+			https://github.com/szapp/GothicFreeAim
+		*/
+		const int mouseUpdate_G1 =  5013602; //0x4C8062 // Hook len 5
+		const int mouseUpdate_G2 =  5062907; //0x4D40FB // Hook len 5
+
+		HookEngine (MEMINT_SwitchG1G2 (mouseUpdate_G1, mouseUpdate_G2), 5, "_hook_mouseUpdate_Event");
 	};
 };
