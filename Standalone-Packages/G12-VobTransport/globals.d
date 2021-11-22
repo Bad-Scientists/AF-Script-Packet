@@ -3,6 +3,7 @@ const int vobTransportCollectVobsRange			= 500;
 
 var int vobTransportVobPtr;
 var int vobTransportOriginalTrafo[16];
+var int vobTransportOriginalAlphaChanged;
 var int vobTransportOriginalAlphaEnabled;
 var int vobTransportOriginalAlpha;
 var int vobTransportOriginalCollisions;
@@ -16,7 +17,7 @@ var int vobTransportShowcaseVobBuyValue;
 var int vobTransportMode;
 	const int vobTransportMode_Idle			= 0;
 	const int vobTransportMode_Init			= 1;
-	
+
 	const int vobTransportMode_SelectVob		= 2;
 	const int vobTransportMode_SelectNext		= 3;
 	const int vobTransportMode_SelectPrev		= 4;

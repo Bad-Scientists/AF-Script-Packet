@@ -71,7 +71,7 @@ func int FocusVobCanBeSelected__VobTransport (var int vobPtr) {
 /*
  *	Following objects can be selected by this feature
  *	NPC can't be selected (unless in focus)
- */ 
+ */
 func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	//API function
 	if (!VobCanBeSelected__VobTransport_API (vobPtr)) {
@@ -105,7 +105,7 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 
 /*
  *	Following objects can be moved around
- */ 
+ */
 func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 	//API function
 	if (!VobCanBeMovedAround__VobTransport_API (vobPtr)) {
@@ -129,7 +129,7 @@ func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 //Not sure how to move these around properly
 //	|| (Hlp_Is_zCTrigger (vobPtr))
 //	|| (Hlp_Is_oCTriggerScript (vobPtr))
-//	|| (Hlp_Is_zCVobSpot (vobPtr))	
+//	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
 	{
@@ -175,12 +175,12 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 	if (!vobPtr) { return; };
 
 	var zCVob vob; vob = _^ (vobPtr);
-	
+
 	//Move vob to NPC X Y Z coordinates
 	vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
 	vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
 	vob.trafoObjToWorld [11] = slf._zCVob_trafoObjToWorld [11];
-	
+
 	//Adjust 'elevation'
 	vob.trafoObjToWorld [07] = addf (vob.trafoObjToWorld [07], mkf (vobTransportElevationLevel));
 
@@ -249,7 +249,7 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 
 			cancel = TRUE;
 		};
-		
+
 		//--- E - elevate
 
 		if (key == KEY_E) {
@@ -287,7 +287,7 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 				cancel = TRUE;
 			};
 		};
-		
+
 		//--- Elevation - up - down key
 
 		if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
@@ -331,6 +331,25 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 	return cancel;
 };
 
+func void Vob_CancelSelection (var int vobPtr) {
+	if (!vobPtr) { return; };
+
+	//Remove bbox
+	zCVob_SetDrawBBox3D (vobPtr, 0);
+
+	//Reset alpha
+	if (vobTransportOriginalAlphaChanged) {
+		var zCVob vob;
+		vob = _^ (vobPtr);
+		vob.visualAlpha = vobTransportOriginalAlpha;
+		if (!vobTransportOriginalAlphaEnabled) {
+			vob.bitfield[0] = (vob.bitfield[0] & ~ zCVob_bitfield0_visualAlphaEnabled);
+		};
+
+		vobTransportOriginalAlphaChanged = FALSE;
+	};
+};
+
 func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 	var int cancel; cancel = FALSE;
 	var int key; key = MEM_ReadInt (ESP + 4);
@@ -372,7 +391,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		} else
 
 		//--- Buy objects
-	
+
 		if (key == KEY_RBRACKET) {
 			//Can we activate Vob transport ?
 			if (VobTransportCanBeActivated__VobTransport_API ()) {
@@ -384,11 +403,11 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 					if (vobTransportShowcaseVobIndex < 0) { vobTransportShowcaseVobIndex = 0; };
 					if (vobTransportShowcaseVobIndex >= her.vobList_numInArray) { vobTransportShowcaseVobIndex = her.vobList_numInArray - 1; };
-					
+
 					if (!vobTransportShowcaseVobPtr) {
 
 						vobPtr = MEM_ReadIntArray (her.vobList_array, vobTransportShowcaseVobIndex);
-						
+
 						if (VobCanBeBought__VobTransport_API (vobPtr)) {
 							vob = _^ (vobPtr);
 							objectName = vob._zCObject_objectName;
@@ -396,7 +415,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 							vobTransportShowcaseVobPtr = InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
 
-							var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (vobTransportShowcaseVobPtr);						
+							var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (vobTransportShowcaseVobPtr);
 							Vob_RemoveCollBits (vobTransportShowcaseVobPtr, vobRemoveCollisions);
 
 							//Add frame function that will rotate showcased vob
@@ -462,8 +481,10 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			vob = _^ (vobTransportVobPtr);
 			MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
 
-			vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
-			vobTransportOriginalAlpha = vob.visualAlpha;
+			if (!vobTransportOriginalAlphaChanged) {
+				vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
+				vobTransportOriginalAlpha = vob.visualAlpha;
+			};
 
 			//Backup collision bitfields
 			vobTransportOriginalCollisions = Vob_GetCollBits (vobTransportVobPtr);
@@ -471,11 +492,15 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			//Remove active collisions
 			Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 
-			//Update alpha
-			vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
-			//Don't adjust alpha for zCDecal - they are already difficult to spot :)
-			if (!Hlp_Is_zCDecal (vobTransportVobPtr)) {
-				vob.visualAlpha = divf (mkf (50), mkf (100));
+			if (!vobTransportOriginalAlphaChanged) {
+				//Don't adjust alpha for zCDecal - they are already difficult to spot :)
+				if (!Hlp_Is_zCDecal (vobTransportVobPtr)) {
+					//Update alpha
+					vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
+					vob.visualAlpha = divf (mkf (50), mkf (100));
+				};
+
+				vobTransportOriginalAlphaChanged = TRUE;
 			};
 
 			cancel = TRUE;
@@ -522,16 +547,16 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 					};
 				};
 				//<--
-				
+
 				if (doDelete) {
 					zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-					
+
 					oCNpc_SetFocusVob (hero, 0);
 					oCNpc_ClearVobList (hero);
 
 					RemoveoCVobSafe (vobTransportVobPtr, 1);
 					vobTransportVobPtr = 0;
-					
+
 					vobTransportTransformationMode = vobTransportTransformation_None;
 					vobTransportMode = vobTransportMode_Init;
 				};
@@ -543,10 +568,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		//--- Cancel selection
 
 		if ((key == KEY_ESCAPE) || (key == KEY_RBRACKET)) {
-			if (vobTransportVobPtr) {
-				zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-			};
-				
+			Vob_CancelSelection (vobTransportVobPtr);
+
 			PC_RemoveFromSleepingMode ();
 			vobTransportMode = vobTransportMode_Idle;
 
@@ -570,13 +593,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			if (vobTransportVobPtr) {
 				AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
 
-				vob = _^ (vobTransportVobPtr);
-
-				//Reset Alpha
-				vob.visualAlpha = vobTransportOriginalAlpha;
-				if (!vobTransportOriginalAlphaEnabled) {
-					vob.bitfield[0] = vob.bitfield[0] & ~ zCVob_bitfield0_visualAlphaEnabled;
-				};
+				//Vob_CancelSelection (vobTransportVobPtr);
+				//zCVob_SetDrawBBox3D (vobTransportVobPtr, 1);
 
 				Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 			};
@@ -622,7 +640,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		};
 
 		//--- Toggle alignment to surface
-	
+
 		if (key == KEY_RBRACKET) {
 			if (vobTransportTransformationMode != vobTransportTransformation_Elevation) {
 				vobTransportAlignToFloor = !vobTransportAlignToFloor;
@@ -636,7 +654,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			//Any object can be deleted while moving (if we allowed selection)
 			//if (VobCanBeDeleted__VobTransport (vobTransportVobPtr)) {
 				zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-				
+
 				oCNpc_SetFocusVob (hero, 0);
 				oCNpc_ClearVobList (hero);
 
@@ -666,8 +684,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 				if (vobTransportActionMode == vobTransportActionMode_Clone) {
 
-					zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-					
+					Vob_CancelSelection (vobTransportVobPtr);
+
 					oCNpc_SetFocusVob (hero, 0);
 					oCNpc_ClearVobList (hero);
 
@@ -683,16 +701,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				if (vobTransportActionMode == vobTransportActionMode_Move) {
 					if (vobTransportVobPtr) {
 						AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
-
-						vob = _^ (vobTransportVobPtr);
-
-						//Reset Alpha
-						vob.visualAlpha = vobTransportOriginalAlpha;
-						if (!vobTransportOriginalAlphaEnabled) {
-							vob.bitfield[0] = vob.bitfield[0] & ~ zCVob_bitfield0_visualAlphaEnabled;
-						};
-
-						zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
+						Vob_CancelSelection (vobTransportVobPtr);
 					};
 
 					vobTransportMode = vobTransportMode_Done;
@@ -728,8 +737,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		if ((key == KEY_ESCAPE) || (key == KEY_RBRACKET)) {
 			if (vobTransportShowcaseVobPtr) {
-				zCVob_SetDrawBBox3D (vobTransportShowcaseVobPtr, 0);
-				
+				Vob_CancelSelection (vobTransportShowcaseVobPtr);
+
 				oCNpc_SetFocusVob (hero, 0);
 				oCNpc_ClearVobList (hero);
 
@@ -747,7 +756,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		//2058 - Wheel down
 
 		//--- Select previous object
-	
+
 		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
 			BuildBuyVobList__VobTransport (KEY_UPARROW);
 				her = Hlp_GetNPC (hero);
@@ -755,9 +764,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 					if (vobTransportShowcaseVobIndex < 0) { vobTransportShowcaseVobIndex = 0; };
 					if (vobTransportShowcaseVobIndex >= her.vobList_numInArray) { vobTransportShowcaseVobIndex = her.vobList_numInArray - 1; };
-					
+
 					vobPtr = MEM_ReadIntArray (her.vobList_array, vobTransportShowcaseVobIndex);
-					
+
 					if (VobCanBeBought__VobTransport_API (vobPtr)) {
 						vob = _^ (vobPtr);
 						objectName = vob._zCObject_objectName;
@@ -783,9 +792,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 					if (vobTransportShowcaseVobIndex < 0) { vobTransportShowcaseVobIndex = 0; };
 					if (vobTransportShowcaseVobIndex >= her.vobList_numInArray) { vobTransportShowcaseVobIndex = her.vobList_numInArray - 1; };
-					
+
 					vobPtr = MEM_ReadIntArray (her.vobList_array, vobTransportShowcaseVobIndex);
-					
+
 					if (VobCanBeBought__VobTransport_API (vobPtr)) {
 						vob = _^ (vobPtr);
 						objectName = vob._zCObject_objectName;
@@ -861,7 +870,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			};
 
 			zCVob_SetDrawBBox3D (vobTransportShowcaseVobPtr, 0);
-			
+
 			oCNpc_SetFocusVob (hero, 0);
 			oCNpc_ClearVobList (hero);
 
@@ -905,9 +914,9 @@ func void FrameFunction__VobTransport () {
 
 	var int vobPtr;
 	var int vobPtrBackup;
-	
+
 	var oCNPC her;
-	
+
 	var zCVob vob;
 
 	//Safety-check
@@ -922,20 +931,20 @@ func void FrameFunction__VobTransport () {
 
 	if (vobTransportMode == vobTransportMode_Init) {
 		her = Hlp_GetNPC (hero);
-		
+
 		//Reset
 		vobPtrBackup = vobTransportVobPtr;
 
 		vobTransportVobPtr = 0;
 		vobTransportElevationLevel = 0;
-		
+
 		//Is there anything in hero's focus ?
 		if (her.focus_vob) {
 			//Move around following objects
 			if (FocusVobCanBeSelected__VobTransport (her.focus_vob)) {
 				//Get pointer of focus_vob
 				vobTransportVobPtr = her.focus_vob;
-				
+
 				//Change vobTransportMode
 				vobTransportMode = vobTransportMode_SelectVob;
 			};
@@ -944,7 +953,7 @@ func void FrameFunction__VobTransport () {
 		//Detect all nearby objects
 		oCNpc_ClearVobList (hero);
 		oCNpc_CreateVobList (hero, mkf (vobTransportCollectVobsRange));
-		
+
 		//If there was nothing in focus - find an object
 		if ((!vobTransportVobPtr) && (her.vobList_array)) {
 
@@ -963,7 +972,7 @@ func void FrameFunction__VobTransport () {
 						break;
 					};
 				};
-				
+
 				i += 1;
 			end;
 
@@ -983,7 +992,7 @@ func void FrameFunction__VobTransport () {
 							break;
 						};
 					};
-					
+
 					i += 1;
 				end;
 			};
@@ -1000,12 +1009,12 @@ func void FrameFunction__VobTransport () {
 						vobTransportMode = vobTransportMode_SelectVob;
 						break;
 					};
-					
+
 					i += 1;
 				end;
 			};
 		};
-		
+
 		//If vobTransportMode was not changed ... then there was no object detected - disable vobTransportMode
 		if (vobTransportMode == vobTransportMode_Init) {
 			PrintS (vobTransportPrint_NoObjectsDetected);
@@ -1030,10 +1039,10 @@ func void FrameFunction__VobTransport () {
 		if (her.vobList_array) {
 			i = 0;
 			loop = her.vobList_numInArray;
-		
+
 			while (i < loop);
 				vobPtr = MEM_ReadIntArray (her.vobList_array, i);
-				
+
 				if (VobCanBeSelected__VobTransport (vobPtr)) {
 					if (flagSelectNext == FALSE) {
 						if (vobTransportVobPtr == vobPtr) {
@@ -1041,7 +1050,7 @@ func void FrameFunction__VobTransport () {
 						};
 					} else {
 						//Remove BBox from last vobPtr
-						zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
+						Vob_CancelSelection (vobTransportVobPtr);
 
 						//Get pointer of moved object
 						vobTransportVobPtr = vobPtr;
@@ -1080,7 +1089,7 @@ func void FrameFunction__VobTransport () {
 
 			while (i > 0);
 				vobPtr = MEM_ReadIntArray (her.vobList_array, i - 1);
-				
+
 				if (VobCanBeSelected__VobTransport (vobPtr)) {
 					if (flagSelectPrevious == FALSE) {
 						if (vobTransportVobPtr == vobPtr) {
@@ -1088,14 +1097,14 @@ func void FrameFunction__VobTransport () {
 						};
 					} else {
 						//Remove BBox from last vobPtr
-						zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
-						
+						Vob_CancelSelection (vobTransportVobPtr);
+
 						//Get pointer of moved object
 						vobTransportVobPtr = vobPtr;
-						
+
 						//Add BBox to previous vobPtr
 						zCVob_SetDrawBBox3D (vobTransportVobPtr, 1);
-						
+
 						NPC_ClearAIQueue (hero);
 						AI_TurnToVobPtr (hero, vobTransportVobPtr);
 
@@ -1104,7 +1113,7 @@ func void FrameFunction__VobTransport () {
 						break;
 					};
 				};
-				
+
 				i -= 1;
 			end;
 		};
@@ -1116,24 +1125,26 @@ func void FrameFunction__VobTransport () {
 			vobTransportMode = vobTransportMode_SelectVob;
 		};
 	};
-	
+
 	if (vobTransportMode == vobTransportMode_SelectConfirm) {
 		if (VobCanBeMovedAround__VobTransport (vobTransportVobPtr)) {
-			//Disable BBox
-			zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
+			//Cancel selection
+			Vob_CancelSelection (vobTransportVobPtr);
 
 			vob = _^ (vobTransportVobPtr);
 			MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
 
-			vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
-			vobTransportOriginalAlpha = vob.visualAlpha;
+			if (!vobTransportOriginalAlphaChanged) {
+				vobTransportOriginalAlphaEnabled = ((vob.bitfield[0] & zCVob_bitfield0_visualAlphaEnabled) == zCVob_bitfield0_visualAlphaEnabled);
+				vobTransportOriginalAlpha = vob.visualAlpha;
+			};
 
 			//Clone mode
 			if (vobTransportActionMode == vobTransportActionMode_Clone) {
 				if (VobCanBeCloned__VobTransport (vobTransportVobPtr)) {
 					vobPtrBackup = vobTransportVobPtr;
 					vobTransportVobPtr = CloneObject__VobTransport (vobTransportVobPtr);
-					
+
 					if (!vobTransportVobPtr) {
 						vobTransportVobPtr = vobPtrBackup;
 
@@ -1148,7 +1159,7 @@ func void FrameFunction__VobTransport () {
 
 						//Remove active collisions
 						Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
-						
+
 						vobTransportMode = vobTransportMode_Movement;
 
 						PC_RemoveFromSleepingMode ();
@@ -1167,7 +1178,7 @@ func void FrameFunction__VobTransport () {
 
 				//Remove active collisions
 				Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
-				
+
 				vobTransportMode = vobTransportMode_Movement;
 
 				PC_RemoveFromSleepingMode ();
@@ -1175,11 +1186,16 @@ func void FrameFunction__VobTransport () {
 
 			if (vobTransportMode == vobTransportMode_Movement) {
 				//Update alpha
-				vob = _^ (vobTransportVobPtr);
-				vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
-				//Don't adjust alpha for zCDecal - they are already difficult to spot :)
-				if (!Hlp_Is_zCDecal (vobTransportVobPtr)) {
-					vob.visualAlpha = divf (mkf (50), mkf (100));
+				if (!vobTransportOriginalAlphaChanged) {
+					vob = _^ (vobTransportVobPtr);
+					vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
+
+					//Don't adjust alpha for zCDecal - they are already difficult to spot :)
+					if (!Hlp_Is_zCDecal (vobTransportVobPtr)) {
+						vob.visualAlpha = divf (mkf (50), mkf (100));
+					};
+
+					vobTransportOriginalAlphaChanged = TRUE;
 				};
 			};
 
@@ -1211,18 +1227,11 @@ func void FrameFunction__VobTransport () {
 			};
 		};
 	};
-	
+
 	//Stop transport mode
 	if (vobTransportMode == vobTransportMode_Done) {
 		if (vobTransportVobPtr) {
-			vob = _^ (vobTransportVobPtr);
-
-			vob.visualAlpha = vobTransportOriginalAlpha;
-			if (!vobTransportOriginalAlphaEnabled) {
-				vob.bitfield[0] = (vob.bitfield[0] & ~ zCVob_bitfield0_visualAlphaEnabled);
-			};
-
-			zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
+			Vob_CancelSelection (vobTransportVobPtr);
 		};
 
 		//Drop item
@@ -1235,7 +1244,7 @@ func void FrameFunction__VobTransport () {
 
 		//Restore collision bitfields
 		Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
-		
+
 		//Disable vobTransportMode
 		vobTransportMode = vobTransportMode_Idle;
 	};
@@ -1252,5 +1261,5 @@ func void G12_VobTransport_Init () {
 	GameHandleEvent_AddListener (_eventGameHandleEvent__VobTransport);
 
 	//Frame function
-	FF_ApplyOnceExtGT (FrameFunction__VobTransport, 0, -1);	
+	FF_ApplyOnceExtGT (FrameFunction__VobTransport, 0, -1);
 };
