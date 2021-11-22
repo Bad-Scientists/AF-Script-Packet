@@ -14,10 +14,17 @@ EngineClasses_G1\zCVisual.d
 EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oCDocumentManager.d
 EngineClasses_G1\oCViewDocument.d
+EngineClasses_G1\zPhysics.d
+EngineClasses_G1\oAiShoot.d
 
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
 ObjectFactory\zCTexture.d
+
+ObjectFactory\oCAIVobMove.d
+ObjectFactory\oCAIVobMoveTorch.d
+ObjectFactory\oCAIDrop.d
+ObjectFactory\oCAIArrow.d
 
 utils.d
 files.d
@@ -148,3 +155,6 @@ Standalone-Packages\G12-Debugging\setSleepingMode.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
+
+Standalone-Packages\G12-VobThrowing\vobThrowing.d
+Standalone-Packages\G12-VobThrowing\testing.d
