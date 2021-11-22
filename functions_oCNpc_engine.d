@@ -592,7 +592,7 @@ func void oCNpc_SetLeftHand (var int slfInstance, var int vobPtr) {
  *	 - positive number vob is above npc
  */
 func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angleXPtr, var int angleYPtr) {
-	//0x0074BD00 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
+	//0x0074C0D0 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
 	const int oCNPC__GetAnglesVob_G1 = 7651536;
 
 	//0x00681680 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
