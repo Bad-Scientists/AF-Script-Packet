@@ -1,3 +1,6 @@
+/*
+ *
+ */
 func void AI_TurnToPos (var int slfinstance, var int posPtr) {
 	if (!posPtr) { return; };
 
@@ -17,7 +20,7 @@ func void AI_TurnToWP (var int slfinstance, var string waypoint) {
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
 	if (!wpPtr) { return; };
-	
+
 	var zCWaypoint wp; wp = _^ (wpPtr);
 	AI_TurnToPos (slf, _@ (wp.pos));
 };
@@ -38,9 +41,9 @@ func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
-	
+
 	if (!wpPtr) { return; };
-	
+
 	var zCWaypoint wp; wp = _^ (wpPtr);
 
 	var int pos[3];		//position - vob
@@ -68,10 +71,10 @@ func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
-	
+
 	var int pos[3];
 	TrfToPos (_@(vob.trafoObjToWorld), _@ (pos));
-	
+
 	AI_TurnToPos (slf, _@ (pos));
 };
 
@@ -82,7 +85,7 @@ func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
-	
+
 	var int pos[3];		//position - vob
 	TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
 
@@ -97,7 +100,7 @@ func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
 
 	//subtract direction vector from self - should be basically pos rotated by 180 around self pos
 	subVectors (_@ (pos), _@ (posSelf), _@ (dir));
-	
+
 	AI_TurnToPos (slf, _@ (pos));
 };
 
@@ -110,7 +113,7 @@ func void AI_GotoPos (var int slfinstance, var int posPtr) {
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
 	slf.soundPosition[1] = MEM_ReadIntArray(posPtr, 1);
 	slf.soundPosition[2] = MEM_ReadIntArray(posPtr, 2);
-	
+
 	AI_GotoSound (slf);
 };
 
@@ -121,10 +124,10 @@ func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
-	
+
 	var int pos[3];
 	TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
-	
+
 	AI_GotoPos (slf, _@ (pos));
 };
 
@@ -213,8 +216,51 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
  *	An alternative that will turn to vob only when not within acceptable angle
  */
 func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int angle) {
-	if (!NPC_IsNpcInAngleX (slfinstance, vobPtr, angle)) {
-		AI_TurnToVobPtr (slfinstance, vobPtr);
-	};
-};
+	var int angleX;
+	var int angleY;
 
+//func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angleXPtr, var int angleYPtr) {
+	//0x0074C0D0 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
+	const int oCNPC__GetAnglesVob_G1 = 7651536;
+
+	//0x00681680 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
+	const int oCNPC__GetAnglesVob_G2 = 6821504;
+
+	if (!vobPtr) { return; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+
+		CALL_PtrParam (_@ (angleY));
+		CALL_PtrParam (_@ (angleX));
+
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAnglesVob_G1, oCNPC__GetAnglesVob_G2));
+		call = CALL_End();
+	};
+//};
+
+//func int NPC_IsVobPtrInAngleX (var int slfInstance, var int vobPtr, var int angle) {
+//	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+//	if (!vobPtr) { return FALSE; };
+
+//	var int angleX;
+//	var int angleY;
+
+//	oCNpc_GetAnglesVob (slfInstance, vobPtr, _@ (angleX), _@ (angleY));
+
+	if (gef (angleX, negf (mkf (angle))))
+	&& (lef (angleX, mkf (angle)))
+	{
+		return;
+	};
+
+	AI_TurnToVobPtr (slfinstance, vobPtr);
+};
