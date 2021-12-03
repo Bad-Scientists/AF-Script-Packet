@@ -31,3 +31,73 @@ func string oCMobInter_GetScemeName (var int mobPtr) {
 
 	return CALL_RetValAszstring ();
 };
+
+func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+	//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCMobInter_SearchFreePosition (var int mobPtr, var int slfInstance, var int rangeF) {
+	//0x0067CD60 protected: virtual struct TMobOptPos * __thiscall oCMobInter::SearchFreePosition(class oCNpc *)
+	const int oCMobInter__SearchFreePosition_G1 = 6802784;
+
+	//0x0071DFC0 public: virtual struct TMobOptPos * __thiscall oCMobInter::SearchFreePosition(class oCNpc *,float)
+	const int oCMobInter__SearchFreePosition_G2 = 7462848;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		//G2A has 1 extra parameter - I assume range
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			CALL_PtrParam (_@ (rangeF));
+		};
+
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__SearchFreePosition_G1, oCMobInter__SearchFreePosition_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr ();
+};
+
+func int oCMobInter_GetFreePosition (var int mobPtr, var int slfInstance, var int posPtr) {
+	//0x0067CD00 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+	const int oCMobInter__GetFreePosition_G1 = 6802688;
+
+	//0x0071DF50 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+	const int oCMobInter__GetFreePosition_G2 = 7462736;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (posPtr));
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__GetFreePosition_G1, oCMobInter__GetFreePosition_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
