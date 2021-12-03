@@ -10,7 +10,7 @@ func void oCNpc_SetFocusVob (var int slfInstance, var int focusPtr) {
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
-	if (!Hlp_IsValidNPc (slf)) { return; };
+	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -213,7 +213,7 @@ func int oCNpc_UseItem (var int slfInstance, var int itemPtr) {
 	const int oCNPC__UseItem_G2 = 7584784;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPc (slf)) { return 0; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -239,7 +239,7 @@ func int oCNpc_GetSlotItem (var int slfInstance, var string slotName)  {
 	const int oCNPC__GetSlotItem_G2 = 7544720;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPc (slf)) { return 0; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	CALL_zStringPtrParam (slotName);
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__GetSlotItem_G1, oCNPC__GetSlotItem_G2));
@@ -259,7 +259,7 @@ func int oCNpc_DoExchangeTorch (var int slfInstance)
 	const int oCNpc__DoExchangeTorch_G2 = 7623536;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPc (slf)) { return 0; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -703,4 +703,22 @@ func int oCNpc_DoThrowVob (var int slfInstance, var int vobPtr, var int speedF) 
 	};
 
 	return CALL_RetValAsInt ();
+};
+
+func int oCNPC_FindMobInter (var int slfInstance, var string scemeName) {
+	//0x0069C720 public: class oCMobInter * __thiscall oCNpc::FindMobInter(class zSTRING const &)
+	const int oCNPC__FindMobInter_G1 = 6932256;
+
+	//0x0073FE70 public: class oCMobInter * __thiscall oCNpc::FindMobInter(class zSTRING const &)
+	const int oCNPC__FindMobInter_G2 = 7601776;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	scemeName = STR_Upper (scemeName);
+
+	CALL_zStringPtrParam (scemeName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__FindMobInter_G1, oCNPC__FindMobInter_G2));
+
+	return CALL_RetValAsPtr ();
 };
