@@ -56,10 +56,10 @@ func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
 	TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (posSelf));
 
 	//subtract posSelf from pos - to get 'direction vector'
-	subVectors (_@ (dir), _@(pos), _@ (posSelf));
+	SubVectors (_@ (dir), _@(pos), _@ (posSelf));
 
 	//subtract direction vector from posSelf - should be basically pos rotated by 180 around self pos
-	subVectors (_@ (pos), _@ (posSelf), _@ (dir));
+	SubVectors (_@ (pos), _@ (posSelf), _@ (dir));
 
 	AI_TurnToPos (slf, _@ (pos));
 };
@@ -263,4 +263,100 @@ func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int an
 	};
 
 	AI_TurnToVobPtr (slfinstance, vobPtr);
+};
+
+/*
+ *	Scans for ideal positions, finds free positions and sends there NPC_IsVobPtrInAngleX
+ *	Function returns TRUE if successfull, FALSE if not
+ */
+func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
+//func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+	//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return FALSE; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+		call = CALL_End();
+	};
+//};
+
+/*
+//func int oCMobInter_SearchFreePosition (var int mobPtr, var int slfInstance) {
+	var int freePosPtr;
+
+	//0x0067CD60 protected: virtual struct TMobOptPos * __thiscall oCMobInter::SearchFreePosition(class oCNpc *)
+	const int oCMobInter__SearchFreePosition_G1 = 6802784;
+
+	//0x0071DFC0 public: virtual struct TMobOptPos * __thiscall oCMobInter::SearchFreePosition(class oCNpc *,float)
+	const int oCMobInter__SearchFreePosition_G2 = 7462848;
+
+	var int rangeF; rangeF = mkf (1000);
+
+	const int call2 = 0;
+	if (CALL_Begin(call2)) {
+		//G2A has 1 extra parameter - I assume range
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			CALL_PtrParam (_@ (rangeF));
+		};
+
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__SearchFreePosition_G1, oCMobInter__SearchFreePosition_G2));
+		call2 = CALL_End();
+	};
+
+	freePosPtr = CALL_RetValAsPtr ();
+//};
+
+	if (!freePosPtr) { return FALSE; };
+
+
+//class TMobOptPos {
+//	var int trafo[16];	//zMAT4
+//	var int distance;	//int
+//	var int npc;		//oCNpc*
+//	var string nodeName;	//zSTRING
+//};
+
+	//TMobOptPos.trafo is at offset 0, so we can read trafo directly from freePosPtr
+	var int pos[3];
+	TrfPosToVector (freePosPtr, _@ (pos));
+	AI_GotoPos (slf, _@ (pos));
+*/
+
+//func int oCMobInter_GetFreePosition (var int mobPtr, var int slfInstance, var int vecPtr) {
+	//0x0067CD00 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+	const int oCMobInter__GetFreePosition_G1 = 6802688;
+
+	//0x0071DF50 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+	const int oCMobInter__GetFreePosition_G2 = 7462736;
+
+	var int pos[3]; var int posPtr; posPtr = _@ (pos);
+
+	const int call2 = 0;
+	if (CALL_Begin(call2)) {
+		CALL_PtrParam (_@ (posPtr));
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__GetFreePosition_G1, oCMobInter__GetFreePosition_G2));
+		call2 = CALL_End();
+	};
+
+	var int retVal; retVal = CALL_RetValAsInt ();
+//};
+
+	if (!retVal) { return FALSE; };
+
+	AI_GotoPos (slf, _@ (pos));
+
+	return TRUE;
 };
