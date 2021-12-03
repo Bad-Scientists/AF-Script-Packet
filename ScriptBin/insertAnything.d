@@ -685,28 +685,33 @@ func int InsertMoverPos(var string nm, var string vis, var int pos, var int dir)
  */
 
 func int InsertItemWP(var string itmInst, var int amount, var string wp) {
-    Wld_InsertItem(MEM_GetSymbolIndex(itmInst), wp);
+    var int symbIdx; symbIdx = MEM_GetSymbolIndex(itmInst);
+    Wld_InsertItem(symbIdx, wp);
 
     var zCTree newTreeNode; newTreeNode = _^(MEM_World.globalVobTree_firstChild);
     var int itmPtr; itmPtr = newTreeNode.data;
 
-    if (!itmPtr) {
+    if (!Hlp_Is_oCItem(itmPtr)) {
+        // Item effect is spawned last
+        newTreeNode = _^ (newTreeNode.next);
+        itmPtr = newTreeNode.data;
+        if (!Hlp_Is_oCItem(itmPtr)) {
+            MEM_Warn(ConcatStrings("Could not insert item: ", itmInst));
+            return 0;
+        };
+    };
+
+    var oCItem itm; itm = _^(itmPtr);
+    if (itm.instanz != symbIdx) {
         MEM_Warn(ConcatStrings("Could not insert item: ", itmInst));
         return 0;
     };
 
-//TODO: seems like MEM_World.globalVobTree_firstChild is in case of item with wear effect effect itself! e.g. ItMi_Nugget
-//this little 'hack' fixed the issue
-if (!Hlp_Is_oCItem (itmPtr)) {
-	var zCTree nextTreeNode; nextTreeNode = _^ (newTreeNode.next);
-	itmPtr = nextTreeNode.data;
-};
-
-    var oCItem itm; itm = _^(itmPtr);
     itm.amount = amount;
 
     return itmPtr;
 };
+
 func int InsertItem(var string itmInst, var int amount, var int trf) {
     var int itmPtr; itmPtr = InsertItemWP(itmInst, amount, MEM_FARFARAWAY);
 
