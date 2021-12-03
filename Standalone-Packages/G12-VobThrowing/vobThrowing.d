@@ -20,8 +20,8 @@
  *
  *	-- How does this feature work: --
  *
- *	 - we are replacing oCNpc::GetRightHand with our own function, by default we always return in EAX register value 0 - this way engine never changes animation to T_STAND_2_IAIM & S_IAIM
- *	 - our replaced function checks if player has anything in hand, if it is item, it 'activates' throwing mode ... and plays animation T_STAND_2_ITEMAIM (which is same as T_STAND_2_IAIM)
+ *	 - we are hooking oCNpc::GetRightHand with our own function, by default we always return in EAX register value 0 - this way engine never changes animation to T_STAND_2_IAIM & S_IAIM
+ *	 - our hooked function checks if player has anything in hand, if it is item, it 'activates' throwing mode ... and plays animation T_STAND_2_ITEMAIM (which is same as T_STAND_2_IAIM)
  *	 	!!! Important note: if you want to use this feature, you need to make sure that in your mod you are able to insert items into players right hand !!!
  *	 - player can turn (thanks to code from Gothic Free Aim) around with mouse and aim
  *	 - player can increase strength/charge by holding upKey
@@ -74,7 +74,11 @@ var int PC_VobThrowing_Time;
 var int PC_VobThrowing_Timer;
 
 func void _hook_oCNpc_GetRightHand__VobThrowing () {
-	EAX = 0;
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	var oCNPC slf; slf = _^ (ECX);
+
+	if (!Npc_IsPlayer (slf)) { return; };
 
 	//Don't do anything while in fight mode
 	if (!Npc_IsInFightMode (hero, FMODE_NONE)) {
@@ -395,8 +399,10 @@ func void G12_VobThrowing_Init () {
 		//0x0073AB50 public: class oCVob * __thiscall oCNpc::GetRightHand(void)
 		const int oCNpc__GetRightHand_G2 = 7580496;
 
-		//Ok, replacnutie funkcie zabrani 'vanilla' hadzaniu!!
-		ReplaceEngineFunc (MEMINT_SwitchG1G2 (oCNpc__GetRightHand_G1, oCNpc__GetRightHand_G2), 0, "_hook_oCNpc_GetRightHand__VobThrowing");
+		//We actually cannot replace engine function, otherwise we screw up mob interaction :)
+		//ReplaceEngineFunc (MEMINT_SwitchG1G2 (oCNpc__GetRightHand_G1, oCNpc__GetRightHand_G2), 0, "_hook_oCNpc_GetRightHand__VobThrowing");
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__GetRightHand_G1, oCNpc__GetRightHand_G2), 10, "_hook_oCNpc_GetRightHand__VobThrowing");
 
 		once = 1;
 	};
