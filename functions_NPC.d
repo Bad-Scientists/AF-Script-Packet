@@ -522,8 +522,8 @@ func int NPC_TorchSwitchOnOff (var int slfinstance) {
 				//For some reason we have to remove pointer here
 				NPC_RemoveInvItem (slf, ptr);
 
-				if (NPC_HasOverlay (hero, "HUMANS_TORCH.MDS")) {
-					Mdl_RemoveOverlayMds (hero, "HUMANS_TORCH.MDS");
+				if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
+					Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
 					return 0;
 				};
 			};
@@ -572,8 +572,8 @@ func void NPC_TorchSwitchOff (var int slfinstance) {
 				//For some reason we have to remove pointer here
 				NPC_RemoveInvItem (slf, ptr);
 
-				if (NPC_HasOverlay (hero, "HUMANS_TORCH.MDS")) {
-					Mdl_RemoveOverlayMds (hero, "HUMANS_TORCH.MDS");
+				if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
+					Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
 				};
 			};
 		};
@@ -591,7 +591,7 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 	if (ptr) {
 		var oCItem itm; itm = _^ (ptr);
 
-		//Is it ItLsTorchBurned? if yes - remove - script below will but ItLsTorchBurning in hand
+		//Is it ItLsTorchBurned? if yes - remove - script below will put ItLsTorchBurning in hand
 		if (Hlp_GetinstanceID (itm) == ItLsTorchBurned) {
 			if (oCNpc_UseItem (slf, ptr)) {
 				//For some reason we have to remove pointer here
@@ -620,6 +620,11 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 
 			//For some reason we have to remove pointer here
 			NPC_RemoveInvItem (slf, ptr);
+
+			//Apply overlay
+			if (!NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
+				Mdl_ApplyOverlayMds (slf, "HUMANS_TORCH.MDS");
+			};
 		};
 	};
 };
