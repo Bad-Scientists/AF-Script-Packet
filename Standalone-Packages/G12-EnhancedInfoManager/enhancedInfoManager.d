@@ -1681,6 +1681,59 @@ MEM_InformationMan.LastMethod:
 
 	var int alignment; //alignment = InfoManagerDefaultDialogAlignment;
 
+//---
+
+	var int len;
+	var int index;
+	var int index2;
+	var int index3;
+
+	var string s1;
+	var string s2;
+	var string s3;
+
+	//Overlay
+	var string overlayText;
+	var string overlayFormat;
+	var string overlayDialog;
+	var string overlayConcat;
+
+	var int overlayColor;
+	var int overlayColorSelected;
+
+	var zCViewText2 overlayChoiceTxt;
+
+	var int overlayIndex;
+	var int overlayPosX;
+	var int overlayShiftX;
+	var int overlayWidth;
+
+	var int flagDialogChoiceStartsWithOverlay;
+	var int flagAdd;
+	var int k;
+
+	var int overlayAlignment;
+
+	var int textWidth;
+	var int defaultPosX;
+
+	var string dlgDescriptionClean;
+	var string dlgDescriptionNoOverlays;
+
+	//Horizontal text scrolling
+	var int horizontalScrolling;
+		const int HSCROLL_IDLE		= 0; //wont do anything
+		const int HSCROLL_INIT		= 1; //waits for a while ... then starts scrolling
+		const int HSCROLL_SCROLL	= 2; //scrolls text, once done it will force reset
+		const int HSCROLL_WAIT		= 3; //waits for a while ... then resets text
+		const int HSCROLL_RESET		= 4; //reset indicator
+
+	var int timerHorizontalScrolling;
+
+	var int horizontalScrollingChoiceNumber;
+
+//---
+
 	arr = _^ (choiceView + 172);
 
 	if (InfoManagerRefreshOverlays == cIM_RefreshDialogColors) {
@@ -1745,6 +1798,7 @@ MEM_InformationMan.LastMethod:
 		InfoManagerRefreshOverlays = cIM_RefreshNothing;
 		refreshOverlays = TRUE;
 		refreshOverlayColors = TRUE;
+		horizontalScrolling = HSCROLL_IDLE;
 
 		//Reset
 		MEM_WriteIntArray (_@ (overlayListMapChoice), 0, -1);
@@ -1780,6 +1834,24 @@ MEM_InformationMan.LastMethod:
 
 		//Auto-scrolling for disabled dialog choices
 		InfoManager_SkipDisabledDialogChoices (-1);
+	};
+
+	//Horizontal text scrolling - reset if selection changed / if scrolling was reset
+	if (horizontalScrolling) {
+		if ((horizontalScrollingChoiceNumber != dlg.ChoiceSelected) || (horizontalScrolling == HSCROLL_RESET)) {
+			if (horizontalScrolling == HSCROLL_RESET) {
+				horizontalScrolling = HSCROLL_INIT;
+			} else {
+				horizontalScrolling = HSCROLL_IDLE;
+			};
+
+			timerHorizontalScrolling += MEM_Timer.frameTime;
+
+			//Reset cached dialog --> this will update dialog choice text
+			if (horizontalScrollingChoiceNumber >= 0 && horizontalScrollingChoiceNumber < DIALOG_MAX) {
+				MEM_WriteStringArray (_@s (dialogCachedDescriptions), horizontalScrollingChoiceNumber, "");
+			};
+		};
 	};
 
 	var int retVal;
@@ -1980,43 +2052,14 @@ MEM_InformationMan.LastMethod:
 				if (infoPtr)
 				|| (choicePtr)
 				{
-					var int len;
-					var int index;
-					var int index2;
-					var int index3;
-
 					/* Extract font, font selected, color and color selected from dlgDescription.
 					   Clear dlgDescription in process. */
 
-					var string s1; s1 = "";
-					var string s2; s2 = "";
-					var string s3; s3 = "";
+					s1 = "";
+					s2 = "";
+					s3 = "";
 
-					//Overlay
-					var string overlayText;
-					var string overlayFormat;
-					var string overlayDialog;
-					var string overlayConcat;
-
-					var int overlayColor;
-					var int overlayColorSelected;
-
-					var zCViewText2 overlayChoiceTxt;
-
-					var int overlayIndex;
-					var int overlayPosX;
-					var int overlayShiftX;
-					var int overlayWidth;
-
-					var int flagDialogChoiceStartsWithOverlay; flagDialogChoiceStartsWithOverlay = FALSE;
-					var int flagAdd;
-					var int k;
-
-					var int overlayAlignment;
-
-					var int textWidth;
-					var int defaultPosX;
-
+					flagDialogChoiceStartsWithOverlay = FALSE;
 					defaultPosX = dlg.sizeMargin_0[0];
 
 					overlayWidth = 0;
@@ -2027,8 +2070,8 @@ MEM_InformationMan.LastMethod:
 						dlgDescription = ConcatStrings (InfoManagerNumKeyString (i + 1), dlgDescription);
 					};
 
-					var string dlgDescriptionClean; dlgDescriptionClean = Choice_GetCleanText (dlgDescription);
-					var string dlgDescriptionNoOverlays; dlgDescriptionNoOverlays = Choice_RemoveAllOverlays (dlgDescription);
+					dlgDescriptionClean = Choice_GetCleanText (dlgDescription);
+					dlgDescriptionNoOverlays = Choice_RemoveAllOverlays (dlgDescription);
 
 					overlayConcat = "";
 
@@ -2104,6 +2147,7 @@ MEM_InformationMan.LastMethod:
 						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
 						txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 
+						//posX cannot be < defaultPosX - otherwise dialog choice will disappear
 						if (txt.posX < defaultPosX) {
 							txt.posX = defaultPosX;
 						};
@@ -2767,6 +2811,17 @@ MEM_InformationMan.LastMethod:
 					colorSelected = MEM_ReadIntArray (_@ (dialogColorSelected), i);
 					txt.color = colorSelected;
 					txt.alpha = GetAlpha (colorSelected);
+
+					dlgFont = Print_GetFontName (txt.font);
+					textWidth = Print_GetStringWidth (txt.text, dlgFont);
+
+					//Horizontal scrolling - if dialogue text > dialogue window
+					if (textWidth > dlg.psizex) {
+						//Init scrolling
+						horizontalScrolling = HSCROLL_INIT;
+						timerHorizontalScrolling += MEM_Timer.frameTime;
+						horizontalScrollingChoiceNumber = dlg.ChoiceSelected;
+					};
 				} else {
 					color = MEM_ReadIntArray (_@ (dialogColor), i);
 					txt.color = color;
@@ -2915,7 +2970,6 @@ MEM_InformationMan.LastMethod:
 				InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
 
 				if (InfoManagerAnswerPossible) {
-
 					txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
 
 					//Add answer indicator
@@ -2981,6 +3035,53 @@ MEM_InformationMan.LastMethod:
 						InfoManagerRefreshOverlays = cIM_RefreshOverlays;
 					};
 				};
+			};
+		};
+
+		//Horizontal auto-scrolling for dialog text
+
+		//First wait for a moment ...
+		if (horizontalScrolling == HSCROLL_INIT) {
+			timerHorizontalScrolling += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrolling >= 2000) {
+				timerHorizontalScrolling -= 2000;
+				horizontalScrolling = HSCROLL_SCROLL;
+			};
+		};
+
+		//Scroll text
+		if (horizontalScrolling == HSCROLL_SCROLL) {
+			timerHorizontalScrolling += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrolling >= 90) {
+				timerHorizontalScrolling -= 90;
+
+				//we cannot really change txt.posX if txt.posX < defaultPosX then dialogue choice wont render ...
+				//so the only option to scroll text is to trim it ...
+				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+
+				dlgFont = Print_GetFontName (txt.font);
+				textWidth = Print_GetStringWidth (txt.text, dlgFont);
+
+				//Double check size - shall we trim?
+				if (textWidth > dlg.psizex) {
+					txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
+				} else {
+					//If text was scrolled completely ... wait
+					horizontalScrolling = HSCROLL_WAIT;
+				};
+			};
+		};
+
+		//Wait for a moment - and reset scrolling
+		if (horizontalScrolling == HSCROLL_WAIT) {
+			timerHorizontalScrolling += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrolling >= 4000) {
+				timerHorizontalScrolling -= 4000;
+				//This will force an update
+				horizontalScrolling = HSCROLL_RESET;
 			};
 		};
 
