@@ -8,7 +8,7 @@ func int zCEventMessage_MD_GetNumOfSubTypes (var int eventMessage) {
 
 	//0x00401FE0 public: virtual int __thiscall zCEventMessage::MD_GetNumOfSubTypes(void)
 	const int zCEventMessage__MD_GetNumOfSubTypes_G2 = 4202464;
-	
+
 	if (!eventMessage) { return -1; };
 
 	const int call = 0;
@@ -16,15 +16,15 @@ func int zCEventMessage_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__MD_GetNumOfSubTypes_G1, zCEventMessage__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
 func int zCEventMessage_GetSubType (var int eventMessage) {
-	//0x0073F4C0 public: unsigned short __thiscall zCEventMessage::GetSubType(void)const 
+	//0x0073F4C0 public: unsigned short __thiscall zCEventMessage::GetSubType(void)const
 	const int zCEventMessage__GetSubType_G1 = 7599296;
 
-	//0x00674290 public: unsigned short __thiscall zCEventMessage::GetSubType(void)const 
+	//0x00674290 public: unsigned short __thiscall zCEventMessage::GetSubType(void)const
 	const int zCEventMessage__GetSubType_G2 = 6767248;
 
 	if (!eventMessage) { return -1; };
@@ -34,7 +34,7 @@ func int zCEventMessage_GetSubType (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__GetSubType_G1, zCEventMessage__GetSubType_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -52,7 +52,7 @@ func int zCEventCore_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventCore__MD_GetNumOfSubTypes_G1, zCEventCore__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -68,7 +68,7 @@ func int zCEvMsgCutscene_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEvMsgCutscene__MD_GetNumOfSubTypes_G1, zCEvMsgCutscene__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -84,7 +84,7 @@ func int zCCSCamera_EventMsg_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCCSCamera_EventMsg__MD_GetNumOfSubTypes_G1, zCCSCamera_EventMsg__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -100,7 +100,7 @@ func int zCCSCamera_EventMsgActivate_MD_GetNumOfSubTypes (var int eventMessage) 
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCCSCamera_EventMsgActivate__MD_GetNumOfSubTypes_G1, zCCSCamera_EventMsgActivate__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -116,7 +116,7 @@ func int zCEventCommon_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventCommon__MD_GetNumOfSubTypes_G1, zCEventCommon__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -132,7 +132,7 @@ func int zCEventMover_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMover__MD_GetNumOfSubTypes_G1, zCEventMover__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -148,7 +148,7 @@ func int zCEventScreenFX_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventScreenFX__MD_GetNumOfSubTypes_G1, zCEventScreenFX__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -164,7 +164,7 @@ func int oCMobMsg_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMobMsg__MD_GetNumOfSubTypes_G1, oCMobMsg__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -180,7 +180,7 @@ func int oCMsgDamage_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgDamage__MD_GetNumOfSubTypes_G1, oCMsgDamage__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -196,7 +196,7 @@ func int oCMsgMovement_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgMovement__MD_GetNumOfSubTypes_G1, oCMsgMovement__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -212,7 +212,7 @@ func int oCMsgWeapon_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgWeapon__MD_GetNumOfSubTypes_G1, oCMsgWeapon__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -228,7 +228,7 @@ func int oCMsgAttack_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgAttack__MD_GetNumOfSubTypes_G1, oCMsgAttack__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -244,7 +244,7 @@ func int oCMsgState_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgState__MD_GetNumOfSubTypes_G1, oCMsgState__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -260,7 +260,7 @@ func int oCMsgManipulate_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgManipulate__MD_GetNumOfSubTypes_G1, oCMsgManipulate__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -276,7 +276,7 @@ func int oCMsgConversation_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgConversation__MD_GetNumOfSubTypes_G1, oCMsgConversation__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -292,7 +292,7 @@ func int oCMsgMagic_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (oCMsgMagic__MD_GetNumOfSubTypes_G1, oCMsgMagic__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -308,7 +308,7 @@ func int zCEventMusicControler_MD_GetNumOfSubTypes (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMusicControler__MD_GetNumOfSubTypes_G1, zCEventMusicControler__MD_GetNumOfSubTypes_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -640,15 +640,15 @@ func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) 
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetTalkingWithMessage_G1, oCNPC__GetTalkingWithMessage_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr ();
 };
 
 func int zCEventMessage_GetClassDef (var int eventMessage) {
-	//0x00401DF0 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const 
+	//0x00401DF0 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const
 	const int zCEventManage__GetClassDef_G1 = 4201968;
 
-	//0x00401F30 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const 
+	//0x00401F30 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const
 	const int zCEventManage__GetClassDef_G2 = 4202288;
 
 	const int call = 0;
@@ -656,7 +656,7 @@ func int zCEventMessage_GetClassDef (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__GetClassDef_G1, zCEventManage__GetClassDef_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr ();
 };
 
@@ -672,7 +672,7 @@ func int zCEventMessage_IsOverlay (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsOverlay_G1, zCEventManage__IsOverlay_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -688,7 +688,7 @@ func int zCEventMessage_IsNetRelevant (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsNetRelevant_G1, zCEventManage__IsNetRelevant_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -704,7 +704,7 @@ func int zCEventMessage_IsHighPriority (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsHighPriority_G1, zCEventManage__IsHighPriority_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -720,7 +720,7 @@ func int zCEventMessage_IsJob (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsJob_G1, zCEventManage__IsJob_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -736,7 +736,7 @@ func int zCEventMessage_IsDeleteable (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsDeleteable_G1, zCEventManage__IsDeleteable_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -752,7 +752,7 @@ func int zCEventMessage_IsDeleted (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsDeleted_G1, zCEventManage__IsDeleted_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -768,7 +768,7 @@ func int zCEventMessage_GetCutsceneMode (var int eventMessage) {
 		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__GetCutsceneMode_G1, zCEventManage__GetCutsceneMode_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -785,6 +785,18 @@ func string zCEventMessage_MD_GetSubTypeString (var int eventMessage, var int su
 	CALL_IntParam (subType);
 	CALL__thiscall (eventMessage, MEMINT_SwitchG1G2 (zCEventMessage__MD_GetSubTypeString_G1, zCEventMessage__MD_GetSubTypeString_G2));
 	return CALL_RetValAszstring ();
+};
+
+func void zCEventMessage_Delete (var int eventMessage) {
+	//0x00401E40 public: virtual void __thiscall zCEventMessage::Delete(void)
+	const int zCEventMessage__Delete_G1 = 4202048;
+
+	//
+	const int zCEventMessage__Delete_G2 = 4202480;
+
+	if (!eventMessage) { return; };
+
+	CALL__thiscall (eventMessage, MEMINT_SwitchG1G2 (zCEventMessage__Delete_G1, zCEventMessage__Delete_G2));
 };
 
 /*
@@ -807,7 +819,7 @@ func int zCEventManager_GetNumMessages (var int eventManager) {
 		CALL__thiscall (_@ (eventManager), MEMINT_SwitchG1G2 (zCEventManager__GetNumMessages_G1, zCEventManager__GetNumMessages_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -823,7 +835,7 @@ func int zCEventManager_GetActiveMessage (var int eventManager) {
 		CALL__thiscall (_@ (eventManager), MEMINT_SwitchG1G2 (zCEventManager__GetActiveMessage_G1, zCEventManager__GetActiveMessage_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr ();
 };
 
@@ -842,7 +854,7 @@ func int zCEventManager_GetEventMessage (var int eventManager, var int index) {
 		CALL__thiscall (_@ (eventManager), MEMINT_SwitchG1G2 (zCEventManager__GetEventMessage_G1, zCEventManager__GetEventMessage_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsPtr ();
 };
 
@@ -860,7 +872,7 @@ func int oCMsgConversation_IsOverlay (var int msgConversation) {
 		CALL__thiscall (_@ (msgConversation), MEMINT_SwitchG1G2 (oCMsgConversation__IsOverlay_G1, oCMsgConversation__IsOverlay_G2));
 		call = CALL_End();
 	};
-	
+
 	return CALL_RetValAsInt ();
 };
 
@@ -894,7 +906,7 @@ func string oCMsgConversation_MD_GetVobRefName (var int msgConversation) {
 func int zCVob_GetEM (var int vobPtr) {
 	//0x005D49B0 public: class zCEventManager * __fastcall zCVob::GetEM(int)
 	const int zCVob__GetEM_G1 = 6113712;
-	
+
 	//0x005FFE10 public: class zCEventManager * __fastcall zCVob::GetEM(int)
 	const int zCVob__GetEM_G2 = 6290960;
 
@@ -918,7 +930,7 @@ func int zCVob_GetEM (var int vobPtr) {
 func void zCEventManager_OnTouch (var int eMgr, var int vobPtr) {
 	//0x006DE5D0 public: virtual void __thiscall zCEventManager::OnTouch(class zCVob *)
 	const int zCEventManager__OnTouch_G1 = 7202256;
-	
+
 	//0x00787860 public: virtual void __thiscall zCEventManager::OnTouch(class zCVob *)
 	const int zCEventManager__OnTouch_G2 = 7895136;
 
@@ -938,7 +950,7 @@ func void zCEventManager_OnTouch (var int eMgr, var int vobPtr) {
 func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 	//0x006DE690 public: virtual void __thiscall zCEventManager::OnUntouch(class zCVob *)
 	const int zCEventManager__OnUntouch_G1 = 7202448;
-	
+
 	//0x00787920 public: virtual void __thiscall zCEventManager::OnUntouch(class zCVob *)
 	const int zCEventManager__OnUntouch_G2 = 7895328;
 
@@ -958,7 +970,7 @@ func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
 	//0x006DE760 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnTrigger_G1 = 7202256;
-	
+
 	//0x007879F0 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnTrigger_G2 = 7895136;
 
@@ -979,7 +991,7 @@ func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
 func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
 	//0x006DE820 public: virtual void __thiscall zCEventManager::OnUntrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnUnTrigger_G1 = 7202848;
-	
+
 	//0x00787AB0 public: virtual void __thiscall zCEventManager::OnUntrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnUnTrigger_G2 = 7895728;
 
@@ -1000,7 +1012,7 @@ func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
 func void zCEventManager_DoFrameActivity (var int eMgr) {
 	//0x006DCC80 public: static void __cdecl zCEventManager::DoFrameActivity(void)
 	const int zCEventManager__DoFrameActivity_G1 = 7195776;
-	
+
 	//0x00785F70 public: static void __cdecl zCEventManager::DoFrameActivity(void)
 	const int zCEventManager__DoFrameActivity_G2 = 7888752;
 
@@ -1012,7 +1024,7 @@ func void zCEventManager_DoFrameActivity (var int eMgr) {
 func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) {
 	//0x006DD090 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
 	const int zCEventManager__OnMessage_G1 = 7196816;
-	
+
 	//0x00786380 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
 	const int zCEventManager__OnMessage_G2 = 7889792;
 
@@ -1033,7 +1045,7 @@ func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) 
 func void zCEventManager_RemoveFromList (var int eMgr, var int eMsg) {
 	//0x006DDFE0 protected: virtual void __thiscall zCEventManager::RemoveFromList(class zCEventMessage *)
 	const int zCEventManager__RemoveFromList_G1 = 7200736;
-	
+
 	//0x007872B0 protected: virtual void __thiscall zCEventManager::RemoveFromList(class zCEventMessage *)
 	const int zCEventManager__RemoveFromList_G2 = 7893680;
 
@@ -1052,7 +1064,7 @@ func void zCEventManager_RemoveFromList (var int eMgr, var int eMsg) {
 func void zCEventManager_InsertInList (var int eMgr, var int eMsg) {
 	//0x006DE030 protected: virtual void __thiscall zCEventManager::InsertInList(class zCEventMessage *)
 	const int zCEventManager__InsertInList_G1 = 7200816;
-	
+
 	//0x00787300 protected: virtual void __thiscall zCEventManager::InsertInList(class zCEventMessage *)
 	const int zCEventManager__InsertInList_G2 = 7893760;
 
@@ -1084,7 +1096,7 @@ func void zCEventManager_ProcessMessageList (var int eMgr) {
 	};
 };
 
-func void zCEventManager_SetActive (var int eMgr, var int index) {
+func void zCEventManager_SetActive (var int eMgr, var int on) {
 	//0x006DDE20 public: virtual void __thiscall zCEventManager::SetActive(int)
 	const int zCEventManager__SetActive_G1 = 7200288;
 
@@ -1095,7 +1107,7 @@ func void zCEventManager_SetActive (var int eMgr, var int index) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(index));
+		CALL_PtrParam(_@(on));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__SetActive_G1, zCEventManager__SetActive_G2));
 
 		call = CALL_End();

@@ -25,7 +25,7 @@ const int zCTrigger_vtbl = 8627196;
 //Not defined in Ikarus for G2A!
 const int oCTriggerScript_vtbl = 8582148;
 
-//0x0082458C const zCParticleFX::`vftable' 
+//0x0082458C const zCParticleFX::`vftable'
 const int zCParticleFX_vtbl = 8537484;
 
 
@@ -48,7 +48,7 @@ func int Hlp_Is_zCTrigger (var int ptr) {
 func int Hlp_Is_oCTriggerScript (var int ptr) {
     if (!ptr) { return 0; };
     return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
-}; 
+};
 
 /*
  *	Enable Player States
@@ -149,24 +149,24 @@ const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
  *	Event Manager
  */
 
-//0x00832214 const zCMaterial::`vftable' 
+//0x00832214 const zCMaterial::`vftable'
 
-//0x0082E89C const zCObject::`vftable' 
+//0x0082E89C const zCObject::`vftable'
 //const int zCObject_vtbl		= 8579228;
- 
-//0x0082ED78 const zCCSBlockPosition::`vftable' 
+
+//0x0082ED78 const zCCSBlockPosition::`vftable'
 //const int zCCSBlockPosition_vtbl	= 8580472;
 
-//0x0082F00C const zCCSProps::`vftable' 
+//0x0082F00C const zCCSProps::`vftable'
 //const int zCCSProps_vtbl		= 8581132;
 
-//0x0082E904 const oCCSPlayer::`vftable'{for `zCObject'} 
+//0x0082E904 const oCCSPlayer::`vftable'{for `zCObject'}
 //const int zCObject__oCCSPlayer_vtbl	= 8579332;
 
-//0x0082E75C const zCEventMessage::`vftable' 
+//0x0082E75C const zCEventMessage::`vftable'
 const int zCEventMessage_vtbl		= 8578908;
 
-//0x0083E23C const zCEventManager::`vftable' 
+//0x0083E23C const zCEventManager::`vftable'
 const int zCEventManager_vtbl		= 8643132;
 
 func int Hlp_Is_zCEventManager (var int ptr) {
@@ -174,7 +174,7 @@ func int Hlp_Is_zCEventManager (var int ptr) {
 	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
 };
 
-//0x0082EA4C const zCCSCutsceneContext::`vftable' 
+//0x0082EA4C const zCCSCutsceneContext::`vftable'
 const int zCCSCutsceneContext_vtbl	= 8579660;
 
 func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
@@ -182,7 +182,7 @@ func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
 	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
 };
 
-//0x0083DA8C const oCNpcMessage::`vftable' 
+//0x0083DA8C const oCNpcMessage::`vftable'
 const int oCNpcMessage_vtbl		= 8641164;
 
 func int Hlp_Is_oCNpcMessage (var int ptr) {
@@ -190,25 +190,30 @@ func int Hlp_Is_oCNpcMessage (var int ptr) {
 	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
 };
 
-//0x0083DAFC const oCMsgDamage::`vftable' 
+//0x0083DAFC const oCMsgDamage::`vftable'
 const int oCMsgDamage_vtbl		= 8641276;
 
-//0x0083DB6C const oCMsgWeapon::`vftable' 
+//0x0083DB6C const oCMsgWeapon::`vftable'
 const int oCMsgWeapon_vtbl		= 8641388;
 
-//0x0083DBDC const oCMsgMovement::`vftable' 
+//0x0083DBDC const oCMsgMovement::`vftable'
 const int oCMsgMovement_vtbl		= 8641500;
 
-//0x0083DC4C const oCMsgAttack::`vftable' 
+//0x0083DC4C const oCMsgAttack::`vftable'
 const int oCMsgAttack_vtbl		= 8641612;
 
-//0x0083DCBC const oCMsgUseItem::`vftable' 
+func int Hlp_Is_oCMsgAttack (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgAttack_vtbl);
+};
+
+//0x0083DCBC const oCMsgUseItem::`vftable'
 const int oCMsgUseItem_vtbl		= 8641724;
 
-//0x0083DD2C const oCMsgState::`vftable' 
+//0x0083DD2C const oCMsgState::`vftable'
 const int oCMsgState_vtbl		= 8641836;
 
-//0x0083DD9C const oCMsgManipulate::`vftable' 
+//0x0083DD9C const oCMsgManipulate::`vftable'
 const int oCMsgManipulate_vtbl		= 8641948;
 
 func int Hlp_Is_oCMsgManipulate (var int ptr) {
@@ -216,7 +221,7 @@ func int Hlp_Is_oCMsgManipulate (var int ptr) {
 	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
 };
 
-//0x0083DE0C const oCMsgConversation::`vftable' 
+//0x0083DE0C const oCMsgConversation::`vftable'
 const int oCMsgConversation_vtbl	= 8642060;
 
 func int Hlp_Is_oCMsgConversation (var int ptr) {
@@ -224,25 +229,32 @@ func int Hlp_Is_oCMsgConversation (var int ptr) {
 	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
 };
 
-//0x0083DE7C const oCMsgMagic::`vftable' 
+//0x0083DE7C const oCMsgMagic::`vftable'
 const int oCMsgMagic_vtbl		= 8642172;
 
-//0x0083AF34 const zCEventMusicControler::`vftable' 
+func int Hlp_Is_oCMsgMagic (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMsgMagic_vtbl);
+};
+
+//0x0083AF34 const zCEventMusicControler::`vftable'
 const int zCEventMusicControler_vtbl	= 8630068;
 
-//0x0082E7BC const zCEventCore::`vftable' 
+//0x0082E7BC const zCEventCore::`vftable'
 const int zCEventCore_vtbl		= 8579004;
 
-//0x0083096C const zCCSCamera_EventMsg::`vftable' 
-//0x0082E6FC const zCCSCamera_EventMsgActivate::`vftable' 
-//0x0082E7BC const zCEventCore::`vftable' 
-//0x0082ED14 const zCEvMsgCutscene::`vftable' 
+//0x0082ED14 const zCEvMsgCutscene::`vftable'
+const int zCEvMsgCutscene_vtbl		= 8580372;
 
-//0x0083A2DC const zCEventCommon::`vftable' 
-//0x0083A33C const zCEventMover::`vftable' 
-//0x0083A39C const zCEventScreenFX::`vftable' 
+//0x0083096C const zCCSCamera_EventMsg::`vftable'
+//0x0082E6FC const zCCSCamera_EventMsgActivate::`vftable'
 
-//0x0083D474 const oCMobMsg::`vftable' 
+
+//0x0083A2DC const zCEventCommon::`vftable'
+//0x0083A33C const zCEventMover::`vftable'
+//0x0083A39C const zCEventScreenFX::`vftable'
+
+//0x0083D474 const oCMobMsg::`vftable'
 const int oCMobMsg_vtbl			= 8639604;
 
 
@@ -258,21 +270,29 @@ const int oCGame__TriggerChangeLevel = 7109360;
  *	Gamestate extended events
  */
 
-//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void) 
+//0x00748880 public: void __thiscall oCNpc::PreSaveGameProcessing(void)
 const int oCNpc__PreSaveGameProcessing = 7637120;
 
-//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void) 
+//0x00748B90 public: void __thiscall oCNpc::PostSaveGameProcessing(void)
 const int oCNpc__PostSaveGameProcessing = 7637904;
 
-//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &) 
+//0x006C7290 private: virtual void __thiscall oCGame::ChangeLevel(class zSTRING const &,class zSTRING const &)
 //Already defined in LeGo
 //const int oCGame__ChangeLevel = 7107216;
 
 /*
  *	No Ammo print
  */
-//0x0073C6E0 public: int __thiscall oCNpc::IsMunitionAvailable(class oCItem *) 
+//0x0073C6E0 public: int __thiscall oCNpc::IsMunitionAvailable(class oCItem *)
 const int oCNpc__IsMunitionAvailable = 7587552;
+
+/*
+ *	Log Dialogues
+ */
+//0x00786380 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
+const int zCEventManager__OnMessage = 7889792;
+
+
 
 
 //0x00832084 const zCDecal::`vftable'
@@ -324,7 +344,7 @@ func int Hlp_Is_oCNpcInventory (var int ptr) {
 // Author: szapp (Mud-freak)
 //========================================
 
-//Not yet published, 
+//Not yet published,
 func int _getInterfaceScaling () {
     //Super cheap, but effective and versatile: Just take (actual width) / (default width) of the health bar
     //MEM_InitGlobalInst();

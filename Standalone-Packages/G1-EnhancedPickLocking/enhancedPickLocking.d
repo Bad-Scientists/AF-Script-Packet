@@ -20,7 +20,7 @@ func void _hook_oCMobLockable_CanOpen () {
 	var int canOpen;
 	var int AlreadyValidated;
 
-	if (!PC_ActionButtonPressed) {
+	if (!PC_ActionKeyPressed) {
 		AlreadyValidated = FALSE;
 		return;
 	};
@@ -33,20 +33,20 @@ func void _hook_oCMobLockable_CanOpen () {
 	if ((slf.focus_vob != lastMobPtr) || (ECX != lastMobPtr)) {
 		AlreadyValidated = FALSE;
 	};
-	
+
 	if (ECX == lastMobPtr) {
 		PC_PickLockOutputVariation += 1;
 	} else {
 		PC_PickLockOutputVariation = 1;
 		lastMobPtr = ECX;
 	};
-	
+
 	//We need one more C_NPC type variable for NPC_GetTalentSkil & Npc_SetTalentValue :-/
 	var C_NPC npc; npc = Hlp_GetNPC (slf);
 
 	//By default let's assume we can open this mob
 	canOpen = TRUE;
-	
+
 	var oCMobLockable mob; mob = _^ (ECX);
 
 	var int lockType; lockType = 0;
@@ -158,7 +158,7 @@ func void _hook_oCMobLockable_CanOpen () {
 };
 
 func void G1_EnhancedPickLocking_Init () {
-	G12_GetActionButton_Init ();
+	G12_GetActionKey_Init ();
 
 	const int once = 0;
 	if (!once) {

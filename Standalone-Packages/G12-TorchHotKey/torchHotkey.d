@@ -16,7 +16,7 @@ var int PC_CarriesTorch;
 var int PC_NumberOfTorches;
 
 func int MobIsTorch__TorchHotKey (var int mobPtr) {
-	//0x007DD9E4 const oCMobFire::`vftable' 
+	//0x007DD9E4 const oCMobFire::`vftable'
 	if (!Hlp_Is_oCMobFire (mobPtr)) { return FALSE; };
 
 	if (!TORCH_ASC_MODELS_MAX) { return FALSE; };
@@ -37,7 +37,7 @@ func int MobIsTorch__TorchHotKey (var int mobPtr) {
 
 func void ReInsertBurningTorches__TorchHotKey () {
 	var int vobPtr;
-	
+
 	//Create array
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
@@ -46,7 +46,7 @@ func void ReInsertBurningTorches__TorchHotKey () {
 		MEM_Info ("No oCItem objects found.");
 		return;
 	};
-	
+
 	var int counter; counter = 0;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
@@ -72,7 +72,7 @@ func void ReInsertBurningTorches__TorchHotKey () {
 
 				//This function cannot be called in G1, G1 torches which are in hand have same flag value 1 << 10 (const int ITEM_BURN = 1 << 10;)
 				//Luckily in G1 torches work fine :)
-				
+
 				//All dropped ItLsTorchBurning do have ITEM_DROPPED flag - so we can use this
 				if ((Hlp_GetInstanceID (itm) == ItLsTorchBurning) && (amount) && (itm.flags & ITEM_DROPPED)) {
 					//Get item trafo
@@ -88,7 +88,7 @@ func void ReInsertBurningTorches__TorchHotKey () {
 
 					//Insert new item to same position
 					vobPtr = InsertItem ("ItLsTorchBurning", amount, _@ (trafo));
-					
+
 					//Restore flags
 					itm = _^ (vobPtr);
 					itm.flags = flags;
@@ -96,7 +96,7 @@ func void ReInsertBurningTorches__TorchHotKey () {
 				};
 			};
 		};
-	
+
 		i += 1;
 	end;
 
@@ -106,7 +106,7 @@ func void ReInsertBurningTorches__TorchHotKey () {
 
 func void TorchesReSendTrigger__TorchHotKey () {
 	var int vobPtr;
-	
+
 	//Create array
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
@@ -115,7 +115,7 @@ func void TorchesReSendTrigger__TorchHotKey () {
 		MEM_Info ("No oCMobFire objects found.");
 		return;
 	};
-	
+
 	var int counter; counter = 0;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
@@ -131,14 +131,12 @@ func void TorchesReSendTrigger__TorchHotKey () {
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
 		if (MobIsTorch__TorchHotKey (vobPtr)) {
-			var oCMob mob; mob = _^ (vobPtr);
-
-			if ((mob.bitfield & oCMob_bitfield_hitp) == 20) {
+			if (oCMobInter_GetHitPoints (vobPtr) == 11) {
 				//Trigger vob - will lit fireplace
 				MEM_TriggerVob (vobPtr);
 			};
 		};
-	
+
 		i += 1;
 	end;
 
@@ -161,22 +159,23 @@ func void _eventMobStartStateChange__TorchHotKey (var int dummyVariable) {
 
 	//Is this torch ? is state changing from 0 to 1 ?
 	if (MobIsTorch__TorchHotKey (ECX)) && (fromState == 0) && (toState == 1) {
-		var oCMob mob; mob = _^ (ECX);
-
-		//This is a little bit dirty workaround, but gets work done
-		if ((mob.bitfield & oCMob_bitfield_hitp) != 20) {
-			mob.bitfield = (mob.bitfield & oCMob_bitfield_hitp) << 1;
+		//Default value 10
+		var int hitp; hitp = oCMobInter_GetHitPoints (ECX);
+		if (hitp == 10) {
+			hitp += 1;
+			oCMobInter_SetHitPoints (ECX, hitp);
 
 			//I case of G2A I didn't test if this works at all
 			//Will leave here couple of additional details - that can be helpful in case of issues
 			if (zERROR_GetFilterLevel () > 0) {
 				var string msg;
+				var oCMob mob; mob = _^ (ECX);
 
 				MEM_Info ("_eventMobStartStateChange__TorchHotKey");
 
 				msg = ConcatStrings ("name: ", mob.name);
 				MEM_Info (msg);
-				
+
 				msg = IntToString (mob.bitfield & oCMob_bitfield_hitp);
 				msg = ConcatStrings ("mob.bitfield & oCMob_bitfield_hitp: ", msg);
 				MEM_Info (msg);
@@ -198,7 +197,7 @@ func void PlayerReApplyOverlays__TorchHotKey () {
 			};
 		};
 	end;
-	
+
 	/*
 	//Timed overlay is not affected by HUMANS_TORCH.MDS removal/addition
 	if (NPC_HasTimedOverlay (hero, "HUMANS_SPRINT.MDS")) {
@@ -219,7 +218,7 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
 		//Get Ctrl key status
 		var int ctrlKey; ctrlKey = MEM_GetKey ("keyAction");
-		var int ctrlSecondaryKey; ctrlSecondaryKey = MEM_GetKey ("keyAction");
+		var int ctrlSecondaryKey; ctrlSecondaryKey = MEM_GetSecondaryKey ("keyAction");
 
 		ctrlKey = MEM_KeyState (ctrlKey);
 		ctrlSecondaryKey = MEM_KeyState (ctrlSecondaryKey);
@@ -261,7 +260,7 @@ func void _eventGameState__TorchHotKey (var int state) {
 
 		//Remember how many torches we have in inventory when saving
 		PC_CarriesTorch = NPC_CarriesTorch (hero);
-		
+
 		PC_NumberOfTorches = 0;
 
 		if (PC_CarriesTorch) {
@@ -281,11 +280,11 @@ func void _eventGameState__TorchHotKey (var int state) {
 			total += NPC_HasItems (hero, ItLsTorch);
 			total += NPC_HasItems (hero, ItLsTorchBurning);
 			total += NPC_HasItems (hero, ItLsTorchBurned);
-			
+
 			if (total < PC_NumberOfTorches) {
 				CreateInvItems (hero, ItLsTorch, PC_NumberOfTorches - total);
 			};
-			
+
 			PC_NumberOfTorches = 0;
 		};
 
@@ -297,7 +296,7 @@ func void _eventGameState__TorchHotKey (var int state) {
 		//Resends triggers to all lit mobs
 		//TorchesReSendTrigger__TorchHotKey ();
 		//Function has to be called with frame function in game - if script was called immediately then mob status would be changed by object routines (Wld_SetObjectRoutine)
-		FF_ApplyOnceGT (TorchesReSendTrigger__TorchHotKey);
+		FF_ApplyOnceExtGT (TorchesReSendTrigger__TorchHotKey, 0, 1);
 	} else
 	//Level change event
 	if (state == Gamestate_ChangeLevel) {
@@ -330,7 +329,7 @@ func void G12_TorchHotKey_Init () {
 	};
 
 	//Load controls from .ini files Gothic.ini is master, mod.ini is secondary
-	
+
 	//Custom key from Gothic.ini
 	if (!MEM_GothOptExists ("KEYS", "keyTorchToggleKey")) {
 		//Custom key from mod .ini file

@@ -18,6 +18,8 @@ ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
 
+mobFunctions.d
+
 eventManager_engine.d
 eventManager.d
 

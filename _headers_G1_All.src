@@ -14,9 +14,20 @@ EngineClasses_G1\zCVisual.d
 EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oCDocumentManager.d
 EngineClasses_G1\oCViewDocument.d
+EngineClasses_G1\zPhysics.d
+EngineClasses_G1\oAiShoot.d
 
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
+ObjectFactory\zCTexture.d
+
+ObjectFactory\oCAIVobMove.d
+ObjectFactory\oCAIVobMoveTorch.d
+ObjectFactory\oCAIDrop.d
+ObjectFactory\oCAIArrow.d
+
+utils.d
+files.d
 
 keys.d
 vectors.d
@@ -28,6 +39,9 @@ ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
+ScriptBin\trafo.d
+
+mobFunctions.d
 
 anims_engine.d
 
@@ -42,7 +56,6 @@ functions_oCNPC_engine.d
 functions_NPC.d
 
 console.d
-
 interface.d
 
 game_Events_G1.d
@@ -135,3 +148,14 @@ Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
 Standalone-Packages\G12-InvItemPreview\invItemPreview.d
 Standalone-Packages\G12-BetterBars\betterBars.d
+
+Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\showAI.d
+Standalone-Packages\G12-Debugging\setSleepingMode.d
+Standalone-Packages\G12-Debugging\setRoutine.d
+
+Standalone-Packages\G12-LogDialogues\logDialogues_API.d
+Standalone-Packages\G12-LogDialogues\logDialogues.d
+
+Standalone-Packages\G12-VobThrowing\vobThrowing.d
+Standalone-Packages\G12-VobThrowing\testing.d

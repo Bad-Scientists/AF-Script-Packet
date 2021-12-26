@@ -3,7 +3,7 @@
  */
 func int eMsg_MD_GetSubType (var int eMsg) {
 	if (!eMsg) { return -1; };
-	
+
 	var int subType; subType = zCEventMessage_GetSubType (eMsg);
 
 	/*
@@ -46,11 +46,17 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	//1073741841
 
 	//1073741824;
-	//-2147483648; 
+	//-2147483648;
 
 	//var zCEventMessage eventMessage;
 	//eventMessage = _^ (eMsg);
 	//return eventMessage.subType;
+
+	//eventMessage.subType sometimes has huge values - idk why.
+	//Are these some 'bitwise flags' that we can remove?
+	//If I deduct these constants then function seems to return correct values.
+
+/*
 	const int bit6 = 1 << 6;	//64
 	const int bit7 = 1 << 7;	//128
 	const int bit8 = 1 << 8;	//256
@@ -77,12 +83,6 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	const int bit29 = 1 << 29;
 	const int bit30 = 1 << 30;	//1073741824
 
-	/*
-	eventMessage.subType sometimes has huge values - idk why.
-	Are these some 'bitwise flags' that we can remove?
-	If I deduct these constants then function seems to return correct values.
-	*/
-
 	if (subType & bit30) { subType = (subType & ~ bit30); };
 	if (subType & bit29) { subType = (subType & ~ bit29); };
 	if (subType & bit28) { subType = (subType & ~ bit28); };
@@ -108,18 +108,47 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	if (subType & bit8) { subType = (subType & ~ bit8); };
 	if (subType & bit7) { subType = (subType & ~ bit7); };
 	if (subType & bit6) { subType = (subType & ~ bit6); };
+*/
+	const int bitMask = (1 << 6) - 1;
+	return (subType & bitMask);
+};
 
-	return subType;
+func string eMsg_MD_GetMsgTypeString (var int eMsg) {
+	if (!eMsg) { return ""; };
+
+	var int vtbl; vtbl = MEM_ReadInt (eMsg);
+
+	if (vtbl == oCMsgConversation_vtbl) { return "oCMsgConversation"; };
+	if (vtbl == zCEventCore_vtbl) { return "zCEventCore"; };
+	if (vtbl == oCNpcMessage_vtbl) { return "oCNpcMessage"; };
+	if (vtbl == oCMsgDamage_vtbl) { return "oCMsgDamage"; };
+	if (vtbl == oCMsgWeapon_vtbl) { return "oCMsgWeapon"; };
+	if (vtbl == oCMsgMovement_vtbl) { return "oCMsgMovement"; };
+	if (vtbl == oCMsgAttack_vtbl) { return "oCMsgAttack"; };
+	if (vtbl == oCMsgUseItem_vtbl) { return "oCMsgUseItem"; };
+	if (vtbl == oCMsgState_vtbl) { return "oCMsgState"; };
+	if (vtbl == oCMsgManipulate_vtbl) { return "oCMsgManipulate"; };
+	if (vtbl == oCMsgMagic_vtbl) { return "oCMsgMagic"; };
+	if (vtbl == zCEvMsgCutscene_vtbl) { return "zCEvMsgCutscene"; };
+
+	//Is this NPC related?
+	if (vtbl == zCEventMusicControler_vtbl) { return "zCEventMusicControler"; };
+	if (vtbl == oCMobMsg_vtbl) { return "oCMobMsg"; };
+
+	//unknown vtbl
+	MEM_Info (ConcatStrings ("eMsg_MD_GetMsgTypeString - Unknown vtbl: ", IntToString (vtbl)));
+	return "";
 };
 
 /*
  *	Wrapper for *MD_GetSubTypeString functions
  */
-func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
+func string eMsg_MD_GetSubTypeString (var int eMsg) {
 	if (!eMsg) { return ""; };
-	if (subType < 0) { return ""; };
 
 	var int vtbl; vtbl = MEM_ReadInt (eMsg);
+
+	var int subType; subType = eMsg_MD_GetSubType (eMsg);
 
 	/*
 		Seems like not all event-like classes have their MD_GetSubTypeString function ...
@@ -172,6 +201,10 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 		return oCMsgMagic_MD_GetSubTypeString (eMsg, subType);
 	};
 
+	if (vtbl == zCEvMsgCutscene_vtbl) {
+		return zCEvMsgCutscene_MD_GetSubTypeString (eMsg, subType);
+	};
+
 	//Is this NPC related?
 	if (vtbl == zCEventMusicControler_vtbl) {
 		return zCEventMusicControler_MD_GetSubTypeString (eMsg, subType);
@@ -187,37 +220,6 @@ func string eMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 };
 
 /*
-oCMsgConversation_vtbl
--4-	00:37 Info:  0 Q:     0 1 EV_PLAYANISOUND  
--4-	00:37 Info:  0 Q:     1 1 EV_PLAYANI  
--4-	00:37 Info:  0 Q:     2 1 EV_PLAYSOUND  
--4-	00:37 Info:  0 Q:     3 1 EV_LOOKAT  
--4-	00:37 Info:  0 Q:     4 1 EV_OUTPUT  
--4-	00:37 Info:  0 Q:     5 1 EV_OUTPUTSVM  
--4-	00:37 Info:  0 Q:     6 1 EV_CUTSCENE  
--4-	00:37 Info:  0 Q:     7 1 EV_WAITTILLEND  
--4-	00:37 Info:  0 Q:     8 1 EV_ASK  
--4-	00:37 Info:  0 Q:     9 1 EV_WAITFORQUESTION  
--4-	00:37 Info:  0 Q:     10 1 EV_STOPLOOKAT  
--4-	00:37 Info:  0 Q:     11 1 EV_STOPPOINTAT  
--4-	00:37 Info:  0 Q:     12 1 EV_POINTAT  
--4-	00:37 Info:  0 Q:     13 1 EV_QUICKLOOK  
--4-	00:37 Info:  0 Q:     14 1 EV_PLAYANI_NOOVERLAY  
--4-	00:37 Info:  0 Q:     15 1 EV_PLAYANI_FACE  
--4-	00:37 Info:  0 Q:     16 1 EV_PROCESSINFOS  
--4-	00:37 Info:  0 Q:     17 1 EV_STOPPROCESSINFOS  
--4-	00:37 Info:  0 Q:     18 1 EV_OUTPUTSVM_OVERLAY  
-*/
-func string zCEventMessage_GetEventName (var int eMsg){
-	if (!eMsg) { return ""; };
-
-	var string eventName;
-	eventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
-
-	return eventName;
-};
-
-/*
  *	Function returns Event Name from Event Manager at index
  *		eMgr			Event Manager
  *		index			Event Message index (starts at 0)
@@ -230,11 +232,11 @@ func string zcEventManager_GetEventName (var int eMgr, var int index){
 
 	//Get Event Message
 	var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, index);
-	
+
 	if (!eMsg) { return ""; };
 
 	var string eventName;
-	eventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
+	eventName = eMsg_MD_GetSubTypeString (eMsg);
 
 	return eventName;
 };
@@ -245,31 +247,52 @@ func int zcEventManager_GetEventCountByEventName (var int eMgr, var string event
 	//Is there anything in event manager?
 	var int eventCount; eventCount = 0;
 	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
-	
+
 	if (eventTotal == 0) { return 0; };
 
 	var int eMsg;
 	var string thisEventName;
-	
+
 	//Loop through Event Messages
 	var int i; i = 0;
-	
-	while (i<eventTotal);
-	
-		eMsg = zCEventManager_GetEventMessage (eMgr, i);
 
-		if (eMsg) {
-			thisEventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
-			
-			if (Hlp_StrCmp (eventName, thisEventName)) {
-				eventCount += 1;
-			};
+	while (i < eventTotal);
+		thisEventName = zcEventManager_GetEventName (eMgr, i);
+
+		if (Hlp_StrCmp (eventName, thisEventName)) {
+			eventCount += 1;
 		};
-		
+
 		i += 1;
 	end;
 
 	return eventCount;
+};
+
+func int zcEventManager_GetEventByEventName (var int eMgr, var string eventName){
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+
+	if (eventTotal == 0) { return 0; };
+
+	var int eMsg;
+	var string thisEventName;
+
+	//Loop through Event Messages
+	var int i; i = 0;
+
+	while (i < eventTotal);
+		thisEventName = zcEventManager_GetEventName (eMgr, i);
+
+		if (Hlp_StrCmp (eventName, thisEventName)) {
+			return +zCEventManager_GetEventMessage (eMgr, i);
+		};
+
+		i += 1;
+	end;
+
+	return 0;
 };
 
 /*
@@ -286,7 +309,7 @@ func int NPC_EM_GetEventCount (var int slfinstance){
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
 
-	return zCEventManager_GetNumMessages (eMgr);
+	return +zCEventManager_GetNumMessages (eMgr);
 };
 
 /*
@@ -317,8 +340,7 @@ func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventN
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
-	return zcEventManager_GetEventCountByEventName (eMgr, eventName);
+	return +zcEventManager_GetEventCountByEventName (eMgr, eventName);
 };
 
 /*
@@ -330,12 +352,10 @@ func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventN
  */
 func string NPC_EM_GetActiveEventName (var int slfinstance){
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
 	if (!Hlp_Is_zCEventManager (eMgr)) { return ""; };
 
 	//Get Event Message
@@ -344,23 +364,132 @@ func string NPC_EM_GetActiveEventName (var int slfinstance){
 	if (!eMsg) { return ""; };
 
 	var string eventName;
-	eventName = eMsg_MD_GetSubTypeString (eMsg, eMsg_MD_GetSubType (eMsg));
+	eventName = eMsg_MD_GetSubTypeString (eMsg);
 
 	return eventName;
 };
 
 func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
 	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
 
 	if (!zCEventManager_GetNumMessages (eMgr)) { return 0; };
 
 	//Get Event Message
-	return zCEventManager_GetEventMessage (eMgr, index);
+	return +zCEventManager_GetEventMessage (eMgr, index);
+};
+
+func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string eventName) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	if (!zCEventManager_GetNumMessages (eMgr)) { return 0; };
+
+	//Get Event Message
+	return +zcEventManager_GetEventByEventName (eMgr, eventName);
+};
+
+/*
+ *	For testing purposes :) Prints out event-message properties
+ */
+func void _hook_zCEventManager_OnMessage__AnalyzeEM () {
+	var string msg;
+
+	var int eMsg; eMsg = MEM_ReadInt (ESP + 4);
+	var zCEventManager eMgr; eMgr = _^ (ECX);
+	if (!Hlp_Is_oCNpc (eMgr.hostVob)) { return; };
+
+	var oCNpc slf; slf = _^ (eMgr.hostVob);
+	if (!Npc_IsPlayer (slf)) { return; };
+
+	var string msgType; msgType = eMsg_MD_GetMsgTypeString (eMsg);
+	var string subType; subType = eMsg_MD_GetSubTypeString (eMsg);
+
+	MEM_Info (msgType);
+	MEM_Info (subType);
+
+	if (Hlp_Is_oCMsgConversation (eMsg)) {
+		var oCMsgConversation msgConversation;
+		msgConversation = _^ (eMsg);
+
+		msg = ConcatStrings ("targetVobName: ", msgConversation.targetVobName); MEM_Info (msg);
+		msg = ConcatStrings ("bitfield_oCNpcMessage: ", IntToString (msgConversation.bitfield_oCNpcMessage)); MEM_Info (msg);
+		msg = ConcatStrings ("text: ", msgConversation.text); MEM_Info (msg);
+		msg = ConcatStrings ("name: ", msgConversation.name); MEM_Info (msg);
+		msg = ConcatStrings ("target: ", IntToString (msgConversation.target)); MEM_Info (msg);
+		msg = ConcatStrings ("ani: ", IntToString (msgConversation.ani)); MEM_Info (msg);
+		msg = ConcatStrings ("cAni: ", IntToString (msgConversation.cAni)); MEM_Info (msg);
+		msg = ConcatStrings ("watchMsg: ", IntToString (msgConversation.watchMsg)); MEM_Info (msg);
+		msg = ConcatStrings ("handle: ", IntToString (msgConversation.handle)); MEM_Info (msg);
+		msg = ConcatStrings ("timer: ", IntToString (msgConversation.timer)); MEM_Info (msg);
+		msg = ConcatStrings ("number: ", IntToString (msgConversation.number)); MEM_Info (msg);
+		msg = ConcatStrings ("f_no: ", IntToString (msgConversation.f_no)); MEM_Info (msg);
+		msg = ConcatStrings ("f_yes: ", IntToString (msgConversation.f_yes)); MEM_Info (msg);
+	};
+
+	if (Hlp_Is_oCMsgMagic (eMsg)) {
+		var oCMsgMagic msgMagic;
+		msgMagic = _^ (eMsg);
+
+		msg = ConcatStrings ("targetVobName: ", msgMagic.targetVobName); MEM_Info (msg);
+		msg = ConcatStrings ("bitfield_oCNpcMessage: ", IntToString (msgMagic.bitfield_oCNpcMessage)); MEM_Info (msg);
+		msg = ConcatStrings ("what: ", IntToString (msgMagic.what)); MEM_Info (msg);
+		msg = ConcatStrings ("level: ", IntToString (msgMagic.level)); MEM_Info (msg);
+		msg = ConcatStrings ("removeSymbol: ", IntToString (msgMagic.removeSymbol)); MEM_Info (msg);
+		msg = ConcatStrings ("manaInvested: ", IntToString (msgMagic.manaInvested)); MEM_Info (msg);
+		msg = ConcatStrings ("energyLeft: ", IntToString (msgMagic.energyLeft)); MEM_Info (msg);
+		msg = ConcatStrings ("target: ", IntToString (msgMagic.target)); MEM_Info (msg);
+		msg = ConcatStrings ("activeSpell: ", IntToString (msgMagic.activeSpell)); MEM_Info (msg);
+	};
+
+	if (Hlp_Is_oCMsgAttack (eMsg)) {
+		var oCMsgAttack msgAttack;
+		msgAttack = _^ (eMsg);
+
+		msg = ConcatStrings ("targetVobName: ", msgAttack.targetVobName); MEM_Info (msg);
+		msg = ConcatStrings ("bitfield_oCNpcMessage: ", IntToString (msgAttack.bitfield_oCNpcMessage)); MEM_Info (msg);
+		msg = ConcatStrings ("combo: ", IntToString (msgAttack.combo)); MEM_Info (msg);
+		msg = ConcatStrings ("target: ", IntToString (msgAttack.target)); MEM_Info (msg);
+		msg = ConcatStrings ("hitAni: ", IntToString (msgAttack.hitAni)); MEM_Info (msg);
+		msg = ConcatStrings ("startFrame: ", toStringF (msgAttack.startFrame)); MEM_Info (msg);
+		msg = ConcatStrings ("bitfield_oCMsgAttack: ", IntToString (msgAttack.bitfield_oCMsgAttack)); MEM_Info (msg);
+	};
+
+	if (Hlp_Is_oCMsgManipulate (eMsg)) {
+		var oCMsgManipulate msgManipulate;
+		msgManipulate = _^ (eMsg);
+
+		msg = ConcatStrings ("targetVobName: ", msgManipulate.targetVobName); MEM_Info (msg);
+		msg = ConcatStrings ("bitfield_oCNpcMessage: ", IntToString (msgManipulate.bitfield_oCNpcMessage)); MEM_Info (msg);
+		msg = ConcatStrings ("name: ", msgManipulate.name); MEM_Info (msg);
+		msg = ConcatStrings ("slot: ", msgManipulate.slot); MEM_Info (msg);
+		msg = ConcatStrings ("targetVob: ", IntToString (msgManipulate.targetVob)); MEM_Info (msg);
+		msg = ConcatStrings ("flag: ", IntToString (msgManipulate.flag)); MEM_Info (msg);
+		msg = ConcatStrings ("aniCombY: ", toStringF (msgManipulate.aniCombY)); MEM_Info (msg);
+		//msg = ConcatStrings ("npcSlot: ", IntToString (msgManipulate.npcSlot)); MEM_Info (msg);
+		//msg = ConcatStrings ("targetState: ", IntToString (msgManipulate.targetState)); MEM_Info (msg);
+		//msg = ConcatStrings ("aniID: ", IntToString (msgManipulate.aniID)); MEM_Info (msg);
+	};
+};
+
+func void G12_AnalyzeEventManager_Init () {
+	const int once = 0;
+	if (!once) {
+		//0x006DD090 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
+		HookEngine (zCEventManager__OnMessage, 7, "_hook_zCEventManager_OnMessage__AnalyzeEM");
+
+		//0x006DE030 protected: virtual void __thiscall zCEventManager::InsertInList(class zCEventMessage *)
+		//const int zCEventManager__InsertInList_G1 = 7200816;
+		//HookEngine (zCEventManager__InsertInList_G1, 6, "_hook_zCEventManager_OnMessage__AnalyzeEM");
+
+		once = 1;
+	};
 };

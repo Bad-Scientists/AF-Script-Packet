@@ -1,7 +1,13 @@
 engine_addresses_G2.d
+
+EngineClasses_G2\zCViewDialog.d
+
 functions_oCNpc_engine.d
 
 game_Events_G12.d
+
+infoManager_engine.d
+infoManager.d
 
 Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d
