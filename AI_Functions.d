@@ -360,3 +360,76 @@ func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
 
 	return TRUE;
 };
+
+/*
+ *
+ */
+func void _AI_MobSetIdealPosition () {
+//func void NPC_MobSetIdealPosition (var int slfInstance) {
+	//This function is called from AI_Function where ECX is pointer to NPC
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	var oCNPC slf; slf = _^ (ECX);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!slf.interactMob) { return; };
+
+	//oCMobInter_ScanIdealPositions (slf.interactMob);
+
+	var oCMobInter mob; mob = _^ (slf.interactMob);
+
+	if (mob.optimalPosList_next) {
+		var int i; i = 0;
+
+		var int ptr;
+		var zCList list;
+
+		ptr = mob.optimalPosList_next;
+
+		while (ptr);
+			list = _^ (ptr);
+			ptr = list.data;
+
+			if (ptr) {
+				//TMobOptPos.trafo is at offset 0, so we can read trafo directly from ptr
+
+				//AlignVobAt (_@ (slf), ptr); --> copying whole function here - in order to have this file 'standalone'
+
+				var int trfPtr; trfPtr = ptr;
+				var int vobPtr; vobPtr = _@ (slf);
+
+				//0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+				const int zCVob__SetTrafoObjToWorld_G1 = 6219616;
+
+				//0x0061BC80 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+				const int zCVob__SetTrafoObjToWorld_G2 = 6405248;
+
+				// Lift collision
+				var zCVob vob; vob = _^ (vobPtr);
+				var int bits; bits = vob.bitfield[0];
+				vob.bitfield[0] = vob.bitfield[0] & ~zCVob_bitfield0_collDetectionStatic & ~zCVob_bitfield0_collDetectionDynamic;
+
+				const int call = 0;
+				if (CALL_Begin(call)) {
+					CALL_PtrParam(_@(trfPtr));
+					CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2(zCVob__SetTrafoObjToWorld_G1, zCVob__SetTrafoObjToWorld_G2));
+					call = CALL_End();
+				};
+
+				// Restore bits
+				vob.bitfield[0] = bits;
+				//<--
+				return;
+			};
+
+			ptr = list.next;
+		end;
+	};
+//};
+};
+
+func void AI_MobSetIdealPosition (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	AI_Function (slf, _AI_MobSetIdealPosition);
+};
