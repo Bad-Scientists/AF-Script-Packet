@@ -783,3 +783,63 @@ func void NPC_SetShowAI (var int slfInstance, var int enable) {
 	CALL_IntParam (enable);
 	CALL__thiscall (slf.human_ai, MEMINT_SwitchG1G2 (oCAIHuman__SetShowAI_G1, oCAIHuman__SetShowAI_G2));
 };
+
+func void NPC_MobSetIdealPosition (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!slf.interactMob) { return; };
+
+	//oCMobInter_ScanIdealPositions (slf.interactMob);
+
+	var oCMobInter mob; mob = _^ (slf.interactMob);
+
+	if (mob.optimalPosList_next) {
+		var int i; i = 0;
+
+		var int ptr;
+		var zCList list;
+
+		ptr = mob.optimalPosList_next;
+
+		while (ptr);
+			list = _^ (ptr);
+			ptr = list.data;
+
+			if (ptr) {
+				//TMobOptPos.trafo is at offset 0, so we can read trafo directly from ptr
+
+				//AlignVobAt (_@ (slf), ptr); --> copying whole function here - in order to have this file 'standalone'
+
+				var int trfPtr; trfPtr = ptr;
+				var int vobPtr; vobPtr = _@ (slf);
+
+				//0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+				const int zCVob__SetTrafoObjToWorld_G1 = 6219616;
+
+				//0x0061BC80 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+				const int zCVob__SetTrafoObjToWorld_G2 = 6405248;
+
+				// Lift collision
+				var zCVob vob; vob = _^ (vobPtr);
+				var int bits; bits = vob.bitfield[0];
+				vob.bitfield[0] = vob.bitfield[0] & ~zCVob_bitfield0_collDetectionStatic & ~zCVob_bitfield0_collDetectionDynamic;
+
+				const int call = 0;
+				if (CALL_Begin(call)) {
+					CALL_PtrParam(_@(trfPtr));
+					CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2(zCVob__SetTrafoObjToWorld_G1, zCVob__SetTrafoObjToWorld_G2));
+					call = CALL_End();
+				};
+
+				// Restore bits
+				vob.bitfield[0] = bits;
+				//<--
+				return;
+			};
+
+			ptr = list.next;
+		end;
+	};
+};
