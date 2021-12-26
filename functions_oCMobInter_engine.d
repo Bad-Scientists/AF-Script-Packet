@@ -101,3 +101,47 @@ func int oCMobInter_GetFreePosition (var int mobPtr, var int slfInstance, var in
 
 	return CALL_RetValAsInt ();
 };
+
+func void oCMobInter_SetIdealPosition (var int mobPtr, var int slfInstance) {
+	//0x0067CEF0 protected: void __thiscall oCMobInter::SetIdealPosition(class oCNpc *)
+	const int oCMobInter__SetIdealPosition_G1 = 6803184;
+
+	//0x0071E240 public: void __thiscall oCMobInter::SetIdealPosition(class oCNpc *)
+	const int oCMobInter__SetIdealPosition_G2 = 7463488;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__SetIdealPosition_G1, oCMobInter__SetIdealPosition_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCMobInter_SetHeading (var int mobPtr, var int slfInstance) {
+	//0x0067CEA0 protected: void __thiscall oCMobInter::SetHeading(class oCNpc *)
+	const int oCMobInter__SetHeading_G1 = 6803104;
+
+	//0x0071E1F0 public: void __thiscall oCMobInter::SetHeading(class oCNpc *)
+	const int oCMobInter__SetHeading_G2 = 7463408;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__SetHeading_G1, oCMobInter__SetHeading_G2));
+		call = CALL_End();
+	};
+};
