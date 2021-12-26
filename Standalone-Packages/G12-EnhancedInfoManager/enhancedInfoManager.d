@@ -1,7 +1,4 @@
 /*
- *	Required LeGo initialization for frame functions in case you want to have Spinner indicator animated (InfoManagerSpinnerIndicatorAnimation)
- *		LeGo_Init (legoFlags | LeGo_FrameFunctions);
- *
  *	How to enable this feature:
  *
  *	func void Init_Global () {
@@ -35,7 +32,7 @@
  */
 
 /*
- *	Variables which you can adjust as you need
+ *	Variables which you can adjust as you need ...
  */
 
 //Default dialog colors
@@ -52,8 +49,6 @@ const string InfoManagerDisabledColorDialogGrey = "808080";		//Disabled color - 
 const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;		//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
 
 const int InfoManagerSpinnerPageSize = 5;				//Page Up/Page Down
-var int InfoManagerSpinnerValueMin;					//Home
-var int InfoManagerSpinnerValueMax;					//End
 
 const string InfoManagerIndicatorColorDefault = "C8C8C8";		//Default color for 'answer' and 'spinner' indicator - if empty it will be same as underlying dialog
 const int InfoManagerIndicatorAlpha = 255;				//Default alpha value for 'answer' and 'spinner' indicator
@@ -61,14 +56,23 @@ const int InfoManagerIndicatorAlpha = 255;				//Default alpha value for 'answer'
 const string InfoManagerSpinnerIndicatorString = "<-- -->";		//Default spinner indicator (non animated)
 const string InfoManagerAnswerIndicatorString = "...";			//Default answer indicator
 
-const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want animated spinner. Animated spinners require LeGo_FrameFunctions intialization !
-									//LeGo_Init (yourBits | LeGo_FrameFunctions);
+const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want animated spinner.
 
 //Dialog 'NumKey' controls [WIP]
 const int InfoManagerNumKeysControls = 1;				//Set to TRUE if you want to enable num key support for dialogs
 const int InfoManagerNumKeysNumbers = 0;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
-const int InfoManagerAlphaBlendFunc = ALPHA_FUNC_ADD;			//ALPHA_FUNC_NONE, ALPHA_FUNC_ADD (is kinda nicer :) )
+/*
+const int ALPHA_FUNC_MAT_DEFAULT	= 0;
+const int ALPHA_FUNC_NONE		= 1;
+const int ALPHA_FUNC_BLEND		= 2;
+const int ALPHA_FUNC_ADD		= 3;
+const int ALPHA_FUNC_SUB		= 4;
+const int ALPHA_FUNC_MUL		= 5;
+const int ALPHA_FUNC_MUL2		= 6;
+const int ALPHA_FUNC_TEST		= 7;
+*/
+const int InfoManagerAlphaBlendFunc = 3;				//ALPHA_FUNC_NONE (is Gothic default), ALPHA_FUNC_ADD (is kinda nicer :) )
 
 const int cIM_RememberSelectedChoice_None	= 0;			//Does nothing (default vanilla behaviour)
 const int cIM_RememberSelectedChoice_All	= 1;			//Moves cursor to last selected choice
@@ -79,6 +83,9 @@ const int InfoManagerRememberSelectedChoice = cIM_RememberSelectedChoice_Spinner
 /*
  *	Internal variables
  */
+
+var int InfoManagerSpinnerValueMin;	//Home
+var int InfoManagerSpinnerValueMax;	//End
 
 //Dialog 'Answering system'
 var int InfoManagerAnswerPossible;
@@ -127,8 +134,9 @@ func int oCInfoManager_GetInfoPtr__EIM (var int index) {
 	return MEM_ReadIntArray (_@ (InfoManagerDialogInstPtr), index);
 };
 
-
-//Split into it's own function to refresh content of InfoManagerSpinnerIndicatorString
+/*
+ *	If you want, you can add your own 'animation' here :)
+ */
 func void InfoManagerSpinnerAnimate (var int animate) {
 	var int aniStep;
 
@@ -188,7 +196,7 @@ func void InfoManagerSpinnerAniFunction () {
 
 	//Remove if not required
 	if ((!InfoManagerSpinnerPossible) || (!InfoManagerSpinnerIndicator)) {
-		FF_Remove (InfoManagerSpinnerAniFunction);
+		//FF_Remove (InfoManagerSpinnerAniFunction);
 	} else {
 		//Animate
 		var zCViewText2 txtIndicator;
@@ -1307,15 +1315,15 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			if (key == KEY_HOME) {
 				InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
 				cancel = TRUE;
-			};
+			} else
 
 			//End
 			if (key == KEY_END) {
 				InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
 				cancel = TRUE;
-			};
+			} else
 
-			//Page Up
+			//Page Up --> - InfoManagerSpinnerPageSize
 			if (key == KEY_PRIOR) {
 				//
 				//12 --> 10 --> 5 --> 1 --> 12
@@ -1330,34 +1338,37 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
 					};
 				} else {
-					InfoManagerSpinnerValue -= InfoManagerSpinnerPageSize;
+					InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
 				};
 
 				cancel = TRUE;
-			};
+			} else
 
-			//Page Down
+			//Page Down --> + InfoManagerSpinnerPageSize
 			if (key == KEY_NEXT) {
 				//1 --> 5 --> 10 --> 12 --> 1
 				if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMax) {
-					InfoManagerSpinnerValue = (InfoManagerSpinnerValue / InfoManagerSpinnerPageSize) * InfoManagerSpinnerPageSize;
-					InfoManagerSpinnerValue += InfoManagerSpinnerPageSize;
+					if ((((InfoManagerSpinnerValue / InfoManagerSpinnerPageSize) + 1) * InfoManagerSpinnerPageSize) > InfoManagerSpinnerValue) {
+						InfoManagerSpinnerValue = ((InfoManagerSpinnerValue / InfoManagerSpinnerPageSize) + 1) * InfoManagerSpinnerPageSize;
+					} else {
+						InfoManagerSpinnerValue += InfoManagerSpinnerPageSize;
+					};
 
 					if (InfoManagerSpinnerValue > InfoManagerSpinnerValueMax) {
 						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
 					};
 				} else {
-					InfoManagerSpinnerValue += InfoManagerSpinnerPageSize;
+					InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
 				};
 
 				cancel = TRUE;
-			};
+			} else
 
 			if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft")))
 			{
 				InfoManagerSpinnerValue -= 1;
 				cancel = TRUE;
-			};
+			} else
 
 			if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight")))
 			{
@@ -1731,6 +1742,8 @@ MEM_InformationMan.LastMethod:
 	var int timerHorizontalScrolling;
 
 	var int horizontalScrollingChoiceNumber;
+
+	var int timerSpinnerAnimation;
 
 //---
 
@@ -2926,10 +2939,10 @@ MEM_InformationMan.LastMethod:
 						//Insert indicator to dialog choices
 						MEM_ArrayInsert (choiceView + 172, InfoManagerSpinnerIndicator);
 
-						if (InfoManagerSpinnerIndicatorAnimation) {
-							FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
-							InfoManagerSpinnerAnimate (FALSE);
-						};
+						//if (InfoManagerSpinnerIndicatorAnimation) {
+						//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
+						//	InfoManagerSpinnerAnimate (FALSE);
+						//};
 					};
 
 					//
@@ -3103,6 +3116,13 @@ MEM_InformationMan.LastMethod:
 					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
 						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
 					};
+				};
+			} else {
+				//Animation implemented without FrameFunctions
+				timerSpinnerAnimation += MEM_Timer.frameTime;
+				if (timerSpinnerAnimation > 80) {
+					timerSpinnerAnimation -= 80;
+					InfoManagerSpinnerAniFunction ();
 				};
 			};
 		};
