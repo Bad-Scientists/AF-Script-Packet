@@ -161,15 +161,11 @@ func void oCMobInter_SetHitPoints (var int mobPtr, var int hitp) {
  *	Function traverses through all oCMobInter objects and updates onStateFunc, conditionFunc and useWithItem for all objects, which do have specified visual name.
  *	Usage:
 
-	const int VISUAL_LIST_COUNT = 2;
-	const string VISUAL_LIST [VISUAL_LIST_COUNT] = {
-		"ORE_GROUND.ASC",
-		"ORE_GROUND_GOLD.ASC"
-	};
+	oCMobInter_SetupAllMobsByVisual ("ORE_GROUND.ASC", "MINING", "", "ITMWPICKAXE");
 
-	oCMobInter_SetupAllMobsByVisual (VISUAL_LIST, VISUAL_LIST_COUNT, "MINING", "", "ITMWPICKAXE");
+	Update: we cannot pass static array as an argument here!
  */
-func void oCMobInter_SetupAllMobsByVisual (var string listVisual, var int listVisualCount, var string onStateFunc, var string conditionFunc, var string useWithItem) {
+func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string onStateFunc, var string conditionFunc, var string useWithItem) {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	if (!SearchVobsByClass ("oCMobInter", vobListPtr)) {
@@ -181,11 +177,9 @@ func void oCMobInter_SetupAllMobsByVisual (var string listVisual, var int listVi
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
 	var int i; i = 0;
-	var int j; j = 0;
 
 	var int count; count = vobList.numInArray;
 
-	var string searchVisual;
 	var string mobVisualName;
 
 	while (i < count);
@@ -195,15 +189,11 @@ func void oCMobInter_SetupAllMobsByVisual (var string listVisual, var int listVi
 		//Get visual name
 		mobVisualName = Vob_GetVisualName (vobPtr);
 
-		repeat (j, listVisualCount);
-			searchVisual = MEM_ReadStatStringArr (listVisual, j);
-			if (Hlp_StrCmp (mobVisualName, searchVisual)) {
-				oCMobInter_SetOnStateFuncName (vobPtr, onStateFunc);
-				oCMobInter_SetConditionFunc (vobPtr, conditionFunc);
-				oCMobInter_SetUseWithItem (vobPtr, useWithItem);
-				break;
-			};
-		end;
+		if (Hlp_StrCmp (mobVisualName, searchVisual)) {
+			oCMobInter_SetOnStateFuncName (vobPtr, onStateFunc);
+			oCMobInter_SetConditionFunc (vobPtr, conditionFunc);
+			oCMobInter_SetUseWithItem (vobPtr, useWithItem);
+		};
 
 		i += 1;
 	end;
