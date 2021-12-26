@@ -386,3 +386,47 @@ func string InfoManager_GetChoiceDescription (var int index) {
 
 	return "";
 };
+
+/*
+ *	Npc_KnowsInfoByString
+ *	 - function checks out if oCInfo.told property != 0
+ *	 - I will be using this one to avoid compilation issues (function will allow me to compile incomplete/interconnected dialogues)
+ *	 - but it might be actually quite useful - as it also works with .permanent dialogues, unlike vanilla Npc_KnowsInfo!
+ *	 - NPC parameter is pointless ... it's always 'hero', using it just for sake of consistency with Npc_KnowsInfo
+ *
+ *	Altered version of setInfoToTold function, originally created by Cryp18Struct
+ *	Original function: https://forum.worldofplayers.de/forum/threads/1529361-Dialog-Instance-auf-TRUE-setzten?p=25955510&viewfull=1#post25955510
+ */
+func int Npc_KnowsInfoByString (var int slfInstance, var string instanceName) {
+	// Find instance symbol by instance name
+	var int symbID; symbID = MEM_GetSymbolIndex(instanceName);
+	if (symbID < 0) || (symbID >= currSymbolTableLength) {
+		MEM_Info(ConcatStrings("Npc_KnowsInfoByString: symbol not found ", instanceName));
+		return 0;
+	};
+
+	var zCPar_Symbol symb; symb = _^ (MEM_GetSymbolByIndex(symbID));
+
+	// Verify that it is an instance
+	if ((symb.bitfield & zCPar_Symbol_bitfield_type) != zPAR_TYPE_INSTANCE)
+	|| (!symb.offset) {
+		MEM_Info(ConcatStrings("Npc_KnowsInfoByString: symbol is not an instance ", instanceName));
+		return 0;
+	};
+
+	// Verify that it is a oCInfo instance
+
+	//0x007DCD8C const oCInfo::`vftable'
+	const int oCInfo___vftable_G1 = 8244620;
+
+	//0x0083C44C const oCInfo::`vftable'
+	const int oCInfo___vftable_G2 = 8635468;
+
+	if (MEM_ReadInt(symb.offset - oCInfo_C_INFO_Offset) != MEMINT_SwitchG1G2 (oCInfo___vftable_G1, oCInfo___vftable_G2)) {
+		MEM_Info(ConcatStrings("Npc_KnowsInfoByString: symbol is not a oCInfo instance: ", instanceName));
+		return 0;
+	};
+
+	var oCInfo info; info = _^ (symb.offset - oCInfo_C_INFO_Offset);
+	return info.told;
+};
