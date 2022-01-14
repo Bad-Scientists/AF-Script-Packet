@@ -295,6 +295,32 @@ func int zcEventManager_GetEventByEventName (var int eMgr, var string eventName)
 	return 0;
 };
 
+func int zcEventManager_GetIndexByEventName (var int eMgr, var string eventName){
+	if (!Hlp_Is_zCEventManager (eMgr)) { return -1; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+
+	if (eventTotal == 0) { return -1; };
+
+	var int eMsg;
+	var string thisEventName;
+
+	//Loop through Event Messages
+	var int i; i = 0;
+
+	while (i < eventTotal);
+		thisEventName = zcEventManager_GetEventName (eMgr, i);
+
+		if (Hlp_StrCmp (eventName, thisEventName)) {
+			return i;
+		};
+
+		i += 1;
+	end;
+
+	return -1;
+};
+
 /*
  *	Function returns number of Event messages in NPC's Event Manager
  *		slfinstance		NPC instance
