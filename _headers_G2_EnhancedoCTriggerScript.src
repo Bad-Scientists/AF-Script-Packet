@@ -7,10 +7,17 @@ ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 
+ObjectFactory\oCMsgMovement.d
+ObjectFactory\oCMsgManipulate.d
+
 game_engine.d
 world_engine.d
 
 functions_oCNpc_engine.d
+
+eventManager_engine.d
+eventManager.d
+
 AI_Functions.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d

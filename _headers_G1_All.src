@@ -16,15 +16,12 @@ EngineClasses_G1\oCDocumentManager.d
 EngineClasses_G1\oCViewDocument.d
 EngineClasses_G1\zPhysics.d
 EngineClasses_G1\oAiShoot.d
+EngineClasses_G1\TMobOptPos.d
 
-ObjectFactory\zCDecal.d
-ObjectFactory\zCMaterial.d
-ObjectFactory\zCTexture.d
-
-ObjectFactory\oCAIVobMove.d
-ObjectFactory\oCAIVobMoveTorch.d
-ObjectFactory\oCAIDrop.d
-ObjectFactory\oCAIArrow.d
+//Sound
+EngineClasses_G1\zTSound3DParams.d
+EngineClasses_G1\zCActiveSnd.d
+EngineClasses_G1\zCSndFrame.d
 
 utils.d
 files.d
@@ -40,6 +37,18 @@ ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d
+
+ObjectFactory\zCDecal.d
+ObjectFactory\zCMaterial.d
+ObjectFactory\zCTexture.d
+
+ObjectFactory\oCAIVobMove.d
+ObjectFactory\oCAIVobMoveTorch.d
+ObjectFactory\oCAIDrop.d
+ObjectFactory\oCAIArrow.d
+
+ObjectFactory\oCMsgMovement.d
+ObjectFactory\oCMsgManipulate.d
 
 mobFunctions.d
 
