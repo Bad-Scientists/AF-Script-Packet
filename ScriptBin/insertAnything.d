@@ -1,6 +1,9 @@
 /*
  *	Author: szapp (mud-freak)
  *	Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page2?p=25712257&viewfull=1#post25712257
+ *
+ *	Small change in case of AlignVobAt we are also saving & restoring BBox
+ *	Small change in case of SetVobToFloor we are also saving & restoring BBox
  */
 
 /*
@@ -238,6 +241,25 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
         return;
     };
 
+//--> Save BBox
+	var zTBBox3D bbox;
+
+//func int zCVob_GetBBox3DLocal (var int vobPtr) {
+	//0x005EDCF0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G1 = 6216944;
+
+	//0x0061B1F0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G2 = 6402544;
+
+	//if (!vobPtr) { return 0; };
+
+	//CALL_RetValIsStruct only supported in disposable calls
+	CALL_RetValIsStruct (24);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetBBox3DLocal_G1, zCVob__GetBBox3DLocal_G2));
+	bbox = _^ (CALL_RetValAsPtr ());
+//};
+//<--
+
     const int zCVob__SetTrafoObjToWorld_G1 = 6219616; //0x5EE760
     const int zCVob__SetTrafoObjToWorld_G2 = 6405248; //0x61BC80
 
@@ -255,6 +277,28 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
 
     // Restore bits
     vob.bitfield[0] = bits;
+
+//--> Restore BBox
+//func void zCVob_SetBBox3DLocal (var int vobPtr, var int bboxPtr) {
+	//0x005EDC40 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G1 = 6216768;
+
+	//0x0061B140 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G2 = 6402368;
+
+	//if (!bboxPtr) { return; };
+	//if (!vobPtr) { return; };
+
+	var int bboxPtr; bboxPtr = _@ (bbox);
+
+	const int call2 = 0;
+	if (CALL_Begin(call2)) {
+		CALL_PtrParam (_@ (bboxPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DLocal_G1, zCVob__SetBBox3DLocal_G2));
+		call2 = CALL_End();
+	};
+//};
+//<--
 };
 
 
@@ -266,6 +310,25 @@ func void SetVobToFloor(var int vobPtr) {
         return;
     };
 
+//--> Save BBox
+	var zTBBox3D bbox;
+
+//func int zCVob_GetBBox3DLocal (var int vobPtr) {
+	//0x005EDCF0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G1 = 6216944;
+
+	//0x0061B1F0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G2 = 6402544;
+
+	//if (!vobPtr) { return 0; };
+
+	//CALL_RetValIsStruct only supported in disposable calls
+	CALL_RetValIsStruct (24);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetBBox3DLocal_G1, zCVob__GetBBox3DLocal_G2));
+	bbox = _^ (CALL_RetValAsPtr ());
+//};
+//<--
+
     // Correct height
     var zCVob vob; vob = _^(vobPtr);
     var int half; half = subf(vob.trafoObjToWorld[7], vob.bbox3D_mins[1]);
@@ -275,6 +338,28 @@ func void SetVobToFloor(var int vobPtr) {
 
     // Update position
     AlignVobAt(vobPtr, _@(vob.trafoObjToWorld));
+
+//--> Restore BBox
+//func void zCVob_SetBBox3DLocal (var int vobPtr, var int bboxPtr) {
+	//0x005EDC40 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G1 = 6216768;
+
+	//0x0061B140 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G2 = 6402368;
+
+	//if (!bboxPtr) { return; };
+	//if (!vobPtr) { return; };
+
+	var int bboxPtr; bboxPtr = _@ (bbox);
+
+	const int call2 = 0;
+	if (CALL_Begin(call2)) {
+		CALL_PtrParam (_@ (bboxPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DLocal_G1, zCVob__SetBBox3DLocal_G2));
+		call2 = CALL_End();
+	};
+//};
+//<--
 };
 
 
