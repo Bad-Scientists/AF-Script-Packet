@@ -1,11 +1,18 @@
 /*
  *	Rain control
+ *
  *	 - allows you to easily control when it is raining
  *	 - allows you to start / stop rain more immersively - with smooth rain fade-in - fade-out transition
+ *	 - allows you to change weather type (G2A only)
+ *
+ *	Required additional LeGo flags: LeGo_Gamestate
  *
  *	Inspiration for code below came from Sektenspinner's post:
  *	Original post: https://forum.worldofplayers.de/forum/threads/879891-Skriptpaket-Ikarus-2/page17?p=15187837&viewfull=1#post15187837
  */
+
+const int zTWEATHER_SNOW = 0;
+const int zTWEATHER_RAIN = 1;
 
 /*
  *	Internal variables
@@ -16,12 +23,16 @@ var int RainControl_EndH;
 var int RainControl_EndM;
 
 var int RainControl_DontRain;
+var int RainControl_RainForever;
 
 var int RainControl_StartRainOverride;
 var int RainControl_StopRainOverride;
 
+var int RainControl_WeatherType;
+var int RainControl_WeatherOverride;
+
 /*
- *	Engine function that sets rain weight and duration (not yet compatible, hook _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl overrides values without respecting this function)
+ *	Engine function that sets rain weight and duration (not yet compatible, hook _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl overrides values without taking into consideration this function)
  */
 func void zCSkyControler_Outdoor_SetRainFXWeight (var int weightF, var int durationF) {
 	//0x005C1090 public: void __thiscall zCSkyControler_Outdoor::SetRainFXWeight(float,float)
@@ -32,9 +43,119 @@ func void zCSkyControler_Outdoor_SetRainFXWeight (var int weightF, var int durat
 
 	if (!MEM_World.skyControlerOutdoor) { return; };
 
-	CALL_FloatParam (durationF);
-	CALL_FloatParam (weightF);
-	CALL__thiscall (MEM_World.skyControlerOutdoor, MEMINT_SwitchG1G2 (zCSkyControler_Outdoor__SetRainFXWeight_G1, zCSkyControler_Outdoor__SetRainFXWeight_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_FloatParam (_@ (durationF));
+		CALL_FloatParam (_@ (weightF));
+		CALL__thiscall (_@ (MEM_World.skyControlerOutdoor), MEMINT_SwitchG1G2 (zCSkyControler_Outdoor__SetRainFXWeight_G1, zCSkyControler_Outdoor__SetRainFXWeight_G2));
+
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Engine function that sets weather type
+ */
+func void zCSkyControler_Outdoor_SetWeatherType (var int weatherType) {
+	//
+	const int zCSkyControler_Outdoor__SetWeatherType_G1 = 0;
+
+	//0x005EB830 public: virtual void __thiscall zCSkyControler_Outdoor::SetWeatherType(enum zTWeather)
+	const int zCSkyControler_Outdoor__SetWeatherType_G2 = 6207536;
+
+	if (!MEM_World.skyControlerOutdoor) { return; };
+
+	//Don't do anything in G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (weatherType));
+		CALL__thiscall (_@ (MEM_World.skyControlerOutdoor), MEMINT_SwitchG1G2 (zCSkyControler_Outdoor__SetWeatherType_G1, zCSkyControler_Outdoor__SetWeatherType_G2));
+
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Engine function that sets weather type
+ */
+func void zCOutdoorRainFX_SetWeatherType (var int weatherType) {
+	//
+	const int zCOutdoorRainFX__SetWeatherType_G1 = 0;
+
+	//0x005E1570 public: void __thiscall zCOutdoorRainFX::SetWeatherType(enum zTWeather)
+	const int zCOutdoorRainFX__SetWeatherType_G2 = 6165872;
+
+	if (!MEM_SkyController.rainFX_outdoorRainFX) { return; };
+
+	//Don't do anything in G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (weatherType));
+		CALL__thiscall (_@ (MEM_SkyController.rainFX_outdoorRainFX), MEMINT_SwitchG1G2 (zCOutdoorRainFX__SetWeatherType_G1, zCOutdoorRainFX__SetWeatherType_G2));
+
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Function reset's weather (hooked function will not update weather type, engine will update setup automatically)
+ *
+ *	Seems like all we have to do to 'reset' weather is to temporarily update hero's status - this will also update weather!
+ */
+func void Wld_ResetWeather () {
+	//0x009A4A20 protected: static enum oHEROSTATUS oCZoneMusic::s_herostatus
+	const int oCZoneMusic__s_herostatus_G2 = 10111520;
+
+	RainControl_DontRain = FALSE;
+	RainControl_RainForever = FALSE;
+	RainControl_WeatherOverride = FALSE;
+
+	RainControl_StartRainOverride = FALSE;
+	RainControl_StopRainOverride = FALSE;
+
+	//Don't do anything in G1 (we don't need to do anything in G1 ...)
+	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+
+	//Override status - this will force update
+	MemoryProtectionOverride (oCZoneMusic__s_herostatus_G2, 4);
+	MEM_WriteInt (oCZoneMusic__s_herostatus_G2, -1);
+};
+
+/*
+ *	Function changes weather type (engine can override this at any time)
+ */
+func void Wld_SetWeatherType (var int weatherType) {
+	//Engine function zCSkyControler_Outdoor_SetWeatherType does not allow us to change weather in the middle of the rain
+	//Also function zCSkyControler_Outdoor_SetWeatherType seems to trigger snow effect immediately
+
+	//zCOutdoorRainFX_SetWeatherType on the other hand allows us to change weather at any point, also it is not starting anything on its own
+
+	//MEM_SkyController.rainFX_outdoorRainFXWeight = FLOATNULL;
+	//zCSkyControler_Outdoor_SetWeatherType (weatherType);
+
+	//Don't do anything in G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+
+	//In G1 we don't have property MEM_SkyController.m_enuWeather, that's why we have to work with offset here (in order to be able to compile scripts)
+	//MEM_SkyController.m_enuWeather = weatherType;
+	MEM_WriteInt (_@ (MEM_SkyController) + 48, weatherType);
+	zCOutdoorRainFX_SetWeatherType (weatherType);
+};
+
+/*
+ *	Function changes weather type - and instructs our hook to override weather type
+ */
+func void Wld_ForceWeatherType (var int weatherType) {
+	//Don't do anything in G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+
+	RainControl_WeatherOverride = TRUE;
+	RainControl_WeatherType = weatherType;
+	Wld_SetWeatherType (weatherType);
 };
 
 /*
@@ -51,15 +172,76 @@ func void GetRainTime__RainControl () {
  *	Function returns TRUE if it is raining
  */
 func int Wld_IsRaining_G1 () {
-	//this should work :)
+	//this should work :) (for both G1 & G2A)
 	return (gf (MEM_SkyController.rainFX_outdoorRainFXWeight, FLOATNULL));
 };
 
 /*
- *	'Emulation' for G2 m_bDontRain
+ *	Function returns true if rain is fading in
+ */
+func int Wld_IsRainFadingIn () {
+	if (!Wld_IsRaining_G1 ()) {
+		return FALSE;
+	};
+
+	var int currentTime; currentTime = zCSkyControler_Outdoor_GetTime ();
+	var int deltaFadeIn; deltaFadeIn = subF (currentTime, MEM_SkyController.rainFX_timeStartRain);
+	var int duration; duration = subF (MEM_SkyController.rainFX_timeStopRain, MEM_SkyController.rainFX_timeStartRain);
+
+	var int percentage;
+
+	if (gf (duration, FLOATNULL)) {
+		//Are we fading-in?
+		percentage = divF (deltaFadeIn, duration);
+		if lef (percentage, castToIntF (0.2)) {
+			return TRUE;
+		};
+	};
+
+	return FALSE;
+};
+
+/*
+ *	Function returns true if rain is fading out
+ */
+func int Wld_IsRainFadingOut () {
+	if (!Wld_IsRaining_G1 ()) {
+		return FALSE;
+	};
+
+	if (Wld_IsRainFadingIn ()) {
+		return FALSE;
+	};
+
+	var int currentTime; currentTime = zCSkyControler_Outdoor_GetTime ();
+	var int deltaFadeOut; deltaFadeOut = subF (MEM_SkyController.rainFX_timeStopRain, currentTime);
+	var int duration; duration = subF (MEM_SkyController.rainFX_timeStopRain, MEM_SkyController.rainFX_timeStartRain);
+
+	var int percentage;
+
+	if (gf (duration, FLOATNULL)) {
+		//Are we fading-out?
+		percentage = divF (deltaFadeOut, duration);
+		if lef (percentage, castToIntF (0.2)) {
+			return TRUE;
+		};
+	};
+
+	return FALSE;
+};
+
+/*
+ *	Emulation for G2 m_bDontRain, if set to true - hook will not allow raining
  */
 func void Wld_SetDontRain (var int value) {
 	RainControl_DontRain = value;
+};
+
+/*
+ *	This flag will make sure rain will never stop - can be used with Wld_StartRain for smooth transition
+ */
+func void Wld_SetRainForever (var int value) {
+	RainControl_RainForever = value;
 };
 
 /*
@@ -69,9 +251,33 @@ func void Wld_SetRainOff () {
 	MEM_SkyController.rainFX_timeStartRain = FLOATNULL;
 	MEM_SkyController.rainFX_timeStopRain = FLOATNULL;
 
-	GetRainTime__RainControl ();
+	//Override for 24h
+	RainControl_StartH = 00;
+	RainControl_StartM = 00;
+	RainControl_EndH = 23;
+	RainControl_EndM = 59;
+
 	RainControl_StartRainOverride = FALSE;
 	RainControl_StopRainOverride = TRUE;
+
+	//Stop sound (it would remain active for a moment)
+	MEM_SkyController.rainFX_soundVolume = FLOATNULL;
+
+	if (MEM_SkyController.rainFX_outdoorRainFX) {
+
+		//0x005B8560 private: void __thiscall zCOutdoorRainFX::UpdateSound(float)
+		const int zCOutdoorRainFX__UpdateSound_G1 = 5997920;
+
+		//0x005E1350 private: void __thiscall zCOutdoorRainFX::UpdateSound(float)
+		const int zCOutdoorRainFX__UpdateSound_G2 = 6165328;
+
+		const int call = 0;
+		if (CALL_Begin(call)) {
+			CALL_FloatParam (_@ (FLOATNULL));
+			CALL__thiscall (_@ (MEM_SkyController.rainFX_outdoorRainFX), MEMINT_SwitchG1G2 (zCOutdoorRainFX__UpdateSound_G1, zCOutdoorRainFX__UpdateSound_G2));
+			call = CALL_End();
+		};
+	};
 };
 
 /*
@@ -81,15 +287,26 @@ func void Wld_SetRainOn () {
 	MEM_SkyController.rainFX_timeStartRain = FLOATNULL;
 	MEM_SkyController.rainFX_timeStopRain = FLOATONE;
 
-	GetRainTime__RainControl ();
+	//Override for 24h
+	RainControl_StartH = 00;
+	RainControl_StartM = 00;
+	RainControl_EndH = 23;
+	RainControl_EndM = 59;
+
 	RainControl_StartRainOverride = TRUE;
 	RainControl_StopRainOverride = FALSE;
 };
 
 /*
  *	Function starts rain - with smooth transition
+ *	newDuration is integer - duration in minutes
  */
-func void Wld_StartRain () {
+func void Wld_StartRain (var int newDuration) {
+	//Default 60 minutes
+	if (newDuration == 0) {
+		newDuration = 60;
+	};
+
 	var int currentTime; currentTime = zCSkyControler_Outdoor_GetTime ();
 
 	var int deltaFadeIn; deltaFadeIn = subF (currentTime, MEM_SkyController.rainFX_timeStartRain);
@@ -112,8 +329,8 @@ func void Wld_StartRain () {
 				MEM_Info ("Wld_StartRain: rain was fading-in ... extending end time by 60 mins");
 
 				//Ratio for actual percentage
-				offsetStart = mulf (mkf (60), percentage);
-				offsetEnd = subf (mkf (60), offsetStart);
+				offsetStart = mulf (mkf (newDuration), percentage);
+				offsetEnd = subf (mkf (newDuration), offsetStart);
 				fadeInOut = TRUE;
 			} else {
 				//Are we fading-out?
@@ -122,20 +339,25 @@ func void Wld_StartRain () {
 					MEM_Info ("Wld_StartRain: rain was fading out ... extending end time by 60 mins");
 
 					//Flipped ratio for actual percentage
-					offsetStart = mulf (mkf (60), percentage);
-					offsetEnd = subf (mkf (60), offsetStart);
+					offsetStart = mulf (mkf (newDuration), percentage);
+					offsetEnd = subf (mkf (newDuration), offsetStart);
 					fadeInOut = TRUE;
 				};
 			};
 		};
 	};
 
+	if (!Wld_IsRaining_G1 ()) {
+		//Start new rain
+		offsetStart = FLOATNULL;
+		offsetEnd = mkf (newDuration);
+	} else
 	if (!fadeInOut) {
 		MEM_Info ("Wld_StartRain: set raining for 60 mins ...");
 
-		//Additional 1 hour
-		offsetStart = FLOATNULL;
-		offsetEnd = mkf (60);
+		//Add more time
+		offsetStart = addf (mkf (newDuration), mulf (mkf (newDuration), castToIntF (0.2)));
+		offsetEnd = mkf (newDuration);
 	};
 
 	//Extend rain
@@ -149,6 +371,7 @@ func void Wld_StartRain () {
 	RainControl_StartRainOverride = TRUE;
 	RainControl_StopRainOverride = FALSE;
 
+	//Call after updating timeStart/Stop to force override of previous time-range (by now extended time)
 	GetRainTime__RainControl ();
 };
 
@@ -221,6 +444,7 @@ func void Wld_StopRain () {
 	RainControl_StopRainOverride = TRUE;
 	RainControl_StartRainOverride = FALSE;
 
+	//Call before updating timeStart/Stop to force override of previous time-range
 	GetRainTime__RainControl ();
 
 	//Calculate new offset for smooth rain shutdown
@@ -269,14 +493,41 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl () {
 	/*
 	 *	Dont rain flag
 	 */
-
 	//Emulation for G2 m_bDontRain (we don't have that one in G1)
 	if (RainControl_DontRain) {
-		Wld_SetRainOff ();
+		if (Wld_IsRaining_G1 ()) {
+			if (!RainControl_StopRainOverride) {
+				Wld_StopRain ();
+			};
+		} else {
+			Wld_SetRainOff ();
+		};
 		return;
 	};
 
-	 /*
+	/*
+	 *	Override - weather type
+	 */
+	if (RainControl_WeatherOverride) {
+		Wld_SetWeatherType (RainControl_WeatherType);
+	};
+
+	/*
+	 *	Override - rain forever flag
+	 */
+	if (RainControl_RainForever) {
+		//If it is already raining ...
+		if (Wld_IsRaining_G1 ()) {
+			if (MEM_SkyController.rainFX_timeStopRain != FLOATONE) {
+				if (Wld_IsRainFadingOut ()) {
+					//This way function will always extend rain time
+					Wld_StartRain (0); //Default time - extend for another 60 minutes
+				};
+			};
+		};
+	};
+
+	/*
 	 *	Override - start rain
 	 */
 	if (RainControl_StartRainOverride) {
@@ -311,7 +562,21 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl () {
 	};
 };
 
+func void _eventGameState__RainControl (var int state) {
+	if (state == Gamestate_NewGame)
+	|| (state == Gamestate_Loaded)
+	{
+		//Seems like this fixes issue with save/load of updated rain start/endtime - where rain drops would all fall down almost at the same time in 'waves'
+		MEM_SkyController.initDone = FALSE;
+	};
+};
+
 func void G12_RainControl_Init () {
+	//Add listener for loaded game
+	if (_LeGo_Flags & LeGo_Gamestate) {
+		Gamestate_AddListener (_eventGameState__RainControl);
+	};
+
 	const int once = 0;
 	if (!once) {
 		HookEngine (zCSkyControler_Outdoor__RenderSkyPre, 7, "_hook_zSkyCtrlOtdr_RenderSkyPre__RainControl");
