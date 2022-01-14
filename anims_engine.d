@@ -228,6 +228,7 @@ func int zCModelAniActive_GetProgressPercent (var int zCModelAniActivePtr) { // 
 
 	if (!zCModelAniActivePtr) { return 0; };
 
+	CALL_RetValIsFloat ();
 	CALL__thiscall (zCModelAniActivePtr, MEMINT_SwitchG1G2 (zCModelAniActive__GetProgressPercent_G1, zCModelAniActive__GetProgressPercent_G2));
 	return CALL_RetValAsFloat();
 };
@@ -250,7 +251,6 @@ func int zCModel_GetProgressPercent (var int model, var string aniName) {
 	CALL_RetValIsFloat (); // method returns float
 	CALL_zStringPtrParam (Str_Upper (aniName));
 	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_G1, zCModel__GetProgressPercent_G2));
-
 	return CALL_RetValAsFloat ();
 };
 
@@ -270,9 +270,9 @@ func int zCModel_GetProgressPercentId(var int zCModel, var int aniId) {
 	//check
 	if (!zCModel) { return 0; };
 
+	CALL_RetValIsFloat ();
 	CALL_IntParam (aniId);
 	CALL__thiscall (zCModel, MEMINT_SwitchG1G2 (zCModel__GetProgressPercentId_G1, zCModel__GetProgressPercentId_G2));
-
 	return CALL_RetValAsFloat ();
 };
 
@@ -651,8 +651,7 @@ func void NPC_StartAni (var int npcInstance, var string aniName){
  *	Author: OrcWarrior
  *	Original post: https://github.com/orcwarrior/Czas_Zaplaty/blob/master/Content/AI/AI_Intern/Sprint_Func.d
  */
-func string oCAniCtrl__GetCurrentAniName (var int oCAniCtrl_Ptr)
-{
+func string oCAniCtrl__GetCurrentAniName (var int oCAniCtrl_Ptr) {
 	if (oCAniCtrl_Ptr) {
 
 		var int ptr;
