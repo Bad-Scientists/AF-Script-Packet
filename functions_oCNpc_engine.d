@@ -722,3 +722,19 @@ func int oCNPC_FindMobInter (var int slfInstance, var string scemeName) {
 
 	return CALL_RetValAsPtr ();
 };
+
+func int oCNpc_DropFromSlot (var int slfInstance, var string slotName) {
+	//0x006A61A0 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+	const int oCNpc__DropFromSlot_G1 = 6971808;
+
+	//0x0074A590 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+	const int oCNpc__DropFromSlot_G2 = 7644560;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DropFromSlot_G1, oCNpc__DropFromSlot_G2));
+
+	return CALL_RetValAsPtr ();
+};
