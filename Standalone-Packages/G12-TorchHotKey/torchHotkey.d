@@ -3,10 +3,10 @@
  *		- enables hotkey 'keyTorchToggleKey' equipping torches
  *		- 'keyTorchToggleKey' can be defined either in Gothic.ini file section [KEYS] or mod.ini file section [KEYS] (master is Gothic.ini)
  *		- if 'keyTorchToggleKey' is not defined then by default KEY_T will be used for toggling
- *		- fixes issue of disappearing torches in G2A
- *			- number of torches will be stored prior game saving
+ *		- fixes issue of disappearing torches in G2A (by removing DontWriteIntoArchive flag from ItLsTorchBurning)
+ *			- number of torches in players inventory will be stored prior game saving
  *			- when game is loaded script will compare number of torches in players inventory, if there is torch missing it will add it back
- *			- reinserts to world ItLsTorchBurning items before saving (fixes bug of disappearing dropped torches) and before level change
+ *			- if player was carrying torch, script will put it back to hand
  *		- compatible with sprint mode (reapplies overlay HUMANS_SPRINT.MDS when torch is removed/equipped)
  *		- will re-lit all mobs, that were previously lit by player (list can be maintained in file 'torchHotKey_API.d' in array TORCH_ASC_MODELS [];
  *		- Ctrl + 'keyTorchToggleKey' will put torch to right hand (with Union you can throw torch away in G1)
@@ -35,13 +35,13 @@ func int MobIsTorch__TorchHotKey (var int mobPtr) {
 	return FALSE;
 };
 
-func void ReInsertBurningTorches__TorchHotKey () {
+func void FixBurningTorches__TorchHotKey () {
 	var int vobPtr;
 
 	//Create array
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
-	//Search by zCVisual or zCParticleFX does not work
+	//Search by class oCItem
 	if (!SearchVobsByClass ("oCItem", vobListPtr)) {
 		MEM_Info ("No oCItem objects found.");
 		return;
@@ -65,34 +65,10 @@ func void ReInsertBurningTorches__TorchHotKey () {
 			var oCItem itm; itm = _^ (vobPtr);
 
 			if (Hlp_IsValidItem (itm)) {
-				var int amount; amount = itm.amount;
-
-				//G1 does not have this one - so define locally because of parsing
-				const int ITEM_DROPPED = 1 << 10;
-
-				//This function cannot be called in G1, G1 torches which are in hand have same flag value 1 << 10 (const int ITEM_BURN = 1 << 10;)
-				//Luckily in G1 torches work fine :)
-
-				//All dropped ItLsTorchBurning do have ITEM_DROPPED flag - so we can use this
-				if ((Hlp_GetInstanceID (itm) == ItLsTorchBurning) && (amount) && (itm.flags & ITEM_DROPPED)) {
-					//Get item trafo
-					var int trafo[16];
-					MEM_CopyWords (_@ (itm._zCVob_trafoObjToWorld), _@ (trafo), 16);
-
-					//Remember flags
-					var int flags; flags = itm.flags;
-					var int mainflag; mainflag = itm.mainflag;
-
-					//Remove found item from world
-					Wld_RemoveItem (itm);
-
-					//Insert new item to same position
-					vobPtr = InsertItem ("ItLsTorchBurning", amount, _@ (trafo));
-
-					//Restore flags
-					itm = _^ (vobPtr);
-					itm.flags = flags;
-					itm.mainflag = mainflag;
+				//Fix all ItLsTorchBurning items
+				//Why would PB not want these to be saved anyway?
+				if (Hlp_GetInstanceID (itm) == ItLsTorchBurning) {
+					Vob_SetDontWriteIntoArchive (vobPtr, FALSE);
 				};
 			};
 		};
@@ -253,9 +229,9 @@ func void _eventGameState__TorchHotKey (var int state) {
 
 	//Game saving event
 	if (state == Gamestate_PreSaveGameProcessing) {
-		//Reinserts ItLsTorchBurning for G2A
+		//Fix ItLsTorchBurning for G2A
 		if (MEMINT_SwitchG1G2 (0, 1)) {
-			ReInsertBurningTorches__TorchHotKey ();
+			FixBurningTorches__TorchHotKey ();
 		};
 
 		//Remember how many torches we have in inventory when saving
@@ -300,9 +276,9 @@ func void _eventGameState__TorchHotKey (var int state) {
 	} else
 	//Level change event
 	if (state == Gamestate_ChangeLevel) {
-		//Reinserts ItLsTorchBurning for G2A
+		//Fix ItLsTorchBurning for G2A
 		if (MEMINT_SwitchG1G2 (0, 1)) {
-			ReInsertBurningTorches__TorchHotKey ();
+			FixBurningTorches__TorchHotKey ();
 		};
 	};
 };
