@@ -107,6 +107,55 @@ func int Wld_PortalGetGuild (var string portalName) {
 };
 
 /*
+ *	Returns 1st NPC instance owner of portal room
+ *	 - takes into consideration also guild of NPC if there is an NPC owner (lower prio than guild owner)
+ */
+func int Wld_PortalGetOwnerInstanceID (var string portalName) {
+	if (!MEM_Game.portalMan) { return -1; };
+
+	var oCPortalRoomManager portalMan; portalMan = _^ (MEM_Game.portalMan);
+	var oCPortalRoom portalRoom;
+
+	var int npcPtr;
+	var int portalPtr;
+
+	var oCNPC npc;
+
+	var int i; i = 0;
+	var int flagFound; flagFound = FALSE;
+
+	while (i < portalMan.portals_numInArray);
+		portalPtr = MEM_ReadIntArray (portalMan.portals_array, i);
+
+		if (portalPtr) {
+			portalRoom = _^ (portalPtr);
+
+			if (Hlp_StrCmp (portalRoom.portalName, portalName)) {
+				flagFound = TRUE;
+
+				if (STR_Len (portalRoom.ownerNpc)) {
+					npcPtr = MEM_SearchVobByName (portalRoom.ownerNpc);
+
+					if (Hlp_Is_oCNpc (npcPtr)) {
+						npc = _^ (npcPtr);
+						if (Hlp_IsValidNPC (npc)) {
+							return (Hlp_GetInstanceID (npc));
+						};
+					};
+				};
+			} else {
+				//List of portal rooms is sorted alphabetically - so if we found it previously and now portal name is different - we can exit
+				if (flagFound) { break; };
+			};
+		};
+
+		i += 1;
+	end;
+
+	return -1;
+};
+
+/*
  *	Returns Vob portal name
  */
 func string Vob_GetPortalName (var int vobPtr) {
