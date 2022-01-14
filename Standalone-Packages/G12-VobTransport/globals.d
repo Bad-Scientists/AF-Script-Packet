@@ -1,5 +1,7 @@
 //--- vob Transport global variables & constants
 const int vobTransportCollectVobsRange			= 500;
+const int vobTransportCollectVobSlotRange		= 500;
+const int vobTransportAlignVobSlotRange			= 100;
 
 var int vobTransportVobPtr;
 var int vobTransportOriginalTrafo[16];
