@@ -15,11 +15,11 @@
 func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		var oCItemContainer itemContainer;
-		
+
 		itemContainer = _^ (ptr);
 
 		var int numItemsInCategory; numItemsInCategory = List_LengthS (itemContainer.inventory2_oCItemContainer_contents) - 1;
-		
+
 		if (numItemsInCategory > -1) {
 
 			//Page Up
@@ -59,7 +59,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 			if (key == KEY_END) {
 				itemContainer.inventory2_oCItemContainer_selectedItem = numItemsInCategory;
 			};
-			
+
 			if (itemContainer.inventory2_oCItemContainer_offset > numItemsInCategory) {
 				itemContainer.inventory2_oCItemContainer_offset = numItemsInCategory;
 			};
@@ -107,7 +107,7 @@ func void _eventTradeHandleEvent__BetterInvControls (var int dummyVariable) {
 				ptr = MEM_ReadInt (ptr + 256);
 			};
 		};
-	} else 
+	} else
 	//Traders offer
 	if (activeContainerNo == 1) {
 		ptr = MEMINT_oCInformationManager_Address;
@@ -120,7 +120,7 @@ func void _eventTradeHandleEvent__BetterInvControls (var int dummyVariable) {
 				ptr = MEM_ReadInt (ptr + 256);
 			};
 		};
-	} else 
+	} else
 	//Buyers offer
 	if (activeContainerNo == 2) {
 		ptr = MEMINT_oCInformationManager_Address;
@@ -133,8 +133,8 @@ func void _eventTradeHandleEvent__BetterInvControls (var int dummyVariable) {
 				ptr = MEM_ReadInt (ptr + 256);
 			};
 		};
-	} else 
-	//Buyer 
+	} else
+	//Buyer
 	if (activeContainerNo == 3) {
 		ptr = MEMINT_oCInformationManager_Address;
 		ptr = MEM_ReadInt (ptr + 24);	//oCInformationManager.ocViewDialogTrade
@@ -196,23 +196,19 @@ func void _eventNpcContainerHandleEvent__BetterInvControls (var int dummyVariabl
 	};
 };
 
+/*
 func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 	//0x00694060 public: void __thiscall oCNpc::RemoveFromHand(void)
 	const int oCNpc__RemoveFromHand_G1 = 6897760;
-	
+
 	//There is no G2A function
 	const int oCNpc__RemoveFromHand_G2 = 0;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	//return in G2A (I would not expect this to be called at any point, since this is in only G1 feature ... but just in case)
+	//return in G2A (I would not expect this to be called at any point, since this is in only G1 function ... but just in case)
 	if (MEMINT_SwitchG1G2 (0, 1)) { return; };
-
-	//Call DoDropVob events
-	if (_DoDropVob_Event) {
-		Event_Execute (_DoDropVob_Event, evDoDropVobBetterInvControls);
-	};
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -222,7 +218,7 @@ func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 		call = CALL_End();
 	};
 };
-
+*/
 
 func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
@@ -232,8 +228,8 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	var oCNpcInventory npcInventory;
 
 	//Has to be C_NPC because of LeGo oCNpc_PutInSlot function
-	var C_NPC slf; 
-	var int vobPtr; 
+	var C_NPC slf;
+	var int vobPtr;
 
 	//Player's inventory - additional controls
 
@@ -276,7 +272,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 
 		if (ECX) {
 			npcInventory = _^ (ECX);
-			
+
 			if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
 				if (npcInventory.inventory2_oCItemContainer_contents) {
 					if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
@@ -286,14 +282,25 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 							//Put item to hand only if hand is empty!
 							if (!vobPtr) {
 								vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
-								
+
 								if (vobPtr) {
 									//Drop item - 1 piece
 									if (action == action_DropItem) {
 										//Take 1 piece from inventory, put in hand, remove from hand
 										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
 										oCNpc_SetRightHand (slf, vobPtr);
-										oCNpc_RemoveFromHand__BetterInvControls (slf);
+										//oCNpc_RemoveFromHand__BetterInvControls (slf);
+
+										//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
+										//We can't play any animations here
+										//Npc_PlayAni (slf, "T_STAND_2_IDROP");
+										//
+										vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+										AI_DropVobPtr (slf, vobPtr);
+
+										//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
+										//const int oCNpcInventory__FindNextCategory_G1 = 6741840;
+										//CALL__thiscall (ECX, oCNpcInventory__FindNextCategory_G1);
 									} else
 									//Put in hand
 									if (action == action_PutInHand) {
@@ -304,7 +311,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 
 										//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
 										//Close inventory
-										const int oCNpcInventory__Close = 6734304;
+										//const int oCNpcInventory__Close = 6734304;
 										//CALL__thiscall (ECX, oCNpcInventory__Close);
 									};
 
@@ -329,9 +336,6 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
  *	If player had in hand item and switched to fight mode - then engine calls oCNpc_DoDropVob - this function drops not only item in hand but also 1 piece from inventory for some reason
  */
 func void _eventDoDropVob__BetterInvControls (var int eventType) {
-	//Prevent infinite loops - if event is called from oCNpc_RemoveFromHand__BetterInvControls
-	if (eventType == evDoDropVobBetterInvControls) { return; };
-
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
 	var oCNPC slf; slf = _^ (ECX);
@@ -340,24 +344,25 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
 	if (vobPtr) {
 		//This engine function drops item from hand only
-		oCNpc_RemoveFromHand__BetterInvControls (slf);
+		//oCNpc_RemoveFromHand__BetterInvControls (slf);
+		var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
 
 		//Crash ...
 		//const int contents = 0;
 		//ECX = _@ (contents) - 4;
 
-		//... this will cancel item drop using oCNpc::DoDropVob
+		//... this will cancel item drop using oCNpc::DoDropVob(class zCVob *)
 		MEM_WriteInt (ESP + 4, 0);
 	};
 };
 
 func void G1_BetterInventoryControls_Init(){
 	const int once = 0;
-	
+
 	G1_TradeEvents_Init ();
-	
+
 	G1_InventoryEvents_Init ();
-	
+
 	TradeHandleEvent_AddListener (_eventTradeHandleEvent__BetterInvControls);
 
 	ItemContainerHandleEvent_AddListener (_eventItemContainerHandleEvent__BetterInvControls);
@@ -367,7 +372,6 @@ func void G1_BetterInventoryControls_Init(){
 	NpcContainerHandleEvent_AddListener (_eventNpcContainerHandleEvent__BetterInvControls);
 
 	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__BetterInvControls);
-
 
 	G12_DoDropVobEvent_Init ();
 
