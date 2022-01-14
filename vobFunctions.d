@@ -271,6 +271,15 @@ func int Vob_GetCollBits (var int vobPtr) {
 };
 
 /*
+ *	Vob_AddCollBits - will add collisions based on input bitfield values in collBits
+ */
+func void Vob_AddCollBits (var int vobPtr, var int collBits) {
+	if (!vobPtr) { return; };
+	var zCVob vob; vob = _^ (vobPtr);
+	vob.bitfield[0] = (vob.bitfield[0] | collBits);
+};
+
+/*
  *	Vob_RemoveCollBits - will remove collisions based on input bitfield values in collBits
  */
 func void Vob_RemoveCollBits (var int vobPtr, var int collBits) {
@@ -966,4 +975,100 @@ func void zCRigidBody_SetVelocity (var int rigidBodyPtr, var int vecPtr) {
 	};
 };
 
+func void _Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
+	if (!vobPtr) { return; };
 
+	var zCVob vob;
+	vob = _^ (vobPtr);
+
+	if (value) {
+		vob.bitfield[4] = (vob.bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive);
+	} else {
+		vob.bitfield[4] = (vob.bitfield[4] & ~ zCVob_bitfield4_dontWriteIntoArchive);
+	};
+};
+
+/*
+ *	Function updates dontWriteIntoArchive flag for vob and its subtree
+ */
+func void Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
+	if (!vobPtr) { return; };
+
+	//Update vob data
+	_Vob_SetDontWriteIntoArchive (vobPtr, value);
+
+	var zCVob vob;
+	vob = _^ (vobPtr);
+
+	//Update child-data
+	var int treePtr; treePtr = vob.globalVobTreeNode;
+
+	//Loop through tree (will this work?)
+	while (treePtr);
+		//Get tree
+		var zCTree tree; tree = _^ (treePtr);
+
+		//Get first child
+		var zCTree child; child = _^ (tree.firstChild);
+
+		//Update data
+		_Vob_SetDontWriteIntoArchive (child.data, value);
+
+		//Get next child
+		treePtr = tree.next;
+	end;
+};
+
+func int zCVob_GetBBox3DLocal (var int vobPtr) {
+	//0x005EDCF0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G1 = 6216944;
+
+	//0x0061B1F0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
+	const int zCVob__GetBBox3DLocal_G2 = 6402544;
+
+	if (!vobPtr) { return 0; };
+
+	//CALL_RetValIsStruct only supported in disposable calls
+	CALL_RetValIsStruct (24);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetBBox3DLocal_G1, zCVob__GetBBox3DLocal_G2));
+	return CALL_RetValAsPtr ();
+};
+
+func void zCVob_SetBBox3DLocal (var int vobPtr, var int bboxPtr) {
+	//0x005EDC40 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G1 = 6216768;
+
+	//0x0061B140 public: void __thiscall zCVob::SetBBox3DLocal(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DLocal_G2 = 6402368;
+
+	if (!bboxPtr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (bboxPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DLocal_G1, zCVob__SetBBox3DLocal_G2));
+		call = CALL_End();
+	};
+};
+
+func int zCVob_GetDistanceToVob (var int vobPtr1, var int vobPtr2) {
+	//0x005EE400 public: float __thiscall zCVob::GetDistanceToVob(class zCVob &)
+	const int zCVob__GetDistanceToVob_G1 = 6218752;
+
+	//0x0061B910 public: float __thiscall zCVob::GetDistanceToVob(class zCVob &)
+	const int zCVob__GetDistanceToVob_G2 = 6404368;
+
+	if (!vobPtr1) { return FLOATNULL; };
+	if (!vobPtr2) { return FLOATNULL; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_RetValIsFloat ();
+		CALL_PtrParam (_@ (vobPtr2));
+		CALL__thiscall (_@ (vobPtr1), MEMINT_SwitchG1G2 (zCVob__GetDistanceToVob_G1, zCVob__GetDistanceToVob_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsFloat ();
+};
