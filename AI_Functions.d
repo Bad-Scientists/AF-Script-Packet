@@ -1,7 +1,9 @@
 /*
- *
+ *	AI_TurnToPos
+ *	 - same as AI_TurnToNPC, but allows us to use position
  */
 func void AI_TurnToPos (var int slfinstance, var int posPtr) {
+/*
 	if (!posPtr) { return; };
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
@@ -12,8 +14,54 @@ func void AI_TurnToPos (var int slfinstance, var int posPtr) {
 	slf.soundPosition[2] = MEM_ReadIntArray(posPtr, 2);
 
 	AI_TurnToSound (slf);
+*/
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!posPtr) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_TURNTOPOS, "", 0, posPtr, mkf (0), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
 
+/*
+ *	AI_TurnAwayPos
+ *	 - same as AI_TurnAway, but allows us to use position
+ */
+func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!posPtr) { return; };
+
+	var int posSelf[3];	//position - slf
+	var int dir[3];		//direction - slf - wp
+
+	var int pos[3];		//position - vob
+	copyVector (posPtr, _@ (pos));
+
+	//get position of slf
+	TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (posSelf));
+
+	//subtract posSelf from pos - to get 'direction vector'
+	SubVectors (_@ (dir), _@(pos), _@ (posSelf));
+
+	//subtract direction vector from posSelf - should be basically pos rotated by 180 around self pos
+	SubVectors (_@ (pos), _@ (posSelf), _@ (dir));
+
+	AI_TurnToPos (slf, _@ (pos));
+};
+
+/*
+ *	AI_TurnToVobPtr
+ *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
+ */
 func void AI_TurnToWP (var int slfinstance, var string waypoint) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -27,6 +75,7 @@ func void AI_TurnToWP (var int slfinstance, var string waypoint) {
 
 /*
 	AI_TurnAwayWP
+	 - same as AI_TurnAway, but allows us to use waypoint
 
 							[waypoint]
 						/
@@ -45,25 +94,13 @@ func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
 	if (!wpPtr) { return; };
 
 	var zCWaypoint wp; wp = _^ (wpPtr);
-
-	var int pos[3];		//position - vob
-	copyVector (_@ (wp.pos), _@ (pos));
-
-	var int posSelf[3];	//position - slf
-	var int dir[3];		//direction - slf - wp
-
-	//get position of slf
-	TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (posSelf));
-
-	//subtract posSelf from pos - to get 'direction vector'
-	SubVectors (_@ (dir), _@(pos), _@ (posSelf));
-
-	//subtract direction vector from posSelf - should be basically pos rotated by 180 around self pos
-	SubVectors (_@ (pos), _@ (posSelf), _@ (dir));
-
-	AI_TurnToPos (slf, _@ (pos));
+	AI_TurnAwayPos (slf, _@ (wp.pos));
 };
 
+/*
+ *	AI_TurnToVobPtr
+ *	 - same as AI_TurnToNPC, but allows us to use vob pointer
+ */
 func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
@@ -78,6 +115,10 @@ func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
 	AI_TurnToPos (slf, _@ (pos));
 };
 
+/*
+ *	AI_TurnAwayVobPtr
+ *	 - same as AI_TurnAway, but allows us to use vob pointer
+ */
 func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
@@ -89,22 +130,15 @@ func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
 	var int pos[3];		//position - vob
 	TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
 
-	var int posSelf[3];	//position - slf
-	var int dir[3];		//direction - slf - vob
-
-	//get position of slf
-	TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (posSelf));
-
-	//subtract pos slf from pos - to get 'direction vector'
-	subVectors (_@ (dir), _@(pos), _@ (posSelf));
-
-	//subtract direction vector from self - should be basically pos rotated by 180 around self pos
-	subVectors (_@ (pos), _@ (posSelf), _@ (dir));
-
-	AI_TurnToPos (slf, _@ (pos));
+	AI_TurnAwayPos (slf, _@ (pos));
 };
 
+/*
+ *	AI_GotoPos
+ *	 - same as AI_GotoNPC, but allows us to define position to which NPC should walk to
+ */
 func void AI_GotoPos (var int slfinstance, var int posPtr) {
+/*
 	if (!posPtr) { return; };
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
@@ -115,8 +149,26 @@ func void AI_GotoPos (var int slfinstance, var int posPtr) {
 	slf.soundPosition[2] = MEM_ReadIntArray(posPtr, 2);
 
 	AI_GotoSound (slf);
+*/
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!posPtr) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, "", 0, posPtr, mkf (0), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
 
+/*
+ *	AI_GotoVobPtr
+ *	 - same as AI_GotoNPC, but allows us to use any vob pointer
+ */
 func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
@@ -186,6 +238,10 @@ func string _AI_GetAniName_T_HEASHOOT_2_STAND () {
 	return "T_HEASHOOT_2_STAND";
 };
 
+/*
+ *	AI_TeleportKeepQueue
+ *	 - function performs teleportation without clearing AI queue (use carefully!)
+ */
 func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -195,6 +251,10 @@ func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
 	AI_PlayAni (slf, _AI_GetAniName_T_HEASHOOT_2_STAND ());
 };
 
+/*
+ *	AI_TeleportToWorld
+ *	 - function allows teleportation between worlds
+ */
 func void AI_TeleportToWorld (var int slfinstance, var string levelName, var string vobName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -429,7 +489,70 @@ func void _AI_MobSetIdealPosition () {
 //};
 };
 
+/*
+ *	Function alligns NPC at ideal position of mob
+ */
 func void AI_MobSetIdealPosition (var int slfInstance) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	AI_Function (slf, _AI_MobSetIdealPosition);
+};
+
+/*
+ *	Same as AI_Function - but using EV_CALLSCRIPT ... do we need this? :thinking:
+ *	Advantage - self is set to NPC, other is always player ...
+ *	Disadvantage - we don't have any parameters here!
+ */
+func void AI_CallFunc (var int slfInstance, var string funcName) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Create new message
+	funcName = STR_Upper (funcName);
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_CALLSCRIPT, funcName, 0, -1, "", "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
+ *	Same as AI_UseMob - but you can specify vob pointer
+ */
+func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!Hlp_Is_oCMobInter (vobPtr)) { return; };
+
+	var oCMobInter mob; mob = _^ (vobPtr);
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
+ *	Same as AI_DropItem - but you can specify vob pointer
+ */
+func void AI_DropVobPtr (var int slfInstance, var int vobPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!vobPtr) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DROPVOB, "", vobPtr, 0, "", "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
