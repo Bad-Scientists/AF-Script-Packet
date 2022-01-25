@@ -93,6 +93,62 @@ func string zCMorphMesh_GetVisualName (var int vobPtr) {
 	return CALL_RetValAszstring ();
 };
 
+func string zCPolyStrip_GetVisualName (var int vobPtr) {
+	//0x004C0DD0 public: virtual class zSTRING __thiscall zCPolyStrip::GetVisualName(void)
+	const int zCPolyStrip__GetVisualName_G1 = 4984272;
+
+	//0x004CA110 public: virtual class zSTRING __thiscall zCPolyStrip::GetVisualName(void)
+	const int zCPolyStrip__GetVisualName_G2 = 5021968;
+
+	if (!vobPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCPolyStrip__GetVisualName_G1, zCPolyStrip__GetVisualName_G2));
+	return CALL_RetValAszstring ();
+};
+
+func string zCFlash_GetVisualName (var int vobPtr) {
+	//0x004C0EA0 public: virtual class zSTRING __thiscall zCFlash::GetVisualName(void)
+	const int zCFlash__GetVisualName_G1 = 4984480;
+
+	//0x004CA1E0 public: virtual class zSTRING __thiscall zCFlash::GetVisualName(void)
+	const int zCFlash__GetVisualName_G2 = 5022176;
+
+	if (!vobPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCFlash__GetVisualName_G1, zCFlash__GetVisualName_G2));
+	return CALL_RetValAszstring ();
+};
+
+func string zCMesh_GetVisualName (var int vobPtr) {
+	//0x0054FBC0 public: virtual class zSTRING __thiscall zCMesh::GetVisualName(void)
+	const int zCMesh__GetVisualName_G1 = 5569472;
+
+	//0x00567020 public: virtual class zSTRING __thiscall zCMesh::GetVisualName(void)
+	const int zCMesh__GetVisualName_G2 = 5664800;
+
+	if (!vobPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCMesh__GetVisualName_G1, zCMesh__GetVisualName_G2));
+	return CALL_RetValAszstring ();
+};
+
+func string zCQuadMark_GetVisualName (var int vobPtr) {
+	//0x005AB980 public: virtual class zSTRING __thiscall zCQuadMark::GetVisualName(void)
+	const int zCQuadMark__GetVisualName_G1 = 5945728;
+
+	//0x005D0AB0 public: virtual class zSTRING __thiscall zCQuadMark::GetVisualName(void)
+	const int zCQuadMark__GetVisualName_G2 = 6097584;
+
+	if (!vobPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCQuadMark__GetVisualName_G1, zCQuadMark__GetVisualName_G2));
+	return CALL_RetValAszstring ();
+};
+
 func int zCVob_GetVisual (var int vobPtr) {
 	//0x005E9A70 public: class zCVisual * __thiscall zCVob::GetVisual(void)const
 	const int zCVob__GetVisual_G1 = 6199920;
@@ -192,6 +248,54 @@ func string Visual_GetVisualName (var int visualPtr) {
 
 	if (visual._vtbl == MEMINT_SwitchG1G2 (zCMorphMesh_vtbl_G1, zCMorphMesh_vtbl_G2)) {
 		return zCMorphMesh_GetVisualName (visualPtr);
+	};
+
+	//visual zCPolyStrip
+
+	//0x007D42EC const zCPolyStrip::`vftable'
+	const int zCPolyStrip_vtbl_G1 = 8209132;
+
+	//0x008326B4 const zCPolyStrip::`vftable'
+	const int zCPolyStrip_vtbl_G2 = 8595124;
+
+	if (visual._vtbl == MEMINT_SwitchG1G2 (zCPolyStrip_vtbl_G1, zCPolyStrip_vtbl_G2)) {
+		return zCPolyStrip_GetVisualName (visualPtr);
+	};
+
+	//visual zCFlash
+
+	//0x007D292C const zCFlash::`vftable'
+	const int zCFlash_vtbl_G1 = 8202540;
+
+	//0x00830A64 const zCFlash::`vftable'
+	const int zCFlash_vtbl_G2 = 8587876;
+
+	if (visual._vtbl == MEMINT_SwitchG1G2 (zCFlash_vtbl_G1, zCFlash_vtbl_G2)) {
+		return zCFlash_GetVisualName (visualPtr);
+	};
+
+	//visual zCMesh
+
+	//0x007D3F6C const zCMesh::`vftable'
+	const int zCMesh_vtbl_G1 = 8208236;
+
+	//0x008322BC const zCMesh::`vftable'
+	const int zCMesh_vtbl_G2 = 8594108;
+
+	if (visual._vtbl == MEMINT_SwitchG1G2 (zCMesh_vtbl_G1, zCMesh_vtbl_G2)) {
+		return zCMesh_GetVisualName (visualPtr);
+	};
+
+	//visual zCQuadMark
+
+	//0x007D467C const zCQuadMark::`vftable'
+	const int zCQuadMark_vtbl_G1 = 8210044;
+
+	//0x00832A64 const zCQuadMark::`vftable'
+	const int zCQuadMark_vtbl_G2 = 8596068;
+
+	if (visual._vtbl == MEMINT_SwitchG1G2 (zCQuadMark_vtbl_G1, zCQuadMark_vtbl_G2)) {
+		return zCQuadMark_GetVisualName (visualPtr);
 	};
 
 	//Since I am not sure if this works properly - couple of prints that might help in the future
@@ -1071,4 +1175,15 @@ func int zCVob_GetDistanceToVob (var int vobPtr1, var int vobPtr2) {
 	};
 
 	return CALL_RetValAsFloat ();
+};
+
+/*
+ *
+ */
+func void Vob_SetAlpha (var int vobPtr, var int visualAlpha) {
+	if (!vobPtr) { return; };
+
+	var zCVob vob; vob = _^ (vobPtr);
+	vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
+	vob.visualAlpha = divf (mkf (visualAlpha), mkf (100));
 };
