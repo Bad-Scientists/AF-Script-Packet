@@ -203,3 +203,31 @@ func string BtoC (var int i) {
 	MEM_WriteByte (mem, i);
 	return STR_FromChar (mem);
 };
+
+func string STR_Left (var string s, var int count) {
+	var int len; len = STR_Len (s);
+
+	if (len < count) {
+		return s;
+	};
+
+	return mySTR_SubStr (s, 0, count);
+};
+
+func string STR_Right (var string s, var int count) {
+	var int len; len = STR_Len (s);
+
+	if (len < count) {
+		return s;
+	};
+
+	return mySTR_SubStr (s, len - count, count);
+};
+
+/*
+ *	Just a little wrapper function ... to eliminate unnecessary code
+ *	LeGo already has STR_StartsWith, so why not :)
+ */
+func int STR_EndsWith (var string s, var string s1) {
+	return Hlp_StrCmp (STR_Right (s, STR_Len (s1)), s1);
+};
