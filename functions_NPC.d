@@ -152,13 +152,31 @@ func string NPC_GetRoutineName (var int slfInstance) {
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 
-	var string curRtnName;
-	curRtnName = STR_Upper (rtnName);
-	curRtnName = ConcatStrings ("RTN_", curRtnName);
-	curRtnName = ConcatStrings (curRtnName, "_");
-	curRtnName = ConcatStrings (curRtnName, IntToString (slf.ID));
+	rtnName = STR_Upper (rtnName);
 
-	return Hlp_StrCmp (NPC_GetRoutineName (slf), curRtnName);
+	//RTN_ rtnName _ID
+	var string curRtnName; curRtnName = NPC_GetRoutineName (slf);
+
+	//Double-check just in case
+	if (STR_StartsWith (curRtnName, "RTN_")) {
+		//Remove prefix
+		curRtnName = STR_Right (curRtnName, STR_Len (curRtnName) - 4);
+	};
+
+	//Double-check just in case
+	var string suffix; suffix = ConcatStrings ("_", IntToString (slf.ID));
+	if (STR_EndsWith (curRtnName, suffix)) {
+		//Remove suffix
+		curRtnName = STR_Left (curRtnName, STR_Len (curRtnName) - STR_Len (suffix));
+	};
+
+	//We will allow wild-card '*' in routine name ;)
+	if (STR_EndsWith (rtnName, "*")) {
+		rtnName = STR_left (rtnName, STR_Len (rtnName) - 1);
+		return (STR_StartsWith (curRtnName, rtnName));
+	};
+
+	return Hlp_StrCmp (rtnName, curRtnName);
 };
 
 func string NPC_GetAIStateName (var int slfInstance) {
@@ -843,3 +861,33 @@ func void NPC_MobSetIdealPosition (var int slfInstance) {
 		end;
 	};
 };
+
+func int NPC_IsInStateName (var int slfInstance, var string stateName) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	stateName = STR_Upper (stateName);
+
+	//We will allow wild-card '*' at the end
+	if (STR_EndsWith (stateName, "*")) {
+		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+
+		return (STR_StartsWith (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	};
+
+	return (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+};
+
+func int NPC_GetNPCState (var int slfInstance) {
+	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
+	//oCNpc.state_vfptr	// 0x0470
+	//oCNpc.state_vtbl	// 0x0588
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int offset; offset = MEMINT_SwitchG1G2 (1136, 1416);
+
+	return (_@ (slf) + offset);
+};
+
