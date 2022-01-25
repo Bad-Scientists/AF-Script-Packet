@@ -4,7 +4,9 @@
 
 //TODO: remove and replace with ViewPtr_AlignText once ViewPtr_AlignText is fixed in LeGo
 func void zCViewPtr_AlignText (var int ptr, var int margin) {
-	var zCView v;  v = _^(ptr);
+	if (!ptr) { return; };
+
+	var zCView v;  v = _^ (ptr);
 	var int lp; lp = v.textLines_next;
 	var zCList l;
 	var zCViewText vt;
@@ -44,6 +46,7 @@ func void zcView_SetTextAndFontColor (var int hndl, var string text, var int col
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 
 	var int viewPtr; viewPtr = getPtr (hndl);
+	if (!viewPtr) { return; };
 	var zCView v; v = _^ (viewPtr);
 
 	var int i; i = 0;
@@ -66,15 +69,17 @@ func void zcView_SetTextAndFontColor (var int hndl, var string text, var int col
 		while (i < cnt);
 			if (list) {
 				l = _^ (list);
-				vt = _^ (l.data);
+				if (l.data) {
+					vt = _^ (l.data);
 
-				vt.text = STR_Split(text, Print_LineSeperator, i);
-				vt.color = color;
-				vt.colored = (color != -1);
+					vt.text = STR_Split(text, Print_LineSeperator, i);
+					vt.color = color;
+					vt.colored = (color != -1);
+
+					posY += vt.posY;
+				};
 
 				list = l.next;
-
-				posY += vt.posY;
 			} else {
 				//Add text first
 				fontName = Print_GetFontName (v.font);
@@ -90,7 +95,9 @@ func void zcView_SetTextAndFontColor (var int hndl, var string text, var int col
 			l.next = del.next;
 			MEM_Free (_@ (del));
 
-			l = _^ (l.next);
+			if (l.next) {
+				l = _^ (l.next);
+			};
 		end;
 
 	} else {
@@ -105,7 +112,9 @@ func void zcView_SetTextAndFontColor (var int hndl, var string text, var int col
 func void zcView_SetFontColor (var int hndl, var int color) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 
-	var zCView view; view = _^ (getPtr (hndl));
+	var int viewPtr; viewPtr = getPtr (hndl);
+	if (!viewPtr) { return; };
+	var zCView view; view = _^ (viewPtr);
 
 	if (view.textLines_next) {
 		var zCList list; list = _^ (view.textLines_next);
@@ -123,7 +132,9 @@ func void zcView_SetText (var int hndl, var string text, var int margin) {
 func int zcView_OnDesk (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
 
-	var zCView view; view = _^ (getPtr (hndl));
+	var int viewPtr; viewPtr = getPtr (hndl);
+	if (!viewPtr) { return FALSE; };
+	var zCView view; view = _^ (viewPtr);
 
 	return view.onDesk;
 };
@@ -131,6 +142,9 @@ func int zcView_OnDesk (var int hndl) {
 func int zcView_IsOpen (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
 
-	var zCView view; view = _^ (getPtr (hndl));
+	var int viewPtr; viewPtr = getPtr (hndl);
+	if (!viewPtr) { return FALSE; };
+	var zCView view; view = _^ (viewPtr);
+
 	return view.IsOpen;
 };
