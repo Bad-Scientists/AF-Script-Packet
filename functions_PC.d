@@ -5,11 +5,10 @@
  *	Added support for G1
  */
 
-var int PC_DefaultTurnSpeed;
-
 /*
  *	2021-09-22 updating hero's turning speed messes up light spell !!
  */
+
 func void PC_SetTurnSpeed (var int f) {
 	//0x007D1110 __real@3dcccccd
 	const int G1_HeroTurnSpeedAdr = 8196368;
@@ -19,12 +18,6 @@ func void PC_SetTurnSpeed (var int f) {
 
 	MemoryProtectionOverride (MEMINT_SwitchG1G2 (G1_HeroTurnSpeedAdr, G2_HeroTurnSpeedAdr), 4);
 	MEM_WriteInt (MEMINT_SwitchG1G2 (G1_HeroTurnSpeedAdr, G2_HeroTurnSpeedAdr), f);
-};
-
-func int PC_IsInState (var func f) {
-	if (!Hlp_IsValidNPC (hero)) { return 0; };
-	var oCNPC her; her = Hlp_GetNPC (hero);
-	return ((MEM_FindParserSymbol (her.state_curState_name) == MEM_GetFuncID (f)) && (her.state_curState_valid));
 };
 
 /*

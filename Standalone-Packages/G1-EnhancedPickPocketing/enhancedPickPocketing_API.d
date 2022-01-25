@@ -14,39 +14,39 @@
  *		- there are also 2 more hooked engine inventory 'events':
  *			- transfer item event - when 1 item is transferred from StealHelper to hero's inventory, script closes inventory, transfers inventory from StealHelper back to StealVictim.
  *			- inventory closing event - this will transfer inventory back from StealHelper to StealVictim.
- *	
+ *
  *	AI constraints:
  *		- G1 vanilla AI is fundamentally broken, without fixing it this feature is useles ...
  *			- (!C_BodyStateContains(other,BS_SNEAK)) doesn't work, because bodystate BS_SNEAK is present only when hero is moving.
- *	
+ *
  *		- You need to update B_AssessSC - check if player is in ZS_PickPocketing AI state, if yes - close player's inventory and start ZS_CatchThief on NPC
- *	
+ *
 
 			FUNC VOID B_AssessSC () {
 
 				if (NPC_GetWalkMode (hero) != NPC_SNEAK)
 				|| (NPC_CanSeeNPC (self, hero) && (NPC_IsNpcInAngleX (self, hero, 60)))
 				{
-					if (PC_IsInState (ZS_PickPocketing))
+					if (NPC_IsInState (hero, ZS_PickPocketing))
 					{
 						//Nastavime target na hero, a other na hero
 						NPC_SetTarget (self, hero);
 						NPC_GetTarget (self);
 
 						oCNPC_CloseInventory (hero);
-						
+
 						B_FullStop (self);
 						AI_StartState (self, ZS_CatchThief, 0, "");
-						
+
 						return;
 					};
-					
+
 					...
 				};
 
 				...
 			};
- *	
+ *
  *	C_CanPickPocket - define your own conditions
  *
  *	This feature requires 1 reserved AI variable !
@@ -62,7 +62,7 @@ func int C_CanPickPocket (var C_NPC slf, var C_NPC oth) {
 	var int retVal;
 	MEM_PushInstParam (slf);
 	MEM_PushInstParam (oth);
-	MEM_CallByString ("C_ModCanPickPocket"); 
+	MEM_CallByString ("C_ModCanPickPocket");
 	retVal = MEM_PopIntResult ();
 
 	return retVal;
@@ -95,7 +95,7 @@ func int C_ModCanPickPocket (var C_NPC slf, var C_NPC oth) {
 
 func void B_PickPocketing_Successfull () {
 	//My custom mod function located outside of this package
-	MEM_CallByString ("B_PickPocketing_GiveXP"); 
+	MEM_CallByString ("B_PickPocketing_GiveXP");
 
 	var C_NPC npc; npc = Hlp_GetNPC (StealVictim);
 	npc.aivar [AIV_MOD_PICKPOCKET] = PickPocketing_PickPocketed;
