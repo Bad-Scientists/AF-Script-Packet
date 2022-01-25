@@ -43,6 +43,7 @@ func void FixBurningTorches__TorchHotKey () {
 
 	//Search by class oCItem
 	if (!SearchVobsByClass ("oCItem", vobListPtr)) {
+		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("No oCItem objects found.");
 		return;
 	};
@@ -88,6 +89,7 @@ func void TorchesReSendTrigger__TorchHotKey () {
 
 	//Search by zCVisual or zCParticleFX does not work
 	if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
+		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("No oCMobFire objects found.");
 		return;
 	};

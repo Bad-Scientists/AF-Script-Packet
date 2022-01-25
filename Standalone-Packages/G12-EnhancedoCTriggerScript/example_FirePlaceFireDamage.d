@@ -1,5 +1,5 @@
 /*
- *	This example demonstrates usage of new oCTriggerScript feature: _OnContact event 
+ *	This example demonstrates usage of new oCTriggerScript feature: _OnContact event
  *
  *	Script uses 2 effects: VOB_BURN_LEFTFOOT & VOB_BURN_RIGHTFOOT which you have to add to your mod manually.
  *	You can find them in folder:
@@ -67,13 +67,13 @@ func void FirePlace_FireDamage_ApplyDamage_OnContact (var int triggerPtr) {
 					//Get item position and direction (rotation)
 					trfPosToVector (_@ (itm._zCVob_trafoObjToWorld), _@ (pos));
 					trfDirToVector (_@ (itm._zCVob_trafoObjToWorld), _@ (dir));
-					
+
 					//Get distance
 					dist = getVectorDistXZ (_@ (pos), _@ (tPos));
 
 					//If close enough --> then replace with cooked meat
 					if (lef (dist, mkf (90))) {
-						if (Hlp_GetinstanceID (itm) == ItFoMuttonRaw) {
+						if (Hlp_GetInstanceID (itm) == ItFoMuttonRaw) {
 							//Ignore moving items
 							if (!(itm._zCVob_bitfield[1] & zCVob_bitfield1_isInMovementMode)) {
 								//remove bitfields - this will temporarily disable trigger
@@ -145,7 +145,7 @@ func void FirePlace_FireDamage_ApplyDamage_OnUntouch (var int triggerPtr, var in
 };
 
 /*
- *	Dummy function, that will be called be engine 
+ *	Dummy function, that will be called be engine
  *		we don't need it for this exmple
  */
 func void FirePlace_FireDamage_ApplyDamage () {
@@ -161,7 +161,7 @@ func void FirePlace_FireDamage_ApplyDamage () {
  */
 func void FirePlace_AddFireDamageTriggers () {
 	var int vobPtr;
-	
+
 	var oCMob mob;
 	var string mobVisualName;
 
@@ -177,11 +177,12 @@ func void FirePlace_AddFireDamageTriggers () {
 //	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
+			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No zCVob objects found.");
 			return;
 		};
 //	};
-	
+
 	var int counter; counter = 0;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
@@ -194,7 +195,7 @@ func void FirePlace_AddFireDamageTriggers () {
 	var int count; count = vobList.numInArray;
 
 	var int flagFound;
-	
+
 	//we have to use separate variable here for count
 	while(i < count);
 		//Read vobPtr from vobList array
@@ -223,9 +224,9 @@ func void FirePlace_AddFireDamageTriggers () {
 
 		if (flagFound) {
 			counter += 1;
-			
+
 			mob = _^ (vobPtr);
-			
+
 			triggerName = ConcatStrings ("FIREPLACE_TRIGGERFIREDAMAGE", IntToString (counter));
 			ptr = InsertTriggerScript (triggerName, _@ (mob._zCVob_trafoObjToWorld));
 
@@ -240,9 +241,9 @@ func void FirePlace_AddFireDamageTriggers () {
 
 			//Enable BBox - only for visual demonstration :)
 			ts._zCVob_bitfield[0] = ts._zCVob_bitfield[0] | zCVob_bitfield0_drawBBox3D;
-			
+
 			ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_reactToOnContact | zCTrigger_bitfield_callEventFuncs;
-			
+
 			ts._zCTrigger_fireDelaySec = divf(mkf(8), mkf(10));
 			ts._zCTrigger_retriggerWaitSec = divf(mkf(8), mkf(10));
 

@@ -6,7 +6,7 @@
  *	Author: Sektenspinner
  *	https://forum.worldofplayers.de/forum/threads/790720-Scriptpaket-Zugriff-auf-ZenGine-Objekte/page2?p=12449815&viewfull=1#post12449815
  */
- 
+
 /*
  *	Example for _OnTouch event function
  *		this one will be called whenever object touches oCTriggerScript
@@ -34,7 +34,7 @@ func void FirePlace_Saving_OnUnTouch (var int triggerPtr, var int vobPtr) {
 };
 
 /*
- *	Dummy function, that will be called be engine 
+ *	Dummy function, that will be called be engine
  *		we don't need it for this exmple
  */
 func void FirePlace_Saving () {
@@ -50,7 +50,7 @@ func void FirePlace_Saving () {
  */
 func void FirePlace_AddSavingPolicy () {
 	var int vobPtr;
-	
+
 	var oCMobFire mob;
 	var string mobVisualName;
 
@@ -60,12 +60,14 @@ func void FirePlace_AddSavingPolicy () {
 	//Fill array with oCMobFire objects
 	if (MEMINT_SwitchG1G2 (1, 0)) {
 		if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
+			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No oCMobFire objects found.");
 			return;
 		};
 	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
+			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No zCVob objects found.");
 			return;
 		};
@@ -81,7 +83,7 @@ func void FirePlace_AddSavingPolicy () {
 	//Loop through all oCMobFire objects
 	var int i; i = 0;
 	var int count; count = vobList.numInArray;
-	
+
 	var int flagFound;
 
 	//we have to use separate variable here for count
@@ -110,7 +112,7 @@ func void FirePlace_AddSavingPolicy () {
 
 		if (flagFound) {
 			counter += 1;
-			
+
 			mob = _^ (vobPtr);
 
 			triggerName = ConcatStrings ("FIREPLACE_SAVING", IntToString (counter));
@@ -145,7 +147,7 @@ func void FirePlace_AddSavingPolicy () {
 
 			//subtract BBox pos from oCMobFire pos - to get 'direction vector' from middle of oCMobFire to _zCVob_bbox3D_maxs
 			subVectors (_@ (dir), _@(posFirePlace), _@ (ts._zCVob_bbox3D_maxs));
-			
+
 			//multiply by 2 (will result in a BBox 3 times bigger than oCMobFire BBox)
 			mulVector (_@ (dir), mkf (2));
 
@@ -154,9 +156,9 @@ func void FirePlace_AddSavingPolicy () {
 
 			//Enable BBox - only for visual demonstration :)
 			ts._zCVob_bitfield[0] = ts._zCVob_bitfield[0] | zCVob_bitfield0_drawBBox3D;
-			
+
 			ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_reactToOnTouch | zCTrigger_bitfield_callEventFuncs;
-			
+
 			ts._zCTrigger_fireDelaySec = divf(mkf(1), mkf(100));
 			ts._zCTrigger_retriggerWaitSec = divf(mkf(1), mkf(100));
 
