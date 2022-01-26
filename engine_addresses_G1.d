@@ -386,6 +386,13 @@ const int oCNpc__IsMunitionAvailable = 6918800;
 //0x006DD090 public: virtual void __thiscall zCEventManager::OnMessage(class zCEventMessage *,class zCVob *)
 const int zCEventManager__OnMessage = 7196816;
 
+/*
+ *	Rain Control
+ */
+//0x005C0900 public: virtual void __thiscall zCSkyControler_Outdoor::RenderSkyPre(void)
+const int zCSkyControler_Outdoor__RenderSkyPre = 6031616;
+
+
 
 
 //0x007D3E04 const zCDecal::`vftable'
