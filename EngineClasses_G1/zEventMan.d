@@ -47,6 +47,41 @@ const int EV_TAKEMOB = 16;
 const int EV_DROPMOB = 17;
 const int EV_MANIP_MAX = 18;
 
+const int EV_ATTACKFORWARD = 0;
+const int EV_ATTACKLEFT = 1;
+const int EV_ATTACKRIGHT = 2;
+const int EV_ATTACKRUN = 3;
+const int EV_ATTACKFINISH = 4;
+const int EV_PARADE = 5;
+const int EV_AIMAT = 6;
+const int EV_SHOOTAT = 7;
+const int EV_STOPAIM = 8;
+const int EV_DEFEND = 9;
+const int EV_ATTACKBOW = 10;
+const int EV_ATTACKMAGIC = 11;
+const int EV_ATTACK_MAX = 12;
+
+const int EV_PLAYANISOUND = 0;
+const int EV_PLAYANI = 1;
+const int EV_PLAYSOUND = 2;
+const int EV_LOOKAT = 3;
+const int EV_OUTPUT = 4;
+const int EV_OUTPUTSVM = 5;
+const int EV_CUTSCENE = 6;
+const int EV_WAITTILLEND = 7;
+const int EV_ASK = 8;
+const int EV_WAITFORQUESTION = 9;
+const int EV_STOPLOOKAT = 10;
+const int EV_STOPPOINTAT = 11;
+const int EV_POINTAT = 12;
+const int EV_QUICKLOOK = 13;
+const int EV_PLAYANI_NOOVERLAY = 14;
+const int EV_PLAYANI_FACE = 15;
+const int EV_PROCESSINFOS = 16;
+const int EV_STOPPROCESSINFOS = 17;
+const int EV_OUTPUTSVM_OVERLAY = 18;
+const int EV_CONV_MAX = 19;
+
 class zCEventManager {
 	var int _vtbl;			//0	8251772		zCEventManager_vtbl
 	var int refctr;			//4	1

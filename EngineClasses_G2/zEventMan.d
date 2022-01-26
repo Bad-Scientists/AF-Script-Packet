@@ -8,6 +8,86 @@ class zCObject {
 };
 */
 
+const int EV_ROBUSTTRACE = 0;
+const int EV_GOTOPOS = 1;
+const int EV_GOTOVOB = 2;
+const int EV_GOROUTE = 3;
+const int EV_TURN = 4;
+const int EV_TURNTOPOS = 5;
+const int EV_TURNTOVOB = 6;
+const int EV_TURNAWAY = 7;
+const int EV_JUMP = 8;
+const int EV_SETWALKMODE = 9;
+const int EV_WHIRLAROUND = 10;
+const int EV_STANDUP = 11;
+const int EV_CANSEENPC = 12;
+const int EV_STRAFE = 13;
+const int EV_GOTOFP = 14;
+const int EV_DODGE = 15;
+const int EV_BEAMTO = 16;
+const int EV_ALIGNTOFP = 17;
+const int EV_MOVE_MAX = 18;
+
+const int EV_TAKEVOB = 0;
+const int EV_DROPVOB = 1;
+const int EV_THROWVOB = 2;
+const int EV_EXCHANGE = 3;
+const int EV_USEMOB = 4;
+const int EV_USEITEM = 5;
+const int EV_INSERTINTERACTITEM = 6;
+const int EV_REMOVEINTERACTITEM = 7;
+const int EV_CREATEINTERACTITEM = 8;
+const int EV_DESTROYINTERACTITEM = 9;
+const int EV_PLACEINTERACTITEM = 10;
+const int EV_EXCHANGEINTERACTITEM = 11;
+const int EV_USEMOBWITHITEM = 12;
+const int EV_CALLSCRIPT = 13;
+const int EV_EQUIPITEM = 14;
+const int EV_USEITEMTOSTATE = 15;
+const int EV_TAKEMOB = 16;
+const int EV_DROPMOB = 17;
+const int EV_MANIP_MAX = 18;
+
+const int EV_ATTACKFORWARD = 0;
+const int EV_ATTACKLEFT = 1;
+const int EV_ATTACKRIGHT = 2;
+const int EV_ATTACKRUN = 3;
+const int EV_ATTACKFINISH = 4;
+const int EV_PARADE = 5;
+const int EV_AIMAT = 6;
+const int EV_SHOOTAT = 7;
+const int EV_STOPAIM = 8;
+const int EV_DEFEND = 9;
+const int EV_ATTACKBOW = 10;
+const int EV_ATTACKMAGIC = 11;
+const int EV_ATTACK_MAX = 12;
+
+const int EV_PLAYANISOUND = 0;
+const int EV_PLAYANI = 1;
+const int EV_PLAYSOUND = 2;
+const int EV_LOOKAT = 3;
+const int EV_OUTPUT = 4;
+const int EV_OUTPUTSVM = 5;
+const int EV_CUTSCENE = 6;
+const int EV_WAITTILLEND = 7;
+const int EV_ASK = 8;
+const int EV_WAITFORQUESTION = 9;
+const int EV_STOPLOOKAT = 10;
+const int EV_STOPPOINTAT = 11;
+const int EV_POINTAT = 12;
+const int EV_QUICKLOOK = 13;
+const int EV_PLAYANI_NOOVERLAY = 14;
+const int EV_PLAYANI_FACE = 15;
+const int EV_PROCESSINFOS = 16;
+const int EV_STOPPROCESSINFOS = 17;
+const int EV_OUTPUTSVM_OVERLAY = 18;
+const int EV_SNDPLAY = 19;
+const int EV_SNDPLAY3D = 20;
+const int EV_PRINTSCREEN = 21;
+const int EV_STARTFX = 22;
+const int EV_STOPFX = 23;
+const int EV_CONV_MAX = 24;
+
 class zCEventManager {
 	var int _vtbl;			//0	8251772		zCEventManager_vtbl
 	var int refctr;			//4	1
@@ -25,7 +105,7 @@ class zCEventManager {
 	var int messageList_numAlloc;	//52
 	var int messageList_numInArray;	//56
 
-	var int hostVob;		//60	zCVob* hostVob; 
+	var int hostVob;		//60	zCVob* hostVob;
 };
 
 const int sizeof_zCEventMessage		= 44;
@@ -48,7 +128,7 @@ class zCEventMessage {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 };
 
 const int sizeof_zCEventCore		= 76;
@@ -62,7 +142,7 @@ class zCEventCore {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 /*
 	enum zTEventCoreSubType {
@@ -81,7 +161,7 @@ class zCEventCore {
 	var int damage;			//52	float damage;
 	var int damageType;		//56	int damageType;
 	var int inflictorVob;		//60	zCVob* inflictorVob;
-	var int hitLocation[3];		//64	zVEC3 hitLocation; 
+	var int hitLocation[3];		//64	zVEC3 hitLocation;
 };
 
 const int sizeof_oCNpcMessage		= 68;
@@ -95,13 +175,13 @@ class oCNpcMessage {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 };
 
@@ -116,13 +196,13 @@ class oCMsgDamage {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 	/*
@@ -148,13 +228,13 @@ class oCMsgWeapon {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 	/*
@@ -183,7 +263,7 @@ class oCMsgWeapon {
 	//int firstTime       : 1;	4
 	//int useFist         : 1;	8
 	//int showMagicCircle : 1;	16
-	
+
 	var int bitfield_oCMsgWeapon;	//72
 	var int ani;			//76	int ani
 };
@@ -199,13 +279,13 @@ class oCMsgMovement {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 	/*
@@ -231,7 +311,7 @@ class oCMsgMovement {
 		EV_MOVE_MAX
 	};
 	*/
-    
+
 	var string targetName;		//68	zSTRING targetName;
 	var int route;			//88	zCRoute* route;
 	var int targetVob;		//92	zCVob* targetVob;
@@ -240,7 +320,7 @@ class oCMsgMovement {
 	var int timer;			//112	float timer;
 	var int targetMode;		//116	int targetMode;
 	var int ani;			//120	int ani;
-  
+
 };
 
 const int sizeof_oCMsgAttack		= 88;
@@ -256,14 +336,14 @@ class oCMsgAttack {
 //class zCEventMessage
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 //class oCNpcMessage
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 //class oCMsgAttack
@@ -305,13 +385,13 @@ class oCMsgUseItem {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 /*
@@ -339,13 +419,13 @@ class oCMsgState {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 /*
@@ -368,7 +448,7 @@ class oCMsgState {
 	var int victim;			//108	oCNpc* victim;
 
 	//int endOldState : 1;
-	//int inRoutine   : 1; 
+	//int inRoutine   : 1;
 	var int bitfield_oCMsgState;	//112
 };
 
@@ -383,7 +463,7 @@ class oCMsgManipulate {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
@@ -442,13 +522,13 @@ class oCMsgConversation {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 /*
@@ -510,13 +590,13 @@ class oCMsgMagic {
 	var string objectName;		//16
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
 	//int highPriority : 1;
 	//int deleted      : 1;
-	//int inUse        : 1; 
+	//int inUse        : 1;
 	var int bitfield_oCNpcMessage;	//64
 
 /*
@@ -556,7 +636,7 @@ class oCMobMsg {
 	var string objectName;		//16	8193786
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 /*
 	enum TMobMsgSubType {
 		EV_STARTINTERACTION,
@@ -593,7 +673,7 @@ class zCCSCamera_EventMsg {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
@@ -642,7 +722,7 @@ class zCCSCamera_EventMsgActivate {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
@@ -677,7 +757,7 @@ class zCEventMusicControler {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
@@ -711,7 +791,7 @@ class zCEventCommon {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
@@ -721,7 +801,7 @@ class zCEventCommon {
 		zEVENT_TOGGLE_ENABLED,
 		zEVENT_RESET,
 		zEVENT_MISC_NUM_SUBTYPES
-	}; 
+	};
 	*/
 };
 
@@ -744,7 +824,7 @@ class zCEventMover {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
@@ -779,7 +859,7 @@ class zCEventScreenFX {
 	*/
 
 	var int subType;		//36	unsigned short int subType;
-	var int inCutscene;		//40	int inCutscene; 
+	var int inCutscene;		//40	int inCutscene;
 	//};
 
 	/*
