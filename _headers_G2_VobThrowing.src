@@ -16,6 +16,8 @@ ObjectFactory\oCAIVobMoveTorch.d
 ObjectFactory\oCAIDrop.d
 ObjectFactory\oCAIArrow.d
 
+strings.d
+
 anims_engine.d
 
 vectors.d

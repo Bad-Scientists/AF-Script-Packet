@@ -2,6 +2,9 @@ EngineClasses_G2\oNpc.d
 
 engine_addresses_G2.d
 
+ScriptBin\strings.d
+ScriptBin\convert.d
+
 vectors.d
 vobFunctions.d
 
@@ -9,13 +12,15 @@ ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 
+strings.d
+
 anims_engine.d
 
 functions_oCNPC_engine.d
 
 functions_NPC.d
 
-mobFunctions.d	
+mobFunctions.d
 
 inventory_oCNpc_engine.d
 inventory_oCNpc.d

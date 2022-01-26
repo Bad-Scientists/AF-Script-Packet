@@ -1,6 +1,18 @@
 EngineClasses_G1\oNpc.d
 
+vectors.d
+vobFunctions.d
+
+ScriptBin\strings.d
+ScriptBin\convert.d
+ScriptBin\insertAnything.d
+ScriptBin\objCheckInheritance.d
+ScriptBin\searchVobs.d
+ScriptBin\removeoCVobSafe.d
+
 _headers_G1_EnhancedInfoManager.src
+
+strings.d
 
 utils.d
 console.d
@@ -12,10 +24,12 @@ anims_engine.d
 functions_oCNpc_engine.d
 functions_NPC.d
 
-vectors.d
-vobFunctions.d
+portals.d
+world_engine.d
 
 Standalone-Packages\G12-Debugging\debugDialogues.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
+Standalone-Packages\G12-Debugging\unlock.d
+Standalone-Packages\G12-Debugging\checkLockValidity.d

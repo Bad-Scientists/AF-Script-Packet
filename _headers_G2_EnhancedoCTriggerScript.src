@@ -1,5 +1,7 @@
 engine_addresses_G2.d
 
+EngineClasses_G2\zEventMan.d
+
 vectors.d
 vobFunctions.d
 

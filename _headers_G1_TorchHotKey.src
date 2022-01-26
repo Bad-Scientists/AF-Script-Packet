@@ -5,9 +5,13 @@ engine_addresses_G1.d
 vectors.d
 vobFunctions.d
 
+ScriptBin\strings.d
+ScriptBin\convert.d
 ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
+
+strings.d
 
 anims_engine.d
 

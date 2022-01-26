@@ -50,6 +50,8 @@ ObjectFactory\oCAIArrow.d
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
 
+strings.d
+
 mobFunctions.d
 
 anims_engine.d
@@ -90,13 +92,18 @@ world_engine.d
 
 portals.d
 
-strings.d
-
 view.d
 
 AI_Functions.d
 
 zError_engine.d
+
+routines_waynet.d
+
+time.d
+sound.d
+
+miscellanous.d
 
 Standalone-Packages\G1-EverloomingBarrier\barrier.d
 
@@ -162,9 +169,13 @@ Standalone-Packages\G12-Debugging\debugDialogues.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
+Standalone-Packages\G12-Debugging\unlock.d
+Standalone-Packages\G12-Debugging\checkLockValidity.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 Standalone-Packages\G12-VobThrowing\testing.d
+
+Standalone-Packages\G12-RainControl\rainControl.d

@@ -2,6 +2,11 @@ EngineClasses_G1\oNpc.d
 
 engine_addresses_G1.d
 
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+strings.d
+
 anims_engine.d
 
 bars.d
