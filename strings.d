@@ -231,3 +231,16 @@ func string STR_Right (var string s, var int count) {
 func int STR_EndsWith (var string s, var string s1) {
 	return Hlp_StrCmp (STR_Right (s, STR_Len (s1)), s1);
 };
+
+/*
+ *
+ */
+func string STR_AddString (var string s, var string s1, var string separator) {
+	if (STR_Len (s) > 0) {
+		s = ConcatStrings (s, separator);
+	};
+
+	s = ConcatStrings (s, s1);
+
+	return s;
+};
