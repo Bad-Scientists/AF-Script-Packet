@@ -738,3 +738,24 @@ func int oCNpc_DropFromSlot (var int slfInstance, var string slotName) {
 
 	return CALL_RetValAsPtr ();
 };
+
+func int oCNpc_GetTalkingWith (var int slfInstance) {
+	//0x006335D0 public: class oCNpc * __thiscall oCNpc::GetTalkingWith(void)
+	const int oCNpc__GetTalkingWith_G1 = 6501840;
+
+	//0x006BCF60 public: class oCNpc * __thiscall oCNpc::GetTalkingWith(void)
+	const int oCNpc__GetTalkingWith_G2 = 7065440;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetTalkingWith_G1, oCNpc__GetTalkingWith_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr ();
+};
