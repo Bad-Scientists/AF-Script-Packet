@@ -932,3 +932,16 @@ func void NPC_ChangeRoutine (var int slfInstance, var int funcID) {
 		call = CALL_End ();
 	};
 };
+
+func int Npc_GetHeightDiffToPos (var int slfInstance, var int posPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FLOATNULL; };
+	var int Y; Y = MEM_ReadIntArray (posPtr, 1);
+	return roundf (subf (Y, slf._zCVob_trafoObjToWorld[7]));
+};
+
+func int Npc_GetHeightToVobPtr (var int s, var int vobPtr) {
+	var int pos[3];
+	MEM_CopyBytes (zCVob_GetPositionWorld (vobPtr), _@ (pos), 12);
+	return +(Npc_GetHeightDiffToPos (s, _@ (pos)));
+};

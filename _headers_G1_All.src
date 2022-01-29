@@ -103,7 +103,7 @@ routines_waynet.d
 time.d
 sound.d
 
-miscellanous.d
+miscellaneous.d
 
 Standalone-Packages\G1-EverloomingBarrier\barrier.d
 

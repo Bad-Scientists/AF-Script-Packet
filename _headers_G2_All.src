@@ -97,7 +97,7 @@ routines_waynet.d
 time.d
 sound.d
 
-miscellanous.d
+miscellaneous.d
 
 Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d
