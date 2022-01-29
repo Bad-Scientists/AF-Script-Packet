@@ -244,3 +244,32 @@ func string STR_AddString (var string s, var string s1, var string separator) {
 
 	return s;
 };
+
+/*
+ *
+ *	 - derived from mud-freak's STR_IndexOfFirstNonNumeric function
+ */
+func int STR_IsNumeric (var string s) {
+	var int len; len = STR_Len (s);
+	var int buf; buf = STR_toChar (s);
+
+	var int index; index = 0;
+
+	if (!len) { return FALSE; };
+
+	while(index < len);
+		var int chr; chr = MEM_ReadInt(buf + index) & 255;
+
+		if (chr >= 48 /* 0 */) && (chr <= 57 /* 9 */) {
+
+		} else if ((chr != 45 /*-*/) && (chr != 43 /*+*/)) && (index == 0) {
+
+		} else {
+			return FALSE;
+		};
+
+		index += 1;
+	end;
+
+	return TRUE;
+};
