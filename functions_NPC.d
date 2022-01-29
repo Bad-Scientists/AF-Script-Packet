@@ -891,3 +891,44 @@ func int NPC_GetNPCState (var int slfInstance) {
 	return (_@ (slf) + offset);
 };
 
+func int NPC_GetDailyRoutineFuncID (var int slfInstance) {
+	//var func daily_routine;	//G1	0x0218 int
+	//var func daily_routine;	//G2	0x0260 int
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int ptr; ptr = _@ (slf);
+
+	var int offset; offset = MEMINT_SwitchG1G2 (536, 608);
+
+	var int symbID; symbID = MEM_ReadInt (ptr + offset);
+
+	if (symbID > 0) && (symbID < currSymbolTableLength) {
+		return symbID;
+	};
+
+	return 0;
+};
+
+func void NPC_ChangeRoutine (var int slfInstance, var int funcID) {
+	//0x006C69F0 public: void __thiscall oCNpc_States::ChangeRoutine(int)
+	const int oCNpc_States__ChangeRoutine_G1 = 7105008;
+
+	//0x0076DF60 public: void __thiscall oCNpc_States::ChangeRoutine(int)
+	const int oCNpc_States__ChangeRoutine_G2 = 7790432;
+
+	if (!funcID) { return; };
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+
+	if (!statePtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (funcID));
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__ChangeRoutine_G1, oCNpc_States__ChangeRoutine_G2));
+		call = CALL_End ();
+	};
+};
