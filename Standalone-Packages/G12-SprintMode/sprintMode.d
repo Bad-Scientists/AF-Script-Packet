@@ -3,7 +3,7 @@
  *		- toggle 'keySprintModeToggleKey' key to enable/disable sprint mode
  *		- 'keySprintModeToggleKey' can be defined either in Gothic.ini file section [KEYS] or mod.ini file section [KEYS]. (master is Gothic.ini)
  *		- if 'keySprintModeToggleKey' is not defined then by default KEY_RSHIFT will be used for toggling
- *		
+ *
  *		- this feature adds stamina bar right underneath health bar, where it displays players stamina level
  *		- when player is exhausted sprint mode will disable with a cool down of 4 seconds
  *		- jumping and fighting exhausts stamina significantly
@@ -41,7 +41,12 @@ var int PC_SprintModePlayerTimedOverlayTimer;
 var int PC_SprintModePlayerTimedOverlayTimerMax;
 var int PC_SprintModePlayerTimedOverlayDetected;
 
-var int hStaminaBar;
+var int hStaminaBar;			//handle for Stamina bar
+
+var int sprintBarLastValue;
+var int sprintBarDisplayMethod;
+var int sprintBarDisplayTime;
+var int sprintBarIsVisible;
 
 const int PC_SprintModeTimedOverlayStacking_GetMaxValue	= 0;	//get max value
 const int PC_SprintModeTimedOverlayStacking_SumValues	= 1;	//sum up all timers
@@ -85,7 +90,7 @@ func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
 		//Activate
 		if (PC_SprintModeSwitch) {
 			var int dontActivate; dontActivate = FALSE;
-			
+
 			repeat (i, PC_SPRINTMODE_IGNOREWITHOVERLAYS_MAX); var int i;
 				var string testOverlay; testOverlay = MEM_ReadStatStringArr (PC_SPRINTMODE_IGNOREWITHOVERLAYS, i);
 
@@ -109,7 +114,7 @@ func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
 				PC_SprintModeDisable = TRUE;
 			};
 		};
-		
+
 		cancel = TRUE;
 	};
 
@@ -271,7 +276,7 @@ func void FrameFunction__SprintMode () {
 				Mdl_ApplyOverlayMds (hero, PC_SprintModeOverlayName);
 				PlayerResetWeaponMode__SprintMode ();
 			};
-			
+
 			textureName = MEM_ReadStatStringArr (BAR_TEX_SPRINTMODE, BAR_TEX_SPRINTMODE_STAMINA);
 			Bar_SetBarTexture (hStaminaBar, textureName);
 		};
@@ -322,7 +327,7 @@ func void FrameFunction_FlashBar__SprintMode () {
 		} else {
 			PC_SprintModeBarAlpha += 32;
 		};
-		
+
 		if (PC_SprintModeBarAlpha < 0) {
 			PC_SprintModeBarAlpha = 0;
 			PC_SprintModeBarFlashingFadeOut = (!PC_SprintModeBarFlashingFadeOut);
@@ -332,7 +337,7 @@ func void FrameFunction_FlashBar__SprintMode () {
 			PC_SprintModeBarAlpha = 255;
 			PC_SprintModeBarFlashingFadeOut = (!PC_SprintModeBarFlashingFadeOut);
 		};
-		
+
 		PC_SprintModeBarFlashingTimer -= 1;
 
 		if (PC_SprintModeBarFlashingTimer == 0) {
@@ -341,14 +346,153 @@ func void FrameFunction_FlashBar__SprintMode () {
 		};
 
 		//Change alpha value for stamina bar
-		Bar_SetAlphaBackAndBar (hStaminaBar, 255, PC_SprintModeBarAlpha);
+		Bar_SetAlphaBackAndBar (hStaminaBar, -1, PC_SprintModeBarAlpha);
 	};
 };
 
+/*
+ *	Better-bars display method
+ */
+func void FrameFunction_FadeInOutSprintBar__BetterBars () {
+	if (BarGetOnDesk (BarType_SprintBar)) {
+		Bar_SetAlphaBackAndBar (hStaminaBar, 255, 255);
+		return;
+	};
+
+	if (!sprintBarDisplayTime) {
+		Bar_Hide (hStaminaBar);
+
+		FF_Remove (FrameFunction_FadeInOutSprintBar__BetterBars);
+		return;
+	};
+
+	if (!sprintBarIsVisible) {
+		if (_Bar_PlayerStatus ()) {
+			Bar_Show (hStaminaBar);
+			sprintBarIsVisible = TRUE;
+		};
+	};
+
+	if (sprintBarIsVisible) {
+		sprintBarDisplayTime -= 1;
+
+		var int alphaBack;
+		var int alphaBar;
+
+		if (sprintBarDisplayTime > 80) {
+			alphaBack = roundf (mulf (mkf (255), divf (mkf (120 - sprintBarDisplayTime), mkf (40))));
+		} else
+		if (sprintBarDisplayTime > 40) {
+			alphaBack = 255;
+		} else {
+			alphaBack = 255 - roundf (mulf (mkf (255), divf (mkf (40 - sprintBarDisplayTime), mkf (40))));
+		};
+
+		alphaBack = clamp (alphaBack, 0, 255);
+		alphaBar = alphaBack * PC_SprintModeBarAlpha / 255;
+
+		//Bar_SetAlpha (hStaminaBar, alphaBack);
+		Bar_SetAlphaBackAndBar (hStaminaBar, alphaBack, alphaBar);
+	};
+};
+
+func void FrameFunction_EachFrame__SprintMode () {
+	//Custom setup from Gothic.ini
+	if (MEM_GothOptExists ("GAME", "sprintBarDisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - alwas on
+		sprintBarDisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "sprintBarDisplayMethod"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("GAME", "sprintBarDisplayMethod")) {
+			sprintBarDisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "sprintBarDisplayMethod"));
+			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (sprintBarDisplayMethod));
+		} else {
+			//Default
+			sprintBarDisplayMethod = BarDisplay_DynamicUpdate;
+			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (sprintBarDisplayMethod));
+		};
+	};
+
+	var int sprintBarOnDesk; sprintBarOnDesk = BarGetOnDesk (BarType_SprintBar);
+
+//-- Auto hiding/display for sprint bar (when updated)
+
+	//Was there an update?
+	var int sprintBarUpdated; sprintBarUpdated = FALSE;
+
+	//Potion effect
+	if (PC_SprintModePlayerHasTimedOverlay) {
+		if (sprintBarLastValue != PC_SprintModePlayerTimedOverlayTimer) {
+			sprintBarUpdated = TRUE;
+			sprintBarLastValue = PC_SprintModePlayerTimedOverlayTimer;
+		};
+	} else
+	//'Standard' sprinting
+	if (sprintBarLastValue != PC_SprintModeStamina) {
+		sprintBarUpdated = TRUE;
+		sprintBarLastValue = PC_SprintModeStamina;
+	};
+
+	//Sprint bar value updated / game status changed / fight mode
+	if ((sprintBarUpdated) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE))) {
+		//
+		if ((sprintBarDisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk)) {
+			if (sprintBarDisplayMethod == BarDisplay_DynamicUpdate) {
+				if (!sprintBarDisplayTime) {
+					sprintBarDisplayTime = 120;
+				} else
+				if (sprintBarDisplayTime < 80) {
+					sprintBarDisplayTime = 80;
+				};
+			};
+		};
+
+		if (sprintBarDisplayTime < 80) {
+			sprintBarDisplayTime = 80;
+		};
+
+		FF_ApplyOnceExtGT (FrameFunction_FadeInOutSprintBar__BetterBars, 60, -1);
+	};
+
+	if ((sprintBarDisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk) || (sprintBarDisplayTime)) {
+		if (!sprintBarIsVisible) {
+			if (_Bar_PlayerStatus ()) {
+				//Bar_SetAlpha (hStaminaBar, 0);
+				Bar_SetAlphaBackAndBar (hStaminaBar, 0, 0);
+
+				if ((sprintBarDisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk)) {
+					if (!sprintBarDisplayTime) {
+						//Bar_SetAlpha (hStaminaBar, 255);
+						Bar_SetAlphaBackAndBar (hStaminaBar, 255, 255);
+					};
+				};
+
+				Bar_Show (hStaminaBar);
+				sprintBarIsVisible = TRUE;
+			};
+		};
+	};
+
+	if ((sprintBarDisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk) && (!sprintBarDisplayTime)) {
+		if (sprintBarIsVisible) {
+			if (_Bar_PlayerStatus ()) {
+				Bar_Hide (hStaminaBar);
+				sprintBarIsVisible = FALSE;
+			};
+		};
+	};
+
+	//Bar_PreviewSetValue (hStaminaBar, vSprintBarPreview, previewValueSprintBar);
+};
+
 func void G12_SprintMode_Init () {
+
+	G12_InitDefaultBarFunctions ();
+
 	//Add frame function (8/1s)
 	FF_ApplyOnceExtGT (FrameFunction__SprintMode, 125, -1);
 	FF_ApplyOnceExtGT (FrameFunction_FlashBar__SprintMode, 60, -1);
+	FF_ApplyOnceExtGT (FrameFunction_EachFrame__SprintMode, 0, -1);
 
 	//Create stamina bar
 	if (!Hlp_IsValidHandle(hStaminaBar)) {
