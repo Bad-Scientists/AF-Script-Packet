@@ -242,7 +242,7 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
     };
 
 //--> Save BBox
-	var zTBBox3D bbox;
+	//var zTBBox3D bbox;
 
 //func int zCVob_GetBBox3DLocal (var int vobPtr) {
 	//0x005EDCF0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
@@ -256,7 +256,8 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
 	//CALL_RetValIsStruct only supported in disposable calls
 	CALL_RetValIsStruct (24);
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetBBox3DLocal_G1, zCVob__GetBBox3DLocal_G2));
-	bbox = _^ (CALL_RetValAsPtr ());
+	//bbox = _^ (CALL_RetValAsPtr ());
+	var int bboxPtr; bboxPtr = CALL_RetValAsPtr ();
 //};
 //<--
 
@@ -289,7 +290,7 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
 	//if (!bboxPtr) { return; };
 	//if (!vobPtr) { return; };
 
-	var int bboxPtr; bboxPtr = _@ (bbox);
+	//var int bboxPtr; bboxPtr = _@ (bbox);
 
 	const int call2 = 0;
 	if (CALL_Begin(call2)) {
@@ -311,7 +312,7 @@ func void SetVobToFloor(var int vobPtr) {
     };
 
 //--> Save BBox
-	var zTBBox3D bbox;
+	//var zTBBox3D bbox;
 
 //func int zCVob_GetBBox3DLocal (var int vobPtr) {
 	//0x005EDCF0 public: struct zTBBox3D __thiscall zCVob::GetBBox3DLocal(void)const
@@ -325,7 +326,8 @@ func void SetVobToFloor(var int vobPtr) {
 	//CALL_RetValIsStruct only supported in disposable calls
 	CALL_RetValIsStruct (24);
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetBBox3DLocal_G1, zCVob__GetBBox3DLocal_G2));
-	bbox = _^ (CALL_RetValAsPtr ());
+	//bbox = _^ (CALL_RetValAsPtr ());
+	var int bboxPtr; bboxPtr = CALL_RetValAsPtr ();
 //};
 //<--
 
@@ -350,7 +352,7 @@ func void SetVobToFloor(var int vobPtr) {
 	//if (!bboxPtr) { return; };
 	//if (!vobPtr) { return; };
 
-	var int bboxPtr; bboxPtr = _@ (bbox);
+	//var int bboxPtr; bboxPtr = _@ (bbox);
 
 	const int call2 = 0;
 	if (CALL_Begin(call2)) {
