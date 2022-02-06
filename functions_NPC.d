@@ -973,11 +973,12 @@ func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
 
 	CALL_RetValIsStruct (12);
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetPositionWorld_G1, zCVob__GetPositionWorld_G2));
-	var int posPtr; posPtr = CALL_RetValAsPtr ();
+	var int vobPosPtr; vobPosPtr = CALL_RetValAsPtr ();
 //};
 
 	var int pos[3];
-	MEM_CopyBytes (posPtr, _@ (pos), 12);
+	MEM_CopyBytes (vobPosPtr, _@ (pos), 12);
+	MEM_Free (vobPosPtr);
 
 	return +(Npc_GetHeightDiffToPos (slfInstance, _@ (pos)));
 };

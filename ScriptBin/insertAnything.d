@@ -298,6 +298,8 @@ func void AlignVobAt(var int vobPtr, var int trfPtr) {
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DLocal_G1, zCVob__SetBBox3DLocal_G2));
 		call2 = CALL_End();
 	};
+
+	MEM_Free (bboxPtr);
 //};
 //<--
 };
@@ -360,6 +362,8 @@ func void SetVobToFloor(var int vobPtr) {
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DLocal_G1, zCVob__SetBBox3DLocal_G2));
 		call2 = CALL_End();
 	};
+
+	MEM_Free (bboxPtr);
 //};
 //<--
 };
