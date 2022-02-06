@@ -962,8 +962,22 @@ func int Npc_GetHeightDiffToPos (var int slfInstance, var int posPtr) {
 };
 
 func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
-	var int pos[3];
 	if (!vobPtr) { return FLOATNULL; };
-	MEM_CopyBytes (zCVob_GetPositionWorld (vobPtr), _@ (pos), 12);
+
+//func int zCVob_GetPositionWorld (var int vobPtr) {
+	//0x0051B3C0 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
+	const int zCVob__GetPositionWorld_G1 = 5354432;
+
+	//0x0052DC90 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
+	const int zCVob__GetPositionWorld_G2 = 5430416;
+
+	CALL_RetValIsStruct (12);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetPositionWorld_G1, zCVob__GetPositionWorld_G2));
+	var int posPtr; posPtr = CALL_RetValAsPtr ();
+//};
+
+	var int pos[3];
+	MEM_CopyBytes (posPtr, _@ (pos), 12);
+
 	return +(Npc_GetHeightDiffToPos (slfInstance, _@ (pos)));
 };
