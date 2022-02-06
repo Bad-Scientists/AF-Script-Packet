@@ -12,14 +12,76 @@ const int zSND_LOOPING_DISABLED = 2;
 var int zSound;
 var int activeSndList;
 
+/*
+ *	Seems like when sound is enabled, then zSound address points to zCSndSys_MSS object, when it is disabled it points to zCSoundSystemDummy
+ *	If we try to play any sound using zCSndSys_MSS functions and sound is disabled then game crashes
+ *	Therefore we have to add check to every function and check if Hlp_Is_zCSndSys_MSS (zSound) is true
+ */
+func int Hlp_Is_zCSndSys_MSS (var int snd) {
+	//0x007D306C const zCSndSys_MSS::`vftable'
+	const int zCSndSys_MSS_vtbl_G1 = 8204396;
+
+	//0x0083120C const zCSndSys_MSS::`vftable'
+	const int zCSndSys_MSS_vtbl_G2 = 8589836;
+
+	if (!snd) { return FALSE; };
+	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSndSys_MSS_vtbl_G1, zCSndSys_MSS_vtbl_G2))) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
+func int Hlp_Is_zCSoundSystemDummy (var int snd) {
+	//0x007DC134 const zCSoundSystemDummy::`vftable'
+	const int zCSoundSystemDummy_vtbl_G1 = 8241460;
+
+	//0x0083A6A4 const zCSoundSystemDummy::`vftable'
+	const int zCSoundSystemDummy_vtbl_G2 = 8627876;
+
+	if (!snd) { return FALSE; };
+	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSoundSystemDummy_vtbl_G1, zCSoundSystemDummy_vtbl_G2))) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 func void MEM_InitSound () {
 	//0x008CEE4C class zCSoundSystem * zsound
-	const int zCSoundSystem__Adress_G1 = 9236044;
+	const int zCSoundSystem__Address_G1 = 9236044;
 
 	//0x0099B03C class zCSoundSystem * zsound
-	const int zCSoundSystem__Adress_G2 = 10072124;
+	const int zCSoundSystem__Address_G2 = 10072124;
 
-	zSound = MEM_ReadInt (MEMINT_SwitchG1G2 (zCSoundSystem__Adress_G1, zCSoundSystem__Adress_G2));
+	zSound = MEM_ReadInt (MEMINT_SwitchG1G2 (zCSoundSystem__Address_G1, zCSoundSystem__Address_G2));
+
+	//0x008CEEBC class zCSoundManager * zsndMan
+	//const int zCSoundManager__Address_G1 = 9236156;
+
+	//0x0086D47C class zCMusicSystem * zmusic
+	//const int zCMusicSystem__Address_G1 = 8836220;
+
+	//0x0086D480 protected: static int zCMusicSystem::s_musicSystemDisabled
+	//const int zCMusicSystem__s_musicSystemDisabled_G1 = 8836224;
+
+	//0x0086DCEC private: static class zCActiveSnd * zCActiveSnd::nextFreeSnd
+	//const int zCActiveSnd__nextFreeSnd_G1 = 8838380;
+
+	//MEM_Info (IntToString (MEM_ReadInt (zCMusicSystem__s_musicSystemDisabled_G1)));
+	//MEM_Info (IntToString (MEM_ReadInt (zCSoundManager__Address_G1)));
+	//MEM_Info (IntToString (MEM_ReadInt (zCMusicSystem__Address_G1)));
+	//MEM_Info (IntToString (MEM_ReadInt (zCActiveSnd__nextFreeSnd_G1)));
+
+	//0x0086DCB8 private: static class zCArray<class zCActiveSnd *> zCActiveSnd::preAllocedSndList
+	//const int zCActiveSnd__preAllocedSndList_G1 = 8838328;
+
+	//0x008D2A20 private: static class zCArray<class zCActiveSnd *> zCActiveSnd::preAllocedSndList
+	//const int zCActiveSnd__preAllocedSndList_G2 = 9251360;
+
+	//var zCArray zCActiveSnd_preAllocedSndList;
+	//zCActiveSnd_preAllocedSndList = _^ (MEMINT_SwitchG1G2 (zCActiveSnd__preAllocedSndList_G1, zCActiveSnd__preAllocedSndList_G2));
+
 
 	//0x0086D700 public: static class zCArraySort<class zCActiveSnd *> zCActiveSnd::activeSndList
 	const int zCActiveSnd__activeSndList_G1 = 8836864;
@@ -63,7 +125,7 @@ func void zCSndSys_MSS_StopSound (var int soundHandle) {
 	const int zCSndSys_MSS__StopSound_G2 = 5186304;
 
 	MEM_InitSound ();
-	if (!zSound) { return; };
+	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
@@ -84,7 +146,7 @@ func void zCSndSys_MSS_StopAllSounds (var int soundHandle) {
 	const int zCSndSys_MSS__StopAllSounds_G2 = 5186496;
 
 	MEM_InitSound ();
-	if (!zSound) { return; };
+	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
@@ -105,7 +167,7 @@ func int zCSndSys_MSS_LoadSoundFX (var string fileName) {
 	const int zCSndSys_MSS__LoadSoundFX_G2 = 5167456;
 
 	MEM_InitSound ();
-	if (!zSound) { return 0; };
+	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return 0; };
 
 	CALL_zStringPtrParam (fileName);
 	CALL__thiscall (zSound, MEMINT_SwitchG1G2 (zCSndSys_MSS__LoadSoundFX_G1, zCSndSys_MSS__LoadSoundFX_G2));
@@ -124,7 +186,7 @@ func int zCSndSys_MSS_PlaySound (var int soundPtr, var int slot) {
 	const int zCSndSys_MSS__PlaySound_G2 = 5175216;
 
 	MEM_InitSound ();
-	if (!zSound) { return 0; };
+	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
@@ -149,7 +211,7 @@ func int zCSndSys_MSS_PlaySound3D_Ext (var int soundPtr, var int vobPtr, var int
 	const int zCSndSys_MSS__PlaySound3D_G2 = 5181680;
 
 	MEM_InitSound ();
-	if (!zSound) { return 0; };
+	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
