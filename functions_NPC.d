@@ -878,6 +878,27 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	return (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
 };
 
+func int NPC_WasInStateName (var int slfInstance, var string stateName) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	stateName = STR_Upper (stateName);
+
+	if (slf.state_lastAIState < 0) { return 0; };
+
+	var string lastStateName;
+	lastStateName = GetSymbolName (slf.state_lastAIState);
+
+	//We will allow wild-card '*' at the end
+	if (STR_EndsWith (stateName, "*")) {
+		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+
+		return (STR_StartsWith (lastStateName, stateName));
+	};
+
+	return (Hlp_StrCmp (lastStateName, stateName));
+};
+
 func int NPC_GetNPCState (var int slfInstance) {
 	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
 	//oCNpc.state_vfptr	// 0x0470
@@ -940,8 +961,9 @@ func int Npc_GetHeightDiffToPos (var int slfInstance, var int posPtr) {
 	return roundf (subf (Y, slf._zCVob_trafoObjToWorld[7]));
 };
 
-func int Npc_GetHeightToVobPtr (var int s, var int vobPtr) {
+func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
 	var int pos[3];
+	if (!vobPtr) { return FLOATNULL; };
 	MEM_CopyBytes (zCVob_GetPositionWorld (vobPtr), _@ (pos), 12);
-	return +(Npc_GetHeightDiffToPos (s, _@ (pos)));
+	return +(Npc_GetHeightDiffToPos (slfInstance, _@ (pos)));
 };
