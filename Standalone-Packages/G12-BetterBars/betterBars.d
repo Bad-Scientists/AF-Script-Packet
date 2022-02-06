@@ -333,7 +333,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
-		if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk)) {
+		if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
 			if (healthBarDisplayMethod == BarDisplay_DynamicUpdate) {
 				if (!healthBarDisplayTime) {
 					healthBarDisplayTime = 120;
@@ -368,7 +368,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
+	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
 		if (healthBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hHealthBar);
