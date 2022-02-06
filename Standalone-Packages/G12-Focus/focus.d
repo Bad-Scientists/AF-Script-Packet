@@ -85,7 +85,7 @@ func void _hook_oCGame_UpdateStatus () {
 
 	//Focus changed
 	if (PC_FocusVob != her.focus_vob) {
-		
+
 	};
 
 	PC_FocusVob = her.focus_vob;
@@ -160,7 +160,7 @@ func void _hook_oCGame_UpdateStatus () {
 				mobName = ConcatStrings (mobName, "_EMPTY");
 
 				nameSymbIndex = MEM_FindParserSymbol (mobName);
-				
+
 				if (NameSymbIndex > -1) {
 					mob.focusNameIndex = nameSymbIndex;
 				};
@@ -185,7 +185,7 @@ func void _hook_oCGame_UpdateStatus () {
 						};
 
 						nameSymbIndex = MEM_FindParserSymbol (mobName);
-						
+
 						if (NameSymbIndex > -1) {
 							mob.focusNameIndex = nameSymbIndex;
 						};

@@ -109,6 +109,7 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	if (subType & bit7) { subType = (subType & ~ bit7); };
 	if (subType & bit6) { subType = (subType & ~ bit6); };
 */
+
 	const int bitMask = (1 << 6) - 1;
 	return (subType & bitMask);
 };

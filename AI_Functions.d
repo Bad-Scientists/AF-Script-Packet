@@ -1,4 +1,23 @@
 /*
+ *	AI functions
+ *	 - dependencies:
+		EngineClasses_G1/2\zEventMan.d
+
+		vectors.d
+		vobFunctions.d
+
+		ScriptBin\insertAnything.d
+
+		ObjectFactory\oCMsgMovement.d
+		ObjectFactory\oCMsgManipulate.d
+
+		eventManager_engine.d
+		eventManager.d
+
+		world_engine.d
+ */
+
+/*
  *	AI_TurnToPos
  *	 - same as AI_TurnToNPC, but allows us to use position
  */
@@ -326,7 +345,7 @@ func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int an
 };
 
 /*
- *	Scans for ideal positions, finds free positions and sends there NPC_IsVobPtrInAngleX
+ *	Scans for ideal positions, finds free positions and sends there NPC
  *	Function returns TRUE if successfull, FALSE if not
  */
 func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
