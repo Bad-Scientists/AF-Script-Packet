@@ -47,7 +47,7 @@ func void _hook_oCAIHuman_PC_ActionMove () {
 	PC_ActionKeyPressed = MEM_ReadInt (ESP + 4);
 
 	//If actionKey is pressed together with other keys ... then this function no longer register actionKey as pressed :-/
-	//So we will add frame function that will check if keyAction is pressed held there
+	//So we will add frame function that will check if keyAction is pressed / held there
 	if (PC_ActionKeyPressed) {
 		if (PC_ActionKeyPressed != PC_ActionKeyPressedLast) {
 			FF_ApplyOnceExtGT (FF_CheckActionKey, 0, -1);
@@ -320,5 +320,6 @@ func void G12_MouseUpdate_Init () {
 		const int mouseUpdate_G2 =  5062907; //0x4D40FB // Hook len 5
 
 		HookEngine (MEMINT_SwitchG1G2 (mouseUpdate_G1, mouseUpdate_G2), 5, "_hook_mouseUpdate_Event");
+		once = 1;
 	};
 };
