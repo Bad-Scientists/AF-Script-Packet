@@ -11,14 +11,6 @@
  *
  *	In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover
  */
-const int BarType_HealthBar = 0;
-const int BarType_ManaBar = 1;
-
-const int BarDisplay_Standard = 0;
-const int BarDisplay_DynamicUpdate = 1;
-const int BarDisplay_AlwaysOn = 2;
-
-//---
 
 var int hHealthBar;			//handle for HP bar
 var int vHealthPreview;			//handle for HP bar preview (view)
@@ -56,58 +48,6 @@ var int manaBarAlpha;
 
 //---
 
-var int InventoryOpened__BetterBars;
-
-func void _eventOpenInventory__BetterBars () {
-	InventoryOpened__BetterBars = TRUE;
-};
-
-func void _eventCloseInventory__BetterBars () {
-	InventoryOpened__BetterBars = FALSE;
-};
-
-/*
- *	Function wrapper - that tells us whether bar should be on desk or not
- *	Returns TRUE if bar should be displayed, FALSE if not
- */
-func int BarGetOnDesk (var int barType) {
-	var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-	var oCViewStatusBar manaBar; manaBar = _^ (MEM_Game.manaBar);
-
-	//Health bar
-	if (barType == BarType_HealthBar) {
-		//If in 'standard display' - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
-		if (healthBarDisplayMethod == BarDisplay_Standard) {
-			if (hpBar.zCView_ondesk) {
-				return TRUE;
-			};
-		};
-
-		//If mana bar is visible - then health bar should also be visible
-		if (manaBar.zCView_ondesk) {
-			return TRUE;
-		};
-
-		//If inventory is opened
-		if (InventoryOpened__BetterBars) {
-			return TRUE;
-		};
-	};
-
-	//Mana bar - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
-	if (barType == BarType_ManaBar) {
-		if (manaBar.zCView_ondesk) {
-			return TRUE;
-		};
-
-		//If inventory is opened
-		if (InventoryOpened__BetterBars) {
-			return TRUE;
-		};
-	};
-
-	return FALSE;
-};
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (BarGetOnDesk (BarType_HealthBar)) {
@@ -495,11 +435,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 func void G12_BetterBars_Init () {
 	G12_InvItemPreview_Init ();
 
-	G12_OpenInventoryEvent_Init ();
-	G12_CloseInventoryEvent_Init ();
-
-	OpenInventoryEvent_AddListener (_eventOpenInventory__BetterBars);
-	CloseInventoryEvent_AddListener (_eventCloseInventory__BetterBars);
+	G12_InitDefaultBarFunctions ();
 
 	FF_ApplyOnceExtGT (FrameFunction_EachFrame__BetterBars, 0, -1);
 };

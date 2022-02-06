@@ -1,3 +1,74 @@
+const int BarType_HealthBar = 0;
+const int BarType_ManaBar = 1;
+const int BarType_Swimbar = 2;
+const int BarType_SprintBar = 3;
+
+const int BarDisplay_Standard = 0;
+const int BarDisplay_DynamicUpdate = 1;
+const int BarDisplay_AlwaysOn = 2;
+
+/*
+ *
+ */
+var int BarDisplay_InventoryOpened;
+
+func void _eventOpenInventory__BetterBars () {
+	BarDisplay_InventoryOpened = TRUE;
+};
+
+func void _eventCloseInventory__BetterBars () {
+	BarDisplay_InventoryOpened = FALSE;
+};
+
+/*
+ *	Function wrapper - that tells us whether bar should be on desk or not
+ *	Returns TRUE if bar should be displayed, FALSE if not
+ */
+func int BarGetOnDesk (var int barType) {
+	var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
+	var oCViewStatusBar manaBar; manaBar = _^ (MEM_Game.manaBar);
+
+	//Health bar
+	if (barType == BarType_HealthBar)
+	//Sprint bar will have by default same behaviour as health bar
+	|| (barType == BarType_SprintBar)
+	{
+		//If in 'standard display' - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
+		if (healthBarDisplayMethod == BarDisplay_Standard) {
+			if (hpBar.zCView_ondesk) {
+				return TRUE;
+			};
+		};
+
+		//If mana bar is visible - then health bar should also be visible
+		if (manaBar.zCView_ondesk) {
+			return TRUE;
+		};
+
+		//If inventory is opened
+		if (BarDisplay_InventoryOpened) {
+			return TRUE;
+		};
+	};
+
+	//Mana bar - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
+	if (barType == BarType_ManaBar) {
+		if (manaBar.zCView_ondesk) {
+			return TRUE;
+		};
+
+		//If inventory is opened
+		if (BarDisplay_InventoryOpened) {
+			return TRUE;
+		};
+	};
+
+	return FALSE;
+};
+
+/*
+ *
+ */
 func void Bar_SetAlphaBackAndBar (var int bar, var int alphaBack, var int alphaBar) {
 	if(!Hlp_IsValidHandle(bar)) { return; };
 	var _bar b; b = get(bar);
@@ -28,8 +99,7 @@ func void Bar_SetValueSafe (var int bar, var int val) {
 
 	if ((val) && (b.valMax)) {
 		Bar_SetPromille(bar, (val * 1000) / b.valMax);
-	}
-	else {
+	} else {
 		Bar_SetPromille(bar, 0);
 	};
 };
@@ -86,4 +156,15 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 	} else {
 		View_Close (vHnd);
 	};
+};
+
+/*
+ *
+ */
+func void G12_InitDefaultBarFunctions () {
+	G12_OpenInventoryEvent_Init ();
+	G12_CloseInventoryEvent_Init ();
+
+	OpenInventoryEvent_AddListener (_eventOpenInventory__BetterBars);
+	CloseInventoryEvent_AddListener (_eventCloseInventory__BetterBars);
 };
