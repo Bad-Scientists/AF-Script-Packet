@@ -57,8 +57,6 @@ mobFunctions.d
 
 anims_engine.d
 
-bars.d
-
 eventManager_engine.d
 eventManager.d
 
@@ -72,6 +70,8 @@ interface.d
 
 game_Events_G1.d
 game_Events_G12.d
+
+bars.d
 
 infoManager_engine.d
 infoManager.d

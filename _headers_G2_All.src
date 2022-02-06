@@ -55,13 +55,13 @@ mobFunctions.d
 
 anims_engine.d
 
-bars.d
-
 infoManager_engine.d
 infoManager.d
 
 eventManager_engine.d
 eventManager.d
+
+functions_oCMobInter_engine.d
 
 functions_oCNpc_engine.d
 functions_NPC.d
@@ -80,6 +80,8 @@ console.d
 interface.d
 
 game_Events_G12.d
+
+bars.d
 
 game_engine.d
 
