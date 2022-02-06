@@ -1,4 +1,5 @@
 EngineClasses_G1\oNpc.d
+EngineClasses_G1\oNpcStates.d
 
 vectors.d
 vobFunctions.d

@@ -17,6 +17,7 @@ EngineClasses_G1\oCViewDocument.d
 EngineClasses_G1\zPhysics.d
 EngineClasses_G1\oAiShoot.d
 EngineClasses_G1\TMobOptPos.d
+EngineClasses_G1\TNpcSlot.d
 
 //Sound
 EngineClasses_G1\zTSound3DParams.d
@@ -99,6 +100,8 @@ AI_Functions.d
 zError_engine.d
 
 routines_waynet.d
+
+spawnManager.d
 
 time.d
 sound.d
