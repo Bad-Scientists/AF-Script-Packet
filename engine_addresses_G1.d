@@ -232,7 +232,7 @@ const int oCNpcInventory__HandleEvent = 6742928;
  */
 
 //0x00624E30 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int)
-const int oCAniCtrl_Human__ToggleWalkMode = 6442544;
+//const int oCAniCtrl_Human__ToggleWalkMode = 6442544;
 
 /*
  *	Event Manager

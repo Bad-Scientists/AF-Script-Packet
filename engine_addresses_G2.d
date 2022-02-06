@@ -143,7 +143,7 @@ const int oCNpc__DoDropVob = 7622096;
  */
 
 //0x006AD500 public: void __thiscall oCAniCtrl_Human::ToggleWalkMode(int)
-const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
+//const int oCAniCtrl_Human__ToggleWalkMode = 7001344;
 
 /*
  *	Event Manager
