@@ -1,5 +1,5 @@
 func void oCGame_TriggerChangeLevel (var string levelName, var string waypoint) {
-	//0x0063D480 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &) 
+	//0x0063D480 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
 	const int oCGame__TriggerChangeLevel_G1 = 6542464;
 
 	//0x006C7AF0 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
@@ -15,38 +15,26 @@ func void oCGame_TriggerChangeLevel (var string levelName, var string waypoint) 
 		oHERO_STATUS_STD, 0
 		oHERO_STATUS_THR, 1
 		oHERO_STATUS_FGT  2
-	}; 
+	};
 */
 
 /*
  *	Function tells us whether player is being attacked
  */
 func int oCGame_GetHeroStatus () {
-	//0x00638B60 public: enum oHEROSTATUS __thiscall oCGame::GetHeroStatus(void) 
+	//0x00638B60 public: enum oHEROSTATUS __thiscall oCGame::GetHeroStatus(void)
 	const int oCGame__GetHeroStatus_G1 = 6523744;
 
 	//0x006C2D10 public: enum oHEROSTATUS __thiscall oCGame::GetHeroStatus(void)
 	const int oCGame__GetHeroStatus_G2 = 7089424;
 
-	CALL__thiscall (_@(MEM_Game), MEMINT_SwitchG1G2 (oCGame__GetHeroStatus_G1, oCGame__GetHeroStatus_G2));
+	var int ptr; ptr = _@ (MEM_Game);
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCGame__GetHeroStatus_G1, oCGame__GetHeroStatus_G2));
+		call = CALL_End ();
+	};
 
 	return CALL_RetValAsInt ();
-};
-
-/*
- *	Function removes NPC from world
- */
-func void oCSpawnManager_DeleteNpc (var int slfInstance) {
-	//0x006D0DE0 public: void __thiscall oCSpawnManager::DeleteNpc(class oCNpc *)
-	const int oCSpawnManager__DeleteNpc_G1 = 7146976;
-
-	//0x00779690 public: void __thiscall oCSpawnManager::DeleteNpc(class oCNpc *)
-	const int oCSpawnManager__DeleteNpc_G2 = 7837328;
-
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	CALL_PtrParam (_@ (slf));
-	CALL__thiscall (_@ (MEM_SpawnManager), MEMINT_SwitchG1G2 (oCSpawnManager__DeleteNpc_G1, oCSpawnManager__DeleteNpc_G2));
 };
