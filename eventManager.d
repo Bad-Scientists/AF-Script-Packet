@@ -109,6 +109,7 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	if (subType & bit7) { subType = (subType & ~ bit7); };
 	if (subType & bit6) { subType = (subType & ~ bit6); };
 */
+
 	const int bitMask = (1 << 6) - 1;
 	return (subType & bitMask);
 };
@@ -293,6 +294,32 @@ func int zcEventManager_GetEventByEventName (var int eMgr, var string eventName)
 	end;
 
 	return 0;
+};
+
+func int zcEventManager_GetIndexByEventName (var int eMgr, var string eventName){
+	if (!Hlp_Is_zCEventManager (eMgr)) { return -1; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+
+	if (eventTotal == 0) { return -1; };
+
+	var int eMsg;
+	var string thisEventName;
+
+	//Loop through Event Messages
+	var int i; i = 0;
+
+	while (i < eventTotal);
+		thisEventName = zcEventManager_GetEventName (eMgr, i);
+
+		if (Hlp_StrCmp (eventName, thisEventName)) {
+			return i;
+		};
+
+		i += 1;
+	end;
+
+	return -1;
 };
 
 /*

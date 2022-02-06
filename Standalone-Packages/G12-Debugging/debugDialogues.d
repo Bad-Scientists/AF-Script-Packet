@@ -34,9 +34,9 @@ func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int ind
 
 	//Add flags: Important, Trade or Permanent dialogue
 	var string flags; flags = "";
-	if (dlgInstance.important) { flags = addString (flags, "I", ","); };
-	if (dlgInstance.trade) { flags = addString (flags, "T", ","); };
-	if (dlgInstance.permanent) { flags = addString (flags, "P", ","); };
+	if (dlgInstance.important) { flags = STR_AddString (flags, "I", ","); };
+	if (dlgInstance.trade) { flags = STR_AddString (flags, "T", ","); };
+	if (dlgInstance.permanent) { flags = STR_AddString (flags, "P", ","); };
 
 	if (STR_Len (flags) > 0) {
 		s = ConcatStrings (s, " (");

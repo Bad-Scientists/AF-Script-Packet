@@ -17,16 +17,6 @@ func int abs (var int i) {
 	return i;
 };
 
-func string addString (var string s, var string s1, var string separator) {
-	if (STR_Len (s) > 0) {
-		s = ConcatStrings (s, separator);
-	};
-
-	s = ConcatStrings (s, s1);
-
-	return s;
-};
-
 func int clamp (var int v, var int min, var int max) {
 	if (v < min) { return min; };
 	if (v > max) { return max; };

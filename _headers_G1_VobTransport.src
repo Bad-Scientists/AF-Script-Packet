@@ -2,11 +2,9 @@ constants.d
 
 engine_addresses_G1.d
 
+EngineClasses_G1\oNpc.d
 EngineClasses_G1\zEventMan.d
 EngineClasses_G1\zCVisual.d
-
-ObjectFactory\zCDecal.d
-ObjectFactory\zCMaterial.d
 
 vectors.d
 vobFunctions.d
@@ -17,6 +15,17 @@ ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
+ScriptBin\trafo.d
+
+ObjectFactory\zCDecal.d
+ObjectFactory\zCMaterial.d
+
+ObjectFactory\oCMsgMovement.d
+ObjectFactory\oCMsgManipulate.d
+
+strings.d
+
+anims_engine.d
 
 mobFunctions.d
 
@@ -28,6 +37,7 @@ interface.d
 game_Events_G12.d
 
 functions_oCNpc_engine.d
+functions_NPC.d
 
 functions_PC.d
 
@@ -40,9 +50,9 @@ inventory_oCNpc_engine.d
 inventory_oCNpc.d
 
 world_engine.d
+
 AI_Functions.d
 
-strings.d
 view.d
 
 portals.d

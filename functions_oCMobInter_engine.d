@@ -145,3 +145,46 @@ func void oCMobInter_SetHeading (var int mobPtr, var int slfInstance) {
 		call = CALL_End();
 	};
 };
+
+func int oCMobInter_IsAvailable (var int mobPtr, var int slfInstance) {
+	//0x0067F570 public: int __thiscall oCMobInter::IsAvailable(class oCNpc *)
+	const int oCMobInter__IsAvailable_G1 = 6813040;
+
+	//0x00720EC0 public: int __thiscall oCMobInter::IsAvailable(class oCNpc *)
+	const int oCMobInter__IsAvailable_G2 = 7474880;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__IsAvailable_G1, oCMobInter__IsAvailable_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
+func void oCMobInter_MarkAsUsed (var int mobPtr, var int timeDeltaF, var int vobPtr) {
+	//0x0067F5D0 public: void __thiscall oCMobInter::MarkAsUsed(float,class zCVob *)
+	const int oCMobInter__MarkAsUsed_G1 = 6813136;
+
+	//0x00720F20 public: void __thiscall oCMobInter::MarkAsUsed(float,class zCVob *)
+	const int oCMobInter__MarkAsUsed_G2 = 7474976;
+
+	if (!vobPtr) { return; };
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_FloatParam (_@ (timeDeltaF));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__MarkAsUsed_G1, oCMobInter__MarkAsUsed_G2));
+		call = CALL_End();
+	};
+};

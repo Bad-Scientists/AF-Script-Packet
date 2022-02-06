@@ -12,7 +12,7 @@
 func void oCMobContainer_Remove (var int mobPtr, var int itmPtr){
 	//0x00683EB0 public: virtual void __thiscall oCMobContainer::Remove(class oCItem *)
 	const int oCMobContainer__Remove_G1 = 6831792;
-	
+
 	//0x00725FF0 public: virtual void __thiscall oCMobContainer::Remove(class oCItem *)
 	const int oCMobContainer__Remove_G2 = 7495664;
 
@@ -34,7 +34,7 @@ func void oCMobContainer_Remove (var int mobPtr, var int itmPtr){
 func int oCMobContainer_GetRemoved (var int mobPtr, var int itmPtr, var int amount){
 	//0x00683F40 public: virtual class oCItem * __thiscall oCMobContainer::Remove(class oCItem *,int)
 	const int oCMobContainer__Remove_G1 = 6831936;
-	
+
 	//0x00726080 public: virtual class oCItem * __thiscall oCMobContainer::Remove(class oCItem *,int)
 	const int oCMobContainer__Remove_G2 = 7495808;
 
@@ -48,9 +48,9 @@ func int oCMobContainer_GetRemoved (var int mobPtr, var int itmPtr, var int amou
 		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobContainer__Remove_G1, oCMobContainer__Remove_G2));
 		call = CALL_End();
 	};
-	
+
 	var int retVal; retVal = CALL_RetValAsPtr ();
-	
+
 	B_Msg_Add (IntToString (retVal));
 
 	return retVal;
@@ -60,7 +60,7 @@ func int oCMobContainer_GetRemoved (var int mobPtr, var int itmPtr, var int amou
 func void oCMobContainer_Insert (var int mobPtr, var int itmPtr){
 	//0x00683E80 public: virtual void __thiscall oCMobContainer::Insert(class oCItem *)
 	const int oCMobContainer__Insert_G1 = 6831744;
-	
+
 	//0x00725FC0 public: virtual void __thiscall oCMobContainer::Insert(class oCItem *)
 	const int oCMobContainer__Insert_G2 = 7495616;
 
@@ -74,3 +74,5 @@ func void oCMobContainer_Insert (var int mobPtr, var int itmPtr){
 		call = CALL_End();
 	};
 };
+
+//0x00726190 public: virtual void __thiscall oCMobContainer::CreateContents(class zSTRING const &)

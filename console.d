@@ -8,7 +8,11 @@ func void Game_InitConsole () {
 	//0x00673470 void __cdecl Game_InitConsole(void)
 	const int Game_InitConsole_G2 = 6763632;
 
-	CALL__cdecl (MEMINT_SwitchG1G2 (Game_InitConsole_G1, Game_InitConsole_G2));
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__cdecl (MEMINT_SwitchG1G2 (Game_InitConsole_G1, Game_InitConsole_G2));
+		call = CALL_End ();
+	};
 };
 
 /*
@@ -40,7 +44,11 @@ func void zCConsole_Show () {
 	//0x00783460 public: void __thiscall zCConsole::Show(void)
 	const int zCConsole__Show_G2 = 7877728;
 
-	CALL__thiscall (zcon_address, MEMINT_SwitchG1G2 (zCConsole__Show_G1, zCConsole__Show_G2));
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (zcon_address), MEMINT_SwitchG1G2 (zCConsole__Show_G1, zCConsole__Show_G2));
+		call = CALL_End ();
+	};
 };
 
 /*
@@ -53,7 +61,11 @@ func void zCConsole_Hide () {
 	//0x007836B0 public: void __thiscall zCConsole::Hide(void)
 	const int zCConsole__Hide_G2 = 7878320;
 
-	CALL__thiscall (zcon_address, MEMINT_SwitchG1G2 (zCConsole__Hide_G1, zCConsole__Hide_G2));
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (zcon_address), MEMINT_SwitchG1G2 (zCConsole__Hide_G1, zCConsole__Hide_G2));
+		call = CALL_End ();
+	};
 };
 
 /*
@@ -67,6 +79,12 @@ func void oCGame_TestKeys (var int key) {
 	//0x0069FAC0 private: int __thiscall oCGame::TestKeys(int)
 	const int oCGame__TestKeys_G2 = 6945472;
 
-	CALL_IntParam (key);
-	CALL__thiscall (_@ (MEM_Game), MEMINT_SwitchG1G2 (oCGame__TestKeys_G1, oCGame__TestKeys_G2));
+	var int ptr; ptr = _@ (MEM_Game);
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (key));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCGame__TestKeys_G1, oCGame__TestKeys_G2));
+		call = CALL_End ();
+	};
 };

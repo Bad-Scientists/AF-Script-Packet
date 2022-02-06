@@ -11,14 +11,6 @@
  *
  *	In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover
  */
-const int BarType_HealthBar = 0;
-const int BarType_ManaBar = 1;
-
-const int BarDisplay_Standard = 0;
-const int BarDisplay_DynamicUpdate = 1;
-const int BarDisplay_AlwaysOn = 2;
-
-//---
 
 var int hHealthBar;			//handle for HP bar
 var int vHealthPreview;			//handle for HP bar preview (view)
@@ -28,13 +20,9 @@ var int healthBarPreviewAlpha;
 var int healthBarPreviewFlashingFadeOut;
 
 var int healthBarLastValue;
-
 var int healthBarDisplayMethod;
-
-var int healthBarIsVisible;
-
 var int healthBarDisplayTime;
-var int healthBarAlpha;
+var int healthBarIsVisible;
 
 //---
 
@@ -46,68 +34,9 @@ var int manaBarPreviewAlpha;
 var int manaBarPreviewFlashingFadeOut;
 
 var int manaBarLastValue;
-
 var int manaBarDisplayMethod;
-
-var int manaBarIsVisible;
-
 var int manaBarDisplayTime;
-var int manaBarAlpha;
-
-//---
-
-var int InventoryOpened__BetterBars;
-
-func void _eventOpenInventory__BetterBars () {
-	InventoryOpened__BetterBars = TRUE;
-};
-
-func void _eventCloseInventory__BetterBars () {
-	InventoryOpened__BetterBars = FALSE;
-};
-
-/*
- *	Function wrapper - that tells us whether bar should be on desk or not
- *	Returns TRUE if bar should be displayed, FALSE if not
- */
-func int BarGetOnDesk (var int barType) {
-	var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-	var oCViewStatusBar manaBar; manaBar = _^ (MEM_Game.manaBar);
-
-	//Health bar
-	if (barType == BarType_HealthBar) {
-		//If in 'standard display' - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
-		if (healthBarDisplayMethod == BarDisplay_Standard) {
-			if (hpBar.zCView_ondesk) {
-				return TRUE;
-			};
-		};
-
-		//If mana bar is visible - then health bar should also be visible
-		if (manaBar.zCView_ondesk) {
-			return TRUE;
-		};
-
-		//If inventory is opened
-		if (InventoryOpened__BetterBars) {
-			return TRUE;
-		};
-	};
-
-	//Mana bar - use original bar zCView_ondesk attribute to figure out whether it should be on desk or not
-	if (barType == BarType_ManaBar) {
-		if (manaBar.zCView_ondesk) {
-			return TRUE;
-		};
-
-		//If inventory is opened
-		if (InventoryOpened__BetterBars) {
-			return TRUE;
-		};
-	};
-
-	return FALSE;
-};
+var int manaBarIsVisible;
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (BarGetOnDesk (BarType_HealthBar)) {
@@ -132,18 +61,19 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (healthBarIsVisible) {
 		healthBarDisplayTime -= 1;
 
+		var int alpha;
+
 		if (healthBarDisplayTime > 80) {
-			healthBarAlpha = roundf (mulf (mkf (255), divf (mkf (120 - healthBarDisplayTime), mkf (40))));
+			alpha = roundf (mulf (mkf (255), divf (mkf (120 - healthBarDisplayTime), mkf (40))));
 		} else
 		if (healthBarDisplayTime > 40) {
-			healthBarAlpha = 255;
+			alpha = 255;
 		} else {
-			healthBarAlpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - healthBarDisplayTime), mkf (40))));
+			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - healthBarDisplayTime), mkf (40))));
 		};
 
-		if (healthBarAlpha < 0) { healthBarAlpha = 0; };
-
-		Bar_SetAlpha (hHealthBar, healthBarAlpha);
+		alpha = clamp (alpha, 0, 255);
+		Bar_SetAlpha (hHealthBar, alpha);
 	};
 };
 
@@ -170,18 +100,20 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	if (manaBarIsVisible) {
 		manaBarDisplayTime -= 1;
 
+		var int alpha;
+
 		if (manaBarDisplayTime > 80) {
-			manaBarAlpha = roundf (mulf (mkf (255), divf (mkf (120 - manaBarDisplayTime), mkf (40))));
+			alpha = roundf (mulf (mkf (255), divf (mkf (120 - manaBarDisplayTime), mkf (40))));
 		} else
 		if (manaBarDisplayTime > 40) {
-			manaBarAlpha = 255;
+			alpha = 255;
 		} else {
-			manaBarAlpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - manaBarDisplayTime), mkf (40))));
+			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - manaBarDisplayTime), mkf (40))));
 		};
 
-		if (manaBarAlpha < 0) { manaBarAlpha = 0; };
+		alpha = clamp (alpha, 0, 255);
 
-		Bar_SetAlpha (hManaBar, manaBarAlpha);
+		Bar_SetAlpha (hManaBar, alpha);
 	};
 };
 
@@ -201,7 +133,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 			} else {
 				healthBarPreviewAlpha += 32;
 			};
-			
+
 			if (healthBarPreviewAlpha < 0) {
 				healthBarPreviewAlpha = 0;
 				healthBarPreviewFlashingFadeOut = (!healthBarPreviewFlashingFadeOut);
@@ -211,7 +143,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 				healthBarPreviewAlpha = 255;
 				healthBarPreviewFlashingFadeOut = (!healthBarPreviewFlashingFadeOut);
 			};
-			
+
 			//
 			View_SetAlpha (vHealthPreview, healthBarPreviewAlpha);
 		};
@@ -225,7 +157,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 			} else {
 				manaBarPreviewAlpha += 32;
 			};
-			
+
 			if (manaBarPreviewAlpha < 0) {
 				manaBarPreviewAlpha = 0;
 				manaBarPreviewFlashingFadeOut = (!manaBarPreviewFlashingFadeOut);
@@ -235,7 +167,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 				manaBarPreviewAlpha = 255;
 				manaBarPreviewFlashingFadeOut = (!manaBarPreviewFlashingFadeOut);
 			};
-			
+
 			//
 			View_SetAlpha (vManaPreview, manaBarPreviewAlpha);
 		};
@@ -333,7 +265,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
-		if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk)) {
+		if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
 			if (healthBarDisplayMethod == BarDisplay_DynamicUpdate) {
 				if (!healthBarDisplayTime) {
 					healthBarDisplayTime = 120;
@@ -368,7 +300,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((!(healthBarDisplayMethod == BarDisplay_AlwaysOn)) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
+	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
 		if (healthBarIsVisible) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hHealthBar);
@@ -486,7 +418,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 //I was also not able to remove Gothic bar
 	//ViewStatusBar_Remove (hpBarAddress);
-	
+
 //Only option which was possible - moving original Gothic bars outside of screen
 	hpBar.zCView_vposy = 8192 * 2;
 	manaBar.zCView_vposy = 8192 * 2;
@@ -495,11 +427,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 func void G12_BetterBars_Init () {
 	G12_InvItemPreview_Init ();
 
-	G12_OpenInventoryEvent_Init ();
-	G12_CloseInventoryEvent_Init ();
-
-	OpenInventoryEvent_AddListener (_eventOpenInventory__BetterBars);
-	CloseInventoryEvent_AddListener (_eventCloseInventory__BetterBars);
+	G12_InitDefaultBarFunctions ();
 
 	FF_ApplyOnceExtGT (FrameFunction_EachFrame__BetterBars, 0, -1);
 };

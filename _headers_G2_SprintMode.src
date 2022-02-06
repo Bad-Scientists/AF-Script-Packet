@@ -1,15 +1,23 @@
 EngineClasses_G2\oNpc.d
 
+utils.d
+
 engine_addresses_G2.d
 
-anims_engine.d
+ScriptBin\strings.d
+ScriptBin\convert.d
 
-bars.d
+strings.d
+
+anims_engine.d
 
 functions_oCNPC_engine.d
 functions_NPC.d
 
+game_engine.d
 game_Events_G12.d
+
+bars.d
 
 Standalone-Packages\G12-SprintMode\sprintMode_API.d
 Standalone-Packages\G12-SprintMode\sprintMode.d

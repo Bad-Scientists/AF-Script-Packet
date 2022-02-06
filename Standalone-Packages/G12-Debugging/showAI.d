@@ -35,7 +35,10 @@ func string CC_ShowAI (var string param) {
 				msg = "Hiding AI info.";
 			} else {
 				NPC_SetShowAI (npc, 1);
-				msg = ConcatStrings (npc.Name, " show AI info.");
+				msg = GetSymbolName (Hlp_GetInstanceID (npc));
+				msg = ConcatStrings (msg, " ");
+				msg = ConcatStrings (msg, NPC_GetRoutineName (npc));
+				msg = ConcatStrings (msg, " show AI info.");
 			};
 		} else {
 			msg = "hero.focus_vob is not an NPC.";

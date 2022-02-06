@@ -14,6 +14,7 @@ var int _EquipItem_Event;
 var int _UnEquipItem_Event;
 var int _DoTakeVob_Event;
 var int _DoDropVob_Event;
+var int _DropFromSlot_Event;
 var int _DoThrowVob_Event;
 var int _OpenDeadNPC_Event;
 
@@ -77,6 +78,14 @@ func void DoDropVobEvent_AddListener (var func f) {
 
 func void DoDropVobEvent_RemoveListener (var func f) {
 	Event_Remove (_DoDropVob_Event, f);
+};
+
+func void DropFromSlotEvent_AddListener (var func f) {
+	Event_AddOnce (_DropFromSlot_Event, f);
+};
+
+func void DropFromSlotEvent_RemoveListener (var func f) {
+	Event_Remove (_DropFromSlot_Event, f);
 };
 
 func void DoThrowVobEvent_AddListener (var func f) {
@@ -238,12 +247,19 @@ func void _hook_oCNpc_DoTakeVob () {
 	};
 };
 
+/*
+ *	Drop from slot is basically drop vob event ... same as Do Throw vob
+ *	Should I combine these 3? Or is it okay to keep them separate??
+ *	I think it makes sense to keep them separate ... modder will have to keep in mind to control all events
+ *	It is also easier for me to keep them separate as they have different parameters ...
+ *	In theory we can use event-type constant to recognize which event is calling event functions ...
+ */
 const int evDoDropVob = 1;			//'Standard' Gothic function oCNpc::DoDropVob(class zCVob *)
 						//Pointer to dropped item is in function parameter (ESP + 4)
-const int evDoDropVobBetterInvControls = 2;	//Item dropped using Better inventory controls
-						//Pointer to dropped item has to be obtained by checking vobs in hands ! Items are still in hand when this event is called!
+const int evDoDropFromSlot = 2;			//Item dropped using oCNpc::DropFromSlot(class zSTRING const &)
+						//Pointer to dropped item has to be obtained by checking vobs in slot ! Items are still in slots when this event is called!
 
-////0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
+//0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 func void _hook_oCNpc_DoDropVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
@@ -253,6 +269,17 @@ func void _hook_oCNpc_DoDropVob () {
 	};
 };
 
+//0x006A61A0 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+func void _hook_oCNpc_DropFromSlot () {
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+	var oCNPC slf; slf = _^ (ECX);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (_DropFromSlot_Event) {
+		Event_Execute (_DropFromSlot_Event, evDoDropFromSlot);
+	};
+};
+
+//0x006A13C0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
 func void _hook_oCNpc_DoThrowVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
@@ -262,6 +289,7 @@ func void _hook_oCNpc_DoThrowVob () {
 	};
 };
 
+//0x006BB890 public: void __thiscall oCNpc::OpenDeadNpc(void)
 func void _hook_oCNPC_OpenDeadNPC () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
@@ -444,10 +472,31 @@ func void G12_DoDropVobEvent_Init () {
 		_DoDropVob_Event = Event_Create ();
 	};
 
+	if (!_DropFromSlot_Event) {
+		_DropFromSlot_Event = Event_Create ();
+	};
+
 	const int once = 0;
 	if (!once) {
 		//[DoDropVob events]
 		HookEngine (oCNPC__DoDropVob, 6, "_hook_oCNpc_DoDropVob");
+
+		//--> Engine calls oCNpc::DropFromSlot(struct TNpcSlot *)
+		//0x006A61A0 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+		//0x0074A590 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+
+		//Only in G1
+		//0x00694060 public: void __thiscall oCNpc::RemoveFromHand(void)
+		//<--
+
+		//0x006A6270 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
+		const int oCNpc__DropFromSlot_G1 = 6972016;
+
+		//0x0074A660 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
+		const int oCNpc__DropFromSlot_G2 = 7644768;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__DropFromSlot_G1, oCNpc__DropFromSlot_G2), 6, "_hook_oCNpc_DropFromSlot");
+
 		once = 1;
 	};
 };

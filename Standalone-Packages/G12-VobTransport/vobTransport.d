@@ -25,10 +25,10 @@ func int VobCanBeDeleted__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
 
-//Not sure how to move these around properly (do I need to move _zCVob_bbox3D_mins & _zCVob_bbox3D_maxs ?)
-//	|| (Hlp_Is_zCTrigger (vobPtr))
-//	|| (Hlp_Is_oCTriggerScript (vobPtr))
-//	|| (Hlp_Is_zCVobSpot (vobPtr))
+	|| (Hlp_Is_zCTrigger (vobPtr))
+	|| (Hlp_Is_oCTriggerScript (vobPtr))
+
+	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob (supported by this feature)
 	{
@@ -92,6 +92,7 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 
 	|| (Hlp_Is_zCTrigger (vobPtr))
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
+
 	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
@@ -126,10 +127,10 @@ func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 
 	|| (Hlp_Is_oCNpc (vobPtr))
 
-//Not sure how to move these around properly
-//	|| (Hlp_Is_zCTrigger (vobPtr))
-//	|| (Hlp_Is_oCTriggerScript (vobPtr))
-//	|| (Hlp_Is_zCVobSpot (vobPtr))
+	|| (Hlp_Is_zCTrigger (vobPtr))
+	|| (Hlp_Is_oCTriggerScript (vobPtr))
+
+	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
 	{
@@ -165,6 +166,55 @@ func int VobCanBeCloned__VobTransport (var int vobPtr) {
 
 //---
 
+func int Npc_GetFP (var int slfInstance, var string freepointName, var int distF, var int posPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	oCNpc_ClearVobList (slf);
+	oCNpc_CreateVobList (slf, distF);
+
+	var int vobPtr;
+
+	var int i; i = 0;
+	var int loop;
+
+	var int maxDist; maxDist = mkf (999999);
+	var int dist;
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	loop = slf.vobList_numInArray;
+
+	while (i < loop);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_zCVobSpot (vobPtr)) {
+			var zCVob vobSpot; vobSpot = _^ (vobPtr);
+			if (STR_StartsWith (vobSpot._zCObject_objectName, freepointName)) {
+				if (!firstPtr) { firstPtr = vobPtr; };
+
+				if (posPtr) {
+					var int pos[3];
+					MEM_CopyBytes (posPtr, _@ (pos), 12);
+
+					dist = TRF_GetDistXYZ (pos[0], pos[1], pos[2], vobSpot.trafoObjToWorld[03], vobSpot.trafoObjToWorld[07], vobSpot.trafoObjToWorld[11]);
+				} else {
+					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+				};
+
+				if (lf (dist, maxDist)) {
+					nearestPtr = vobPtr;
+					maxDist = dist;
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) {
+		return nearestPtr;
+	};
+
+	return firstPtr;
+};
+
 /*
  *	Function MoveVobInFront - created by Lehona
  */
@@ -176,6 +226,9 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 
 	var zCVob vob; vob = _^ (vobPtr);
 
+	//Save BBox
+	var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
+
 	//Move vob to NPC X Y Z coordinates
 	vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
 	vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
@@ -185,6 +238,21 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 	vob.trafoObjToWorld [07] = addf (vob.trafoObjToWorld [07], mkf (vobTransportElevationLevel));
 
 	zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[6], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
+
+	//Vob-spot-slotting
+	var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
+	var int vobSpotPtr; vobSpotPtr = Npc_GetFP (slf, "FP_SLOT", mkf (vobTransportCollectVobSlotRange), _@ (pos));
+	if (vobSpotPtr) {
+		if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
+			var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
+
+			// Update position
+			AlignVobAt(vobPtr, _@(vobSpot.trafoObjToWorld));
+		};
+	};
+
+	//Restore BBox
+	zCVob_SetBBox3DLocal (vobPtr, _@ (bbox));
 };
 
 func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode) {

@@ -5,6 +5,11 @@ EngineClasses_G1\oInventory.d
 EngineClasses_G1\oNpc.d
 EngineClasses_G1\oNpcStates.d
 
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+strings.d
+
 anims_engine.d
 
 inventory_oCNpc_engine.d

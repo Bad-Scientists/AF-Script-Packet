@@ -16,15 +16,13 @@ EngineClasses_G1\oCDocumentManager.d
 EngineClasses_G1\oCViewDocument.d
 EngineClasses_G1\zPhysics.d
 EngineClasses_G1\oAiShoot.d
+EngineClasses_G1\TMobOptPos.d
+EngineClasses_G1\TNpcSlot.d
 
-ObjectFactory\zCDecal.d
-ObjectFactory\zCMaterial.d
-ObjectFactory\zCTexture.d
-
-ObjectFactory\oCAIVobMove.d
-ObjectFactory\oCAIVobMoveTorch.d
-ObjectFactory\oCAIDrop.d
-ObjectFactory\oCAIArrow.d
+//Sound
+EngineClasses_G1\zTSound3DParams.d
+EngineClasses_G1\zCActiveSnd.d
+EngineClasses_G1\zCSndFrame.d
 
 utils.d
 files.d
@@ -41,11 +39,23 @@ ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d
 
+ObjectFactory\zCDecal.d
+ObjectFactory\zCMaterial.d
+ObjectFactory\zCTexture.d
+
+ObjectFactory\oCAIVobMove.d
+ObjectFactory\oCAIVobMoveTorch.d
+ObjectFactory\oCAIDrop.d
+ObjectFactory\oCAIArrow.d
+
+ObjectFactory\oCMsgMovement.d
+ObjectFactory\oCMsgManipulate.d
+
+strings.d
+
 mobFunctions.d
 
 anims_engine.d
-
-bars.d
 
 eventManager_engine.d
 eventManager.d
@@ -60,6 +70,8 @@ interface.d
 
 game_Events_G1.d
 game_Events_G12.d
+
+bars.d
 
 infoManager_engine.d
 infoManager.d
@@ -81,13 +93,20 @@ world_engine.d
 
 portals.d
 
-strings.d
-
 view.d
 
 AI_Functions.d
 
 zError_engine.d
+
+routines_waynet.d
+
+spawnManager.d
+
+time.d
+sound.d
+
+miscellaneous.d
 
 Standalone-Packages\G1-EverloomingBarrier\barrier.d
 
@@ -153,9 +172,14 @@ Standalone-Packages\G12-Debugging\debugDialogues.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
+Standalone-Packages\G12-Debugging\unlock.d
+Standalone-Packages\G12-Debugging\checkLockValidity.d
+Standalone-Packages\G12-Debugging\checkRoutineValidity.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 Standalone-Packages\G12-VobThrowing\testing.d
+
+Standalone-Packages\G12-RainControl\rainControl.d
