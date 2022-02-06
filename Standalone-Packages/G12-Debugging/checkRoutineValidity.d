@@ -294,7 +294,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 					var string npcWithID; npcWithID = "";
 
 					//Find an NPC with this ID
-					var int listPtr; listPtr = MEM_World.voblist_npcs;
+					var int listPtr; listPtr = MEM_World_Get_voblist_npcs ();
 					var zCListSort list;
 
 					while (listPtr);
@@ -393,7 +393,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 
 	//Restart routines !
 
-	listPtr = MEM_World.voblist_npcs;
+	listPtr = MEM_World_Get_voblist_npcs ();
 
 	while (listPtr);
 		list = _^ (listPtr);
