@@ -459,8 +459,6 @@ func void _AI_MobSetIdealPosition () {
 	var oCMobInter mob; mob = _^ (slf.interactMob);
 
 	if (mob.optimalPosList_next) {
-		var int i; i = 0;
-
 		var int ptr;
 		var zCList list;
 
@@ -551,8 +549,27 @@ func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState
 	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
 	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, "", "");
 
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
+ *	Same as AI_UseMob - but you can specify vob pointer + additional action in name string (UNLOCK, LOCK)
+ */
+func void AI_UseMobPtr_Ext (var int slfInstance, var int vobPtr, var int targetState, var string name) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!Hlp_Is_oCMobInter (vobPtr)) { return; };
+
+	//var oCMobInter mob; mob = _^ (vobPtr);
+
 	//Create new message
 	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, name, "");
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
