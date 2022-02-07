@@ -1149,11 +1149,12 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	if (MEM_InformationMan.IsWaitingForSelection) {
 
 		//G2A tweak - dialog confirmation with SPACE
+		//Additionally we will allow confirmation via numpad enter
 		if (!InfoManagerAnswerPossible) {
-			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
+			if ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; update = TRUE; };
 		} else {
 			if (!InfoManagerAnswerMode)
-			&& (key == KEY_SPACE) { key = KEY_RETURN; };
+			&& ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; };
 		};
 
 //--- Answers -->
