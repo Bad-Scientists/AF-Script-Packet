@@ -37,7 +37,7 @@ func string CC_Lock (var string param) {
 			msg = ConcatStrings (msg, pickLockStr);
 
 			msg = ConcatStrings (msg, " and keyInstance: ");
-			msg = ConcatStrings (msg, pickLockStr);
+			msg = ConcatStrings (msg, keyInstance);
 
 			mob.pickLockStr = pickLockStr;
 			mob.keyInstance = keyInstance;
