@@ -17,6 +17,16 @@ func void oCMobInter_SendStateChange (var int mobPtr, var int fromState, var int
 };
 
 func string oCMobInter_GetScemeName (var int mobPtr) {
+	//0x00684CA0 public: virtual class zSTRING __thiscall oCMobDoor::GetScemeName(void)
+	const int oCMobDoor__GetScemeName_G1 = 6835360;
+
+	//0x00726D60 public: virtual class zSTRING __thiscall oCMobDoor::GetScemeName(void)
+	const int oCMobDoor__GetScemeName_G2 = 7499104;
+
+	//Only G2A ... G1 does not have this function
+	//0x007232A0 public: virtual class zSTRING __thiscall oCMobBed::GetScemeName(void)
+	const int oCMobBed__GetScemeName_G2 = 7484064;
+
 	//0x0067C970 public: virtual class zSTRING __thiscall oCMobInter::GetScemeName(void)
 	const int oCMobInter__GetScemeName_G1 = 6801776;
 
@@ -27,7 +37,14 @@ func string oCMobInter_GetScemeName (var int mobPtr) {
 
 	CALL_RetValIszString();
 
-	CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMobInter__GetScemeName_G1, oCMobInter__GetScemeName_G2));
+	if (Hlp_Is_oCMobDoor (mobPtr)) {
+		CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMobDoor__GetScemeName_G1, oCMobDoor__GetScemeName_G2));
+	} else
+	if (Hlp_Is_oCMobBed (mobPtr) && (MEMINT_SwitchG1G2 (0, 1))) {
+		CALL__thiscall (mobPtr, oCMobBed__GetScemeName_G2);
+	} else {
+		CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMobInter__GetScemeName_G1, oCMobInter__GetScemeName_G2));
+	};
 
 	return CALL_RetValAszstring ();
 };
