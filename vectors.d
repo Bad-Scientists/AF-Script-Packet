@@ -175,13 +175,16 @@ func int zVEC3_LengthApprox (var int vecPtr) {
 	//0x00488FD0 public: float __thiscall zVEC3::LengthApprox(void)const
 	const int zVEC3__LengthApprox_G1 = 4755408;
 
+	//0x00490E10 public: float __thiscall zVEC3::LengthApprox(void)const
+	const int zVEC3__LengthApprox_G2 = 4787728;
+
 	var int retVal;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_RetValIsFloat ();
 		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (vecPtr), zVEC3__LengthApprox_G1);
+		CALL__thiscall (_@ (vecPtr), MEMINT_SwitchG1G2 (zVEC3__LengthApprox_G1, zVEC3__LengthApprox_G2));
 		call = CALL_End();
 	};
 
