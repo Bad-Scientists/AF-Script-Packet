@@ -113,6 +113,8 @@ func void _hook_oCNpc_OnMessage () {
 
 	var oCNPC npc; npc = _^ (ECX);
 
+	var oCMsgManipulate msgManipulate;
+
 /*
 	//EV_DODGE - nothing happens when you call AI_Dodge on monster NPC
 	if (Hlp_Is_oCMsgMovement (eMsg)) {
@@ -230,8 +232,8 @@ func void _hook_oCNpc_OnMessage () {
 			};
 			*/
 			//EV_USEITEMTOSTATE
-			if (eMsg_MD_GetSubType (eMsg) == 15) {
-				var oCMsgManipulate msgManipulate; msgManipulate = _^ (eMsg);
+			if (eMsg_MD_GetSubType (eMsg) == EV_USEITEMTOSTATE) {
+				msgManipulate = _^ (eMsg);
 				if (msgManipulate.npcSlot == 0) {
 					if (eventUseItemToState == 0) {
 						eventUseItemToState = 1;
@@ -245,6 +247,35 @@ func void _hook_oCNpc_OnMessage () {
 						eventUseItemToState = 0;
 						if (_PlayerUseItemToStateUse_Event) {
 							Event_Execute (_PlayerUseItemToStateUse_Event, 0);
+						};
+					};
+				};
+			};
+		};
+	} else {
+		//Additional logic for NPCs
+		if (Hlp_Is_oCMsgManipulate (eMsg)) {
+			//EV_USEMOB
+			if (eMsg_MD_GetSubType (eMsg) == EV_USEMOB) {
+				msgManipulate = _^ (eMsg);
+
+				//NPC will be able to unlock & lock oCMobLockable objects
+				if (Hlp_Is_oCMobLockable (msgManipulate.targetVob)) {
+					if (msgManipulate.targetVob == npc.interactMob) {
+						var oCMobLockable lock; lock = _^ (msgManipulate.targetVob);
+
+						if (Hlp_StrCmp (msgManipulate.name, "LOCK")) {
+							if (!(lock.bitfield & oCMobLockable_bitfield_locked)) {
+								lock.bitfield = (lock.bitfield | oCMobLockable_bitfield_locked);
+								//PrintS ("locking!");
+							};
+						};
+
+						if (Hlp_StrCmp (msgManipulate.name, "UNLOCK")) {
+							if (lock.bitfield & oCMobLockable_bitfield_locked) {
+								lock.bitfield = (lock.bitfield & ~ oCMobLockable_bitfield_locked);
+								//PrintS ("unlocking!");
+							};
 						};
 					};
 				};
