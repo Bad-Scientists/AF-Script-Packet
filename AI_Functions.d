@@ -545,10 +545,13 @@ func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState
 
 	if (!Hlp_Is_oCMobInter (vobPtr)) { return; };
 
-	var oCMobInter mob; mob = _^ (vobPtr);
+	//var oCMobInter mob; mob = _^ (vobPtr);
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
+	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
+
+	//Create new message
+	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
