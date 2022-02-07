@@ -549,6 +549,7 @@ func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState
 
 	//Create new message
 	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, "", "");
 
 	//Create new message
 	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
