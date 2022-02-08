@@ -564,7 +564,7 @@ func string Choice_GetModifierSpinnerID (var string s) {
 	var string s1; s1 = "";
 	var string s2; s2 = "";
 
-	var string spinnerID;
+	var string spinnerID; spinnerID = "";
 
 	len = STR_Len (s);
 	index = STR_IndexOf (s, "s@");
@@ -937,10 +937,10 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 
 				if (dlgInstance.listChoices_next) {
 
-					var int list; list = dlgInstance.listChoices_next;
 					var zCList l;
 
-					var int i; i = 0;
+					var int list; list = dlgInstance.listChoices_next;
+
 					while (list);
 						l = _^ (list);
 
@@ -955,7 +955,6 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 						};
 
 						list = l.next;
-						i += 1;
 					end;
 				};
 			};
@@ -1092,7 +1091,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 		//Prevent infinite loops
 		if (nextChoiceIndex != lastChoiceIndex) {
-			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp"))) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
 				zCViewDialogChoice_SelectPrevious ();
 			} else {
 				zCViewDialogChoice_SelectNext ();
@@ -1149,11 +1148,12 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	if (MEM_InformationMan.IsWaitingForSelection) {
 
 		//G2A tweak - dialog confirmation with SPACE
+		//Additionally we will allow confirmation via numpad enter
 		if (!InfoManagerAnswerPossible) {
-			if (key == KEY_SPACE) { key = KEY_RETURN; update = TRUE; };
+			if ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; update = TRUE; };
 		} else {
 			if (!InfoManagerAnswerMode)
-			&& (key == KEY_SPACE) { key = KEY_RETURN; };
+			&& ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; };
 		};
 
 //--- Answers -->
@@ -1900,6 +1900,8 @@ MEM_InformationMan.LastMethod:
 			loop = arr.numInArray;
 		};
 
+		var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
+
 		while (i < loop);
 
 			//Recalculate Y pos
@@ -1959,8 +1961,12 @@ MEM_InformationMan.LastMethod:
 					dlgInstance = _^ (infoPtr);
 
 					//--> re-evaluate dialog conditions
-					MEM_CallByID (dlgInstance.conditions);
-					retVal = MEMINT_PopInt();
+					//Prevent multiple calls for each choice - if already evaluated!
+					if (!choiceConditionEvaluated) {
+						MEM_CallByID (dlgInstance.conditions);
+						retVal = MEMINT_PopInt();
+						choiceConditionEvaluated = TRUE;
+					};
 					//<--
 
 					infoPtr = 0;
@@ -1968,10 +1974,11 @@ MEM_InformationMan.LastMethod:
 					if (dlgInstance.listChoices_next) {
 
 						var oCInfoChoice dlgChoice;
-						var int list; list = dlgInstance.listChoices_next;
+						var int list;
 						var zCList l;
 
 						j = 0;
+						list = dlgInstance.listChoices_next;
 						while (list);
 							l = _^ (list);
 
@@ -3217,6 +3224,20 @@ func void _hook_oCInformationManager_CollectChoices () {
 			i += 1;
 		end;
 	};
+
+	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
+	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
+
+	self = _^ (MEM_InformationMan.npc);
+	other = _^ (MEM_InformationMan.player);
+
+	//--> re-evaluate dialog conditions
+	MEM_CallByID (dlgInstance.conditions);
+	var int retVal; retVal = MEMINT_PopInt();
+	//<--
+
+	self = Hlp_GetNPC (selfBackup);
+	other = Hlp_GetNPC (otherBackup);
 };
 
 //Remove hidden@ dialogues

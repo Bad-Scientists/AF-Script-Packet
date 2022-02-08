@@ -52,5 +52,10 @@ func int oCMsgManipulate_Create (var int subType, var string scemeName, var int 
 		msg.slot = slotName;
 	};
 
+	//
+	if (subType == EV_USEMOB) {
+		msg.name = itemName;
+	};
+
 	return ptr;
 };

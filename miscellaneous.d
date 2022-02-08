@@ -149,7 +149,8 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
 					var oCMobInter mob;
 					mob = _^ (vobPtr);
-					if (Hlp_StrCmp (mob.sceme, scemeName)) {
+					//if (Hlp_StrCmp (mob.sceme, scemeName)) {
+					if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
 						if (mob.state == state) {
 							if (!firstPtr) { firstPtr = vobPtr; };
 
