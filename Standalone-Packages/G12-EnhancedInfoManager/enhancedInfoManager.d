@@ -3224,6 +3224,20 @@ func void _hook_oCInformationManager_CollectChoices () {
 			i += 1;
 		end;
 	};
+
+	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
+	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
+
+	self = _^ (MEM_InformationMan.npc);
+	other = _^ (MEM_InformationMan.player);
+
+	//--> re-evaluate dialog conditions
+	MEM_CallByID (dlgInstance.conditions);
+	var int retVal; retVal = MEMINT_PopInt();
+	//<--
+
+	self = Hlp_GetNPC (selfBackup);
+	other = Hlp_GetNPC (otherBackup);
 };
 
 //Remove hidden@ dialogues
