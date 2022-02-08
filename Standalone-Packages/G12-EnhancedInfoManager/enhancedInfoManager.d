@@ -564,7 +564,7 @@ func string Choice_GetModifierSpinnerID (var string s) {
 	var string s1; s1 = "";
 	var string s2; s2 = "";
 
-	var string spinnerID;
+	var string spinnerID; spinnerID = "";
 
 	len = STR_Len (s);
 	index = STR_IndexOf (s, "s@");
