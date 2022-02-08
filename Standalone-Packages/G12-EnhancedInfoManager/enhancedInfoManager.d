@@ -937,10 +937,10 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 
 				if (dlgInstance.listChoices_next) {
 
-					var int list; list = dlgInstance.listChoices_next;
 					var zCList l;
 
-					var int i; i = 0;
+					var int list; list = dlgInstance.listChoices_next;
+
 					while (list);
 						l = _^ (list);
 
@@ -955,7 +955,6 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 						};
 
 						list = l.next;
-						i += 1;
 					end;
 				};
 			};
@@ -1975,10 +1974,11 @@ MEM_InformationMan.LastMethod:
 					if (dlgInstance.listChoices_next) {
 
 						var oCInfoChoice dlgChoice;
-						var int list; list = dlgInstance.listChoices_next;
+						var int list;
 						var zCList l;
 
 						j = 0;
+						list = dlgInstance.listChoices_next;
 						while (list);
 							l = _^ (list);
 
