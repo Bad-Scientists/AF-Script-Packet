@@ -1901,6 +1901,8 @@ MEM_InformationMan.LastMethod:
 			loop = arr.numInArray;
 		};
 
+		var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
+
 		while (i < loop);
 
 			//Recalculate Y pos
@@ -1960,8 +1962,12 @@ MEM_InformationMan.LastMethod:
 					dlgInstance = _^ (infoPtr);
 
 					//--> re-evaluate dialog conditions
-					MEM_CallByID (dlgInstance.conditions);
-					retVal = MEMINT_PopInt();
+					//Prevent multiple calls for each choice - if already evaluated!
+					if (!choiceConditionEvaluated) {
+						MEM_CallByID (dlgInstance.conditions);
+						retVal = MEMINT_PopInt();
+						choiceConditionEvaluated = TRUE;
+					};
 					//<--
 
 					infoPtr = 0;
