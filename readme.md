@@ -264,6 +264,23 @@ Several debugging features:
 1. Console command `debug dialogues`
     * will give you access to all dialogues which are assigned to NPC.
     * also will allow you to change dialogues to told/untold.
+1. Console command `unlock`
+    * will unlock `oCMobLockable` object in focus.
+1. Console command `lock`
+    * will lock `oCMobLockable` object in focus.
+1. Console command `set routine`
+    * will change routine of NPC in focus.
+1. Console command `set sleepingMode`
+    * will put vob in focus into sleeping mode/awake mode.
+1. Function `oCMobLockable_CheckLockValidity`
+    * traverses through all `oCMobLockable` objects and checks whether their pickLock string or key instances are valid.
+1. Function `oCRtnManager_RtnList_CheckValidity`
+    * traverses through all active routines in routine manager and checks whether they are properly setup:
+        * checks if waypoint exists.
+        * checks if 24h day cycle is complete.
+        * checks if routines are not overlapping one another.
+1. Function `oCRtnManager_AllRoutines_CheckValidity`
+
 
 In order to enable these:
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
