@@ -5,6 +5,8 @@ Authors: [Auronen](https://github.com/auronen) & [Fawkes](https://github.com/Faw
 Credits: We are using here many scripts sourced from great Gothic community. None of this would be possible without Ikarus/LeGo and of course without modders willing to share their amazing work/ideas.
 Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct and many more (we will try to keep list up to date :) )
 
+Special thanks goes to: helpo1 :crown:, who endlessly debugged many features, even when we asked him not to.
+
 In this Script Packet we would like to consolidate as many useful functions as possible.
 Main goal is to put together several useful features that any modder can simply enable by calling single init function.
 In a future we will add wiki with examples explaining how to use each feature.
