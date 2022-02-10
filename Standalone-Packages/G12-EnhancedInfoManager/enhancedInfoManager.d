@@ -1053,9 +1053,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 	var int loop; loop = MEM_StackPos.position;
 
-	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
-	//2057 - Wheel up
-	|| (key == 2057)
+	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP))
 	{
 		nextChoiceIndex -= 1;
 
@@ -1064,9 +1062,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 		};
 	};
 
-	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
-	//2058 - Wheel down
-	|| (key == 2058)
+	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN))
 	{
 		nextChoiceIndex += 1;
 
@@ -1091,7 +1087,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 		//Prevent infinite loops
 		if (nextChoiceIndex != lastChoiceIndex) {
-			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP)) {
 				zCViewDialogChoice_SelectPrevious ();
 			} else {
 				zCViewDialogChoice_SelectNext ();
@@ -1115,10 +1111,13 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 	var int len;
 	//cancel mouse input in event handler
-	//2050 - Left Mouse button
-	//2052 - Right Mouse button
-	//2057 - Wheel up
-	//2058 - Wheel down
+	//524	2050 - Left Mouse button
+	//525	2052 - Right Mouse button
+	//526        - Middle Mouse button
+	//527        -
+	//528        -
+	//522	2057 - Wheel up
+	//523	2058 - Wheel down
 
 	/*
 	if (key == 2050) {
@@ -1538,12 +1537,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		};
 
 		//Skip disabled dialog choices
-		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
-		|| ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
-		//2057 - Wheel up
-		|| (key == 2057)
-		//2058 - Wheel down
-		|| (key == 2058)
+		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP))
+		|| ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN))
 		{
 			InfoManager_SkipDisabledDialogChoices (key);
 		};

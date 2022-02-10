@@ -331,9 +331,6 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 			cancel = TRUE;
 		};
 
-		//2057 - Wheel up
-		//2058 - Wheel down
-
 		//--- Rotation
 
 		if ((vobTransportTransformationMode == vobTransportTransformation_RotX)
@@ -341,16 +338,16 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 		|| (vobTransportTransformationMode == vobTransportTransformation_RotZ)) {
 
 			//Left / down key
-			//if ((key == KEY_LEFTARROW) || (key == 2057) || (key == KEY_DOWNARROW)) {
-			if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft")) || (key == 2057)) {
+			//if ((key == KEY_LEFTARROW) || (key == MOUSE_WHEEL_UP) || (key == KEY_DOWNARROW)) {
+			if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft")) || (key == MOUSE_WHEEL_UP)) {
 
 				rotation = -vobTransportMovementSpeed;
 				cancel = TRUE;
 			};
 
 			// right / up key
-			//if ((key == KEY_RIGHTARROW) || (key == 2058) || (key == KEY_UPARROW)) {
-			if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight")) || (key == 2058)) {
+			//if ((key == KEY_RIGHTARROW) || (key == MOUSE_WHEEL_DOWN) || (key == KEY_UPARROW)) {
+			if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight")) || (key == MOUSE_WHEEL_DOWN)) {
 				rotation = vobTransportMovementSpeed;
 				cancel = TRUE;
 			};
@@ -360,13 +357,13 @@ func int HandleElevationAndRotation__VobTransport (var int key, var int mvmtMode
 
 		if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
 			//if (key == KEY_UPARROW) {
-			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP)) {
 				vobTransportElevationLevel += vobTransportMovementSpeed;
 				cancel = TRUE;
 			};
 
 			//if (key == KEY_DOWNARROW) {
-			if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == 2058)) {
+			if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN)) {
 				vobTransportElevationLevel -= vobTransportMovementSpeed;
 				cancel = TRUE;
 			};
@@ -582,18 +579,15 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		//2057 - Wheel up
-		//2058 - Wheel down
-
 		//Select previous vob
-		//if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		//if ((key == KEY_LEFTARROW) || (key == MOUSE_WHEEL_UP)) {
 		if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft"))) {
 			vobTransportMode = vobTransportMode_SelectPrev;
 			cancel = TRUE;
 		};
 
 		//Select next vob
-		//if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		//if ((key == KEY_RIGHTARROW) || (key == MOUSE_WHEEL_DOWN)) {
 		if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight"))) {
 			vobTransportMode = vobTransportMode_SelectNext;
 			cancel = TRUE;
@@ -820,12 +814,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		//2057 - Wheel up
-		//2058 - Wheel down
-
 		//--- Select previous object
 
-		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP)) {
 			BuildBuyVobList__VobTransport (KEY_UPARROW);
 				her = Hlp_GetNPC (hero);
 				if ((her.vobList_numInArray > 0) && (her.vobList_array)) {
@@ -853,7 +844,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == 2058)) {
+		if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN)) {
 			BuildBuyVobList__VobTransport (KEY_DOWNARROW);
 				her = Hlp_GetNPC (hero);
 				if ((her.vobList_numInArray > 0) && (her.vobList_array)) {
@@ -881,7 +872,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			cancel = TRUE;
 		};
 
-		//if ((key == KEY_LEFTARROW) || (key == 2057)) {
+		//if ((key == KEY_LEFTARROW) || (key == MOUSE_WHEEL_UP)) {
 		if ((key == MEM_GetKey ("keyLeft")) || (key == MEM_GetSecondaryKey ("keyLeft")) || (key == MEM_GetKey ("keyStrafeLeft")) || (key == MEM_GetSecondaryKey ("keyStrafeLeft"))) {
 			vobTransportShowcaseVobIndex -= 1;
 
@@ -905,7 +896,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//--- Select next object
 
-		//if ((key == KEY_RIGHTARROW) || (key == 2058)) {
+		//if ((key == KEY_RIGHTARROW) || (key == MOUSE_WHEEL_DOWN)) {
 		if ((key == MEM_GetKey ("keyRight")) || (key == MEM_GetSecondaryKey ("keyRight")) || (key == MEM_GetKey ("keyStrafeRight")) || (key == MEM_GetSecondaryKey ("keyStrafeRight"))) {
 			vobTransportShowcaseVobIndex += 1;
 
