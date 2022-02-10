@@ -3,13 +3,15 @@
 Authors: [Auronen](https://github.com/auronen) & [Fawkes](https://github.com/Fawkes-dev)
 
 Credits: We are using here many scripts sourced from great Gothic community. None of this would be possible without Ikarus/LeGo and of course without modders willing to share their amazing work/ideas.
-Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll and many more (we will try to keep list up to date :) )
+Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct and many more (we will try to keep list up to date :) )
+
+Special thanks goes to: helpo1 :crown:, who endlessly debugged many features, even when we asked him not to.
 
 In this Script Packet we would like to consolidate as many useful functions as possible.
 Main goal is to put together several useful features that any modder can simply enable by calling single init function.
 In a future we will add wiki with examples explaining how to use each feature.
 
-## Features available so far - in case of all of them you need both Ikarus (1.2.2) and LeGo (2.8.0):
+## Features available so far - in case of all of them you need both Ikarus (1.2.2) and LeGo (2.8.1):
 1. Make sure both **Ikarus** and **LeGo** are parsed from your `Gothic.src` file.
 1. Copy all files from this repository to your Gothic work folder `_work\data\Scripts\Content\AF-Script-Packet`.
 1. Gothic 1 users will have to add function `Init_Global();` into their Startup.d file (it is not there by default). Call `Init_Global ();` from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions).
@@ -264,6 +266,23 @@ Several debugging features:
 1. Console command `debug dialogues`
     * will give you access to all dialogues which are assigned to NPC.
     * also will allow you to change dialogues to told/untold.
+1. Console command `unlock`
+    * will unlock `oCMobLockable` object in focus.
+1. Console command `lock`
+    * will lock `oCMobLockable` object in focus.
+1. Console command `set routine`
+    * will change routine of NPC in focus.
+1. Console command `set sleepingMode`
+    * will put vob in focus into sleeping mode/awake mode.
+1. Function `oCMobLockable_CheckLockValidity`
+    * traverses through all `oCMobLockable` objects and checks whether their pickLock string or key instances are valid.
+1. Function `oCRtnManager_RtnList_CheckValidity`
+    * traverses through all active routines in routine manager and checks whether they are properly setup:
+        * checks if waypoint exists.
+        * checks if 24h day cycle is complete.
+        * checks if routines are not overlapping one another.
+1. Function `oCRtnManager_AllRoutines_CheckValidity`
+
 
 In order to enable these:
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
