@@ -43,7 +43,7 @@ const string InfoManagerDefaultFontDialogSelected = "";			//Default font for sel
 const string InfoManagerDefaultFontDialogGrey = "";			//Default font for greyed (if blank default Gothic version will be used)
 
 const string InfoManagerDisabledDialogColorSelected = "808080";		//Disabled color - selected
-const string InfoManagerDisabledColorDialogGrey = "808080";		//Disabled color - grey
+const string InfoManagerDisabledColorDialogGrey = "666666";		//Disabled color - grey
 
 //Default text alignment
 const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;		//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
