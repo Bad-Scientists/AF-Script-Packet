@@ -1310,6 +1310,21 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			//Default value if not set
 			if (InfoManagerSpinnerPageSize == 0) { InfoManagerSpinnerPageSize = 1; };
 
+			//Get Left Shift key status
+			var int lShift;
+
+			lShift = MEM_KeyState (KEY_LSHIFT);
+
+			if ((lShift == KEY_PRESSED) || (lShift == KEY_HOLD)) {
+				if (key == MOUSE_WHEEL_DOWN) {
+					key = MEM_GetKey ("keyLeft");
+				};
+
+				if (key == MOUSE_WHEEL_UP) {
+					key = MEM_GetKey ("keyRight");
+				};
+			};
+
 			//Home
 			if (key == KEY_HOME) {
 				InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
