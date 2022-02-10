@@ -43,7 +43,7 @@ const string InfoManagerDefaultFontDialogSelected = "";			//Default font for sel
 const string InfoManagerDefaultFontDialogGrey = "";			//Default font for greyed (if blank default Gothic version will be used)
 
 const string InfoManagerDisabledDialogColorSelected = "808080";		//Disabled color - selected
-const string InfoManagerDisabledColorDialogGrey = "808080";		//Disabled color - grey
+const string InfoManagerDisabledColorDialogGrey = "666666";		//Disabled color - grey
 
 //Default text alignment
 const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;		//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
@@ -1053,9 +1053,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 	var int loop; loop = MEM_StackPos.position;
 
-	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
-	//2057 - Wheel up
-	|| (key == 2057)
+	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP))
 	{
 		nextChoiceIndex -= 1;
 
@@ -1064,9 +1062,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 		};
 	};
 
-	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
-	//2058 - Wheel down
-	|| (key == 2058)
+	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN))
 	{
 		nextChoiceIndex += 1;
 
@@ -1091,7 +1087,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 
 		//Prevent infinite loops
 		if (nextChoiceIndex != lastChoiceIndex) {
-			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == 2057)) {
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP)) {
 				zCViewDialogChoice_SelectPrevious ();
 			} else {
 				zCViewDialogChoice_SelectNext ();
@@ -1115,10 +1111,13 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 	var int len;
 	//cancel mouse input in event handler
-	//2050 - Left Mouse button
-	//2052 - Right Mouse button
-	//2057 - Wheel up
-	//2058 - Wheel down
+	//524	2050 - Left Mouse button
+	//525	2052 - Right Mouse button
+	//526        - Middle Mouse button
+	//527        -
+	//528        -
+	//522	2057 - Wheel up
+	//523	2058 - Wheel down
 
 	/*
 	if (key == 2050) {
@@ -1310,6 +1309,21 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 			//Default value if not set
 			if (InfoManagerSpinnerPageSize == 0) { InfoManagerSpinnerPageSize = 1; };
+
+			//Get Left Shift key status
+			var int lShift;
+
+			lShift = MEM_KeyState (KEY_LSHIFT);
+
+			if ((lShift == KEY_PRESSED) || (lShift == KEY_HOLD)) {
+				if (key == MOUSE_WHEEL_DOWN) {
+					key = MEM_GetKey ("keyLeft");
+				};
+
+				if (key == MOUSE_WHEEL_UP) {
+					key = MEM_GetKey ("keyRight");
+				};
+			};
 
 			//Home
 			if (key == KEY_HOME) {
@@ -1538,12 +1552,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		};
 
 		//Skip disabled dialog choices
-		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")))
-		|| ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")))
-		//2057 - Wheel up
-		|| (key == 2057)
-		//2058 - Wheel down
-		|| (key == 2058)
+		if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP))
+		|| ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN))
 		{
 			InfoManager_SkipDisabledDialogChoices (key);
 		};
@@ -1740,8 +1750,11 @@ MEM_InformationMan.LastMethod:
 		const int HSCROLL_RESET		= 4; //reset indicator
 
 	var int timerHorizontalScrolling;
-
 	var int horizontalScrollingChoiceNumber;
+
+	//Horizontal text scrolling for disabled dialogues
+	var int horizontalScrollingDisabled;
+	var int timerHorizontalScrollingDisabled;
 
 	var int timerSpinnerAnimation;
 
@@ -1813,6 +1826,8 @@ MEM_InformationMan.LastMethod:
 		refreshOverlayColors = TRUE;
 		horizontalScrolling = HSCROLL_IDLE;
 
+		horizontalScrollingDisabled = HSCROLL_IDLE;
+
 		//Reset
 		MEM_WriteIntArray (_@ (overlayListMapChoice), 0, -1);
 		MEM_WriteIntArray (_@ (overlayListMapView), 0, 0);
@@ -1864,6 +1879,33 @@ MEM_InformationMan.LastMethod:
 			if (horizontalScrollingChoiceNumber >= 0 && horizontalScrollingChoiceNumber < DIALOG_MAX) {
 				MEM_WriteStringArray (_@s (dialogCachedDescriptions), horizontalScrollingChoiceNumber, "");
 			};
+		};
+	};
+
+	if (horizontalScrollingDisabled) {
+		if (horizontalScrollingDisabled == HSCROLL_RESET) {
+			if (horizontalScrollingDisabled == HSCROLL_RESET) {
+				horizontalScrollingDisabled = HSCROLL_INIT;
+			};
+
+			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+
+			//Reset cached dialog --> this will update dialog choice text
+
+			i = 0;
+			while (i < dlg.choices);
+
+				properties = MEM_ReadIntArray (_@ (dialogProperties), i);
+				if (properties & dialogChoiceType_Disabled) {
+					//Reset cached dialog --> this will update dialog choice text
+					if (i < DIALOG_MAX) {
+						MEM_WriteStringArray (_@s (dialogCachedDescriptions), i, "");
+					};
+				};
+
+				i += 1;
+			end;
+
 		};
 	};
 
@@ -2846,6 +2888,20 @@ MEM_InformationMan.LastMethod:
 					color = MEM_ReadIntArray (_@ (dialogColor), i);
 					txt.color = color;
 					txt.alpha = GetAlpha (color);
+
+					//Check disabled dialogues --> do we need to scroll any horizontal text?
+					properties = MEM_ReadIntArray (_@ (dialogProperties), i);
+					if (properties & dialogChoiceType_Disabled) {
+						dlgFont = Print_GetFontName (txt.font);
+						textWidth = Print_GetStringWidth (txt.text, dlgFont);
+
+						//Horizontal scrolling - if dialogue text > dialogue window
+						if (textWidth > dlg.psizex) {
+							//Init scrolling
+							horizontalScrollingDisabled = HSCROLL_INIT;
+							timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+						};
+					};
 				};
 
 				//Apply alpha function
@@ -3104,6 +3160,74 @@ MEM_InformationMan.LastMethod:
 				horizontalScrolling = HSCROLL_RESET;
 			};
 		};
+
+		//Horizontal auto-scrolling for disabled dialog text
+
+		//First wait for a moment ...
+		if (horizontalScrollingDisabled == HSCROLL_INIT) {
+			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrollingDisabled >= 2000) {
+				timerHorizontalScrollingDisabled -= 2000;
+				horizontalScrollingDisabled = HSCROLL_SCROLL;
+			};
+		};
+
+		//Scroll text
+		if (horizontalScrollingDisabled == HSCROLL_SCROLL) {
+			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrollingDisabled >= 90) {
+				timerHorizontalScrollingDisabled -= 90;
+
+				//we cannot really change txt.posX if txt.posX < defaultPosX then dialogue choice wont render ...
+				//so the only option to scroll text is to trim it ...
+
+				//loop through all dialogues
+				var int wasSomethingScrolled; wasSomethingScrolled = FALSE;
+
+				//Small optimization - recolor only visible dialog choices
+				i = dlg.LineStart;
+
+				while (i < dlg.choices);
+
+					properties = MEM_ReadIntArray (_@ (dialogProperties), i);
+					if (properties & dialogChoiceType_Disabled) {
+
+						txt = _^ (MEM_ReadIntArray (arr.array, i));
+
+						dlgFont = Print_GetFontName (txt.font);
+						textWidth = Print_GetStringWidth (txt.text, dlgFont);
+
+						//Double check size - shall we trim?
+						if (textWidth > dlg.psizex) {
+							txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
+							wasSomethingScrolled = TRUE;
+						};
+					};
+
+					i += 1;
+				end;
+
+				if (!wasSomethingScrolled) {
+					//If text was scrolled completely ... wait
+					horizontalScrollingDisabled = HSCROLL_WAIT;
+				};
+			};
+		};
+
+		//Wait for a moment - and reset scrolling
+		if (horizontalScrollingDisabled == HSCROLL_WAIT) {
+			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+
+			if (timerHorizontalScrollingDisabled >= 4000) {
+				timerHorizontalScrollingDisabled -= 4000;
+				//This will force an update
+				horizontalScrollingDisabled = HSCROLL_RESET;
+			};
+		};
+
+		//--
 
 		if (InfoManagerSpinnerPossible) {
 			if (!InfoManagerSpinnerIndicatorAnimation) {

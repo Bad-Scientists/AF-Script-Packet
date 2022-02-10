@@ -1,4 +1,26 @@
 /*
+ *	Mouse input
+ *	 - Ikarus G1 constants are incorrect, we have to use our own
+ */
+const int MOUSE_WHEEL_UP = 522;
+const int MOUSE_WHEEL_DOWN = 523;
+
+const int MOUSE_BUTTON_LEFT = 524;
+const int MOUSE_BUTTON_RIGHT = 525;
+const int MOUSE_BUTTON_MIDDLE = 526;
+
+//522	2057 - Wheel up
+//523	2058 - Wheel down
+
+//524	2050 - Left Mouse button
+//525	2052 - Right Mouse button
+//526        - Middle Mouse button
+
+//Special buttons
+//527        - Forward button
+//528        - Backward button
+
+/*
  *	Enhanced InfoManager
  */
 
