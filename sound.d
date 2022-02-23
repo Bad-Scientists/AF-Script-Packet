@@ -25,6 +25,7 @@ func int Hlp_Is_zCSndSys_MSS (var int snd) {
 	const int zCSndSys_MSS_vtbl_G2 = 8589836;
 
 	if (!snd) { return FALSE; };
+
 	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSndSys_MSS_vtbl_G1, zCSndSys_MSS_vtbl_G2))) {
 		return TRUE;
 	};
@@ -296,9 +297,8 @@ func void zTSound3DParams_SetDefaults (var int ptrParams) {
  *	Returns sound handle
  */
 func int zCSndSys_MSS_PlaySound3D (var int soundPtr, var int vobPtr) {
-	var int ptrParams; ptrParams = create (zTSound3DParams@);
-	zTSound3DParams_SetDefaults (ptrParams);
-	return +zCSndSys_MSS_PlaySound3D_Ext (soundPtr, vobPtr, 0,ptrParams);
+	var zTSound3DParams params; zTSound3DParams_SetDefaults (_@ (params));
+	return +zCSndSys_MSS_PlaySound3D_Ext (soundPtr, vobPtr, 0, _@ (params));
 };
 
 /*
