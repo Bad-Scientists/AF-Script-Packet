@@ -1,18 +1,53 @@
 /*
- */
-
-
-/*
-*/
-
-	};
-};
-
-/*
  *	Global variables
  */
 
 var oCRtnManager MEM_RtnMan;
+
+/*
+ *	zCVobSpot / FreePoint engine functions
+ */
+func void zCVobSpot_MarkAsUsed (var int vobSpotPtr, var int timeDeltaF, var int vobPtr) {
+	//0x007094A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G1 = 7378080;
+
+	//0x007B31A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G2 = 8073632;
+
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_FloatParam (_@ (timeDeltaF));
+		CALL__thiscall (_@ (vobSpotPtr), MEMINT_SwitchG1G2 (zCVobSpot__MarkAsUsed_G1, zCVobSpot__MarkAsUsed_G2));
+		call = CALL_End();
+	};
+};
+
+//Function updates availability if there is no vob on vobSpot (freepoint) --> this will proactively clears freepoint availability
+func int zCVobSpot_IsAvailable (var int vobSpotPtr, var int vobPtr) {
+	//0x00709320 public: int __thiscall zCVobSpot::IsAvailable(class zCVob *)
+	const int zCVobSpot__IsAvailable_G1 = 7377696;
+
+	//0x007B3020 public: int __thiscall zCVobSpot::IsAvailable(class zCVob *)
+	const int zCVobSpot__IsAvailable_G2 = 8073248;
+
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (vobSpotPtr), MEMINT_SwitchG1G2 (zCVobSpot__IsAvailable_G1, zCVobSpot__IsAvailable_G2));
+		call = CALL_End ();
+	};
+
+	return + retVal;
+};
 
 /*
  *	MEM_RtnMan init function
@@ -81,6 +116,35 @@ func void oCRtnManager_RemoveAllRoutines () {
 
 		rtnPtr = MEM_RtnMan.rtnList_next;
 	end;
+};
+
+func int oCRtnManager_GetNpcRoutines (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	MEM_RtnMan_Init ();
+
+	var int rtnArrayPtr; rtnArrayPtr = MEM_ArrayCreate ();
+
+	var zCListSort list;
+
+	var int rtnPtr; rtnPtr = MEM_RtnMan.rtnList_next;
+	while (rtnPtr);
+		list = _^ (rtnPtr);
+
+		if (list.data) {
+			var oCRtnEntry rtn; rtn = _^ (list.data);
+			if (rtn.npc == slfPtr) {
+				MEM_ArrayInsert (rtnArrayPtr, list.data);
+			};
+		};
+
+		rtnPtr = list.next;
+	end;
+
+	return rtnArrayPtr;
 };
 
 // sizeof 20h
@@ -322,3 +386,162 @@ func void NPC_FindRoute (var int slfInstance, var string fromWP, var string toWP
 		call = CALL_End ();
 	};
 };
+
+/*
+ *	Function returns waypoint from last routine entry
+ *	 - if there is no routine available, then function returns current routine entry waypoint
+ */
+func string NPC_GetLastRoutineWP (var int slfInstance) {
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return ""; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	//If rtnBefore == rtnNow - then return blank string
+	if (state.rtnBefore == state.rtnNow) { return ""; };
+
+	var int rtnEntryPtr; rtnEntryPtr = state.rtnBefore;
+	if (!rtnEntryPtr) { return ""; };
+
+	var oCRtnEntry rtnEntry; rtnEntry = _^ (rtnEntryPtr);
+	return rtnEntry.wpname;
+};
+
+/*
+ *	Custom function for searching freepoints
+ *	 - allows us to search for freepoints in specified rangeF
+ *	 - parameter deprioritizeFreePoint will basically put freepoints with certain strings to the 'end of the list'
+ *	   for example we can search for freepoints SMALLTALK and we can deprioritize those freepoints that also contain string _RAIN:
+ *		vobSpotPtr = NPC_GetFreepoint (self, freePoint, "_RAIN", mkf (1200));
+ *		function will prefer freePoint FP_SMALLTALK_XYZ before FP_SMALLTALK_RAIN_XYZ, however if freePoint FP_SMALLTALK_XYZ is marked as used ... function returns FP_SMALLTALK_RAIN_XYZ
+ */
+func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string deprioritizeFreePoint, var int rangeF) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	oCNpc_ClearVobList (slf);
+	oCNpc_CreateVobList (slf, rangeF);
+
+	var int vobPtr; vobPtr = _@ (slf);
+	var int vobSpotPtr;
+
+	var int dist;
+	var int dist2;
+
+	var int maxDist; maxDist = mkf (999999);
+	var int maxDist2; maxDist2 = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+	var int nearestPtr2; nearestPtr2 = 0;
+
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobSpotPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_zCVobSpot (vobSpotPtr)) {
+			//Seems like engine still returns true when NPC is standing on freepoint
+			if (zCVobSpot_IsAvailable (vobSpotPtr, vobPtr)) {
+				var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+
+				var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
+				var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
+
+				//Matching freePoint name
+				if (index1 > -1) {
+					if (!firstPtr) { firstPtr = vobSpotPtr; };
+
+					dist = NPC_GetDistToVobPtr (slfInstance, vobSpotPtr);
+
+					if (lf (dist, maxDist)) {
+						nearestPtr = vobSpotPtr;
+						maxDist = dist;
+					};
+				};
+
+				//Matching freePoint name (not matching deprioritizeFreePoint)
+				if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
+
+					dist2 = NPC_GetDistToVobPtr (slfInstance, vobSpotPtr);
+
+					if (lf (dist2, maxDist2)) {
+						nearestPtr2 = vobSpotPtr;
+						maxDist2 = dist2;
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr2) { return nearestPtr2; };
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+/*
+ *	Function returns freepoint which NPC is using
+ */
+func int NPC_GetCurrentFreepoint (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	oCNpc_ClearVobList (slf);
+	oCNpc_CreateVobList (slf, mkf (300)); //Is this far enough ?
+
+	var int vobPtr; vobPtr = _@ (slf);
+	var int vobSpotPtr;
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobSpotPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_zCVobSpot (vobSpotPtr)) {
+			//Seems like engine still returns true when NPC is standing on freepoint
+			if (zCVobSpot_IsAvailable (vobSpotPtr, vobPtr)) {
+				var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+				if (vobSpot.inUseVob == vobPtr) {
+					return vobSpotPtr;
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	return 0;
+};
+
+/*
+ *	Function returns freepoint name
+ */
+func string FP_GetFreePointName (var int vobSpotPtr) {
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return ""; };
+
+	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+	return vobSpot._zCObject_objectName;
+};
+
+/*
+ *	Following format of freepoints is expected
+ *	FP_STAND
+ *	FP_STAND_RAIN
+ *	FP_STAND_RAIN_XYZ123
+ *
+ *	 - function returns freePoint name STAND
+ */
+func string FP_GetCleanName (var string freePoint) {
+	var int len; len = STR_Len (freePoint);
+
+	//Remove prefix
+	if (STR_StartsWith (freePoint, "FP_")) {
+		freePoint = mySTR_SubStr (freePoint, 3, len - 3);
+	};
+
+	var int index; index = STR_IndexOf (freePoint, "_");
+	if (index > -1) {
+		freePoint = mySTR_SubStr (freePoint, 0, index);
+	};
+
+	return freePoint;
+};
+
