@@ -157,8 +157,9 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 					var oCMobInter mob;
 					mob = _^ (vobPtr);
 					//if (Hlp_StrCmp (mob.sceme, scemeName)) {
+
 					if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
-						if (mob.state == state) {
+						if ((mob.state == state) || (state == -1)) {
 							if (!firstPtr) { firstPtr = vobPtr; };
 
 							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
