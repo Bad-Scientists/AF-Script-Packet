@@ -189,11 +189,13 @@ func int zCWay_GetGoalWaypoint (var int wayPtr, var int wpPtr) {
 /*
  *	zCRoute_InitWayNode
  *	 - for some reason wayNode is un-initialized, so here we will initialize it
+ *	 - we will also setup first target --> it should be starting waypoint
  */
 func void zCRoute_InitWayNode (var int rt) {
 	var zCRoute route; route = _^ (rt);
 	if (!route.wayNode) {
 		route.wayNode = route.wayList_next;
+		route.target = route.startWp;
 	};
 };
 
