@@ -357,15 +357,19 @@ func void _hook_oCGame_HandleEvent () {
 	};
 };
 
-var int PC_PortalManager_OldPlayerRoom;
+//var int PC_PortalManager_OldPlayerRoom;
+var int PC_PortalManager_OldPlayerPortal;
 
 func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
 	if (!MEM_Game.portalman) { return; };
 
 	var oCPortalRoomManager portalManager; portalManager = _^ (MEM_Game.portalman);
 
-	if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
-		PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
+	//if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
+	//	PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
+
+	if (portalManager.curPlayerPortal != PC_PortalManager_OldPlayerPortal) {
+		PC_PortalManager_OldPlayerPortal = portalManager.curPlayerPortal;
 		if (_PlayerPortalRoomChange_Event) {
 			Event_Execute (_PlayerPortalRoomChange_Event, 0);
 		};
