@@ -170,14 +170,6 @@ func void GetRainTime__RainControl () {
 };
 
 /*
- *	Function returns TRUE if it is raining
- */
-func int Wld_IsRaining_G1 () {
-	//this should work :) (for both G1 & G2A)
-	return (gf (MEM_SkyController.rainFX_outdoorRainFXWeight, FLOATNULL));
-};
-
-/*
  *	Function returns true if rain is fading in
  */
 func int Wld_IsRainFadingIn () {
