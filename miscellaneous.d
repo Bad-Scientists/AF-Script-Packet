@@ -298,3 +298,54 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 
 	return firstPtr;
 };
+
+func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int canSeeCheck, var int verticalDist) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int dist;
+	var int maxDist; maxDist = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCNPC npc;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_oCNpc (vobPtr)) {
+
+			if (canSeeCheck) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (canSee) {
+				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+					npc = _^ (vobPtr);
+					if (NPC_IsInStateName (npc, stateName)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+
+						if (lf (dist, maxDist)) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
