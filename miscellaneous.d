@@ -120,7 +120,7 @@ func void test_G2A_InsertItemsToChestsInOldCampCastle () {
  *	 - you can only search for mobs that NPC can see by using canSeeCheck == true
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int canSeeCheck, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -131,14 +131,21 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 	var int nearestPtr; nearestPtr = 0;
 
 	var int canSee;
+	var int available;
 
 	var int vobPtr;
 	var int i; i = 0;
 
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		//if (Hlp_Is_oCMobInter (vobPtr)) {
-		if (oCMobInter_IsAvailable (vobPtr, slf)) {
+
+		if (availabilityCheck) {
+			available = oCMobInter_IsAvailable (vobPtr, slf);
+		} else {
+			available = Hlp_Is_oCMobInter (vobPtr);
+		};
+
+		if (available) {
 			if (canSeeCheck) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
