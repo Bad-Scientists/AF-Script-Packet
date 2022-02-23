@@ -982,3 +982,72 @@ func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
 
 	return +(Npc_GetHeightDiffToPos (slfInstance, _@ (pos)));
 };
+
+func int NPC_GetNearestMobOptPosition (var int slfInstance, var int mobPtr) {
+
+//func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+	//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+		call = CALL_End();
+	};
+//};
+
+	var int dist;
+	var int maxDist; maxDist = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos; mobOptPos = _^ (ptr);
+
+			var int pos[3];
+			pos[0] = mobOptPos.trafo[03];
+			pos[1] = mobOptPos.trafo[07];
+			pos[2] = mobOptPos.trafo[11];
+
+			if (!firstPtr) { firstPtr = ptr; };
+
+			dist = NPC_GetDistToPos (slfInstance, _@ (pos));
+			if (lf (dist, maxDist)) {
+				nearestPtr = ptr;
+				maxDist = dist;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func string NPC_GetNearestMobNodeName (var int slfInstance, var int mobPtr) {
+	var int ptr; ptr = NPC_GetNearestMobOptPosition (slfInstance, mobPtr);
+
+	if (!ptr) { return ""; };
+
+	var TMobOptPos mobOptPos; mobOptPos = _^ (ptr);
+	return mobOptPos.nodeName;
+};
+
