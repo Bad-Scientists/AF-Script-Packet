@@ -18,6 +18,11 @@ EngineClasses_G1\zPhysics.d
 EngineClasses_G1\oAiShoot.d
 EngineClasses_G1\TMobOptPos.d
 EngineClasses_G1\TNpcSlot.d
+EngineClasses_G1\zCVobSpot.d
+EngineClasses_G1\oCRtnEntry.d
+EngineClasses_G1\oCRtnManager.d
+
+EngineClasses_G1\oCVisualFX.d
 
 //Sound
 EngineClasses_G1\zTSound3DParams.d
