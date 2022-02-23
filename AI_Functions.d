@@ -2,6 +2,7 @@
  *	AI functions
  *	 - dependencies:
 		EngineClasses_G1/2\zEventMan.d
+		EngineClasses_G1/2\zCVobSpot.d
 
 		vectors.d
 		vobFunctions.d
@@ -176,6 +177,49 @@ func void AI_GotoPos (var int slfinstance, var int posPtr) {
 
 	//Create new message
 	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, "", 0, posPtr, mkf (0), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
+ *	AI_GotoFpPtr
+ *	 - same as AI_GotoFP, but allows us to define freePoint pointer
+ */
+func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
+
+	//Flag temporarily as used - so no other NPC will try to go to the same freePoint
+	var int timeDeltaF; timeDeltaF = mkf (6000);
+	var int vobPtr; vobPtr = _@ (slf);
+
+//func void zCVobSpot_MarkAsUsed (var int vobSpotPtr, var int timeDeltaF, var int vobPtr) {
+	//0x007094A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G1 = 7378080;
+
+	//0x007B31A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G2 = 8073632;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_FloatParam (_@ (timeDeltaF));
+		CALL__thiscall (_@ (vobSpotPtr), MEMINT_SwitchG1G2 (zCVobSpot__MarkAsUsed_G1, zCVobSpot__MarkAsUsed_G2));
+		call = CALL_End();
+	};
+//};
+
+	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+
+	//Create new message
+	//EV_GOTOFP does not save targetVob into savefile! we have to use targetName
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOFP, vobSpot._zCObject_objectName, 0, 0, mkf (0), 0);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -434,6 +478,71 @@ func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
 //};
 
 	if (!retVal) { return FALSE; };
+
+	AI_GotoPos (slf, _@ (pos));
+
+	return TRUE;
+};
+
+/*
+ *	Scans for ideal positions, finds position with specified nodeName and sends there NPC
+ *	Function returns TRUE if successfull, FALSE if not
+ */
+func int AI_GotoMobPtrNodeName (var int slfinstance, var int mobPtr, var string nodeName) {
+//func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+	//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return FALSE; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+		call = CALL_End();
+	};
+//};
+
+	var int pos[3];
+	var int nodeNameFound; nodeNameFound = FALSE;
+
+	//Search optimalPosList and find nodeName
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos;
+			mobOptPos = _^ (ptr);
+
+			//ZS_POS0_FRONT, ZS_POS0_BACK
+			if (STR_EndsWith (mobOptPos.nodeName, nodeName)) {
+				pos[0] = mobOptPos.trafo[03];
+				pos[1] = mobOptPos.trafo[07];
+				pos[2] = mobOptPos.trafo[11];
+
+				nodeNameFound = TRUE;
+				break;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	if (!nodeNameFound) { return FALSE; };
 
 	AI_GotoPos (slf, _@ (pos));
 
