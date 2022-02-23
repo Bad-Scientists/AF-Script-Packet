@@ -271,6 +271,19 @@ func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
 };
 
 /*
+ *	AI_BeamToKeepQueue
+ *	 - function teleports NPC to WP/VOB without clearing AI queue (use carefully!)
+ *       - doesn't use the teleprotation animations
+ *       - useful for NPC positioning during cutscenes/dialogues
+ */
+func void AI_BeamToKeepQueue (var int slfinstance, var string vobName) {
+    var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+    if (!Hlp_IsValidNPC (slf)) { return; };
+
+    AI_Function_S (slf, _AI_TeleportKeepQueue, vobName);
+};
+
+/*
  *	AI_TeleportToWorld
  *	 - function allows teleportation between worlds
  */
