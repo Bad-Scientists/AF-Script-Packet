@@ -426,6 +426,12 @@ func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {
 //Gothic Sourcer compatibility - we cannot access MEM_World.voblist_npcs directly, because it seems like GS does not respect arrays > [255] ... which we do have in class oWorld ...
 //therefore we have to access voblist_npcs by accessing pointer @ offset
 
+//G1	offset 25192
+//G2A	offset 25216
+func int MEM_World_Get_voblist () {
+	return + (MEM_ReadInt (_@ (MEM_World) + MEMINT_SwitchG1G2 (25192, 25216)));
+};
+
 //G1	offset 25196
 //G2A	offset 25220
 func int MEM_World_Get_voblist_npcs () {
