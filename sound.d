@@ -320,16 +320,16 @@ func int WAV_PlaySound3D (var string fileName, var int vobPtr) {
 };
 
 /*
- *	Function loops thorugh list of active sounds and finds out, whether specified fileName is playing
+ *	Function loops thorugh list of active sounds and finds out, whether specified fileName or instance name is playing
  */
-func int WAV_IsPlaying (var string fileName) {
+func int WAV_IsPlaying (var string fileOrInstName) {
 	MEM_InitSound ();
 
 	if (!activeSndList) { return FALSE; };
 
 	var zCArray activeSndArray; activeSndArray = _^ (activeSndList);
 
-	fileName = STR_Upper (fileName);
+	fileOrInstName = STR_Upper (fileOrInstName);
 
 	var int i; i = 0;
 	while (i < activeSndArray.numInArray);
@@ -340,7 +340,7 @@ func int WAV_IsPlaying (var string fileName) {
 			if (activeSnd.bitfield_zCActiveSnd & bitfield_zCActiveSnd_active) {
 				if (activeSnd.sourceFrm) {
 					var zCSndFrame sndFrame; sndFrame = _^ (activeSnd.sourceFrm);
-					if (Hlp_StrCmp (sndFrame.fileName, fileName)) {
+					if ((Hlp_StrCmp (sndFrame.fileName, fileOrInstName)) || (Hlp_StrCmp (sndFrame.instance, fileOrInstName))) {
 						return TRUE;
 					};
 				};
@@ -354,23 +354,28 @@ func int WAV_IsPlaying (var string fileName) {
 };
 
 /*
- *	Function loops thorugh list of active sounds and returns a handle for fileName (if playing)
+ *	Function loops thorugh list of active sounds and returns a handle for fileName or instance name (if playing)
  */
-func int WAV_GetSoundHandleByFileName (var string fileName) {
+func int WAV_GetSoundHandle (var string fileOrInstName) {
 	MEM_InitSound ();
 
 	if (!activeSndList) { return FALSE; };
 
 	var zCArray activeSndArray; activeSndArray = _^ (activeSndList);
 
-	fileName = STR_Upper (fileName);
+	fileOrInstName = STR_Upper (fileOrInstName);
 
 	var int i; i = 0;
 	while (i < activeSndArray.numInArray);
 		var int activeSndPtr; activeSndPtr = MEM_ArrayRead (activeSndList, i);
 		if (activeSndPtr) {
 			var zCActiveSnd activeSnd; activeSnd = _^ (activeSndPtr);
-			return activeSnd.handle;
+			if (activeSnd.sourceFrm) {
+				var zCSndFrame sndFrame; sndFrame = _^ (activeSnd.sourceFrm);
+				if ((Hlp_StrCmp (sndFrame.fileName, fileOrInstName)) || (Hlp_StrCmp (sndFrame.instance, fileOrInstName))) {
+					return activeSnd.handle;
+				};
+			};
 		};
 
 		i += 1;
