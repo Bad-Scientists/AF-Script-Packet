@@ -139,7 +139,7 @@ func void zCSndSys_MSS_StopSound (var int soundHandle) {
 /*
  *	Function stops all sounds
  */
-func void zCSndSys_MSS_StopAllSounds (var int soundHandle) {
+func void zCSndSys_MSS_StopAllSounds () {
 	//0x004E46D0 public: virtual void __thiscall zCSndSys_MSS::StopAllSounds(void)
 	const int zCSndSys_MSS__StopAllSounds_G1 = 5129936;
 
