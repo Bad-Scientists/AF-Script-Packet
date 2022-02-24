@@ -383,12 +383,12 @@ func int WAV_IsPlaying (var string fileOrInstName) {
 };
 
 /*
- *	Function loops thorugh list of active sounds and returns a handle for fileName or instance name (if playing)
+ *	Function loops through list of active sounds and returns a handle for fileName or instance name (if playing)
  */
 func int WAV_GetSoundHandle (var string fileOrInstName) {
 	MEM_InitSound ();
 
-	if (!activeSndList) { return FALSE; };
+	if (!activeSndList) { return -1; };
 
 	var zCArray activeSndArray; activeSndArray = _^ (activeSndList);
 
@@ -410,7 +410,7 @@ func int WAV_GetSoundHandle (var string fileOrInstName) {
 		i += 1;
 	end;
 
-	return 0;
+	return -1;
 };
 
 /*
