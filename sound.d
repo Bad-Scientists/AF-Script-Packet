@@ -116,27 +116,6 @@ func void oCNpc_StopAllVoices (var int slfInstance) {
 };
 
 /*
- *	Function will stop sound handle
- */
-func void zCSndSys_MSS_StopSound (var int soundHandle) {
-	//0x004E4610 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
-	const int zCSndSys_MSS__StopSound_G1 = 5129744;
-
-	//0x004F2300 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
-	const int zCSndSys_MSS__StopSound_G2 = 5186304;
-
-	MEM_InitSound ();
-	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
-
-	const int call = 0;
-	if (CALL_Begin (call)) {
-		CALL_IntParam (_@ (soundHandle));
-		CALL__thiscall (_@ (zSound), MEMINT_SwitchG1G2 (zCSndSys_MSS__StopSound_G1, zCSndSys_MSS__StopSound_G2));
-		call = CALL_End();
-	};
-};
-
-/*
  *	Function stops all sounds
  */
 func void zCSndSys_MSS_StopAllSounds () {
@@ -246,6 +225,56 @@ func int zCActiveSnd_GetHandleSound (var int soundHandle) {
 	};
 
 	return CALL_RetValAsPtr ();
+};
+
+/*
+ *	zCActiveSnd_RemoveSound
+ *	 - function removes sound by sound pointer zCActiveSnd*
+ */
+func void zCActiveSnd_RemoveSound (var int activeSndPtr) {
+	//0x004E9010 public: static void __cdecl zCActiveSnd::RemoveSound(class zCActiveSnd *)
+	const int zCActiveSnd__RemoveSound_G1 = 5148688;
+
+	//0x004F71A0 public: static void __cdecl zCActiveSnd::RemoveSound(class zCActiveSnd *)
+	const int zCActiveSnd__RemoveSound_G2 = 5206432;
+
+	if (!activeSndPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PtrParam (_@ (activeSndPtr));
+		CALL__cdecl (MEMINT_SwitchG1G2(zCActiveSnd__RemoveSound_G1, zCActiveSnd__RemoveSound_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Function will stop sound handle
+ */
+func void zCSndSys_MSS_StopSound (var int soundHandle) {
+	//--> Not sure if I am using this one incorrectly - but it crashed everytime
+
+	//0x004E4610 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
+	//const int zCSndSys_MSS__StopSound_G1 = 5129744;
+
+	//0x004F2300 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
+	//const int zCSndSys_MSS__StopSound_G2 = 5186304;
+
+	//MEM_InitSound ();
+	//if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
+
+	//const int call = 0;
+	//if (CALL_Begin (call)) {
+	//	CALL_IntParam (_@ (soundHandle));
+	//	CALL__thiscall (_@ (zSound), MEMINT_SwitchG1G2 (zCSndSys_MSS__StopSound_G1, zCSndSys_MSS__StopSound_G2));
+	//	call = CALL_End();
+	//};
+
+	//<--
+
+	var int activeSndPtr; activeSndPtr = zCActiveSnd_GetHandleSound (soundHandle);
+	if (!activeSndPtr) { return; };
+	zCActiveSnd_RemoveSound (activeSndPtr);
 };
 
 /*
