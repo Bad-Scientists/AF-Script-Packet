@@ -219,7 +219,7 @@ func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
 
 	//Create new message
 	//EV_GOTOFP does not save targetVob into savefile! we have to use targetName
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOFP, vobSpot._zCObject_objectName, 0, 0, mkf (0), 0);
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOFP, vobSpot._zCObject_objectName, vobSpotPtr, 0, mkf (0), 0);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
