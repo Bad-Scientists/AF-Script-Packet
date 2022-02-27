@@ -151,6 +151,7 @@ Standalone-Packages\G12-Debugging\setRoutine.d
 Standalone-Packages\G12-Debugging\unlock.d
 Standalone-Packages\G12-Debugging\checkLockValidity.d
 Standalone-Packages\G12-Debugging\checkRoutineValidity.d
+Standalone-Packages\G12-Debugging\create.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
