@@ -192,6 +192,7 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 	if (!key) { return; };
 
 	if (!Hlp_IsValidNPC (hero)) { return; };
+	if (Npc_IsDead (hero)) { return; };
 
 	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
 		//Get Ctrl key status
@@ -201,17 +202,25 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 		ctrlKey = MEM_KeyState (ctrlKey);
 		ctrlSecondaryKey = MEM_KeyState (ctrlSecondaryKey);
 
-		if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
-			//Put torch to right hand
-			//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
-			if (NPC_DoExchangeTorch (hero)) {
-				cancel = TRUE;
-			};
-		} else {
-			//On & Off
-			if (NPC_TorchSwitchOnOff (hero) != -1) {
-				PlayerReApplyOverlays__TorchHotKey ();
-				cancel = TRUE;
+		//Is player jumping? [C_BodyStateContains (hero, BS_JUMP)]
+		var int isJumping; isJumping = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
+
+		//Is player falling? [C_BodyStateContains (hero, BS_FALL)]
+		var int isFalling; isFalling = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_FALL & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
+
+		if ((!isJumping) && (!isFalling)) {
+			if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
+				//Put torch to right hand
+				//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
+				if (NPC_DoExchangeTorch (hero)) {
+					cancel = TRUE;
+				};
+			} else {
+				//On & Off
+				if (NPC_TorchSwitchOnOff (hero) != -1) {
+					PlayerReApplyOverlays__TorchHotKey ();
+					cancel = TRUE;
+				};
 			};
 		};
 	};
