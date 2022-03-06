@@ -18,6 +18,7 @@ var int vHealthPreview;			//handle for HP bar preview (view)
 var int healthBarPreviewVisible;
 var int healthBarPreviewAlpha;
 var int healthBarPreviewFlashingFadeOut;
+var int healthBarPreviewEffect;
 
 var int healthBarLastValue;
 var int healthBarDisplayMethod;
@@ -31,6 +32,7 @@ var int vManaPreview;			//handle for Mana bar preview (view)
 var int manaBarPreviewVisible;
 var int manaBarPreviewAlpha;
 var int manaBarPreviewFlashingFadeOut;
+var int manaBarPreviewEffect;
 
 var int manaBarLastValue;
 var int manaBarDisplayMethod;
@@ -121,7 +123,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		return;
 	};
 
-	if (healthBarPreviewVisible) {
+	if ((healthBarPreviewVisible) && (healthBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
 		if (Hlp_IsValidHandle (vHealthPreview)) {
 
 			if (healthBarPreviewFlashingFadeOut) {
@@ -145,7 +147,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		};
 	};
 
-	if (manaBarPreviewVisible) {
+	if ((manaBarPreviewVisible) && (manaBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
 		if (Hlp_IsValidHandle (vManaPreview)) {
 
 			if (manaBarPreviewFlashingFadeOut) {
@@ -240,6 +242,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 	if (!Hlp_IsValidHandle (vHealthPreview)) {
 		vHealthPreview = Bar_CreatePreview (hHealthBar, "Bar_Health_Preview.tga");
+		View_SetAlpha (vHealthPreview, 255);
 	};
 
 	//
@@ -340,6 +343,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 	if (!Hlp_IsValidHandle (vManaPreview)) {
 		vManaPreview = Bar_CreatePreview (hManaBar, "Bar_Mana_Preview.tga");
+		View_SetAlpha (vManaPreview, 255);
 	};
 
 	//

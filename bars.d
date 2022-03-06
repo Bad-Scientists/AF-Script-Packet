@@ -7,6 +7,10 @@ const int BarDisplay_Standard = 0;
 const int BarDisplay_DynamicUpdate = 1;
 const int BarDisplay_AlwaysOn = 2;
 
+//Bar preview - fadein/fadeout
+const int BarPreviewEffect_None = 0;
+const int BarPreviewEffect_FadeInOut = 1;
+
 /*
  *
  */
