@@ -22,7 +22,6 @@ var int healthBarPreviewFlashingFadeOut;
 var int healthBarLastValue;
 var int healthBarDisplayMethod;
 var int healthBarDisplayTime;
-var int healthBarIsVisible;
 
 //---
 
@@ -36,7 +35,6 @@ var int manaBarPreviewFlashingFadeOut;
 var int manaBarLastValue;
 var int manaBarDisplayMethod;
 var int manaBarDisplayTime;
-var int manaBarIsVisible;
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (BarGetOnDesk (BarType_HealthBar)) {
@@ -51,14 +49,13 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 		return;
 	};
 
-	if (!healthBarIsVisible) {
+	if (!Bar_IsVisible (hHealthBar)) {
 		if (_Bar_PlayerStatus ()) {
 			Bar_Show (hHealthBar);
-			healthBarIsVisible = TRUE;
 		};
 	};
 
-	if (healthBarIsVisible) {
+	if (Bar_IsVisible (hHealthBar)) {
 		healthBarDisplayTime -= 1;
 
 		var int alpha;
@@ -90,14 +87,13 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 		return;
 	};
 
-	if (!manaBarIsVisible) {
+	if (!Bar_IsVisible (hManaBar)) {
 		if (_Bar_PlayerStatus ()) {
 			Bar_Show (hManaBar);
-			manaBarIsVisible = TRUE;
 		};
 	};
 
-	if (manaBarIsVisible) {
+	if (Bar_IsVisible (hManaBar)) {
 		manaBarDisplayTime -= 1;
 
 		var int alpha;
@@ -284,7 +280,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (healthBarDisplayTime)) {
-		if (!healthBarIsVisible) {
+		if (!Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hHealthBar, 0);
 
@@ -295,16 +291,14 @@ func void FrameFunction_EachFrame__BetterBars () {
 				};
 
 				Bar_Show (hHealthBar);
-				healthBarIsVisible = TRUE;
 			};
 		};
 	};
 
 	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
-		if (healthBarIsVisible) {
+		if (Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hHealthBar);
-				healthBarIsVisible = FALSE;
 			};
 		};
 	};
@@ -323,8 +317,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		Bar_SetBarTexture (hManaBar, manaBar.texValue);
 		Bar_MoveTo (hManaBar, manaBar.zCView_vposx + (manaBar.zCView_vsizex / 2), manaBar.zCView_vposy + (manaBar.zCView_vsizey / 2));
 
-		manaBarIsVisible = manaBarOnDesk;
-		if (!manaBarIsVisible) {
+		if (!manaBarOnDesk) {
 			Bar_Hide (hManaBar);
 		};
 
@@ -384,7 +377,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime)) {
-		if (!manaBarIsVisible) {
+		if (!Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hManaBar, 0);
 
@@ -395,16 +388,14 @@ func void FrameFunction_EachFrame__BetterBars () {
 				};
 
 				Bar_Show (hManaBar);
-				manaBarIsVisible = TRUE;
 			};
 		};
 	};
 
 	if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime)) {
-		if (manaBarIsVisible) {
+		if (Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hManaBar);
-				manaBarIsVisible = FALSE;
 			};
 		};
 	};

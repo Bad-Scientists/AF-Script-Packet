@@ -90,6 +90,12 @@ func void Bar_Top (var int bar) {
 	View_Top(b.v1);
 };
 
+func int Bar_IsVisible (var int bar) {
+	if(!Hlp_IsValidHandle(bar)) { return FALSE; };
+	var _bar b; b = get(bar);
+	return !b.hidden;
+};
+
 func void Bar_SetValueSafe (var int bar, var int val) {
 	if (!Hlp_IsValidHandle(bar)) { return; };
 

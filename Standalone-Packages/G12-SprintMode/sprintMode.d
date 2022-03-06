@@ -46,7 +46,6 @@ var int hStaminaBar;			//handle for Stamina bar
 var int sprintBarLastValue;
 var int sprintBarDisplayMethod;
 var int sprintBarDisplayTime;
-var int sprintBarIsVisible;
 
 const int PC_SprintModeTimedOverlayStacking_GetMaxValue	= 0;	//get max value
 const int PC_SprintModeTimedOverlayStacking_SumValues	= 1;	//sum up all timers
@@ -379,14 +378,13 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 		return;
 	};
 
-	if (!sprintBarIsVisible) {
+	if (!Bar_IsVisible (hStaminaBar)) {
 		if (_Bar_PlayerStatus ()) {
 			Bar_Show (hStaminaBar);
-			sprintBarIsVisible = TRUE;
 		};
 	};
 
-	if (sprintBarIsVisible) {
+	if (Bar_IsVisible (hStaminaBar)) {
 		sprintBarDisplayTime -= 1;
 
 		var int alphaBack;
@@ -468,7 +466,7 @@ func void FrameFunction_EachFrame__SprintMode () {
 	};
 
 	if ((sprintBarDisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk) || (sprintBarDisplayTime)) {
-		if (!sprintBarIsVisible) {
+		if (!Bar_IsVisible (hStaminaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				//Bar_SetAlpha (hStaminaBar, 0);
 				Bar_SetAlphaBackAndBar (hStaminaBar, 0, 0);
@@ -481,16 +479,14 @@ func void FrameFunction_EachFrame__SprintMode () {
 				};
 
 				Bar_Show (hStaminaBar);
-				sprintBarIsVisible = TRUE;
 			};
 		};
 	};
 
 	if ((sprintBarDisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk) && (!sprintBarDisplayTime)) {
-		if (sprintBarIsVisible) {
+		if (Bar_IsVisible (hStaminaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hStaminaBar);
-				sprintBarIsVisible = FALSE;
 			};
 		};
 	};
