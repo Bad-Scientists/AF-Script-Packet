@@ -202,13 +202,7 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 		ctrlKey = MEM_KeyState (ctrlKey);
 		ctrlSecondaryKey = MEM_KeyState (ctrlSecondaryKey);
 
-		//Is player jumping? [C_BodyStateContains (hero, BS_JUMP)]
-		var int isJumping; isJumping = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
-
-		//Is player falling? [C_BodyStateContains (hero, BS_FALL)]
-		var int isFalling; isFalling = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_FALL & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
-
-		if ((!isJumping) && (!isFalling)) {
+		if (NPC_CanChangeOverlay (hero)) {
 			if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
 				//Put torch to right hand
 				//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
