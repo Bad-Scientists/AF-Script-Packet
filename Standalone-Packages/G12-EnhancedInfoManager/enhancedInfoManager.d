@@ -1888,6 +1888,7 @@ MEM_InformationMan.LastMethod:
 		if ((horizontalScrollingChoiceNumber != dlg.ChoiceSelected) || (horizontalScrolling == HSCROLL_RESET)) {
 			if (horizontalScrolling == HSCROLL_RESET) {
 				horizontalScrolling = HSCROLL_INIT;
+				timerHorizontalScrolling = 0;
 			} else {
 				horizontalScrolling = HSCROLL_IDLE;
 			};
@@ -1907,6 +1908,7 @@ MEM_InformationMan.LastMethod:
 				horizontalScrollingDisabled = HSCROLL_INIT;
 			};
 
+			timerHorizontalScrollingDisabled = 0;
 			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 
 			//Reset cached dialog --> this will update dialog choice text
@@ -2912,6 +2914,7 @@ MEM_InformationMan.LastMethod:
 					if (textWidth > dlg.psizex) {
 						//Init scrolling
 						horizontalScrolling = HSCROLL_INIT;
+						timerHorizontalScrolling = 0;
 						timerHorizontalScrolling += MEM_Timer.frameTime;
 						horizontalScrollingChoiceNumber = dlg.ChoiceSelected;
 					};
@@ -2930,6 +2933,7 @@ MEM_InformationMan.LastMethod:
 						if (textWidth > dlg.psizex) {
 							//Init scrolling
 							horizontalScrollingDisabled = HSCROLL_INIT;
+							timerHorizontalScrollingDisabled = 0;
 							timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 						};
 					};
@@ -3149,6 +3153,7 @@ MEM_InformationMan.LastMethod:
 
 		//First wait for a moment ...
 		if (horizontalScrolling == HSCROLL_INIT) {
+			timerHorizontalScrolling = 0;
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrolling >= 2000) {
