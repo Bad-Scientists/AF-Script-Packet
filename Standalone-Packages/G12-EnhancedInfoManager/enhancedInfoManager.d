@@ -3360,8 +3360,38 @@ func void _hook_oCInformationManager_CollectChoices () {
 			list = l.next;
 			i += 1;
 		end;
-	};
 
+		//Check d@ (disabled) choices
+		var int allDisabled; allDisabled = TRUE;
+
+		list = dlgInstance.listChoices_next;
+
+		while (list);
+			l = _^ (list);
+
+			if (l.data) {
+				dlgChoice = _^ (l.data);
+
+				if (!Choice_IsDisabled (dlgChoice.Text)) {
+					allDisabled = FALSE;
+					break;
+				};
+			};
+
+			list = l.next;
+		end;
+
+		//If all choices are disabled --> ClearChoices!
+		if (allDisabled) {
+			//0x00665CC0 public: void __thiscall oCInfo::RemoveAllChoices(void)
+			const int oCInfo__RemoveAllChoices_G1 = 6708416;
+
+			//0x00703D70 public: void __thiscall oCInfo::RemoveAllChoices(void)
+			const int oCInfo__RemoveAllChoices_G2 = 7355760;
+
+			CALL__thiscall (infoPtr, MEMINT_SwitchG1G2 (oCInfo__RemoveAllChoices_G1, oCInfo__RemoveAllChoices_G2));
+		};
+	};
 
 	self = _^ (MEM_InformationMan.npc);
 	other = _^ (MEM_InformationMan.player);
