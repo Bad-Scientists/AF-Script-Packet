@@ -1987,6 +1987,9 @@ MEM_InformationMan.LastMethod:
 					dlgInstance = _^ (infoPtr);
 
 					//--> re-evaluate dialog conditions
+					self = _^ (MEM_InformationMan.npc);
+					other = _^ (MEM_InformationMan.player);
+
 					MEM_CallByID (dlgInstance.conditions);
 					retVal = MEMINT_PopInt();
 					//<--
@@ -2008,6 +2011,9 @@ MEM_InformationMan.LastMethod:
 					//--> re-evaluate dialog conditions
 					//Prevent multiple calls for each choice - if already evaluated!
 					if (!choiceConditionEvaluated) {
+						self = _^ (MEM_InformationMan.npc);
+						other = _^ (MEM_InformationMan.player);
+
 						MEM_CallByID (dlgInstance.conditions);
 						retVal = MEMINT_PopInt();
 						choiceConditionEvaluated = TRUE;
@@ -3395,6 +3401,8 @@ func void _hook_oCInformationManager_CollectInfos () {
 			//and dialogues will no longer be hidden.
 
 			var int retVal;
+			self = _^ (MEM_InformationMan.npc);
+			other = _^ (MEM_InformationMan.player);
 			MEM_CallByID (dlgInstance.conditions);
 			retVal = MEMINT_PopInt();
 
