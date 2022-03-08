@@ -1914,12 +1914,6 @@ MEM_InformationMan.LastMethod:
 
 	var int retVal;
 
-	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
-	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
-
-	self = _^ (MEM_InformationMan.npc);
-	other = _^ (MEM_InformationMan.player);
-
 //	if (dlg.IsActivated)
 	if (dlg.m_listLines_numInArray)
 	&& (arr.array)
@@ -3296,8 +3290,6 @@ MEM_InformationMan.LastMethod:
 		};
 	};
 
-	self = Hlp_GetNPC (selfBackup);
-	other = Hlp_GetNPC (otherBackup);
 };
 
 //Remove hidden@ choices
@@ -3358,8 +3350,6 @@ func void _hook_oCInformationManager_CollectChoices () {
 		end;
 	};
 
-	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
-	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
 
 	self = _^ (MEM_InformationMan.npc);
 	other = _^ (MEM_InformationMan.player);
@@ -3368,9 +3358,6 @@ func void _hook_oCInformationManager_CollectChoices () {
 	MEM_CallByID (dlgInstance.conditions);
 	var int retVal; retVal = MEMINT_PopInt();
 	//<--
-
-	self = Hlp_GetNPC (selfBackup);
-	other = Hlp_GetNPC (otherBackup);
 };
 
 //Remove hidden@ dialogues
@@ -3378,11 +3365,6 @@ func void _hook_oCInformationManager_CollectInfos () {
 	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
 	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
 
-	var C_NPC selfBackup; selfBackup = Hlp_GetNPC (self);
-	var C_NPC otherBackup; otherBackup = Hlp_GetNPC (other);
-
-	self = _^ (MEM_InformationMan.npc);
-	other = _^ (MEM_InformationMan.player);
 
 	var oCInfo dlgInstance;
 	var zCListSort list;
@@ -3431,8 +3413,6 @@ func void _hook_oCInformationManager_CollectInfos () {
 		infoPtr = list.next;
 	end;
 
-	self = Hlp_GetNPC (selfBackup);
-	other = Hlp_GetNPC (otherBackup);
 };
 
 func void G12_EnhancedInfoManager_Init () {
