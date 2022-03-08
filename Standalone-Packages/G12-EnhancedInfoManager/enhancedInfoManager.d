@@ -1537,9 +1537,12 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 
 		//cancel KEY_GRAVE changes fight mode to fist mode, this caused some issues ... we will use it for a better purpose - move cursor to last dialog choice
 		if (key == KEY_GRAVE) {
-			InfoManager_SelectLastChoice ();
-			InfoManager_SkipDisabledDialogChoices (-1);
-			cancel = TRUE;
+			//Don't change position if answer mode / input field is activated
+			if (!InfoManagerAnswerMode) {
+				InfoManager_SelectLastChoice ();
+				InfoManager_SkipDisabledDialogChoices (-1);
+				InfoManagerHighlightSelected = TRUE;
+				cancel = TRUE;
 
 			if (InfoManagerRefreshOverlays == cIM_RefreshNothing) {
 				InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
