@@ -126,7 +126,22 @@ var int InfoManagerAnswerIndicator;
 var int InfoManagerDialogInstPtr[255];
 var int InfoManagerDialogInstPtrCount;
 
+var int InfoManagerCollectInfos;
 var int InfoManagerCollectInfosAllDisabled;
+var int InfoManagerCollectChoices;
+var int InfoManagerHighlightSelected;
+
+var int EnhancedInfoManagerReady;
+	const int cEIM_Idle = 0;
+	const int cEIM_InfosCollected = 1;
+	const int cEIM_ChoicesCollected = 2;
+	const int cEIM_Initialized = 3;
+
+func void oCInfoManager_Reset_EIM () {
+	EnhancedInfoManagerReady = cEIM_Idle;
+	InfoManagerDialogInstPtrCount = 0;
+};
+
 func int oCInfoManager_GetInfoPtr__EIM (var int index) {
 	if ((index < 0) || (index >= InfoManagerDialogInstPtrCount)) {
 		return 0;
@@ -1164,7 +1179,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			//cancel answer mode
 			if (InfoManagerAnswerMode) {
 				if (key == KEY_ESCAPE) {
-					InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+					//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+					InfoManagerHighlightSelected = TRUE;
 					InfoManagerAnswerMode = FALSE;
 					InfoManagerAnswer = "";
 				};
@@ -1182,7 +1198,8 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				InfoManagerAnswerMode = !InfoManagerAnswerMode;
 
 				//Refresh all overlays (remove in answer more ... add when done)
-				InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+				//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+				InfoManagerHighlightSelected = TRUE;
 			};
 
 			s = "";
@@ -1486,7 +1503,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 //--- Num Keys control -->
 
 		if (!InfoManagerAnswerMode) {
-			var int numKeyPressed; numKeyPressed = FALSE;
+			//var int numKeyPressed; numKeyPressed = FALSE;
 
 			if (InfoManagerNumKeysControls) {
 				//Override Num Keys
@@ -1517,16 +1534,16 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			};
 
 			//We have to refresh dialog colors
-			if ((key == KEY_0) || (key == KEY_1) || (key == KEY_2) || (key == KEY_3) || (key == KEY_4) || (key == KEY_5)
-			|| (key == KEY_6) || (key == KEY_7) || (key == KEY_8) || (key == KEY_9)) {
-				numKeyPressed = TRUE;
-			};
+			//if ((key == KEY_0) || (key == KEY_1) || (key == KEY_2) || (key == KEY_3) || (key == KEY_4) || (key == KEY_5)
+			//|| (key == KEY_6) || (key == KEY_7) || (key == KEY_8) || (key == KEY_9)) {
+			//	numKeyPressed = TRUE;
+			//};
 
-			if (InfoManagerRefreshOverlays == cIM_RefreshNothing)
-			&& (numKeyPressed)
-			{
-				InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
-			};
+			//if (InfoManagerRefreshOverlays == cIM_RefreshNothing)
+			//&& (numKeyPressed)
+			//{
+			//	InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+			//};
 		};
 
 //--- Additional tweaks -->
@@ -1545,8 +1562,9 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 				InfoManagerHighlightSelected = TRUE;
 				cancel = TRUE;
 
-			if (InfoManagerRefreshOverlays == cIM_RefreshNothing) {
-				InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+				//if (InfoManagerRefreshOverlays == cIM_RefreshNothing) {
+				//	InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
+				//};
 			};
 		};
 
@@ -1596,25 +1614,44 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 };
 
 func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
-	if (MEM_InformationMan.IsDone) { return; };
-
-	if (!MEM_InformationMan.DlgChoice) { return; };
-
 	const int cINFO_MGR_MODE_IMPORTANT	= 0;
 	const int cINFO_MGR_MODE_INFO		= 1;
 	const int cINFO_MGR_MODE_CHOICE		= 2;
 	const int cINFO_MGR_MODE_TRADE		= 3;
 
+	//Don't run if done
+	if (MEM_InformationMan.IsDone) { return; };
+
+	//Don't run if opening / in dialogue / ending
+	if (MEM_InformationMan.IsWaitingForOpen) { return; };
+	if (MEM_InformationMan.IsWaitingForScript) { return; };
+	if (MEM_InformationMan.IsWaitingForEnd) { return; };
+
 	//Don't run during trading
 	if (MEM_InformationMan.Mode == cINFO_MGR_MODE_TRADE) { return; };
 
-	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
-
-	if (!choiceView) { return; };
-
+	//More safety checks
+	if (!MEM_InformationMan.DlgChoice) { return; };
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
-
+	if (!dlg.m_listLines_array) { return; };
 	if (!dlg.m_listLines_numInArray) { return; };
+
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
+
+	//Do we have infos collected?
+	if (InfoManagerCollectInfos) {
+		EnhancedInfoManagerReady = cEIM_InfosCollected;
+	};
+
+	//Do we have choices collected?
+	if (InfoManagerCollectChoices) {
+		EnhancedInfoManagerReady = cEIM_ChoicesCollected;
+	};
+
+	//Don't do anything, if choices / infos were not yet collected
+	if (!EnhancedInfoManagerReady) { return; };
+
 	//If all dialogues are disabled --> add exit option!
 	if (InfoManagerCollectInfosAllDisabled) {
 		if (MEM_InformationMan.IndexBye == -1) {
@@ -1631,14 +1668,14 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 		};
 	};
 
+	var zCArray arr; arr = _^ (_@ (dlg.m_listLines_array));
+
 	//crash
 	//zCInputCallback_SetHandleEventTop (MEM_InformationMan.DlgChoice);
 
 	var int i;
 	var int j;
 	var int loop;
-
-	var zCArray arr;
 
 	var zCViewText2 txt;
 	var zCViewText2 txtIndicator;
@@ -1779,7 +1816,6 @@ MEM_InformationMan.LastMethod:
 
 //---
 
-	arr = _^ (choiceView + 172);
 
 	if (InfoManagerRefreshOverlays == cIM_RefreshDialogColors) {
 		InfoManagerRefreshOverlays = cIM_RefreshNothing;
@@ -1792,27 +1828,27 @@ MEM_InformationMan.LastMethod:
 		InfoManagerDialogInstPtrCount = 0;
 	};
 
-	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos")) {
-		if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
-			i = 0;
-			loop = dlg.Choices;
 
-			InfoManagerDialogInstPtrCount = 0;
+	//Init
+	if (EnhancedInfoManagerReady < cEIM_Initialized) {
+		//Load all dialogues
+		InfoManagerDialogInstPtrCount = 0;
+		while (InfoManagerDialogInstPtrCount < dlg.Choices);
+			infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, InfoManagerDialogInstPtrCount);
+			MEM_WriteIntArray (_@ (InfoManagerDialogInstPtr), InfoManagerDialogInstPtrCount, infoPtr);
 
-			while (i < loop);
-				infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, i);
-				MEM_WriteIntArray (_@ (InfoManagerDialogInstPtr), i, infoPtr);
+			InfoManagerDialogInstPtrCount += 1;
+		end;
 
-				InfoManagerDialogInstPtrCount += 1;
-				i += 1;
-			end;
-		};
+		//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+		InfoManagerHighlightSelected = TRUE;
+		EnhancedInfoManagerReady = cEIM_Initialized;
 	};
 
-	if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
-	|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
-	|| (InfoManagerRefreshOverlays == cIM_RefreshOverlays)
-	{
+	//if (InfoManagerRefreshOverlays == cIM_RefreshOverlays)
+	if (InfoManagerHighlightSelected) {
+		InfoManagerHighlightSelected = FALSE;
+
 		InfoManagerAnswerIndicator = 0;
 		InfoManagerSpinnerIndicator = 0;
 
@@ -1852,8 +1888,11 @@ MEM_InformationMan.LastMethod:
 		MEM_WriteIntArray (_@ (overlayListMapView), 0, 0);
 		MEM_WriteStringArray (_@s (overlayID), 0, "");
 
-		if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
-		|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
+		//if (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectInfos"))
+		//|| (Hlp_StrCmp (MEM_InformationMan.LastMethod, "CollectChoices"))
+		//{
+		if (InfoManagerCollectInfos)
+		|| (InfoManagerCollectChoices)
 		{
 			if (InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_All)
 			|| ((InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (InfoManagerSpinnerPossible))
@@ -1932,14 +1971,8 @@ MEM_InformationMan.LastMethod:
 
 	var int retVal;
 
-//	if (dlg.IsActivated)
-	if (dlg.m_listLines_numInArray)
-	&& (arr.array)
-	&& (!MEM_InformationMan.IsWaitingForScript)
-	{
-		//var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
-		//var C_NPC her; her = _^ (MEM_InformationMan.player);
-
+	if (dlg.m_listLines_array)
+	&& (dlg.m_listLines_numInArray) {
 		var int nextPosY;
 		var string dlgFont;
 		var string dlgFontSelected;
@@ -2866,7 +2899,8 @@ MEM_InformationMan.LastMethod:
 			i += 1;
 		end;
 
-		if (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
+		if (InfoManagerHighlightSelected)
+		|| (InfoManagerLastChoiceSelected != dlg.ChoiceSelected)
 		|| (refreshOverlayColors)
 		{
 			/*
@@ -3136,14 +3170,16 @@ MEM_InformationMan.LastMethod:
 				//Remove if not required (or if we are already answering)
 				if (!InfoManagerAnswerPossible) || (InfoManagerAnswerMode) {
 					if (InfoManagerAnswerIndicator) {
-						InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+						//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+						InfoManagerHighlightSelected = TRUE;
 					};
 				};
 
 				//Remove if not required
 				if (!InfoManagerSpinnerPossible) {
 					if (InfoManagerSpinnerIndicator) {
-						InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+						//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+						InfoManagerHighlightSelected = TRUE;
 					};
 				};
 			};
@@ -3323,11 +3359,17 @@ MEM_InformationMan.LastMethod:
 		};
 	};
 
+	InfoManagerCollectInfos = FALSE;
+	InfoManagerCollectChoices = FALSE;
+	InfoManagerCollectInfosAllDisabled = FALSE;
 };
 
 //Remove hidden@ choices
 func void _hook_oCInformationManager_CollectChoices () {
 	var int infoPtr;
+
+	oCInfoManager_Reset_EIM ();
+	InfoManagerCollectChoices = TRUE;
 
 	//We can't use first parameter - it is a lie !!! :)
 	//infoPtr = MEM_ReadInt (ESP + 4);
@@ -3428,6 +3470,8 @@ func void _hook_oCInformationManager_CollectInfos () {
 	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
 	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
 
+	oCInfoManager_Reset_EIM ();
+	InfoManagerCollectInfos = TRUE;
 
 	var oCInfo dlgInstance;
 	var zCListSort list;
@@ -3491,6 +3535,17 @@ func void _hook_oCInformationManager_CollectInfos () {
 		InfoManagerCollectInfosAllDisabled = TRUE;
 	};
 };
+
+func void _hook_oCInformationManager_OnImportantBegin () {
+	oCInfoManager_Reset_EIM ();
+};
+
+func void _hook_oCInformationManager_OnExit () {
+	oCInfoManager_Reset_EIM ();
+};
+
+func void _hook_zCViewDialogChoice_HighlightSelected () {
+	InfoManagerHighlightSelected = TRUE;
 };
 
 func void G12_EnhancedInfoManager_Init () {
@@ -3505,6 +3560,30 @@ func void G12_EnhancedInfoManager_Init () {
 
 		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices");
 		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos");
+
+		//0x0072D0A0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G1 = 7524512;
+
+		//0x00661DB0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G2 = 6692272;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin");
+
+		//0x0072E360 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G1 = 7529312;
+
+		//0x006630D0 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G2 = 6697168;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit");
+
+		//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
+
+		//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G2 = 6878752;
+
+		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected");
 
 		once = 1;
 	};
