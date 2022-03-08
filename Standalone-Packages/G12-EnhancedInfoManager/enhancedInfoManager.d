@@ -2045,6 +2045,18 @@ MEM_InformationMan.LastMethod:
 				};
 			};
 
+			//Replace default 'ENDE.' with constant value DIALOG_ENDE
+			if (!descriptionAvailable) {
+				if ((MEM_InformationMan.IndexBye > -1) && (i == 0)) {
+					txt = _^ (MEM_ReadIntArray (arr.array, MEM_InformationMan.IndexBye));
+
+					if (Hlp_StrCmp (txt.text, "ENDE.")) {
+						dlgDescription = DIALOG_ENDE;
+						descriptionAvailable = TRUE;
+					};
+				};
+			};
+
 			//if (i >= dlg.LineStart)
 			//&& (txt.posy + dlg.offsetTextpy - dlg.sizeMargin_0[1] <= dlg.psizey)
 			//{
