@@ -126,6 +126,7 @@ var int InfoManagerAnswerIndicator;
 var int InfoManagerDialogInstPtr[255];
 var int InfoManagerDialogInstPtrCount;
 
+var int InfoManagerCollectInfosAllDisabled;
 func int oCInfoManager_GetInfoPtr__EIM (var int index) {
 	if ((index < 0) || (index >= InfoManagerDialogInstPtrCount)) {
 		return 0;
@@ -1614,6 +1615,21 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
 
 	if (!dlg.m_listLines_numInArray) { return; };
+	//If all dialogues are disabled --> add exit option!
+	if (InfoManagerCollectInfosAllDisabled) {
+		if (MEM_InformationMan.IndexBye == -1) {
+			//0x00759590 public: void __fastcall zCViewDialogChoice::AddChoice(class zSTRING &,int)
+			const int zCViewDialogChoice__AddChoice_G1 = 7706000;
+
+			//0x0068F710 public: void __fastcall zCViewDialogChoice::AddChoice(class zSTRING &,int)
+			const int zCViewDialogChoice__AddChoice_G2 = 6878992;
+
+			MEM_InformationMan.IndexBye = dlg.choices;
+
+			CALL_IntParam (0);
+			CALL__fastcall (MEM_InformationMan.DlgChoice, _@s (DIALOG_ENDE), MEMINT_SwitchG1G2 (zCViewDialogChoice__AddChoice_G1, zCViewDialogChoice__AddChoice_G2));
+		};
+	};
 
 	//crash
 	//zCInputCallback_SetHandleEventTop (MEM_InformationMan.DlgChoice);
@@ -3415,6 +3431,8 @@ func void _hook_oCInformationManager_CollectInfos () {
 
 	InfoManagerLastChoiceSelected = -1;
 
+	var int allDisabled; allDisabled = TRUE;
+
 	while (infoPtr);
 		list = _^ (infoPtr);
 		dlgInstance = _^ (list.data);
@@ -3424,11 +3442,10 @@ func void _hook_oCInformationManager_CollectInfos () {
 			//Because we can have a situation where condition function updates description
 			//and dialogues will no longer be hidden.
 
-			var int retVal;
 			self = _^ (MEM_InformationMan.npc);
 			other = _^ (MEM_InformationMan.player);
 			MEM_CallByID (dlgInstance.conditions);
-			retVal = MEMINT_PopInt();
+			var int retVal; retVal = MEMINT_PopInt();
 
 			if (Choice_IsHidden (dlgInstance.description)) {
 				//hide
@@ -3450,11 +3467,25 @@ func void _hook_oCInformationManager_CollectInfos () {
 					dlgInstance.told = 0;
 				};
 			};
+
+			if (retVal) {
+				//Only if not told / permanent
+				if ((dlgInstance.told == 0) || (dlgInstance.permanent == 1)) {
+					if (!Choice_IsDisabled (dlgInstance.description)) {
+						allDisabled = FALSE;
+					};
+				};
+			};
 		};
 
 		infoPtr = list.next;
 	end;
 
+	//If all dialogues are disabled - add exit option! (in oCInformationManager::Update, because CollectInfos will remove all choices)
+	if (allDisabled) {
+		InfoManagerCollectInfosAllDisabled = TRUE;
+	};
+};
 };
 
 func void G12_EnhancedInfoManager_Init () {
