@@ -140,6 +140,7 @@ var int EnhancedInfoManagerReady;
 func void oCInfoManager_Reset_EIM () {
 	EnhancedInfoManagerReady = cEIM_Idle;
 	InfoManagerDialogInstPtrCount = 0;
+	InfoManagerCollectInfosAllDisabled = FALSE;
 };
 
 func int oCInfoManager_GetInfoPtr__EIM (var int index) {
@@ -950,28 +951,25 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 			var oCInfo dlgInstance;
 			dlgInstance = _^ (MEM_InformationMan.Info);
 
-			if (dlgInstance.listChoices_next) {
+			var zCList l;
 
-				var zCList l;
+			var int list; list = dlgInstance.listChoices_next;
 
-				var int list; list = dlgInstance.listChoices_next;
+			while (list);
+				l = _^ (list);
 
-				while (list);
-					l = _^ (list);
+				if (l.data) {
+					var oCInfoChoice dlgChoice;
+					dlgChoice = _^ (l.data);
 
-					if (l.data) {
-						var oCInfoChoice dlgChoice;
-						dlgChoice = _^ (l.data);
-
-						If (Hlp_StrCmp (Choice_GetModifierSpinnerID (dlgChoice.text), spinnerID)) {
-							dlgChoice.Text = text;
-							return;
-						};
+					If (Hlp_StrCmp (Choice_GetModifierSpinnerID (dlgChoice.text), spinnerID)) {
+						dlgChoice.Text = text;
+						return;
 					};
+				};
 
-					list = l.next;
-				end;
-			};
+				list = l.next;
+			end;
 		};
 	};
 };
@@ -991,7 +989,7 @@ func string InfoManager_GetChoiceDescription_EIM (var int index) {
 
 	var zCArray arr; arr = _^ (_@ (dlg.m_listLines_array));
 
-	if (index < arr.numInArray) {
+	if ((index >= 0) && (index < arr.numInArray)) {
 		var int infoPtr;
 		var oCInfo dlgInstance;
 
@@ -1016,29 +1014,27 @@ func string InfoManager_GetChoiceDescription_EIM (var int index) {
 			if (infoPtr) {
 				dlgInstance = _^ (infoPtr);
 
-				if (dlgInstance.listChoices_next) {
-					//loop counter for all Choices
-					var int i; i = 0;
+				//loop counter for all Choices
+				var int i; i = 0;
 
-					var oCInfoChoice dlgChoice;
+				var oCInfoChoice dlgChoice;
 
-					var int list; list = dlgInstance.listChoices_next;
-					var zCList l;
+				var int list; list = dlgInstance.listChoices_next;
+				var zCList l;
 
-					while (list);
-						l = _^ (list);
-						if (l.data) {
-							//if our dialog option is dialog choice - put text to dlgDescription
-							if (i == index) {
-								dlgChoice = _^ (l.data);
-								return dlgChoice.Text;
-							};
+				while (list);
+					l = _^ (list);
+					if (l.data) {
+						//if our dialog option is dialog choice - put text to dlgDescription
+						if (i == index) {
+							dlgChoice = _^ (l.data);
+							return dlgChoice.Text;
 						};
+					};
 
-						list = l.next;
-						i += 1;
-					end;
-				};
+					list = l.next;
+					i += 1;
+				end;
 			};
 		};
 	};
@@ -1616,6 +1612,8 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 	const int cINFO_MGR_MODE_CHOICE		= 2;
 	const int cINFO_MGR_MODE_TRADE		= 3;
 
+	if (!MEM_Game.infoman) { return; };
+
 	//Don't run if done
 	if (MEM_InformationMan.IsDone) { return; };
 
@@ -1811,25 +1809,18 @@ MEM_InformationMan.LastMethod:
 	//};
 
 //--> zSpy debug
-/*
-	var int errorLevel; errorLevel = zERROR_GetFilterLevel ();
-	zERROR_SetFilterLevel (1);
+//	var int lastNpc;
+//	var string lastMethod;
+//	if (lastNpc != MEM_InformationMan.npc) {
+//		var oCNpc npc; npc = _^ (MEM_InformationMan.npc);
+//		zSpy_Info (ConcatStrings ("EIM.npc ", IntToString (npc.IDX)));
+//		lastNpc = MEM_InformationMan.npc;
+//	};
 
-	var int lastNpc;
-	var string lastMethod;
-	if (lastNpc != MEM_InformationMan.npc) {
-		var oCNpc npc; npc = _^ (MEM_InformationMan.npc);
-		MEM_Info (ConcatStrings ("EIM.npc ", IntToString (npc.IDX)));
-		lastNpc = MEM_InformationMan.npc;
-	};
-
-	if ((!Hlp_StrCmp (lastMethod, MEM_InformationMan.LastMethod))) {
-		MEM_Info (ConcatStrings ("EIM.lastMethod: ", MEM_InformationMan.LastMethod));
-		lastMethod = MEM_InformationMan.LastMethod;
-	};
-
-	zERROR_SetFilterLevel (errorLevel);
-*/
+//	if ((!Hlp_StrCmp (lastMethod, MEM_InformationMan.LastMethod))) {
+//		zSpy_Info (ConcatStrings ("EIM.lastMethod: ", MEM_InformationMan.LastMethod));
+//		lastMethod = MEM_InformationMan.LastMethod;
+//	};
 //<--
 
 	//Init
@@ -2020,7 +2011,6 @@ MEM_InformationMan.LastMethod:
 
 			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
 				//infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, i);
-
 				infoPtr = oCInfoManager_GetInfoPtr__EIM (i);
 
 				if (infoPtr) {
@@ -2062,32 +2052,29 @@ MEM_InformationMan.LastMethod:
 
 					//infoPtr = 0;
 
-					if (dlgInstance.listChoices_next) {
+					var oCInfoChoice dlgChoice;
+					var int list;
+					var zCList l;
 
-						var oCInfoChoice dlgChoice;
-						var int list;
-						var zCList l;
+					j = 0;
+					list = dlgInstance.listChoices_next;
+					while (list);
+						l = _^ (list);
 
-						j = 0;
-						list = dlgInstance.listChoices_next;
-						while (list);
-							l = _^ (list);
-
-							//if our dialog option is dialog choice - put text to dlgDescription
-							if (l.data) {
-								if (i == j) {
-									//choicePtr = l.data;
-									dlgChoice = _^ (l.data);
-									dlgDescription = dlgChoice.Text;
-									descriptionAvailable = TRUE;
-									break;
-								};
+						//if our dialog option is dialog choice - put text to dlgDescription
+						if (l.data) {
+							if (i == j) {
+								//choicePtr = l.data;
+								dlgChoice = _^ (l.data);
+								dlgDescription = dlgChoice.Text;
+								descriptionAvailable = TRUE;
+								break;
 							};
+						};
 
-							list = l.next;
-							j += 1;
-						end;
-					};
+						list = l.next;
+						j += 1;
+					end;
 				};
 			};
 
@@ -3351,21 +3338,32 @@ MEM_InformationMan.LastMethod:
  *
  */
 func void _hook_oCInformationManager_CollectChoices () {
-	var int infoPtr;
-
 	oCInfoManager_Reset_EIM ();
+
+	if (!MEM_Game.infoman) { return; };
+
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
+
+	var int infoPtr; infoPtr = MEM_InformationMan.Info;
+	if (!infoPtr) { return; };
+
 	InfoManagerCollectChoices = TRUE;
 
 	//We can't use first parameter - it is a lie !!! :)
 	//infoPtr = MEM_ReadInt (ESP + 4);
 	InfoManagerLastChoiceSelected = -1;
 
-	infoPtr = MEM_InformationMan.Info;
-
-	if (!infoPtr) { return; };
-
 	var oCInfo dlgInstance;
 	dlgInstance = _^ (infoPtr);
+
+	self = _^ (MEM_InformationMan.npc);
+	other = _^ (MEM_InformationMan.player);
+
+	//--> re-evaluate dialog conditions
+	MEM_CallByID (dlgInstance.conditions);
+	var int retVal; retVal = MEMINT_PopInt();
+	//<--
 
 	var int i; i = 0;
 
@@ -3388,20 +3386,30 @@ func void _hook_oCInformationManager_CollectChoices () {
 
 				if (Choice_IsHidden (dlgChoice.Text)) {
 					//Get next item
-					n = _^ (l.next);
+					if (l.next) {
+						n = _^ (l.next);
 
-					if (i == 0) {
-						//Replace current item with next item
-						l.data = n.data;
-						l.next = n.next;
+						if (i == 0) {
+							//Replace current item with next item
+							l.data = n.data;
+							l.next = n.next;
+						} else {
+							//Replace pointer of previous item with next item
+							p.next = l.next;
+						};
+
+						//restart loop
+						i = 0;
+						list = dlgInstance.listChoices_next;
+						continue;
 					} else {
-						//Replace pointer of previous item with next item
-						p.next = l.next;
+						if (i == 0) {
+							dlgInstance.listChoices_next = 0;
+						} else {
+							//Remove pointer of previous item
+							p.next = 0;
+						};
 					};
-
-					//restart loop
-					list = dlgInstance.listChoices_next;
-					continue;
 				};
 			};
 
@@ -3443,24 +3451,27 @@ func void _hook_oCInformationManager_CollectChoices () {
 			CALL__thiscall (infoPtr, MEMINT_SwitchG1G2 (oCInfo__RemoveAllChoices_G1, oCInfo__RemoveAllChoices_G2));
 		};
 	};
-
-	self = _^ (MEM_InformationMan.npc);
-	other = _^ (MEM_InformationMan.player);
-
-	//--> re-evaluate dialog conditions
-	MEM_CallByID (dlgInstance.conditions);
-	var int retVal; retVal = MEMINT_PopInt();
-	//<--
 };
 
 /*
  *
  */
 func void _hook_oCInformationManager_CollectInfos () {
+	oCInfoManager_Reset_EIM ();
+
+	if (!MEM_Game.infoman) { return; };
+
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
+
 	var oCNPC slf; slf = _^ (MEM_InformationMan.npc);
+
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
 	var int slfInstance; slfInstance = Hlp_GetInstanceID (slf);
 
-	oCInfoManager_Reset_EIM ();
+	if (!MEM_InfoMan.infoList_next) { return; };
+
 	InfoManagerCollectInfos = TRUE;
 
 	var oCInfo dlgInstance;
@@ -3474,44 +3485,47 @@ func void _hook_oCInformationManager_CollectInfos () {
 
 	while (infoPtr);
 		list = _^ (infoPtr);
-		dlgInstance = _^ (list.data);
-		if (dlgInstance.npc == slfInstance) {
 
-			//Here we have to re-evaluate dialogue conditions.
-			//Because we can have a situation where condition function updates description
-			//and dialogues will no longer be hidden.
+		if (list.data) {
+			dlgInstance = _^ (list.data);
+			if (dlgInstance.npc == slfInstance) {
 
-			self = _^ (MEM_InformationMan.npc);
-			other = _^ (MEM_InformationMan.player);
-			MEM_CallByID (dlgInstance.conditions);
-			var int retVal; retVal = MEMINT_PopInt();
+				//Here we have to re-evaluate dialogue conditions.
+				//Because we can have a situation where condition function updates description
+				//and dialogues will no longer be hidden.
 
-			if (Choice_IsHidden (dlgInstance.description)) {
-				//hide
-				if (dlgInstance.permanent == 1) {
-					dlgInstance.told = -2;
-					dlgInstance.permanent = 0;
+				self = _^ (MEM_InformationMan.npc);
+				other = _^ (MEM_InformationMan.player);
+				MEM_CallByID (dlgInstance.conditions);
+				var int retVal; retVal = MEMINT_PopInt();
+
+				if (Choice_IsHidden (dlgInstance.description)) {
+					//hide
+					if (dlgInstance.permanent == 1) {
+						dlgInstance.told = -2;
+						dlgInstance.permanent = 0;
+					} else {
+						if (dlgInstance.told == 0) {
+							dlgInstance.told = -1;
+						};
+					};
 				} else {
-					if (dlgInstance.told == 0) {
-						dlgInstance.told = -1;
+					//restore
+					if (dlgInstance.told == -1) {
+						dlgInstance.told = 0;
+					} else
+					if (dlgInstance.told == -2) {
+						dlgInstance.permanent = 1;
+						dlgInstance.told = 0;
 					};
 				};
-			} else {
-				//restore
-				if (dlgInstance.told == -1) {
-					dlgInstance.told = 0;
-				} else
-				if (dlgInstance.told == -2) {
-					dlgInstance.permanent = 1;
-					dlgInstance.told = 0;
-				};
-			};
 
-			if (retVal) {
-				//Only if not told / permanent
-				if ((dlgInstance.told == 0) || (dlgInstance.permanent == 1)) {
-					if (!Choice_IsDisabled (dlgInstance.description)) {
-						allDisabled = FALSE;
+				if (retVal) {
+					//Only if not told / permanent
+					if ((dlgInstance.told == 0) || (dlgInstance.permanent == 1)) {
+						if (!Choice_IsDisabled (dlgInstance.description)) {
+							allDisabled = FALSE;
+						};
 					};
 				};
 			};
