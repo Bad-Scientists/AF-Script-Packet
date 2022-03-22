@@ -18,9 +18,6 @@ func void _hook_oCNPC_OpenScreen_Map () {
 	var oCNPC slf; slf = _^ (ECX);
 
 	if (NPC_IsPlayer (slf)) {
-		//Call close inventory events
-		Event_Execute (_CloseInventory_Event, evOpenScreenMap);
-
 		//Is there any specific map that player should open ?
 		var int mapInstanceName; mapInstanceName = GetPlayerMapInstance ();
 
@@ -81,10 +78,6 @@ func void _hook_oCNPC_OpenScreen_Map () {
 
 func void G1_PlayerMap_Init () {
 	const int once = 0;
-
-	//We only need to make sure that event handler for _CloseInventory_Event is initialized
-	G12_CloseInventoryEvent_Init ();
-
 	if (!once) {
 		//Add hook which will recognize latest map
 		HookEngine (oCDocumentManager__CreateMap, 6, "_hook_oCDocumentManager_CreateMap");
