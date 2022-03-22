@@ -339,8 +339,8 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
  *	An alternative that will turn to vob only when not within acceptable angle
  */
 func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int angle) {
-	var int angleX;
-	var int angleY;
+	var int angleX; var int angleXPtr; angleXPtr = _@ (angleX);
+	var int angleY; var int angleYPtr; angleYPtr = _@ (angleY);
 
 //func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angleXPtr, var int angleYPtr) {
 	//0x0074C0D0 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
@@ -359,8 +359,8 @@ func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int an
 	const int call = 0;
 	if (CALL_Begin(call)) {
 
-		CALL_PtrParam (_@ (angleY));
-		CALL_PtrParam (_@ (angleX));
+		CALL_PtrParam (_@ (angleYPtr));
+		CALL_PtrParam (_@ (angleXPtr));
 
 		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAnglesVob_G1, oCNPC__GetAnglesVob_G2));
