@@ -9,6 +9,7 @@ func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int in
 	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfo_G2 = 7351648;
 
+	if (!MEM_Game.infoman) { return 0; };
 	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
 	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
 
@@ -31,6 +32,7 @@ func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var in
 	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfo_G2 = 7351648;
 
+	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
@@ -62,6 +64,7 @@ func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr,
 	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
 
+	if (!MEM_Game.infoman) { return 0; };
 	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
 	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
 
@@ -84,6 +87,7 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
 	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
 	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
 
+	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
@@ -114,6 +118,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	//0x00702940 public: int __thiscall oCInfoManager::GetInfoCount(class oCNPC *,class oCNPC *)
 	const int oCInfoManager__GetInfoCount_G2 = 7350592;
 
+	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var oCNPC oth; oth = Hlp_GetNPC (othinstance);
