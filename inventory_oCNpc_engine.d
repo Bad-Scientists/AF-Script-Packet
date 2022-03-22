@@ -263,3 +263,31 @@ func int oCItemContainer_IsActive (var int ptr) {
 
 	return CALL_RetValAsInt ();
 };
+
+/*
+ *	LeGo version does not return pointer in G2A :-/
+ */
+func int oCNpc_RemoveFromSlot_Fixed (var int slfInstance, var string slotName, var int dropIt, var int killEffect) {
+	//0x006A5E80 public: class oCVob * __thiscall oCNpc::RemoveFromSlot(class zSTRING const &,int)
+	const int oCNpc__RemoveFromSlot_G1 = 6971008;
+
+	//0x0074A270 public: class oCVob * __thiscall oCNpc::RemoveFromSlot(class zSTRING const &,int,int)
+	const int oCNpc__RemoveFromSlot_G2 = 7643760;
+
+	//0x006A5F50 public: class oCVob * __thiscall oCNpc::RemoveFromSlot(struct TNpcSlot *,int)
+	//0x0074A340 public: class oCVob * __thiscall oCNpc::RemoveFromSlot(struct TNpcSlot *,int,int)
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	//killEffect parameter is valid only for G2A
+	if (MEMINT_SwitchG1G2 (0, 1)) {
+		CALL_IntParam (killEffect);
+	};
+
+	CALL_IntParam (dropIt);
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__RemoveFromSlot_G1, oCNpc__RemoveFromSlot_G2));
+
+	return CALL_RetValAsPtr ();
+};
