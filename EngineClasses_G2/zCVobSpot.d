@@ -54,6 +54,6 @@ class zCVobSpot {
 	var int m_poCollisionObjectClass; // 0x0118 zCCollisionObjectDef*
 	var int m_poCollisionObject; // 0x011C zCCollisionObject*
 
-	float timerEnd; // sizeof 04h offset 120h
-	zCVob* inUseVob; // sizeof 04h offset 124h
+	var int timerEnd; //float  // sizeof 04h offset 120h
+	var int inUseVob; //zCVob*  // sizeof 04h offset 124h
 };
