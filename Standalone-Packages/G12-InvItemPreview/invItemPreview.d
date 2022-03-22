@@ -35,23 +35,20 @@ func void _eventUseItemToStateUse__InvItemPreview (var int dummyVariable) {
 func void GetItemPreviewData__InvItemPreview (var int npcInventoryPtr) {
 	if (!npcInventoryPtr) { return; };
 
-	var oCNpcInventory npcInventory; npcInventory = _^ (npcInventoryPtr);
-	
-	if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
-		var oCNPC slf; slf = _^ (npcInventory.inventory2_owner);
-		if (NPC_IsPlayer (slf)) {
-			PC_ItemPreviewHealth = 0;
-			PC_ItemPreviewMana = 0;
+	var oCItemContainer itemContainer; itemContainer = _^ (npcInventoryPtr);
 
-			if (npcInventory.inventory2_oCItemContainer_contents) {
-				if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
+	if (!itemContainer.inventory2_oCItemContainer_passive) {
+		PC_ItemPreviewHealth = 0;
+		PC_ItemPreviewMana = 0;
 
-					var int vobPtr; vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+		if (itemContainer.inventory2_oCItemContainer_contents) {
+			if ((itemContainer.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (itemContainer.inventory2_oCItemContainer_contents) > 1) {
 
-					if (vobPtr) {
-						PC_ItemPreviewHealth = GetItemCountValue (vobPtr, NAME_Bonus_HP);
-						PC_ItemPreviewMana = GetItemCountValue (vobPtr, NAME_Bonus_Mana);
-					};
+				var int vobPtr; vobPtr = List_GetS (itemContainer.inventory2_oCItemContainer_contents, itemContainer.inventory2_oCItemContainer_selectedItem + 2);
+
+				if (vobPtr) {
+					PC_ItemPreviewHealth = GetItemCountValue (vobPtr, NAME_Bonus_HP);
+					PC_ItemPreviewMana = GetItemCountValue (vobPtr, NAME_Bonus_Mana);
 				};
 			};
 		};
@@ -59,13 +56,10 @@ func void GetItemPreviewData__InvItemPreview (var int npcInventoryPtr) {
 };
 
 func void _hook_oCItemContainer_CheckSelectedItem () {
-	//Run this piece only in players inventory
-	if (Hlp_Is_oCNpcInventory (ECX)) {
-		if (oCItemContainer_IsActive (ECX)) {
-			//Update public variables only when Item preview is active
-			if ((PC_ItemPreviewActive) && (PC_ItemPreviewCanUpdate)) {
-				GetItemPreviewData__InvItemPreview (ECX);
-			};
+	if (oCItemContainer_IsActive (ECX)) {
+		//Update public variables only when Item preview is active
+		if ((PC_ItemPreviewActive) && (PC_ItemPreviewCanUpdate)) {
+			GetItemPreviewData__InvItemPreview (ECX);
 		};
 	};
 };
