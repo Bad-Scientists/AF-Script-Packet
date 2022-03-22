@@ -5,21 +5,13 @@
 var int PC_ItemPreviewMana;
 var int PC_ItemPreviewHealth;
 
-//[Internal variable]
+//[Internal variables]
 var int PC_ItemPreviewActive;
 var int PC_ItemPreviewCanUpdate;
 
 func void _eventOpenInventory__InvItemPreview (var int dummyVariable) {
-	if (!Hlp_Is_oCNpc (ECX)) { return; };
-
-	var oCNPC slf; slf = _^ (ECX);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	//'Activate' item preview
-	if (NPC_IsPlayer (slf)) {
-		PC_ItemPreviewActive = TRUE;
-		PC_ItemPreviewCanUpdate = TRUE;
-	};
+	PC_ItemPreviewActive = TRUE;
+	PC_ItemPreviewCanUpdate = TRUE;
 };
 
 func void _eventCloseInventory__InvItemPreview (var int dummyVariable) {
@@ -101,6 +93,7 @@ func void G12_InvItemPreview_Init () {
 		//0x00709660 protected: virtual void __thiscall oCItemContainer::CheckSelectedItem(void)
 		const int oCItemContainer__CheckSelectedItem_G2 = 7378528;
 		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__CheckSelectedItem_G1, oCItemContainer__CheckSelectedItem_G2), 5, "_hook_oCItemContainer_CheckSelectedItem");
+
 		once = 1;
 	};
 };
