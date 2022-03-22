@@ -5,14 +5,16 @@
  *	 - Page Up/Page Down keys to scroll faster through inventory
  *
  *	 - it also adds possibility to:
- *	    - put item in hand by pressing Alt + key Up
- *	    - drop a single piece of item by pressing Alt + key Down
+ *	    - put item in hand by pressing key_E
+ *	    - drop a single piece of item by pressing key_Q
  */
 
 /*
  *	Wrapper function for all inventory 'types' (oCItemContainer, oCStealContainer, oCNpcContainer, oCNpcInventory)
  */
 func int oCItemContainer_HandleKey (var int ptr, var int key) {
+	if (!ptr) { return 0; };
+
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		var oCItemContainer itemContainer;
 
@@ -221,6 +223,8 @@ func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 */
 
 func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariable) {
+	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
+
 	var int key; key = MEM_ReadInt (ESP + 4);
 	//oCNpcInventory
 	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
@@ -239,85 +243,68 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 
 	var int action; action = action_Nothing;
 
-	var int altKey;
-	var int altSecondaryKey;
+	//Put in hand / back to inventory
+	if (key == key_E) { action = action_PutInHand; };
 
-	//Alt + key Up --> Put item in hand
-	if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp"))) {
-		altKey = MEM_GetKey ("keySMove");
-		altSecondaryKey = MEM_GetKey ("keySMove");
-
-		altKey = MEM_KeyState (altKey);
-		altSecondaryKey = MEM_KeyState (altSecondaryKey);
-
-		if (((altKey == KEY_PRESSED) || (altKey == KEY_HOLD)) || ((altSecondaryKey == KEY_PRESSED) || (altSecondaryKey == KEY_HOLD))) {
-			action = action_PutInHand;
-		};
-	};
-
-	//Alt + key Down --> Drop 1 piece
-	if ((key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown"))) {
-		altKey = MEM_GetKey ("keySMove");
-		altSecondaryKey = MEM_GetKey ("keySMove");
-
-		altKey = MEM_KeyState (altKey);
-		altSecondaryKey = MEM_KeyState (altSecondaryKey);
-
-		if (((altKey == KEY_PRESSED) || (altKey == KEY_HOLD)) || ((altSecondaryKey == KEY_PRESSED) || (altSecondaryKey == KEY_HOLD))) {
-			action = action_DropItem;
-		};
-	};
+	//Drop from hand - single piece
+	if (key == key_Q) { action = action_DropItem; };
 
 	if (action != action_Nothing) {
 
-		if (ECX) {
-			npcInventory = _^ (ECX);
+		npcInventory = _^ (ECX);
 
-			if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
-				if (npcInventory.inventory2_oCItemContainer_contents) {
-					if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
-						slf = _^ (npcInventory.inventory2_owner);
-						if (NPC_IsPlayer (slf)) {
-							vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-							//Put item to hand only if hand is empty!
-							if (!vobPtr) {
-								vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+		if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
+			if (npcInventory.inventory2_oCItemContainer_contents) {
+				slf = _^ (npcInventory.inventory2_owner);
+				if (NPC_IsPlayer (slf)) {
+					vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+					//Put item to hand only if hand is empty!
+					if (!vobPtr) {
+						if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
+							vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
 
-								if (vobPtr) {
-									//Drop item - 1 piece
-									if (action == action_DropItem) {
-										//Take 1 piece from inventory, put in hand, remove from hand
-										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
-										oCNpc_SetRightHand (slf, vobPtr);
-										//oCNpc_RemoveFromHand__BetterInvControls (slf);
+							if (vobPtr) {
+								//Drop item - 1 piece
+								if (action == action_DropItem) {
+									//Take 1 piece from inventory, put in hand, remove from hand
+									vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
+									oCNpc_SetRightHand (slf, vobPtr);
+									//oCNpc_RemoveFromHand__BetterInvControls (slf);
 
-										//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
-										//We can't play any animations here
-										//Npc_PlayAni (slf, "T_STAND_2_IDROP");
-										//
-										vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-										AI_DropVobPtr (slf, vobPtr);
+									//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
+									//We can't play any animations here
+									//Npc_PlayAni (slf, "T_STAND_2_IDROP");
+									//
+									vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+									AI_DropVobPtr (slf, vobPtr);
 
-										//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
-										//const int oCNpcInventory__FindNextCategory_G1 = 6741840;
-										//CALL__thiscall (ECX, oCNpcInventory__FindNextCategory_G1);
-									} else
-									//Put in hand
-									if (action == action_PutInHand) {
-										//Take 1 piece from inventory, put in hand
-										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
-										oCNpc_SetRightHand (slf, vobPtr);
-										//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
+									//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
+									//const int oCNpcInventory__FindNextCategory_G1 = 6741840;
+									//CALL__thiscall (ECX, oCNpcInventory__FindNextCategory_G1);
+								} else
+								//Put in hand
+								if (action == action_PutInHand) {
+									//Take 1 piece from inventory, put in hand
+									vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
+									oCNpc_SetRightHand (slf, vobPtr);
+									//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
 
-										//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
-										//Close inventory
-										//const int oCNpcInventory__Close = 6734304;
-										//CALL__thiscall (ECX, oCNpcInventory__Close);
-									};
-
-									cancel = TRUE;
+									//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
+									//Close inventory
+									//const int oCNpcInventory__Close = 6734304;
+									//CALL__thiscall (ECX, oCNpcInventory__Close);
 								};
+
+								cancel = TRUE;
 							};
+						};
+					} else {
+						//If an item is already in hand - and we try to put an item to hand - do the opposite - put it back to inventory
+						if (action == action_PutInHand) {
+							//Remove from hand - do not drop
+							vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
+							//Put in inventory
+							vobPtr = oCNpc_PutInInvPtr (slf, vobPtr);
 						};
 					};
 				};
@@ -357,8 +344,6 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 };
 
 func void G1_BetterInventoryControls_Init(){
-	const int once = 0;
-
 	G1_TradeEvents_Init ();
 
 	G1_InventoryEvents_Init ();
