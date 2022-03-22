@@ -18,7 +18,7 @@ const int vobTransportPropertiesView_VPosX		= -1;		//if not defined (-1) then vo
 const int vobTransportPropertiesView_VPosY		= -1;		//if not defined (-1) then vobTransportPropertiesView_VPosY will be taken into consideration. Virtual coordinates
 
 const int vobTransportPropertiesView_WidthPxl		= 360;		//In pixels
-const int vobTransportPropertiesView_Lines		= 25;		//24 lines + 1 empty delimiter
+const int vobTransportPropertiesView_Lines		= 30;		//29 lines + 1 empty delimiter
 
 const int vobTransportBuyVobViewPPosX			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
 const int vobTransportBuyVobViewPPosY			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
@@ -239,7 +239,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	//Special categories
 
 	if (vobTransportShowcaseVobVerticalIndex == 1) {
-		repeat (i, 6); 
+		repeat (i, 6);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -276,7 +276,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 	var int j;
 
 	if (!vobPtr) { return FALSE; };
-	
+
 	vob = _^ (vobPtr);
 
 	repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX); var int i;
@@ -310,13 +310,13 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			sVobTransportBuyVobView_Count5 = IntToString (i + 1); //index starts with 0
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_MAX));
-			
+
 			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count3 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count4 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count5 = RGBA (255, 255, 255, 255);
-			
+
 			if (oreTotal >= vobTransportShowcaseVobBuyValue) {
 				colorVobTransportBuyVobView_Count2 = RGBA (102, 255, 102, 255);
 			} else {
@@ -326,7 +326,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			return TRUE;
 		};
 	end;
-	
+
 	return FALSE;
 };
 

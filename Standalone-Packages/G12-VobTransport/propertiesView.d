@@ -70,21 +70,21 @@ func void DisplayProperties__VobTransport () {
 		//oCMobFire
 		var string s_fireSlot; s_fireSlot = "";
 		var string s_fireVobtreeName; s_fireVobtreeName = "";
-		
+
 		//oCMobDoor
 		var string s_addName; s_addName = "";
-		
+
 		//zCTrigger
 		var string s_respondToVobName; s_respondToVobName = "";
 
 		//oCTriggerScript
 		var string s_scriptFunc; s_scriptFunc = "";
-		
+
 		var string s_Title; s_Title = "";
 
 		var int collStatic; collStatic = 0;
 		var int collDynamic; collDynamic = 0;
-		
+
 		var int vtbl; vtbl = 0;
 
 		//--> Common attributes
@@ -114,12 +114,12 @@ func void DisplayProperties__VobTransport () {
 			itm = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCItem ", IntToString (vtbl));
 		} else
-	
+
 		//oCMobContainer - chest
 		if (Hlp_Is_oCMobContainer (vobTransportVobPtr)) {
 			mobContainer = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobContainer ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobContainer._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobContainer._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobContainer._oCMob_ownerGuildStr);
@@ -138,7 +138,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobFire (vobTransportVobPtr)) {
 			mobFire = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobFire ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobFire._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobFire._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobFire._oCMob_ownerGuildStr);
@@ -156,8 +156,8 @@ func void DisplayProperties__VobTransport () {
 		//oCMobDoor
 		if (Hlp_Is_oCMobDoor (vobTransportVobPtr)) {
 			mobDoor = _^ (vobTransportVobPtr);
-			s_vtbl = ConcatStrings ("oCMobDoor ", IntToString (vtbl));
-			
+			s_vtbl = ConcatStrings ("h@42B3F5 oCMobDoor h@FFFFFF ", IntToString (vtbl));
+
 			s_mobName = ConcatStrings ("mob name: ", mobDoor._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobDoor._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobDoor._oCMob_ownerGuildStr);
@@ -167,6 +167,9 @@ func void DisplayProperties__VobTransport () {
 			s_sceme = ConcatStrings ("sceme: ", mobDoor._oCMobInter_sceme);
 			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobDoor._oCMobInter_conditionFunc);
 			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobDoor._oCMobInter_onStateFuncName);
+
+			s_keyInstance = ConcatStrings ("keyInstance: ", mobContainer._oCMobLockable_keyInstance);
+			s_pickLockStr = ConcatStrings ("pickLockStr: ", mobContainer._oCMobLockable_pickLockStr);
 
 			s_addName = ConcatStrings ("addName: ", mobDoor.addName);
 		} else
@@ -192,7 +195,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobLockable (vobTransportVobPtr)) {
 			mobLockable = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobLockable ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobLockable._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobLockable._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobLockable._oCMob_ownerGuildStr);
@@ -202,13 +205,16 @@ func void DisplayProperties__VobTransport () {
 			s_sceme = ConcatStrings ("sceme: ", mobLockable._oCMobInter_sceme);
 			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobLockable._oCMobInter_conditionFunc);
 			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobLockable._oCMobInter_onStateFuncName);
+
+			s_keyInstance = ConcatStrings ("keyInstance: ", mobLockable.keyInstance);
+			s_pickLockStr = ConcatStrings ("pickLockStr: ", mobLockable.pickLockStr);
 		} else
 
 		//oCMobSwitch
 		if (Hlp_Is_oCMobSwitch (vobTransportVobPtr)) {
 			mobInter = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobSwitch ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
@@ -224,7 +230,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobWheel (vobTransportVobPtr)) {
 			mobInter = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobWheel ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
@@ -240,7 +246,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobBed (vobTransportVobPtr)) {
 			mobInter = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobBed ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
@@ -256,7 +262,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMobInter (vobTransportVobPtr)) {
 			mobInter = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMobInter ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mobInter._oCMob_name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mobInter._oCMob_ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mobInter._oCMob_ownerGuildStr);
@@ -272,7 +278,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCMob (vobTransportVobPtr)) {
 			mob = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("oCMob ", IntToString (vtbl));
-			
+
 			s_mobName = ConcatStrings ("mob name: ", mob.name);
 			s_ownerStr = ConcatStrings ("ownerStr: ", mob.ownerStr);
 			s_ownerGuildStr = ConcatStrings ("ownerGuildStr: ", mob.ownerGuildStr);
@@ -282,7 +288,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_zCTrigger (vobTransportVobPtr)) {
 			trigger = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("zCTrigger ", IntToString (vtbl));
-			
+
 			s_triggerTarget = ConcatStrings ("triggerTarget: ", trigger.triggerTarget);
 			s_respondToVobName = ConcatStrings ("respondToVobName: ", trigger.respondToVobName);
 		} else
@@ -291,7 +297,7 @@ func void DisplayProperties__VobTransport () {
 		if (Hlp_Is_oCTriggerScript (vobTransportVobPtr)) {
 			triggerScript = _^ (vobTransportVobPtr);
 			s_vtbl = ConcatStrings ("zCTrigger ", IntToString (vtbl));
-			
+
 			s_triggerTarget = ConcatStrings ("triggerTarget: ", triggerScript._zCTrigger_triggerTarget);
 			s_respondToVobName = ConcatStrings ("respondToVobName: ", triggerScript._zCTrigger_respondToVobName);
 
@@ -299,7 +305,7 @@ func void DisplayProperties__VobTransport () {
 		};
 
 		var int titleColor; titleColor = RGBA (255, 255, 255, 255);
-		
+
 		//Properties
 		var int s; s = SB_New();
 
@@ -520,11 +526,11 @@ func void DisplayProperties__VobTransport () {
 			} else {
 				posX = Print_ToVirtual (vobTransportPropertiesView_PPosX, PS_X);
 			};
-			
+
 			if (vobTransportPropertiesView_VPosX > -1) {
 				posX = vobTransportPropertiesView_VPosX;
 			};
-			
+
 			if (vobTransportPropertiesView_PPosY == -1) {
 				posY = (PS_VMax / 2 - (vobTransportPropertiesView_Lines * fontHeight) / 2);
 			} else {
@@ -623,6 +629,11 @@ func void DisplayProperties__VobTransport () {
 			SB (Print_LineSeperator);
 		} else
 		if (Hlp_Is_oCMobDoor (vobTransportVobPtr)) {
+			SB (s_keyInstance);
+			SB (Print_LineSeperator);
+			SB (s_pickLockStr);
+			SB (Print_LineSeperator);
+
 			SB (s_addName);
 			SB (Print_LineSeperator);
 		} else
@@ -667,7 +678,7 @@ func void DisplayProperties__VobTransport () {
 			} else {
 				posX = Print_ToVirtual (vobTransportBuyVobViewPPosX, PS_X);
 			};
-			
+
 			if (vobTransportBuyVobViewVPosX > -1) {
 				posX = vobTransportBuyVobViewVPosX;
 			};
@@ -681,7 +692,7 @@ func void DisplayProperties__VobTransport () {
 			if (vobTransportBuyVobViewVPosY > -1) {
 				posY = vobTransportBuyVobViewVPosY;
 			};
-			
+
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobViewFrame)) {
 				hVobTransportBuyVobViewFrame  = View_Create (posX, posY, posX + viewWidth, posY + (vobTransportBuyVobView_Lines * fontHeight) + spaceWidth);
 				View_SetTexture (hVobTransportBuyVobViewFrame, vobTransportViewTexture);
@@ -696,7 +707,7 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Description
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Description)) {
 				hVobTransportBuyVobView_Description = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Description, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Description, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Description);
@@ -708,7 +719,7 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Line1
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Line1)) {
 				hVobTransportBuyVobView_Line1 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Line1, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Line1, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Line1);
@@ -718,19 +729,19 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Count1
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count1)) {
 				hVobTransportBuyVobView_Count1 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Count1, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Count1, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Count1);
 			View_MoveTo (hVobTransportBuyVobView_Count1, posX, posY);
 			View_Resize (hVobTransportBuyVobView_Count1, viewWidth, fontHeight);
-			
+
 			posY += (fontHeight);
 
 			//--- hVobTransportBuyVobView_Line2
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Line2)) {
 				hVobTransportBuyVobView_Line2 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Line2, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Line2, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Line2);
@@ -740,19 +751,19 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Count2
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count2)) {
 				hVobTransportBuyVobView_Count2 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Count2, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Count2, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Count2);
 			View_MoveTo (hVobTransportBuyVobView_Count2, posX, posY);
 			View_Resize (hVobTransportBuyVobView_Count2, viewWidth, fontHeight);
-			
+
 			posY += (fontHeight);
 
 			//--- hVobTransportBuyVobView_Line3
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Line3)) {
 				hVobTransportBuyVobView_Line3 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Line3, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Line3, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Line3);
@@ -762,19 +773,19 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Count3
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count3)) {
 				hVobTransportBuyVobView_Count3 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Count3, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Count3, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Count3);
 			View_MoveTo (hVobTransportBuyVobView_Count3, posX, posY);
 			View_Resize (hVobTransportBuyVobView_Count3, viewWidth, fontHeight);
-			
+
 			posY += (fontHeight);
 
 			//--- hVobTransportBuyVobView_Line4
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Line4)) {
 				hVobTransportBuyVobView_Line4 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Line4, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Line4, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Line4);
@@ -784,19 +795,19 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Count4
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count4)) {
 				hVobTransportBuyVobView_Count4 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Count4, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Count4, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Count4);
 			View_MoveTo (hVobTransportBuyVobView_Count4, posX, posY);
 			View_Resize (hVobTransportBuyVobView_Count4, viewWidth, fontHeight);
-			
+
 			posY += (fontHeight);
 
 			//--- hVobTransportBuyVobView_Line5
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Line5)) {
 				hVobTransportBuyVobView_Line5 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Line5, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Line5, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Line5);
@@ -806,15 +817,15 @@ func void DisplayProperties__VobTransport () {
 			//--- hVobTransportBuyVobView_Count5
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count5)) {
 				hVobTransportBuyVobView_Count5 = View_Create (posX, posY, posX + viewWidth, posY + (1 * fontHeight) + spaceWidth);
-				View_AddText (hVobTransportBuyVobView_Count5, 00, 00, "", vobTransportFontName);	
+				View_AddText (hVobTransportBuyVobView_Count5, 00, 00, "", vobTransportFontName);
 			};
 
 			View_Open (hVobTransportBuyVobView_Count5);
 			View_MoveTo (hVobTransportBuyVobView_Count5, posX, posY);
 			View_Resize (hVobTransportBuyVobView_Count5, viewWidth, fontHeight);
-			
+
 			posY += (fontHeight);
-			
+
 			vobTransportBuyVobViewVisible = TRUE;
 		};
 
@@ -827,7 +838,7 @@ func void DisplayProperties__VobTransport () {
 
 		zcView_SetText (hVobTransportBuyVobView_Line2, sVobTransportBuyVobView_Line2, spaceWidth * 2);
 		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count2, sVobTransportBuyVobView_Count2, colorVobTransportBuyVobView_Count2, - spaceWidth * 2);
-	
+
 		zcView_SetText (hVobTransportBuyVobView_Line3, sVobTransportBuyVobView_Line3, spaceWidth * 2);
 		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count3, sVobTransportBuyVobView_Count3, colorVobTransportBuyVobView_Count3, - spaceWidth * 2);
 
