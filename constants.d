@@ -10,7 +10,7 @@ const int zMDL_MAX_ANIS_PARALLEL     = 6;
 const int zMDL_MAX_MESHLIBS_PARALLEL = 4;
 const int zMDL_VELRING_SIZE          = 8;
 const int MAX_ANIHISTORY             = 16;
-  
+
 // Animation directions
 /*
 enum zTMdl_AniDir {
@@ -33,7 +33,7 @@ enum zTRnd_AlphaBlendFunc {
 	zRND_ALPHA_FUNC_MUL,
 	zRND_ALPHA_FUNC_MUL2,
 	zRND_ALPHA_FUNC_TEST
-}; 
+};
 */
 
 const int ALPHA_FUNC_MAT_DEFAULT	= 0;
@@ -44,3 +44,9 @@ const int ALPHA_FUNC_SUB		= 4;
 const int ALPHA_FUNC_MUL		= 5;
 const int ALPHA_FUNC_MUL2		= 6;
 const int ALPHA_FUNC_TEST		= 7;
+
+
+const int MAX_SPL_LEVEL          = 20;
+const int VFX_MAX_POS_SAMPLES    = 10;
+const int VFX_NUM_USERSTRINGS    = 3;
+const float VFX_LIFESPAN_FOREVER = -1;
