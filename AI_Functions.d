@@ -705,3 +705,23 @@ func void AI_DropVobPtr (var int slfInstance, var int vobPtr) {
 	//Add new msg to Event Manager
 	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
+
+/*
+ *	AI_WhirlAroundToPos
+ *	 - same as AI_WhirlAround, but allows us to use position
+ */
+func void AI_WhirlAroundToPos (var int slfinstance, var int posPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!posPtr) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_WHIRLAROUND, "", 0, posPtr, mkf (0), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
