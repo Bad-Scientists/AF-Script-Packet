@@ -5,7 +5,7 @@
 func int oCNpc_GetWeaponPtr (var int slfInstance) {
 	//0x006943F0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
 	const int oCNpc__GetWeapon_G1 = 6898672;
-	
+
 	//0x007377A0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
 	const int oCNpc__GetWeapon_G2 = 7567264;
 
@@ -32,7 +32,7 @@ func int oCNpc_GetWeaponPtr (var int slfInstance) {
 func int oCNpc_RemoveFromInvByPtr (var int slfInstance, var int itemPtr, var int qty) {
 	//0x006A5260 public: class oCItem * __thiscall oCNpc::RemoveFromInv(class oCItem *,int)
 	const int oCNpc__RemoveFromInv_G1 = 6967904;
-	
+
 	//0x007495A0 public: class oCItem * __thiscall oCNpc::RemoveFromInv(class oCItem *,int)
 	const int oCNpc__RemoveFromInv_G2 = 7640480;
 
@@ -63,7 +63,7 @@ func int oCNpc_RemoveFromInvByPtr (var int slfInstance, var int itemPtr, var int
 func int oCNpc_PutInInvPtr (var int slfInstance, var int itemPtr) {
 	//0x006A4FF0 public: class oCItem * __thiscall oCNpc::PutInInv(class oCItem *)
 	const int oCNpc__PutInInv_G1 = 6967280;
-	
+
 	//0x00749350 public: class oCItem * __thiscall oCNpc::PutInInv(class oCItem *)
 	const int oCNpc__PutInInv_G2 = 7639888;
 
@@ -95,7 +95,7 @@ func void oCNPC_EquipPtr (var int slfInstance, var int itemPtr) {
 
 	//0x00739C90 public: void __thiscall oCNpc::Equip(class oCItem *)
 	const int oCNPC__Equip_G2 = 7576720;
-	
+
 	if (!itemPtr) { return; };
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
@@ -119,7 +119,7 @@ func void oCNPC_EquipPtr (var int slfInstance, var int itemPtr) {
 func void oCNPC_UnequipItemPtr (var int slfInstance, var int itemPtr){
 	//0x0068FBC0 public: void __thiscall oCNpc::UnequipItem(class oCItem *)
 	const int oCNPC__UnequipItem_G1 = 6880192;
-	
+
 	//0x007326C0 public: void __thiscall oCNPC::UnequipItem(class oCItem *)
 	const int oCNPC__UnequipItem_G2 = 7546560;
 
@@ -145,10 +145,10 @@ func void oCNPC_UnequipItemPtr (var int slfInstance, var int itemPtr){
 func int oCNpc_GetEquippedMeleeWeapon (var int npcInstance){
 	//0x00694580 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G1 = 6899072;
-	
-	//0x00737930 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void) 
+
+	//0x00737930 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G2 = 7567664;
-	
+
 	var oCNPC slf; slf = Hlp_GetNPC (npcInstance);
 	if (!slf) { return 0; };
 
@@ -175,12 +175,12 @@ func int oCNpc_PutInInvPtrAmount (var int npcInstance, var int itemPtr, var int 
 
 	//0x007494C0 public: class oCItem * __thiscall oCNpc::PutInInv(int,int)
 	const int oCNpc__PutInInv_G2 = 7640256;
-	
+
 	if (!itemPtr) { return 0; };
 
 	var oCNPC slf; slf = Hlp_GetNPC (npcInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	
+
 	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
@@ -203,7 +203,7 @@ func int oCNpc_PutInInvPtrAmount (var int npcInstance, var int itemPtr, var int 
 func int oCNpc_GetFromInv (var int slfInstance, var int itemInstance, var int qty) {
 	//0x006A4E20 public: class oCItem * __thiscall oCNpc::GetFromInv(int,int)
 	const int oCNpc__GetFromInv_G1 = 6966816;
-	
+
 	//0x00749180 public: class oCItem * __thiscall oCNpc::GetFromInv(int,int)
 	const int oCNpc__GetFromInv_G2 = 7639424;
 
@@ -227,7 +227,7 @@ func int oCNpc_GetFromInv (var int slfInstance, var int itemInstance, var int qt
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
 	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
 	const int oCNpc__SwitchToCategory_G1 = 6741600;
-	
+
 	//There is no G2A function
 	const int oCNpc__SwitchToCategory_G2 = 0;
 

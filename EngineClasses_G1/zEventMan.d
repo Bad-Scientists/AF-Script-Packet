@@ -520,9 +520,9 @@ class oCMsgConversation {
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
-	//int highPriority : 1;
-	//int deleted      : 1;
-	//int inUse        : 1;
+	//int highPriority : 1;	1
+	//int deleted      : 1;	2
+	//int inUse        : 1;	4
 	var int bitfield_oCNpcMessage;	//64
 
 /*

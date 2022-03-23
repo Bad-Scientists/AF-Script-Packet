@@ -1,4 +1,4 @@
-/*
+	/*
  *	These are some useful engine ANIMATION functions
  *	by Milgos, Fawkes and Auronen
  */
@@ -158,10 +158,10 @@ func void zCModel_StartAni_ByAniID (var int modelPtr, var int aniID, var int sta
  */
 func int zCModel_GetActiveAni (var int modelPtr, var int modelAniPtr) { //zCModelAniActive *
 	//0x00560DD0 public: class zCModelAniActive * __thiscall zCModel::GetActiveAni(class zCModelAni *)const
-	const int zCModel_GetActiveAni_G1 = 5639632;
+	const int zCModel__GetActiveAni_G1 = 5639632;
 
 	//0x0057ABA0 public: class zCModelAniActive * __thiscall zCModel::GetActiveAni(class zCModelAni *)const
-	const int zCModel_GetActiveAni_G2 = 5745568;
+	const int zCModel__GetActiveAni_G2 = 5745568;
 
 	// checks
 	if (!modelPtr) { return 0; };
@@ -173,7 +173,7 @@ func int zCModel_GetActiveAni (var int modelPtr, var int modelAniPtr) { //zCMode
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (modelAniPtr));
 		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel_GetActiveAni_G1, zCModel_GetActiveAni_G2));
+		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel__GetActiveAni_G1, zCModel__GetActiveAni_G2));
 		call = CALL_End();
 	};
 
@@ -188,10 +188,10 @@ func int zCModel_GetActiveAni (var int modelPtr, var int modelAniPtr) { //zCMode
  */
 func int zCModel_GetActiveAni_ByAniID (var int modelPtr, var int aniID) { //zCModelAniActive *
 	//0x00560D90 public: class zCModelAniActive * __thiscall zCModel::GetActiveAni(int)const
-	const int zCModel_GetActiveAni_ByAniID_G1 = 5639568;
+	const int zCModel__GetActiveAni_ByAniID_G1 = 5639568;
 
 	//0x0057AB60 public: class zCModelAniActive * __thiscall zCModel::GetActiveAni(int)const
-	const int zCModel_GetActiveAni_ByAniID_G2 = 5745504;
+	const int zCModel__GetActiveAni_ByAniID_G2 = 5745504;
 
 	// checks
 	if (!modelPtr) { return 0; };
@@ -203,7 +203,7 @@ func int zCModel_GetActiveAni_ByAniID (var int modelPtr, var int aniID) { //zCMo
 	if (CALL_Begin(call)) {
 		CALL_IntParam (_@ (aniID));
 		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel_GetActiveAni_ByAniID_G1, zCModel_GetActiveAni_ByAniID_G2));
+		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel__GetActiveAni_ByAniID_G1, zCModel__GetActiveAni_ByAniID_G2));
 		call = CALL_End();
 	};
 
@@ -653,13 +653,13 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 	var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
 
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID(modelPtr, aniID, 1);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, 1);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
 
 	// set animation direction
-	zCModelAniActive_SetDirection(aniActivePtr, aniDir);
+	zCModelAniActive_SetDirection (aniActivePtr, aniDir);
 
 	// change ani progress to specified value
 	zCModelAniActive_SetProgressPercent (aniActivePtr, aniProgress);

@@ -17,12 +17,12 @@
 	Authors: Auronen & Fawkes
 	Useful print functions
 	Powered by Ikarus and LeGo  // <3
-	
+
 	Usage:
-	
+
 	// for var int
 	MEM_Info(PV("myVar",myVar));
-	
+
 	// for var string
 	MEM_Info(PVs("myVar",myVar));
 */
