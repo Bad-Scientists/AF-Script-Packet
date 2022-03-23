@@ -46,7 +46,6 @@ ScriptBin\trafo.d
 
 ObjectFactory\zCDecal.d
 ObjectFactory\zCMaterial.d
-ObjectFactory\zCTexture.d
 
 ObjectFactory\oCAIVobMove.d
 ObjectFactory\oCAIVobMoveTorch.d
