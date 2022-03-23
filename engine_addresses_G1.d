@@ -374,6 +374,11 @@ const int zCEvMsgCutscene_vtbl		= 8195300;
 //0x007DDC9C const oCMobMsg::`vftable'
 const int oCMobMsg_vtbl			= 8248476;
 
+func int Hlp_Is_oCMobMsg (var int ptr) {
+	if (!ptr) { return 0; };
+	return (MEM_ReadInt (ptr) == oCMobMsg_vtbl);
+};
+
 /*
  *	TriggerChangeLevel event
  */
