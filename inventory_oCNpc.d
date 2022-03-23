@@ -3,11 +3,11 @@
  *		inventory_oCNpc_engine.d
  *
  */
- 
+
 /*
  *	Returns pointer to specific item instance in NPC's inventory
  *		slfInstance		NPC instance
- *		invCat			inventory category	
+ *		invCat			inventory category
  *		itemInstance		item instance
  */
 func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int itemInstance){
@@ -58,7 +58,7 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 	//
 	while (ptr);
 		list = _^ (ptr);
-		
+
 		if (list.data) {
 			itm = _^ (list.data);
 			if (Hlp_GetInstanceID (itm) == itemInstance) {
@@ -88,7 +88,7 @@ func int NPC_HasItemInstanceName (var int slfInstance, var string instanceName) 
 			return (NPC_HasItems (slf, Hlp_GetinstanceID (item)));
 		};
 	};
-	
+
 	return 0;
 };
 
@@ -98,7 +98,7 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCategory,
 
 	var int amount;
 	var int itmInstance;
-	
+
 	var int itmSlot; itmSlot = 0;
 
 	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
@@ -116,9 +116,9 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCategory,
 		};
 
 		var int ptr; ptr = _@ (item);
-		
+
 		var oCItem itm; itm = _^ (ptr);
-		
+
 		if (itm.amount == 1) {
 			oCNPC_UnequipItemPtr (slf, ptr);
 			NPC_RemoveInvItem (slf, itmInstance);
@@ -167,9 +167,9 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 
 	var int amount;
 	var int itmInstance;
-	
+
 	var int itmSlot; itmSlot = 0;
-	
+
 	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 
 	while (amount > 0);
@@ -192,7 +192,7 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 			continue;
 		};
-		
+
 		//Ignore mission items
 		if (!transferMissionItems)
 		&& (item.Flags & ITEM_MISSION)
@@ -210,7 +210,7 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
 			Event_Execute (_NpcTransferItemPrint_Event, itmPtr);
 		};
-		
+
 		if (itm.amount == 1) {
 			CreateInvItem (oth, itmInstance);
 			NPC_RemoveInvItem (slf, itmInstance);
@@ -232,4 +232,34 @@ func void NPC_TransferInventory (var int slfInstance, var int othInstance, var i
 	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_POTION, transferEquippedArmor, transferEquippedItems, transferMissionItems);
 	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_DOC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
 	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MISC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+};
+
+func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCategory) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int amount;
+	var int itmSlot; itmSlot = 0;
+
+	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+
+	//Loop
+	while (amount > 0);
+		oCNPC_UnequipItemPtr (slf, _@ (item));
+
+		itmSlot = itmSlot + 1;
+		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	end;
+
+};
+
+func void NPC_UnEquipInventory (var int slfinstance) {
+	NPC_UnEquipInventoryCategory (slfinstance, INV_WEAPON);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_ARMOR);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_RUNE);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_MAGIC);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_FOOD);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_POTION);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_DOC);
+	NPC_UnEquipInventoryCategory (slfinstance, INV_MISC);
 };
