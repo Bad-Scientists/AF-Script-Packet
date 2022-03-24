@@ -3481,6 +3481,7 @@ func void _hook_oCInformationManager_CollectInfos () {
 
 	InfoManagerLastChoiceSelected = -1;
 
+	var int count; count = 0;
 	var int allDisabled; allDisabled = TRUE;
 
 	while (infoPtr);
@@ -3527,6 +3528,7 @@ func void _hook_oCInformationManager_CollectInfos () {
 							allDisabled = FALSE;
 						};
 					};
+					count += 1;
 				};
 			};
 		};
@@ -3535,7 +3537,8 @@ func void _hook_oCInformationManager_CollectInfos () {
 	end;
 
 	//If all dialogues are disabled - add exit option! (in oCInformationManager::Update, because CollectInfos will remove all choices)
-	if (allDisabled) {
+	//Add exit option - only if there are dialogues!
+	if ((allDisabled) && (count > 0)) {
 		InfoManagerCollectInfosAllDisabled = TRUE;
 	};
 };
