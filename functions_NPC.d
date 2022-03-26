@@ -498,21 +498,112 @@ func void NPC_RemoveTimedOverlay (var int slfInstance, var string testOverlay) {
 	end;
 };
 
-func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
+func int NPC_GetBitfield (var int slfInstance, var int bitfield) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	if (addBitfield & zCVob_bitfield2_sleepingMode) {
-		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 0;
+	//Simple true/false values
+	if (bitfield == oCNpc_bitfield0_showaidebug)
+	|| (bitfield == oCNpc_bitfield0_showNews)
+	|| (bitfield == oCNpc_bitfield0_csAllowedAsRole)
+	|| (bitfield == oCNpc_bitfield0_isSummoned)
+	|| (bitfield == oCNpc_bitfield0_respawnOn)
+	|| (bitfield == oCNpc_bitfield0_movlock)
+	|| (bitfield == oCNpc_bitfield0_drunk)
+	|| (bitfield == oCNpc_bitfield0_mad)
+	|| (bitfield == oCNpc_bitfield0_overlay_wounded)
+	|| (bitfield == oCNpc_bitfield0_inOnDamage)
+	|| (bitfield == oCNpc_bitfield0_autoremoveweapon)
+	|| (bitfield == oCNpc_bitfield0_openinventory)
+	|| (bitfield == oCNpc_bitfield0_askroutine)
+	|| (bitfield == oCNpc_bitfield0_spawnInRange)
+	|| (bitfield == oCNpc_bitfield0_body_TexVarNr)
+	{
+		return (slf.bitfield[0] & bitfield);
 	};
+
+	if (bitfield == oCNpc_bitfield1_body_TexColorNr) //65535
+	|| (bitfield == oCNpc_bitfield1_head_TexVarNr) //4294901760
+	{
+		return (slf.bitfield[1] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield2_teeth_TexVarNr)
+	|| (bitfield == oCNpc_bitfield2_guildTrue)
+	|| (bitfield == oCNpc_bitfield2_drunk_heal)
+	{
+		return (slf.bitfield[2] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield3_mad_heal)
+	|| (bitfield == oCNpc_bitfield3_spells)
+	{
+		return (slf.bitfield[3] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield4_bodyState)
+	{
+		return (slf.bitfield[4] & bitfield);
+	};
+
+	return 0;
 };
 
-func void NPC_RemoveBitfield (var int slfInstance, var int removeBitfield) {
+func void NPC_SetBitfield (var int slfInstance, var int bitfield, var int value) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	if (removeBitfield & zCVob_bitfield2_sleepingMode) {
-		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 1;
+	//Basically true/false values
+	if (bitfield == oCNpc_bitfield0_showaidebug)
+	|| (bitfield == oCNpc_bitfield0_showNews)
+	|| (bitfield == oCNpc_bitfield0_csAllowedAsRole)
+	|| (bitfield == oCNpc_bitfield0_isSummoned)
+	|| (bitfield == oCNpc_bitfield0_respawnOn)
+	|| (bitfield == oCNpc_bitfield0_movlock)
+	|| (bitfield == oCNpc_bitfield0_drunk)
+	|| (bitfield == oCNpc_bitfield0_mad)
+	|| (bitfield == oCNpc_bitfield0_overlay_wounded)
+	|| (bitfield == oCNpc_bitfield0_inOnDamage)
+	|| (bitfield == oCNpc_bitfield0_autoremoveweapon)
+	|| (bitfield == oCNpc_bitfield0_openinventory)
+	|| (bitfield == oCNpc_bitfield0_askroutine)
+	|| (bitfield == oCNpc_bitfield0_spawnInRange)
+	|| (bitfield == oCNpc_bitfield0_body_TexVarNr)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
+
+		slf.bitfield[0] = (slf.bitfield[0] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield1_body_TexColorNr)
+	|| (bitfield == oCNpc_bitfield1_head_TexVarNr)
+	{
+		slf.bitfield[1] = (slf.bitfield[1] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield2_teeth_TexVarNr)
+	|| (bitfield == oCNpc_bitfield2_guildTrue)
+	|| (bitfield == oCNpc_bitfield2_drunk_heal)
+	{
+		slf.bitfield[2] = (slf.bitfield[2] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield3_mad_heal)
+	|| (bitfield == oCNpc_bitfield3_spells)
+	{
+		slf.bitfield[3] = (slf.bitfield[3] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield4_bodyState)
+	{
+		slf.bitfield[4] = (slf.bitfield[4] & ~ bitfield) | value;
+		return;
 	};
 };
 
@@ -1051,6 +1142,28 @@ func string NPC_GetNearestMobNodeName (var int slfInstance, var int mobPtr) {
 	return mobOptPos.nodeName;
 };
 
+func void NPC_SetWalkMode (var int slfInstance, var int walkMode) {
+	//0x006211E0 public: void __thiscall oCAniCtrl_Human::SetWalkMode(int)
+	const int oCAniCtrl_Human__SetWalkMode_G1 = 6427104;
+
+	//0x006A9820 public: void __thiscall oCAniCtrl_Human::SetWalkMode(int)
+	const int oCAniCtrl_Human__SetWalkMode_G2 = 6985760;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!slf.aniCtrl) { return; };
+
+	var int aniCtrl; aniCtrl = slf.aniCtrl;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (walkMode));
+		CALL__thiscall (_@ (aniCtrl), MEMINT_SwitchG1G2 (oCAniCtrl_Human__SetWalkMode_G1, oCAniCtrl_Human__SetWalkMode_G2));
+		call = CALL_End();
+	};
+};
+
 /*
  *	There are several body-states with which we should not change overlays (to sprint mode, or equip torch) ... all hopefully listed here
  */
@@ -1070,4 +1183,16 @@ func int NPC_CanChangeOverlay (var int slfInstance) {
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_MOBINTERACT_INTERRUPT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 
 	return TRUE;
+};
+
+/*
+ *	Function removes specified focus vob pointer
+ */
+func void NPC_RemoveFromFocus (var int slfInstance, var int vobPtr) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (slf.focus_vob == vobPtr) {
+		oCNpc_SetFocusVob (slf, 0);
+	};
 };
