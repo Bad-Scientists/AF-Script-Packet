@@ -188,9 +188,12 @@ func void _hook_oCNpc_DoDropVob () {
 	};
 };
 
-//0x006A61A0 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+//0x006A6270 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
 func void _hook_oCNpc_DropFromSlot () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	if (!MEM_ReadInt (ESP + 4)) { return; };
+
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	if (_DropFromSlot_Event) {
