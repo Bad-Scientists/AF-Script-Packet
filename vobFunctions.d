@@ -1079,11 +1079,62 @@ func void zCRigidBody_SetVelocity (var int rigidBodyPtr, var int vecPtr) {
 	};
 };
 
+func void Vob_SetBitfield (var int vobPtr, var int bitfield, var int value) {
+	if (!vobPtr) { return; };
+	var zCVob vob; vob = _^ (vobPtr);
+
+	//Basically true/false values
+	if (bitfield == zCVob_bitfield0_showVisual)
+	|| (bitfield == zCVob_bitfield0_drawBBox3D)
+	|| (bitfield == zCVob_bitfield0_visualAlphaEnabled)
+	|| (bitfield == zCVob_bitfield0_physicsEnabled)
+	|| (bitfield == zCVob_bitfield0_staticVob)
+	|| (bitfield == zCVob_bitfield0_ignoredByTraceRay)
+	|| (bitfield == zCVob_bitfield0_collDetectionStatic)
+	|| (bitfield == zCVob_bitfield0_collDetectionDynamic)
+	|| (bitfield == zCVob_bitfield0_castDynShadow)
+	|| (bitfield == zCVob_bitfield0_lightColorStatDirty)
+	|| (bitfield == zCVob_bitfield0_lightColorDynDirty)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
+
+		vob.bitfield[0] = (vob.bitfield[0] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield1_isInMovementMode)
+	{
+		vob.bitfield[1] = (vob.bitfield[1] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield2_sleepingMode)
+	|| (bitfield == zCVob_bitfield2_mbHintTrafoLocalConst)
+	|| (bitfield == zCVob_bitfield2_mbInsideEndMovementMethod)
+	{
+		vob.bitfield[2] = (vob.bitfield[2] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield3_visualCamAlign)
+	{
+		vob.bitfield[3] = (vob.bitfield[3] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield4_collButNoMove)
+	|| (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
+	{
+		vob.bitfield[4] = (vob.bitfield[4] & ~ bitfield) | value;
+		return;
+	};
+};
+
 func void _Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
 	if (!vobPtr) { return; };
-
-	var zCVob vob;
-	vob = _^ (vobPtr);
+	var zCVob vob; vob = _^ (vobPtr);
 
 	if (value) {
 		vob.bitfield[4] = (vob.bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive);
