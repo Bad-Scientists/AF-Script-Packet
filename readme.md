@@ -206,6 +206,13 @@ Simple feature that writes all dialogues as LOG_NOTE into player's log.
 
     [![Gothic 1 & 2 Log Dialogues](https://img.youtube.com/vi/RG1UBn53ZpY/0.jpg)](https://www.youtube.com/watch?v=RG1UBn53ZpY)
 
+### Gothic 1 & 2 Spacer spawn
+Spacer allows you to insert NPCs into the `.ZEN` world. However game wont spawn them in the world. With this simple feature hooked spawn function will do just that.
+
+1. Call `G12_SpacerSpawn_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+    [![Gothic 1 & 2 Spacer spawn](https://img.youtube.com/vi/ytQtkdkwtv0/0.jpg)](https://www.youtube.com/watch?v=ytQtkdkwtv0)
+
 ### Gothic 1 & 2 Debugging
 We have added several debugging features. In order to enable these call their respective init functions from `Init_Global();` function  in `Startup.d` file:
 1. Console command `show AI`. Init with `CC_ShowAI_Init ();`
