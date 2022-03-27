@@ -213,6 +213,14 @@ Spacer allows you to insert NPCs into the `.ZEN` world. However game wont spawn 
 
     [![Gothic 1 & 2 Spacer spawn](https://img.youtube.com/vi/ytQtkdkwtv0/0.jpg)](https://www.youtube.com/watch?v=ytQtkdkwtv0)
 
+### Gothic 1 & 2 Fade away
+Gothic engine has built-in most likely unfinished feature - it is able to fade away dead NPCs and remove their bodies.
+
+1. Call `G12_FadeAway_Init ();` from your `Init_Global();` function in `Startup.d` file.
+2. Call `oCNpc_StartFadeAway (self);` on an NPC that you want to fade-away. (for example from ZS_Dead state, or whenever you want :smile:)
+
+    [![Gothic 1 & 2 Fade away](https://img.youtube.com/vi/0MdiT97w59c/0.jpg)](https://www.youtube.com/watch?v=0MdiT97w59c)
+
 ### Gothic 1 & 2 Debugging
 We have added several debugging features. In order to enable these call their respective init functions from `Init_Global();` function  in `Startup.d` file:
 1. Console command `show AI`. Init with `CC_ShowAI_Init ();`
