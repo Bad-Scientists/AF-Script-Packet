@@ -253,14 +253,16 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 	zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[6], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
 
 	//Vob-spot-slotting
-	var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
-	var int vobSpotPtr; vobSpotPtr = Npc_GetFP (slf, "FP_SLOT", mkf (vobTransportCollectVobSlotRange), _@ (pos));
-	if (vobSpotPtr) {
-		if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
-			var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
+	if (vobTransportMode == vobTransportMode_Movement) {
+		var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
+		var int vobSpotPtr; vobSpotPtr = Npc_GetFP (slf, "FP_SLOT", mkf (vobTransportCollectVobSlotRange), _@ (pos));
+		if (vobSpotPtr) {
+			if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
+				var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
 
-			// Update position
-			AlignVobAt(vobPtr, _@(vobSpot.trafoObjToWorld));
+				// Update position
+				AlignVobAt (vobPtr, _@(vobSpot.trafoObjToWorld));
+			};
 		};
 	};
 
