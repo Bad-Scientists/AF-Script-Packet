@@ -229,6 +229,19 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 	//Save BBox
 	var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
 
+	//--> Offset position based on how huge the object is
+	var int minsXZ[3]; MEM_CopyBytes (_@ (bbox.mins), _@ (minsXZ), 12);
+	var int maxsXZ[3]; MEM_CopyBytes (_@ (bbox.maxs), _@ (maxsXZ), 12);
+
+	//we don't care about Y coordinates
+	minsXZ[1] = FLOATNULL;
+	maxsXZ[1] = FLOATNULL;
+
+	var int sizeXZ[3]; SubVectors (_@ (sizeXZ), _@ (minsXZ), _@ (maxsXZ));
+	var int diameter; diameter = zVEC3_LengthApprox (_@ (sizeXZ));
+	delta = addF (delta, divf (diameter, mkf (2)));
+	//<--
+
 	//Move vob to NPC X Y Z coordinates
 	vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
 	vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
