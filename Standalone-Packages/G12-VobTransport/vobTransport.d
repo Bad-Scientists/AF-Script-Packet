@@ -997,10 +997,11 @@ func void FrameFunction__VobTransport () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
 
 	/*	Identification of object which should be moved around
-			prio 1:	focus_vob
-			prio 2: last vobPtr (vobPtrBackup)
-			prio 3: anything in view
-			prio 4: everything else
+			prio 1:	item in right hand
+			prio 2:	focus_vob
+			prio 3: last vobPtr (vobPtrBackup)
+			prio 4: anything in view
+			prio 5: everything else
 	*/
 
 	if (vobTransportMode == vobTransportMode_Init) {
@@ -1012,8 +1013,21 @@ func void FrameFunction__VobTransport () {
 		vobTransportVobPtr = 0;
 		vobTransportElevationLevel = 0;
 
+		//Is there anything in the hand?
+		vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+		if (vobPtr) {
+			//Move around following objects
+			if (FocusVobCanBeSelected__VobTransport (vobPtr)) {
+				//Get pointer of item in hand
+				vobTransportVobPtr = vobPtr;
+
+				//Change vobTransportMode
+				vobTransportMode = vobTransportMode_SelectVob;
+			};
+		};
+
 		//Is there anything in hero's focus ?
-		if (her.focus_vob) {
+		if ((!vobTransportVobPtr) && (her.focus_vob)) {
 			//Move around following objects
 			if (FocusVobCanBeSelected__VobTransport (her.focus_vob)) {
 				//Get pointer of focus_vob
@@ -1097,6 +1111,8 @@ func void FrameFunction__VobTransport () {
 			if (vobTransportVobPtr) {
 				//Select mode - draw BBox and lock hero
 				zCVob_SetDrawBBox3D (vobTransportVobPtr, 1);
+				vobTransportOriginalCollisions = Vob_GetCollBits (vobTransportVobPtr);
+
 				PC_PutInSleepingMode ();
 
 				NPC_ClearAIQueue (hero);
@@ -1131,6 +1147,7 @@ func void FrameFunction__VobTransport () {
 
 						//Add BBox to next vobPtr
 						zCVob_SetDrawBBox3D (vobTransportVobPtr, 1);
+						vobTransportOriginalCollisions = Vob_GetCollBits (vobTransportVobPtr);
 
 						NPC_ClearAIQueue (hero);
 						AI_TurnToVobPtr (hero, vobTransportVobPtr);
@@ -1178,6 +1195,7 @@ func void FrameFunction__VobTransport () {
 
 						//Add BBox to previous vobPtr
 						zCVob_SetDrawBBox3D (vobTransportVobPtr, 1);
+						vobTransportOriginalCollisions = Vob_GetCollBits (vobTransportVobPtr);
 
 						NPC_ClearAIQueue (hero);
 						AI_TurnToVobPtr (hero, vobTransportVobPtr);
@@ -1202,6 +1220,18 @@ func void FrameFunction__VobTransport () {
 
 	if (vobTransportMode == vobTransportMode_SelectConfirm) {
 		if (VobCanBeMovedAround__VobTransport (vobTransportVobPtr)) {
+			//Is this item in hand? If yes - drop from slot (insert into the world) and move around
+			vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+			if ((vobPtr) && (vobPtr == vobTransportVobPtr)) {
+				//Remove from hand
+				//vobTransportVobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
+				vobTransportVobPtr = oCNpc_DropFromSlot (hero, "ZS_RIGHTHAND");
+
+				//Stop item from moving
+				zCVob_SetPhysicsEnabled (vobTransportVobPtr, 0);
+				zCVob_SetSleeping (vobTransportVobPtr, 1);
+			};
+
 			//Cancel selection
 			Vob_CancelSelection (vobTransportVobPtr);
 
