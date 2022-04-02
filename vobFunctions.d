@@ -1040,25 +1040,25 @@ func void Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
 	//Update vob data
 	_Vob_SetDontWriteIntoArchive (vobPtr, value);
 
-	var zCVob vob;
-	vob = _^ (vobPtr);
+	var zCVob vob; vob = _^ (vobPtr);
 
-	//Update child-data
+	//Loop through all child objects
+	var zCTree tree;
 	var int treePtr; treePtr = vob.globalVobTreeNode;
+	if (treePtr) {
+		tree = _^ (treePtr);
+		treePtr = tree.firstChild;
+	};
 
 	//Loop through tree (will this work?)
 	while (treePtr);
-		//Get tree
-		var zCTree tree; tree = _^ (treePtr);
-
-		//Get first child
-		var zCTree child; child = _^ (tree.firstChild);
+		var zCTree child; child = _^ (treePtr);
 
 		//Update data
 		_Vob_SetDontWriteIntoArchive (child.data, value);
 
 		//Get next child
-		treePtr = tree.next;
+		treePtr = child.next;
 	end;
 };
 
