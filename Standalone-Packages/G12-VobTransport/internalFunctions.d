@@ -5,15 +5,19 @@ func int Hlp_Is_zCVob__vobTransport (var int vobPtr) {
 	if (!vobPtr) { return FALSE; };
 
 	//0x007DB44C const zCVob::`vftable'
-	const int zCVob_vtbl_G1 = 8238156;
+	//const int zCVob_vtbl_G1 = 8238156;
 
 	//0x0083997C const zCVob::`vftable'
-	const int zCVob_vtbl_G2 = 8624508;
+	//const int zCVob_vtbl_G2 = 8624508;
 
 	//
-	if (MEM_ReadInt (vobPtr) == MEMINT_SwitchG1G2 (zCVob_vtbl_G1, zCVob_vtbl_G2)) {
+	//if (MEM_ReadInt (vobPtr) == MEMINT_SwitchG1G2 (zCVob_vtbl_G1, zCVob_vtbl_G2)) {
+
+	if (Hlp_Is_zCVob (vobPtr)) {
 		//Not yet supported
 		if (Hlp_Is_zCParticleFX (vobPtr)) { return FALSE; };
+
+		//All other zCVob objects should be supported
 
 		var zCVob vob; vob = _^ (vobPtr);
 		if (vob.type == 0) {
@@ -41,6 +45,6 @@ func int Hlp_Is_zCVob__vobTransport (var int vobPtr) {
 			};
 		};
 	};
-	
+
 	return FALSE;
 };
