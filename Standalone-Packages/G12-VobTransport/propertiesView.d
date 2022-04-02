@@ -304,16 +304,14 @@ func void DisplayProperties__VobTransport () {
 			s_scriptFunc = ConcatStrings ("scriptFunc: ", triggerScript.scriptFunc);
 		};
 
+		//Default - white color
 		var int titleColor; titleColor = RGBA (255, 255, 255, 255);
 
 		//Properties
-		var int s; s = SB_New();
+		var int stringBuilder; stringBuilder = SB_New();
 
 		if (vobTransportMode == vobTransportMode_SelectVob) {
 			s_Title = vobTransportView_TitleSelection;
-
-			SB (vobTransportView_InstructionRotate);
-			SB (Print_LineSeperator);
 
 			SB (vobTransportView_InstructionMove);
 			SB (Print_LineSeperator);
@@ -321,185 +319,73 @@ func void DisplayProperties__VobTransport () {
 			SB (vobTransportView_InstructionClone);
 			SB (Print_LineSeperator);
 
-			SB (vobTransportView_InstructionCancel);
+			SB (vobTransportView_InstructionTransform);
 			SB (Print_LineSeperator);
 
-			SB (vobTransportView_InstructionDelete);
-			SB (Print_LineSeperator);
-		};
+			//-->
+			//These instructions are pretty much pointless - everyone knows this :)
+			//SB (vobTransportView_InstructionDelete);
+			//SB (Print_LineSeperator);
 
-		if (vobTransportMode == vobTransportMode_Transform) {
-			if (vobTransportTransformationMode == vobTransportTransformation_None) {
-				s_Title = vobTransportView_TitleTransform;
+			//SB (vobTransportView_InstructionCancel);
+			//SB (Print_LineSeperator);
+			//<--
 
-				SB (vobTransportView_InstructionConfirm);
-				SB (Print_LineSeperator);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_On) {
-				s_Title = vobTransportView_TitleRotation;
-
-				SB (vobTransportView_InstructionRotateXYZ);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionElevation);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-				s_Title = vobTransportView_TitleRotationX;
-
-				SB (vobTransportView_InstructionStopRotX);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//X - orange
-				titleColor = RGBA (255, 128, 000, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-				s_Title = vobTransportView_TitleRotationY;
-
-				SB (vobTransportView_InstructionStopRotY);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Y - white
-				titleColor = RGBA (255, 255, 255, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-				s_Title = vobTransportView_TitleRotationZ;
-
-				SB (vobTransportView_InstructionStopRotZ);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Z - yellow
-				titleColor = RGBA (255, 255, 000, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
-				s_Title = vobTransportView_TitleElevation;
-
-				SB (vobTransportView_InstructionStopElevation);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionElevationLvl);
-				SBi (vobTransportElevationLevel);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Elevation - light green
-				titleColor = RGBA (102, 255, 178, 255);
-			};
-
-			SetFontColor (titleColor);
+			//Will be displayed only for items (further below)
+			//SB (vobTransportView_InstructionDropItem);
+			//SB (Print_LineSeperator);
 		};
 
 		if (vobTransportMode == vobTransportMode_Movement) {
-			if (vobTransportTransformationMode == vobTransportTransformation_None) {
-				s_Title = vobTransportView_TitleTransform;
+			s_Title = vobTransportView_TitleMovement;
 
-				SB (vobTransportView_InstructionConfirm);
-				SB (Print_LineSeperator);
+			SB (vobTransportView_InstructionConfirm);
+			SB (Print_LineSeperator);
 
-				SB (vobTransportView_InstructionRotate);
-				SB (Print_LineSeperator);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_On) {
-				s_Title = vobTransportView_TitleRotation;
+			SB (vobTransportView_InstructionTransform);
+			SB (Print_LineSeperator);
 
-				SB (vobTransportView_InstructionRotateXYZ);
+			//Align to surface only in case that elevation mode is off ...
+			if (vobTransportAlignToFloor == FALSE) {
+				SB (vobTransportView_InstructionAlign);
 				SB (Print_LineSeperator);
+			} else {
+				SB (vobTransportView_InstructionDontAlign);
+				SB (Print_LineSeperator);
+			};
+		};
 
-				SB (vobTransportView_InstructionElevation);
-				SB (Print_LineSeperator);
+		if (vobTransportMode == vobTransportMode_Transform) {
+			s_Title = vobTransportView_TitleTransform;
 
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-			} else
+			var string s;
+			s = ConcatStrings (vobTransportView_InstructionRotateXYZ, " (");
 			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-				s_Title = vobTransportView_TitleRotationX;
+				s = ConcatStrings (s, "X");
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				s = ConcatStrings (s, "Y");
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				s = ConcatStrings (s, "Z");
+			};
+			s = ConcatStrings (s, ")");
 
-				SB (vobTransportView_InstructionStopRotX);
-				SB (Print_LineSeperator);
+			SB (s);
+			SB (Print_LineSeperator);
 
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
+			SB (vobTransportView_InstructionSpeed);
+			SBi (vobTransportMovementSpeed);
+			SB (Print_LineSeperator);
 
-				//X - orange
+			//X axis
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
 				titleColor = RGBA (255, 128, 000, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-				s_Title = vobTransportView_TitleRotationY;
-
-				SB (vobTransportView_InstructionStopRotY);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Y - white
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
 				titleColor = RGBA (255, 255, 255, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-				s_Title = vobTransportView_TitleRotationZ;
-
-				SB (vobTransportView_InstructionStopRotZ);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Z - yellow
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
 				titleColor = RGBA (255, 255, 000, 255);
-			} else
-			if (vobTransportTransformationMode == vobTransportTransformation_Elevation) {
-				s_Title = vobTransportView_TitleElevation;
-
-				SB (vobTransportView_InstructionStopElevation);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionElevationLvl);
-				SBi (vobTransportElevationLevel);
-				SB (Print_LineSeperator);
-
-				SB (vobTransportView_InstructionSpeed);
-				SBi (vobTransportMovementSpeed);
-				SB (Print_LineSeperator);
-
-				//Elevation - light green
-				titleColor = RGBA (102, 255, 178, 255);
 			};
 
 			SetFontColor (titleColor);
-
-			//Align to surface only in case that elevation mode is off ...
-			if (vobTransportTransformationMode != vobTransportTransformation_Elevation) {
-				if (vobTransportAlignToFloor == FALSE) {
-					SB (vobTransportView_InstructionAlign);
-					SB (Print_LineSeperator);
-				} else {
-					SB (vobTransportView_InstructionDontAlign);
-					SB (Print_LineSeperator);
-				};
-			};
 		};
 
 		if ((vobTransportMode == vobTransportMode_SelectVob) || (vobTransportMode == vobTransportMode_Movement)) {
@@ -581,7 +467,7 @@ func void DisplayProperties__VobTransport () {
 
 		//Header
 		//zcView_SetFontColor (hVobTransportPropertiesViewHeader, titleColor);
-		zcView_SetTextAndFontColor (hVobTransportPropertiesViewHeader, s_Title, spaceWidth * 2, titleColor);
+		zcView_SetTextAndFontColor (hVobTransportPropertiesViewHeader, s_Title, titleColor, spaceWidth * 2);
 
 		SB (Print_LineSeperator);
 		SB (Print_LineSeperator);

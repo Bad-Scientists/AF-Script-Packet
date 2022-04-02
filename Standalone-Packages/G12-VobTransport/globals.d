@@ -16,6 +16,9 @@ var int vobTransportShowcaseVobIndex;
 var int vobTransportShowcaseVobVerticalIndex;
 var int vobTransportShowcaseVobBuyValue;
 
+var int vobTransportVobChanged;
+
+var int lastVobTransportMode;
 var int vobTransportMode;
 	const int vobTransportMode_Idle			= 0;
 	const int vobTransportMode_Init			= 1;
@@ -38,12 +41,9 @@ var int vobTransportActionMode;
 	const int vobTransportActionMode_Edit		= 3;	//Not yet implemented
 
 var int vobTransportTransformationMode;
-	const int vobTransportTransformation_None	= 0;
-	const int vobTransportTransformation_On		= 1;
-	const int vobTransportTransformation_RotX	= 2;
-	const int vobTransportTransformation_RotY	= 3;
-	const int vobTransportTransformation_RotZ	= 4;
-	const int vobTransportTransformation_Elevation	= 5;
+	const int vobTransportTransformation_RotY	= 0;	//Default - rotation on Y axies
+	const int vobTransportTransformation_RotX	= 1;
+	const int vobTransportTransformation_RotZ	= 2;
 
 var int vobTransportAlignToFloor;
 var int vobTransportMovementSpeed;

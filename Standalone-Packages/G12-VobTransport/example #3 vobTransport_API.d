@@ -26,6 +26,8 @@ const int vobTransportBuyVobViewVPosY			= 6600;		//if not defined (-1) then vobT
 const int vobTransportBuyVobView_WidthPxl		= 540;
 const int vobTransportBuyVobView_Lines			= 7;		//7 lines
 
+const int vobTransportAlpha				= 80;
+
 //Interaction prints
 const string vobTransportPrint_BuyVobActivated		= "Select objects which you would like to buy.";
 const string vobTransportPrint_BuyVobNothingToBuy	= "Nothing to buy.";
@@ -39,38 +41,25 @@ const string vobTransportPrint_CannotBeClonedMoved	= "Object cannot be cloned or
 
 //Vob transport modes
 const string vobTransportView_TitleSelection		= "<< Selection mode >>";
- const string vobTransportView_InstructionMove		= "Press M to move.";
- const string vobTransportView_InstructionClone		= "Press L Bracket to clone.";
- const string vobTransportView_InstructionCancel	= "Press R Bracket to cancel.";
- const string vobTransportView_InstructionDelete	= "Press Delete to delete.";
- const string vobTransportView_InstructionDropItem	= "Ctrl + L BRACKET to drop item.";
+ const string vobTransportView_InstructionMove		= "Press C to select";
+ const string vobTransportView_InstructionClone		= "Press Ctrl + C to copy object";
+ const string vobTransportView_InstructionTransform	= "Press Shift + C to enter transform mode";
+ const string vobTransportView_InstructionDelete	= "Press Del to delete object";
+ const string vobTransportView_InstructionCancel	= "Press Esc to cancel selection";
+ const string vobTransportView_InstructionDropItem	= "Press P to apply physics on an item";
+
+const string vobTransportView_TitleMovement		= "<< Movement mode >>";
+ const string vobTransportView_InstructionConfirm	= "Press C to confirm position";
+ //const string vobTransportView_InstructionTransform	= "L Shift + C - transform";
 
 const string vobTransportView_TitleTransform		= "<< Transform mode >>";
- const string vobTransportView_InstructionConfirm	= "Press L Bracket to confirm position.";
- const string vobTransportView_InstructionRotate	= "Press ENTER for Rotation mode.";
-
-const string vobTransportView_TitleRotation		= "<< Rotation mode >>";
- const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z for axis rotation.";
- const string vobTransportView_InstructionElevation	= "Press E for elevation adjustment.";
+ const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z to switch axes";
  const string vobTransportView_InstructionSpeed		= "Press SPACE to adjust speed: ";
 
-const string vobTransportView_TitleRotationX		= "<< Rotation mode >> X axis";
- const string vobTransportView_InstructionStopRotX	= "Press X to stop.";
+ const string vobTransportView_InstructionAlign		= "Press V to align to surface (ON)";
+ const string vobTransportView_InstructionDontAlign	= "Press V to align to surface (OFF)";
 
-const string vobTransportView_TitleRotationY		= "<< Rotation mode >> Y axis";
- const string vobTransportView_InstructionStopRotY	= "Press Y to stop.";
-
-const string vobTransportView_TitleRotationZ		= "<< Rotation mode >> Z axis";
- const string vobTransportView_InstructionStopRotZ	= "Press Z to stop.";
-
-const string vobTransportView_TitleElevation		= "<< Elevation mode >>";
- const string vobTransportView_InstructionStopElevation	= "Press E to stop.";
- const string vobTransportView_InstructionElevationLvl	= "Elevation: ";
-
- const string vobTransportView_InstructionAlign		= "R Bracket - align to surface.";
- const string vobTransportView_InstructionDontAlign	= "R Bracket - don't align to surface.";
-
-const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 462;
+const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 463;
 
 const string VOBTRANSPORT_CANBUY_VOBLIST [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = {
 	"VOB_BUY_FIREPLACE_GROUND",
@@ -602,7 +591,9 @@ const string VOBTRANSPORT_CANBUY_VOBLIST [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = {
 	"VOB_BUY_OC_STAIRS_V3",
 	"VOB_BUY_OC_STAIRS_V5",
 	"VOB_BUY_OC_STAIRS_V10",
-	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+	"VOB_BUY_OC_LOB_STAIRS_ROUND",
+
+	"VOB_BUY_HOUSE_01"
 };
 
 /*
@@ -1157,7 +1148,7 @@ const string VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS [23] = {
 	"VOB_BUY_METALTHORNS_DEADLY"
 };
 
-const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [11] = {
+const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [12] = {
 	"VOB_BUY_ARCH_V1",
 	"VOB_BUY_ARCH_V2",
 	"VOB_BUY_BOOKSHELF_V1",
@@ -1169,7 +1160,8 @@ const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [11] = {
 	"VOB_BUY_OC_STAIRS_V3",
 	"VOB_BUY_OC_STAIRS_V5",
 	"VOB_BUY_OC_STAIRS_V10",
-	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+	"VOB_BUY_OC_LOB_STAIRS_ROUND",
+	"VOB_BUY_HOUSE_01"
 };
 
 func int BuildBuyVobListGetCategoryCount () {
@@ -1193,7 +1185,7 @@ func int BuildBuyVobListGetCategoryCount () {
 	if (vobTransportShowcaseVobVerticalIndex == 13) { return 15; };	//VOBTRANSPORT_CANBUY_VOBLIST_STONES
 	if (vobTransportShowcaseVobVerticalIndex == 14) { return 45; };	//VOBTRANSPORT_CANBUY_VOBLIST_STATUES
 	if (vobTransportShowcaseVobVerticalIndex == 15) { return 23; };	//VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS
-	if (vobTransportShowcaseVobVerticalIndex == 16) { return 11; };	//VOBTRANSPORT_CANBUY_VOBLIST_OTHERS
+	if (vobTransportShowcaseVobVerticalIndex == 16) { return 12; };	//VOBTRANSPORT_CANBUY_VOBLIST_OTHERS
 
 	return 0;
 };
