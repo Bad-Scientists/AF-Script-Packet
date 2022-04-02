@@ -62,16 +62,6 @@ const int zCTrigger__OnTouch = 6358592;
 //0x00610660 public: virtual void __thiscall zCTrigger::OnUntouch(class zCVob *)
 const int zCTrigger__OnUntouch = 6358624;
 
-func int Hlp_Is_zCTrigger (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCTrigger_vtbl);
-};
-
-func int Hlp_Is_oCTriggerScript (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
-};
-
 /*
  *	Enable Player States
  */
@@ -191,26 +181,11 @@ const int zCEventMessage_vtbl		= 8578908;
 //0x0083E23C const zCEventManager::`vftable'
 const int zCEventManager_vtbl		= 8643132;
 
-func int Hlp_Is_zCEventManager (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
-};
-
 //0x0082EA4C const zCCSCutsceneContext::`vftable'
 const int zCCSCutsceneContext_vtbl	= 8579660;
 
-func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
-};
-
 //0x0083DA8C const oCNpcMessage::`vftable'
 const int oCNpcMessage_vtbl		= 8641164;
-
-func int Hlp_Is_oCNpcMessage (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
-};
 
 //0x0083DAFC const oCMsgDamage::`vftable'
 const int oCMsgDamage_vtbl		= 8641276;
@@ -224,11 +199,6 @@ const int oCMsgMovement_vtbl		= 8641500;
 //0x0083DC4C const oCMsgAttack::`vftable'
 const int oCMsgAttack_vtbl		= 8641612;
 
-func int Hlp_Is_oCMsgAttack (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgAttack_vtbl);
-};
-
 //0x0083DCBC const oCMsgUseItem::`vftable'
 const int oCMsgUseItem_vtbl		= 8641724;
 
@@ -238,26 +208,11 @@ const int oCMsgState_vtbl		= 8641836;
 //0x0083DD9C const oCMsgManipulate::`vftable'
 const int oCMsgManipulate_vtbl		= 8641948;
 
-func int Hlp_Is_oCMsgManipulate (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
-};
-
 //0x0083DE0C const oCMsgConversation::`vftable'
 const int oCMsgConversation_vtbl	= 8642060;
 
-func int Hlp_Is_oCMsgConversation (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
-};
-
 //0x0083DE7C const oCMsgMagic::`vftable'
 const int oCMsgMagic_vtbl		= 8642172;
-
-func int Hlp_Is_oCMsgMagic (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgMagic_vtbl);
-};
 
 //0x0083AF34 const zCEventMusicControler::`vftable'
 const int zCEventMusicControler_vtbl	= 8630068;
@@ -278,11 +233,6 @@ const int zCEvMsgCutscene_vtbl		= 8580372;
 
 //0x0083D474 const oCMobMsg::`vftable'
 const int oCMobMsg_vtbl			= 8639604;
-
-func int Hlp_Is_oCMobMsg (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMobMsg_vtbl);
-};
 
 /*
  *	TriggerChangeLevel event
@@ -333,43 +283,17 @@ const int zCDecal_vtbl = 8593540;
 //0x0083E434 const zCVobSpot::`vftable'
 const int zCVobSpot_vtbl = 8643636;
 
-func int Hlp_Is_zCVobSpot (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
-};
-
 //0x0083C574 const oCStealContainer::`vftable'
 const int oCStealContainer_vtbl = 8635764;
-
-func int Hlp_Is_oCStealContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
-};
-
 //0x0083C4AC const oCItemContainer::`vftable'
 const int oCItemContainer_vtbl = 8635564;
 
-func int Hlp_Is_oCItemContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
-};
 
 //0x0083C644 const oCNpcContainer::`vftable'
 const int oCNPCContainer_vtbl = 8635972;
 
-func int Hlp_Is_oCNpcContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
-};
-
 //0x0083C714 const oCNpcInventory::`vftable'
 const int oCNpcInventory_vtbl = 8636180;
-
-func int Hlp_Is_oCNpcInventory (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
-};
-
 
 //========================================
 // Interface scaling

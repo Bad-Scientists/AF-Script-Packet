@@ -126,16 +126,6 @@ const int zCTrigger__OnTouch = 6174672;
 //0x005E37F0 public: virtual void __thiscall zCTrigger::OnUntouch(class zCVob *)
 const int zCTrigger__OnUntouch = 6174704;
 
-func int Hlp_Is_zCTrigger (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCTrigger_vtbl);
-};
-
-func int Hlp_Is_oCTriggerScript (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
-};
-
 /*
  *	Enable Player States
  */
@@ -280,26 +270,11 @@ const int zCEventMessage_vtbl		= 8193876;
 //0x007DE97C const zCEventManager::`vftable'
 const int zCEventManager_vtbl		= 8251772;
 
-func int Hlp_Is_zCEventManager (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
-};
-
 //0x007D0A24 const zCCSCutsceneContext::`vftable'
 const int zCCSCutsceneContext_vtbl	= 8194596;
 
-func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
-};
-
 //0x007DE28C const oCNpcMessage::`vftable'
 const int oCNpcMessage_vtbl		= 8249996;
-
-func int Hlp_Is_oCNpcMessage (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
-};
 
 //0x007DE2F4 const oCMsgDamage::`vftable'
 const int oCMsgDamage_vtbl		= 8250100;
@@ -313,11 +288,6 @@ const int oCMsgMovement_vtbl		= 8250308;
 //0x007DE42C const oCMsgAttack::`vftable'
 const int oCMsgAttack_vtbl		= 8250412;
 
-func int Hlp_Is_oCMsgAttack (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgAttack_vtbl);
-};
-
 //0x007DE494 const oCMsgUseItem::`vftable'
 const int oCMsgUseItem_vtbl		= 8250516;
 
@@ -327,31 +297,11 @@ const int oCMsgState_vtbl		= 8250620;
 //0x007DE564 const oCMsgManipulate::`vftable'
 const int oCMsgManipulate_vtbl		= 8250724;
 
-func int Hlp_Is_oCMsgManipulate (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
-};
-
 //0x007DE5CC const oCMsgConversation::`vftable'
 const int oCMsgConversation_vtbl	= 8250828;
 
-func int Hlp_Is_oCMsgConversation (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
-};
-
-func int Hlp_Is_oCMsgMovement (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgMovement_vtbl);
-};
-
 //0x007DE634 const oCMsgMagic::`vftable'
 const int oCMsgMagic_vtbl		= 8250932;
-
-func int Hlp_Is_oCMsgMagic (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgMagic_vtbl);
-};
 
 //0x007DEDDC const zCEventMusicControler::`vftable'
 const int zCEventMusicControler_vtbl	= 8252892;
@@ -373,11 +323,6 @@ const int zCEvMsgCutscene_vtbl		= 8195300;
 
 //0x007DDC9C const oCMobMsg::`vftable'
 const int oCMobMsg_vtbl			= 8248476;
-
-func int Hlp_Is_oCMobMsg (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMobMsg_vtbl);
-};
 
 /*
  *	TriggerChangeLevel event
@@ -429,43 +374,17 @@ const int zCSkyControler_Outdoor__RenderSkyPre = 6031616;
 //0x007DCDFC const oCItemContainer::`vftable'
 const int oCItemContainer_vtbl = 8244732;
 
-func int Hlp_Is_oCItemContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
-};
-
 //0x007DCEA4 const oCStealContainer::`vftable'
 const int oCStealContainer_vtbl = 8244900;
-
-func int Hlp_Is_oCStealContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
-};
 
 //0x007DCF54 const oCNpcContainer::`vftable'
 const int oCNPCContainer_vtbl = 8245076;
 
-func int Hlp_Is_oCNpcContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
-};
-
 //0x007DD004 const oCNpcInventory::`vftable'
 const int oCNpcInventory_vtbl = 8245252;
 
-func int Hlp_Is_oCNpcInventory (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
-};
-
 //0x007DEB3C const zCVobSpot::`vftable'
 const int zCVobSpot_vtbl = 8252220;
-
-func int Hlp_Is_zCVobSpot (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
-};
-
 
 //========================================
 // Interface scaling

@@ -12,42 +12,6 @@ const int zSND_LOOPING_DISABLED = 2;
 var int zSound;
 var int activeSndList;
 
-/*
- *	Seems like when sound is enabled, then zSound address points to zCSndSys_MSS object, when it is disabled it points to zCSoundSystemDummy
- *	If we try to play any sound using zCSndSys_MSS functions and sound is disabled then game crashes
- *	Therefore we have to add check to every function and check if Hlp_Is_zCSndSys_MSS (zSound) is true
- */
-func int Hlp_Is_zCSndSys_MSS (var int snd) {
-	//0x007D306C const zCSndSys_MSS::`vftable'
-	const int zCSndSys_MSS_vtbl_G1 = 8204396;
-
-	//0x0083120C const zCSndSys_MSS::`vftable'
-	const int zCSndSys_MSS_vtbl_G2 = 8589836;
-
-	if (!snd) { return FALSE; };
-
-	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSndSys_MSS_vtbl_G1, zCSndSys_MSS_vtbl_G2))) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCSoundSystemDummy (var int snd) {
-	//0x007DC134 const zCSoundSystemDummy::`vftable'
-	const int zCSoundSystemDummy_vtbl_G1 = 8241460;
-
-	//0x0083A6A4 const zCSoundSystemDummy::`vftable'
-	const int zCSoundSystemDummy_vtbl_G2 = 8627876;
-
-	if (!snd) { return FALSE; };
-	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSoundSystemDummy_vtbl_G1, zCSoundSystemDummy_vtbl_G2))) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
 func void MEM_InitSound () {
 	//0x008CEE4C class zCSoundSystem * zsound
 	const int zCSoundSystem__Address_G1 = 9236044;
