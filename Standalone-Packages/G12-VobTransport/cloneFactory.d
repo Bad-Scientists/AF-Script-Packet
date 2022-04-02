@@ -155,7 +155,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 	*/
 	//zCDecal (TGA textures)
-	if (Hlp_Is_zCDecal (vobPtr)) {
+	if (Hlp_VobVisual_Is_zCDecal (vobPtr)) {
 		vob = _^ (vobPtr);
 		decal = _^ (vob.visual);
 
