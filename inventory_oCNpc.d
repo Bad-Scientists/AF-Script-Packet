@@ -270,3 +270,109 @@ func void NPC_UnEquipInventory (var int slfinstance) {
 	NPC_UnEquipInventoryCategory (slfinstance, INV_DOC);
 	NPC_UnEquipInventoryCategory (slfinstance, INV_MISC);
 };
+
+/*
+ *	NPC_InventoryIsEmpty
+ *	 - function checks whether inventory is empty
+ */
+func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int ignoreMainFlags, var int ignoreArmor) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	var oCItem itm;
+	var zCListSort list;
+
+	var int noOfCategories;
+	var int offset;
+	var int ptr;
+
+	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
+	if (GOTHIC_BASE_VERSION == 1) {
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
+		noOfCategories = INV_CAT_MAX;
+	} else {
+		offset = 1816;						// 0x0718 zCListSort<oCItem>*
+		noOfCategories = 1;
+	};
+
+	//NPC_GetArmor requires C_NPC ... ;-/
+	var C_NPC _slf; _slf = Hlp_GetNpc (slf);
+	var int armorID; armorID = NPC_GetArmor (_slf);
+
+	repeat (invCat, noOfCategories); var int invCat;
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, invCat);
+		ptr = MEM_ReadInt (_@ (slf) + offset + (12 * invCat));
+
+		while (ptr);
+			list = _^ (ptr);
+
+			if (list.data) {
+				itm = _^ (list.data);
+				if ((itm.Flags & ignoreFlags) || (itm.MainFlag & ignoreMainFlags) || ((invCat == INV_ARMOR) && (armorID == Hlp_GetInstanceID (itm)) && (ignoreArmor))) {
+					ptr = list.next;
+					continue;
+				};
+
+				return FALSE;
+			};
+
+			ptr = list.next;
+		end;
+	end;
+
+	return TRUE;
+};
+
+/*
+ *	NPC_HasMissionItem
+ *	 - checks whether NPC has any mission items
+ *	 - adding here as an alternative, because we are replacing engine version of function oCNpc::HasMissionItem!
+ */
+func int NPC_HasMissionItem (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	var oCItem itm;
+	var zCListSort list;
+
+	var int noOfCategories;
+	var int offset;
+	var int ptr;
+
+	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
+	if (GOTHIC_BASE_VERSION == 1) {
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
+		noOfCategories = INV_CAT_MAX;
+	} else {
+		offset = 1816;						// 0x0718 zCListSort<oCItem>*
+		noOfCategories = 1;
+	};
+
+	//NPC_GetArmor requires C_NPC ... ;-/
+	var C_NPC _slf; _slf = Hlp_GetNpc (slf);
+	var int armorID; armorID = NPC_GetArmor (_slf);
+
+	repeat (invCat, noOfCategories); var int invCat;
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, invCat);
+		ptr = MEM_ReadInt (_@ (slf) + offset + (12 * invCat));
+
+		while (ptr);
+			list = _^ (ptr);
+
+			if (list.data) {
+				itm = _^ (list.data);
+				if (itm.mainflag & ITEM_MISSION) {
+					return TRUE;
+				};
+			};
+
+			ptr = list.next;
+		end;
+	end;
+
+	return FALSE;
+};
