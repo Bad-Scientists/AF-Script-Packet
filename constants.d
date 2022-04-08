@@ -50,3 +50,8 @@ const int MAX_SPL_LEVEL          = 20;
 const int VFX_MAX_POS_SAMPLES    = 10;
 const int VFX_NUM_USERSTRINGS    = 3;
 const float VFX_LIFESPAN_FOREVER = -1;
+
+const int ITM_STATE_MAX       = 4;
+//const int ITM_TEXT_MAX        = 6;
+const int ITM_COND_MAX        = 3;
+
