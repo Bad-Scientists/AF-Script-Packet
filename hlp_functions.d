@@ -390,6 +390,16 @@ func int Hlp_Is_zCVobWaypoint (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCVobWaypoint__classDef_G1, zCVobWaypoint__classDef_G2));
 };
 
+func int Hlp_Is_zCVobAnimate (var int ptr) {
+	//0x008D7C58 private: static class zCClassDef zCVobAnimate::classDef
+	const int zCVobAnimate__classDef_G1 = 9272408;
+
+	//0x009A3E50 private: static class zCClassDef zCVobAnimate::classDef
+	const int zCVobAnimate__classDef_G2 = 10108496;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCVobAnimate__classDef_G1, zCVobAnimate__classDef_G2));
+};
+
 /*
  *	We don't have class definitions for these hmmmm ...
  */
