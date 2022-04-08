@@ -16,10 +16,13 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
 	var oCItem itm;
 	var zCListSort list;
 
-	var int ptr; ptr = 0;
+	var int offset;
+	var int ptr;
 
 	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
 	if (GOTHIC_BASE_VERSION == 1) {
@@ -46,16 +49,20 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 			var int    inventory2_inventory7_next;		// 0x064C zCListSort<oCItem>*
 			var int    inventory2_inventory8_next;		// 0x0658 zCListSort<oCItem>*
 		*/
-		ptr = MEM_ReadInt (_@ (slf) + 1528 + (12 * invCat));	// 0x05F8
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
 	} else {
 		/*
 		G2A oCNPC - inventory offset
 			var int    inventory2_inventory_next;		// 0x0718 zCListSort<oCItem>*
 		*/
 		//G2A has single inventory
-		ptr = MEM_ReadInt (_@ (slf) + 1816);			// 0x0718
+		offset = 1816;
 	};
-	//
+
+	oCNpcInventory_UnpackCategory (npcInventoryPtr, invCat);
+
+	ptr = MEM_ReadInt (_@ (slf) + offset + (12 * invCat));
+
 	while (ptr);
 		list = _^ (ptr);
 
