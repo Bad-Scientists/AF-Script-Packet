@@ -73,3 +73,68 @@ func int oCSpawnManager_InsertNpc (var int slfPtr, var int posPtr) {
 
 	return CALL_RetValAsInt ();
 };
+
+/*
+ *	Set spawn time
+ */
+func void oCSpawnManager_SetSpawnTime (var int f) {
+	//0x006CF610 public: static void __cdecl oCSpawnManager::SetSpawnTime(float)
+	const int oCSpawnManager__SetSpawnTime_G1 = 7140880;
+
+	//0x00777860 public: static void __cdecl oCSpawnManager::SetSpawnTime(float)
+	const int oCSpawnManager__SetSpawnTime_G2 = 7829600;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (f));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__SetSpawnTime_G1, oCSpawnManager__SetSpawnTime_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	Get spawn time
+ */
+func int oCSpawnManager_GetSpawnTime () {
+	//0x006CF620 public: static float __cdecl oCSpawnManager::GetSpawnTime(void)
+	const int oCSpawnManager__GetSpawnTime_G1 = 7140896;
+
+	//0x00777870 public: static float __cdecl oCSpawnManager::GetSpawnTime(void)
+	const int oCSpawnManager__GetSpawnTime_G2 = 7829616;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetSpawnTime_G1, oCSpawnManager__GetSpawnTime_G2));
+		call = CALL_End ();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	Get spawn node for specific NPC
+ */
+func int oCSpawnManager_GetNodePtr (var int npcPtr) {
+	if (!MEM_SpawnManager.spawnList_array) { return 0; };
+	if (!MEM_SpawnManager.spawnList_numInArray) { return 0; };
+
+	repeat (i, MEM_SpawnManager.spawnList_numInArray); var int i;
+		var int spawnNodePtr; spawnNodePtr = MEM_ReadIntArray (MEM_SpawnManager.spawnList_array, i);
+		if (spawnNodePtr) {
+			//NPC pointer is @ offset 0, we don't really need to converr pointer to oSSpawnNode object
+
+			//var oSSpawnNode spawnNode; spawnNode = _^ (spawnNodePtr);
+			//if (npcPtr == spawnNode.npc) {
+			//	return spawnNodePtr;
+			//};
+			if (MEM_ReadInt (spawnNodePtr) == npcPtr) {
+				return spawnNodePtr;
+			};
+		};
+	end;
+
+	return 0;
+};
