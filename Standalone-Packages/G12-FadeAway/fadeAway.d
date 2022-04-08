@@ -21,6 +21,7 @@
  *	We have to define this ZS state - as long as it is running (_LOOP function returns LOOP_CONTINUE) engine function oCAIHuman::DoAI will be active
  */
 func void ZS_FadeAway () {
+	Npc_SetPercTime (self, 1);
 };
 
 func int ZS_FadeAway_Loop () {
