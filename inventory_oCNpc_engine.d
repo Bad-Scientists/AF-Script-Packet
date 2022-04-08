@@ -291,3 +291,29 @@ func int oCNpc_RemoveFromSlot_Fixed (var int slfInstance, var string slotName, v
 
 	return CALL_RetValAsPtr ();
 };
+
+/*
+ *	oCNpcInventory_UnpackCategory
+ *	 - in case of G2A inventory category is redundant
+ */
+func void oCNpcInventory_UnpackCategory (var int npcInventoryPtr, var int invCategory) {
+	//0x0066FAD0 public: void __thiscall oCNpcInventory::UnpackCategory(int)
+	const int oCNpcInventory__UnpackCategory_G1 = 6748880;
+
+	//0x0070F620 public: void __thiscall oCNpcInventory::UnpackCategory(void)
+	const int oCNpcInventory__UnpackCategory_G2 = 7403040;
+
+	if (!npcInventoryPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		if (MEMINT_SwitchG1G2 (1, 0)) {
+			CALL_IntParam (_@ (invCategory));
+		};
+		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__UnpackCategory_G1, oCNpcInventory__UnpackCategory_G2));
+		call = CALL_End();
+	};
+};
+
+//0x0066C610 public: class oCItem * __thiscall oCNpcInventory::GetItem(int,int)
+//0x0070C450 public: class oCItem * __thiscall oCNpcInventory::GetItem(int)
