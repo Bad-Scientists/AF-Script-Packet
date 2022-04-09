@@ -1095,6 +1095,13 @@ func void zCVob_SetBBox3DLocal (var int vobPtr, var int bboxPtr) {
 	};
 };
 
+func int zCVob_GetBBox3DWorld (var int vobPtr) {
+	if (!vobPtr) { return 0; };
+
+	var zCVob vob; vob = _^ (vobPtr);
+	return _@ (vob.bbox3D_mins[0]);
+};
+
 func int zCVob_GetDistanceToVob (var int vobPtr1, var int vobPtr2) {
 	//0x005EE400 public: float __thiscall zCVob::GetDistanceToVob(class zCVob &)
 	const int zCVob__GetDistanceToVob_G1 = 6218752;
