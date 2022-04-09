@@ -41,12 +41,12 @@ func void oCItem_SetLightingSwell (var int itemPtr, var int value) {
 func int oCItem_HasFlag (var int itemPtr, var int flag){
 	//0x00671FC0 public: int __thiscall oCItem::HasFlag(int)
 	const int oCItem__HasFlag_G1 = 6758336;
-	
+
 	//0x007126D0 public: int __thiscall oCItem::HasFlag(int)
 	const int oCItem__HasFlag_G2 = 7415504;
 
 	if (!itemPtr) { return 0; };
-	
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_IntParam (_@ (flag));
@@ -65,10 +65,10 @@ func int oCItem_HasFlag (var int itemPtr, var int flag){
 func void oCItem_SetFlag (var int itemPtr, var int flag){
 	//0x00672000 public: void __thiscall oCItem::SetFlag(int)
 	const int oCItem__SetFlag_G1 = 6758400;
-	
+
 	//0x00712710 public: void __thiscall oCItem::SetFlag(int)
 	const int oCItem__SetFlag_G2 = 7415568;
-	
+
 	if (!itemPtr) { return; };
 
 	const int call = 0;
@@ -87,10 +87,10 @@ func void oCItem_SetFlag (var int itemPtr, var int flag){
 func void oCItem_ClearFlag (var int itemPtr, var int flag){
 	//0x00671FE0 public: void __thiscall oCItem::ClearFlag(int)
 	const int oCItem__ClearFlag_G1 = 6758368;
-	
+
 	//0x007126F0 public: void __thiscall oCItem::ClearFlag(int)
 	const int oCItem__ClearFlag_G2 = 7415536;
-	
+
 	if (!itemPtr) { return; };
 
 	const int call = 0;
@@ -109,7 +109,7 @@ func void oCItem_ClearFlag (var int itemPtr, var int flag){
 func int oCItem_SplitItemPtr (var int itemPtr, var int qty){
 	//0x00672440 public: class oCItem * __thiscall oCItem::SplitItem(int)
 	const int oCItem__SplitItem_G1 = 6759488;
-	
+
 	//0x00712BA0 public: class oCItem * __thiscall oCItem::SplitItem(int)
 	const int oCItem__SplitItem_G2 = 7416736;
 
@@ -129,7 +129,7 @@ func string GetItemTextByIndex (var int itemPtr, var int index) {
 	if (!Hlp_Is_oCItem (itemPtr)) { return ""; };
 
 	//Safety check for index boundaries
-	if ((index < 0) || (index > 5)) { return ""; };
+	if ((index < 0) || (index >= ITM_TEXT_MAX)) { return ""; };
 
 	var oCItem itm; itm = _^ (itemPtr);
 
@@ -147,4 +147,26 @@ func int GetItemCountValue (var int itemPtr, var string text) {
 	end;
 
 	return 0;
+};
+
+func int oCItem_GetCondAttr (var int itemPtr, var int index) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	//Safety check for index boundaries
+	if ((index < 0) || (index >= ITM_COND_MAX)) { return 0; };
+
+	var oCItem itm; itm = _^ (itemPtr);
+
+	return MEM_ReadIntArray (_@(itm.cond_atr[0]), index);
+};
+
+func int oCItem_GetCondValue (var int itemPtr, var int index) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	//Safety check for index boundaries
+	if ((index < 0) || (index >= ITM_COND_MAX)) { return 0; };
+
+	var oCItem itm; itm = _^ (itemPtr);
+
+	return MEM_ReadIntArray (_@(itm.cond_value[0]), index);
 };
