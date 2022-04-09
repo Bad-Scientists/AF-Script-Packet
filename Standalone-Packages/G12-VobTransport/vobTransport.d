@@ -214,6 +214,222 @@ func int Npc_GetFP (var int slfInstance, var string freepointName, var int distF
 	return firstPtr;
 };
 
+func void CreateWaypoints__VobTransport (var int vobPtr) {
+	var int trafo[16];
+
+	if (!vobPtr) { return; };
+
+	//Is there any node for waypoints (starts with ZS_WP0) ?
+	if (zCVob_GetTrafoModelNode (vobPtr, "ZS_WP0", _@ (trafo))) {
+		var zCVob vob; vob = _^ (vobPtr);
+
+		var int i; i = 0;
+
+		var string waypointName;
+		waypointName = "WP_";
+		waypointName = ConcatStrings (waypointName, vob._zCObject_objectName);
+		waypointName = ConcatStrings (waypointName, "_");
+		waypointName = ConcatStrings (waypointName, IntToString (i));
+
+		var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+
+		//If waypoint does exist ... don't do anything
+		if (wpPtr) {
+		} else
+		//If waypoint does not exist - create new waypoints for all nodes
+		{
+			var int nodeFound; nodeFound = TRUE;
+
+			while (nodeFound);
+				var string nodeName;
+
+				waypointName = "WP_";
+				waypointName = ConcatStrings (waypointName, vob._zCObject_objectName);
+				waypointName = ConcatStrings (waypointName, "_");
+				waypointName = ConcatStrings (waypointName, IntToString (i));
+
+				//--> Create waypoints
+				var int pos[3]; TrfToPos (_@ (trafo), _@ (pos));
+				var int lastWpPtr;
+
+				//When creating first waypoint - connect it to nearest waypoint ...
+				if (i == 0) {
+					lastWpPtr = zCWayNet_GetNearestWaypoint (_@ (pos));
+				};
+
+				//Create new waypoint - onnect with last waypoint
+				lastWpPtr = WP_Create (waypointName, _@ (pos), lastWpPtr);
+				//<--
+
+				nodeName = ConcatStrings ("ZS_WP", IntToString (i));
+				nodeFound = zCVob_GetTrafoModelNode (vobPtr, nodeName, _@ (trafo));
+
+				i += 1;
+			end;
+		};
+	};
+	//<--
+};
+
+/*
+ *	AlignWaypoints__VobTransport
+ *	 - this function traverses through vob nodes and moves also waypoints, if there are any
+ *	   - by default this function expects waypoints with format: "WP_" & vob.name & index
+ */
+func void AlignWaypoints__VobTransport (var int vobPtr) {
+	var int trafo[16];
+
+	if (!vobPtr) { return; };
+
+	//Is there any node for waypoints (starts with ZS_WP0) ?
+	if (zCVob_GetTrafoModelNode (vobPtr, "ZS_WP0", _@ (trafo))) {
+		var zCVob vob; vob = _^ (vobPtr);
+
+		var int i; i = 0;
+		var int nodeFound; nodeFound = TRUE;
+
+		while (nodeFound);
+			var string nodeName;
+
+			var string waypointName;
+			waypointName = "WP_";
+			waypointName = ConcatStrings (waypointName, vob._zCObject_objectName);
+			waypointName = ConcatStrings (waypointName, "_");
+			waypointName = ConcatStrings (waypointName, IntToString (i));
+
+			var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+
+			if (wpPtr) {
+				var zCWaypoint wp; wp = _^ (wpPtr);
+
+				if (wp.wpvob) {
+					AlignVobAt (wp.wpvob, _@ (trafo));
+				};
+
+				wp.pos[0] = trafo[3];
+				wp.pos[1] = trafo[7];
+				wp.pos[2] = trafo[11];
+
+				wp.dir[0] = trafo[2];
+				wp.dir[1] = trafo[6];
+				wp.dir[2] = trafo[10];
+			};
+
+			nodeName = ConcatStrings ("ZS_WP", IntToString (i));
+			nodeFound = zCVob_GetTrafoModelNode (vobPtr, nodeName, _@ (trafo));
+
+			i += 1;
+		end;
+	};
+	//<--
+};
+
+func void DeleteWaypoints__VobTransport (var int vobPtr) {
+	var int trafo[16];
+
+	if (!vobPtr) { return; };
+
+	//Is there any node for waypoints (starts with ZS_WP0) ?
+	if (zCVob_GetTrafoModelNode (vobPtr, "ZS_WP0", _@ (trafo))) {
+		var zCVob vob; vob = _^ (vobPtr);
+
+		var int i; i = 0;
+		var int nodeFound; nodeFound = TRUE;
+
+		while (nodeFound);
+			var string nodeName;
+
+			var string waypointName;
+			waypointName = "WP_";
+			waypointName = ConcatStrings (waypointName, vob._zCObject_objectName);
+			waypointName = ConcatStrings (waypointName, "_");
+			waypointName = ConcatStrings (waypointName, IntToString (i));
+
+			var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+
+			if (wpPtr) {
+				zCWayNet_DeleteWaypoint_ByPtr (wpPtr);
+			};
+
+			nodeName = ConcatStrings ("ZS_WP", IntToString (i));
+			nodeFound = zCVob_GetTrafoModelNode (vobPtr, nodeName, _@ (trafo));
+
+			i += 1;
+		end;
+	};
+	//<--
+};
+
+func void UpdateWaypoints__VobTransport (var int vobPtr) {
+	if (!vobPtr) { return; };
+	var zCVob vob; vob = _^ (vobPtr);
+
+	//Check movement - did we move?
+	var int flagMove; flagMove = FALSE;
+	var int trafo[16];
+
+	repeat (i, 16); var int i;
+		var int v1; v1 = MEM_ReadIntArray (_@ (trafo), i);
+		var int v2; v2 = MEM_ReadIntArray (_@ (vob.trafoObjToWorld), i);
+
+		if (v1 != v2) {
+			flagMove = TRUE;
+			break;
+		};
+	end;
+
+	//if ((trafo[00] != vob.trafoObjToWorld[00]) || (trafo[01] != vob.trafoObjToWorld[01]) || ..) {
+	if (flagMove) {
+		//Delete waypoints (in order to connect to nearest one, this was easiest way)
+		DeleteWaypoints__VobTransport (vobPtr);
+
+		//Re-Create waypoints
+		CreateWaypoints__VobTransport (vobPtr);
+
+		//Automatic waypoint alignment
+		AlignWaypoints__VobTransport (vobPtr);
+
+		//Remember last position
+		MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (trafo), 64);
+	};
+};
+
+func void WaypointsCorrectHeight__VobTransport (var int vobPtr) {
+	var int trafo[16];
+
+	if (!vobPtr) { return; };
+
+	//Is there any node for waypoints (starts with ZS_WP0) ?
+	if (zCVob_GetTrafoModelNode (vobPtr, "ZS_WP0", _@ (trafo))) {
+		var zCVob vob; vob = _^ (vobPtr);
+
+		var int i; i = 0;
+		var int nodeFound; nodeFound = TRUE;
+
+		while (nodeFound);
+			var string nodeName;
+
+			var string waypointName;
+			waypointName = "WP_";
+			waypointName = ConcatStrings (waypointName, vob._zCObject_objectName);
+			waypointName = ConcatStrings (waypointName, "_");
+			waypointName = ConcatStrings (waypointName, IntToString (i));
+
+			var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+
+			if (wpPtr) {
+				zCWaypoint_CorrectHeight (wpPtr);
+			};
+
+			nodeName = ConcatStrings ("ZS_WP", IntToString (i));
+			nodeFound = zCVob_GetTrafoModelNode (vobPtr, nodeName, _@ (trafo));
+
+			i += 1;
+		end;
+	};
+	//<--
+};
+
 /*
  *	Function MoveVobInFront - created by Lehona
  *	Several modifications done:
@@ -269,6 +485,10 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 		};
 	};
 
+	if ((vobTransportMode == vobTransportMode_Movement) || (vobTransportMode == vobTransportMode_Transform)) {
+		UpdateWaypoints__VobTransport (vobPtr);
+	};
+
 	//Restore BBox
 	zCVob_SetBBox3DLocal (vobPtr, _@ (bbox));
 	vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobPtr);
@@ -294,6 +514,9 @@ func void Vob_CancelSelection (var int vobPtr) {
 
 	//Restore collisions
 	Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+
+	//Correct height of all waypints
+	WaypointsCorrectHeight__VobTransport (vobTransportVobPtr);
 };
 
 func int Activate__VobTransport () {
@@ -491,6 +714,7 @@ func void BuyingConfirmSelection__VobTransport () {
 func void DoDeleteObject__VobTransport () {
 	Vob_CancelSelection (vobTransportVobPtr);
 
+	DeleteWaypoints__VobTransport (vobTransportVobPtr);
 
 	oCNpc_SetFocusVob (hero, 0);
 	oCNpc_ClearVobList (hero);
@@ -741,10 +965,10 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			if (vobTransportActionMode == vobTransportActionMode_Clone) {
 
 				//Vob_CancelSelection (vobTransportVobPtr);
+
 				//oCNpc_SetFocusVob (hero, 0);
 				//oCNpc_ClearVobList (hero);
 
-				oCNpc_ClearVobList (hero);
 				//RemoveoCVobSafe (vobTransportVobPtr, 1);
 				//vobTransportVobPtr = 0;
 
@@ -757,6 +981,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			if (vobTransportActionMode == vobTransportActionMode_Move) {
 				if (vobTransportVobPtr) {
 					AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
+					UpdateWaypoints__VobTransport (vobTransportVobPtr);
+
 					Vob_CancelSelection (vobTransportVobPtr);
 				};
 
@@ -809,6 +1035,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				//Restore trafo and alpha
 				if (vobTransportVobPtr) {
 					AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
+					UpdateWaypoints__VobTransport (vobTransportVobPtr);
+
 					Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 				};
 			};
@@ -877,11 +1105,14 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
 				zCVob_RotateLocalZ (vobTransportVobPtr, mkf (rotation));
 			};
+
+			UpdateWaypoints__VobTransport (vobTransportVobPtr);
 		};
 
 		//When player is moving object elevation is being adjusted automatically, here we have to move object 'manually'
 		if (elevation) {
 			zCVob_Move (vobTransportVobPtr, FLOATNULL, mkf (elevation), FLOATNULL);
+			UpdateWaypoints__VobTransport (vobTransportVobPtr);
 		};
 
 		//'Handle' key
