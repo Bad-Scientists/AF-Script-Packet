@@ -272,6 +272,7 @@ func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var
 
 	//Restore BBox
 	zCVob_SetBBox3DLocal (vobPtr, _@ (bbox));
+	vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobPtr);
 };
 
 func void Vob_CancelSelection (var int vobPtr) {
@@ -279,6 +280,7 @@ func void Vob_CancelSelection (var int vobPtr) {
 
 	//Remove bbox
 	zCVob_SetDrawBBox3D (vobPtr, 0);
+	vobTransportBBoxPtr = 0;
 
 	//Reset alpha
 	if (vobTransportOriginalAlphaChanged) {
@@ -1253,7 +1255,26 @@ func void FrameFunction__VobTransport () {
 	DisplayProperties__VobTransport ();
 };
 
+func void _hook_BBox3D_Draw () {
+	if (!ECX) { return; };
+	if (!vobTransportBBoxPtr) { return; };
+
+	var int vobTransportBBoxColor;
+
+	if (!vobTransportBBoxColor) {
+		vobTransportBBoxColor = MEM_Alloc (4);
+	};
+
+	if (ECX == vobTransportBBoxPtr) {
+		MEM_WriteInt (vobTransportBBoxColor, GFX_BLUE);
+	};
+
+	MEM_WriteInt (ESP + 4, vobTransportBBoxColor);
+};
+
 func void G12_VobTransport_Init () {
+	G12_ColorConstants_Init ();
+
 	//Init Game key events
 	G12_GameHandleEvent_Init ();
 
@@ -1262,4 +1283,18 @@ func void G12_VobTransport_Init () {
 
 	//Frame function
 	FF_ApplyOnceExtGT (FrameFunction__VobTransport, 0, -1);
+
+	//BBox draw hook
+	const int once = 0;
+	if (!once) {
+		//0x00531E90 public: void __thiscall zTBBox3D::Draw(struct zCOLOR const &)const
+		const int zTBBox3D__Draw_G1 = 5447312;
+
+		//0x00545EE0 public: void __thiscall zTBBox3D::Draw(struct zCOLOR const &)const
+		const int zTBBox3D__Draw_G2 = 5529312;
+
+		HookEngine (MEMINT_SwitchG1G2 (zTBBox3D__Draw_G1, zTBBox3D__Draw_G2), 5, "_hook_BBox3D_Draw");
+
+		once = 1;
+	};
 };
