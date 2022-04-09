@@ -1133,3 +1133,84 @@ func void Vob_SetAlpha (var int vobPtr, var int visualAlpha) {
 	vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
 	vob.visualAlpha = divf (mkf (visualAlpha), mkf (100));
 };
+
+/*
+ *	zCModel_SearchNode
+ *	 - returns pointer to node
+ */
+func int zCModel_SearchNode (var int modelPtr, var string nodeName) {
+	//0x00563F80 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G1 = 5652352;
+
+	//0x0057DFF0 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G2 = 5758960;
+
+	if (!modelPtr) { return 0; };
+
+	CALL_zStringPtrParam (nodeName);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
+
+	return CALL_RetValAsPtr ();
+};
+
+/*
+ *	zCModel_GetNodePositionWorld
+ *	 - returns true if node was found, posPtr is updated with position
+ */
+func int zCModel_GetNodePositionWorld (var int modelPtr, var int nodePtr, var int posPtr) {
+	//0x0055F8C0 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G1 = 5634240;
+
+	//0x00579140 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G2 = 5738816;
+
+	if (!modelPtr) { return FALSE; };
+	if (!nodePtr) { return FALSE; };
+
+	CALL_RetValIsStruct (12);
+	CALL_PtrParam (nodePtr);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
+
+	var int vobPosPtr; vobPosPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (vobPosPtr, posPtr, 12);
+	MEM_Free (vobPosPtr);
+
+	return TRUE;
+};
+
+/*
+ *	zCVob_GetTrafoModelNodeToWorld
+ *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafof of object itself
+ */
+func void zCVob_GetTrafoModelNodeToWorld (var int vobPtr, var string nodeName, var int trafoPtr) {
+	//0x005D83E0 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
+	const int zCVob__GetTrafoModelNodeToWorld_G1 = 6128608;
+
+	//0x00604960 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
+	const int zCVob__GetTrafoModelNodeToWorld_G2 = 6310240;
+
+	if (!vobPtr) { return; };
+
+	CALL_RetValIsStruct (64);
+	CALL_zStringPtrParam (nodeName);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetTrafoModelNodeToWorld_G1, zCVob__GetTrafoModelNodeToWorld_G2));
+	var int vobTrafoPtr; vobTrafoPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (vobTrafoPtr, trafoPtr, 64);
+	MEM_Free (vobTrafoPtr);
+};
+
+/*
+ *	zCVob_GetTrafoModelNode
+ *	 - updates trafoPtr with trafo of the node, if node does not exist function returns value FALSE
+ */
+func int zCVob_GetTrafoModelNode (var int vobPtr, var string nodeName, var int trafoPtr) {
+	if (!Hlp_VobVisual_Is_zCModel (vobPtr)) { return FALSE; };
+
+	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
+
+	if (!zCModel_SearchNode (visualPtr, nodeName)) { return FALSE; };
+
+	zCVob_GetTrafoModelNodeToWorld (vobPtr, nodeName, trafoPtr);
+
+	return TRUE;
+};
