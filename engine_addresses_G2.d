@@ -283,11 +283,11 @@ const int zCDecal_vtbl = 8593540;
 //0x0083E434 const zCVobSpot::`vftable'
 const int zCVobSpot_vtbl = 8643636;
 
-//0x0083C574 const oCStealContainer::`vftable'
-const int oCStealContainer_vtbl = 8635764;
 //0x0083C4AC const oCItemContainer::`vftable'
 const int oCItemContainer_vtbl = 8635564;
 
+//0x0083C574 const oCStealContainer::`vftable'
+const int oCStealContainer_vtbl = 8635764;
 
 //0x0083C644 const oCNpcContainer::`vftable'
 const int oCNPCContainer_vtbl = 8635972;

@@ -784,16 +784,13 @@ func int NPC_GetNode (var int slfInstance, var string nodeName) {
 	const int zCModel__SearchNode_G2 = 5758960;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var int model; model = oCNPC_GetModel (slfInstance);
-
-	if (!model) { return 0; };
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return 0; };
 
 	CALL_zStringPtrParam (nodeName);
-	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
-
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
 	return CALL_RetValAsPtr ();
 };
 
@@ -804,18 +801,15 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 	//0x00579140 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
 	const int zCModel__GetNodePositionWorld_G2 = 5738816;
 
-	var int model; model = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return 0; };
 
-	if (!model) { return 0; };
-
-	var int node; node = NPC_GetNode (slfInstance, nodeName);
-
-	if (!node) { return 0; };
+	var int nodePtr; nodePtr = NPC_GetNode (slfInstance, nodeName);
+	if (!nodePtr) { return 0; };
 
 	CALL_RetValIsStruct (12);
-	CALL_PtrParam (node);
-	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
-
+	CALL_PtrParam (nodePtr);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
 	return CALL_RetValAsPtr ();
 };
 
