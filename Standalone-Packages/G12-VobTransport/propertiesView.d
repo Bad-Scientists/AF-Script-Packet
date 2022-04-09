@@ -346,11 +346,16 @@ func void DisplayProperties__VobTransport () {
 			SB (Print_LineSeperator);
 
 			//Align to surface only in case that elevation mode is off ...
-			if (vobTransportAlignToFloor == FALSE) {
-				SB (vobTransportView_InstructionAlign);
-				SB (Print_LineSeperator);
-			} else {
+			if (vobTransportAlignObject == vobTransportAlignObject_Dont) {
 				SB (vobTransportView_InstructionDontAlign);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportAlignObject == vobTransportAlignObject_InFront) {
+				SB (vobTransportView_InstructionAlignInFront);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportAlignObject == vobTransportAlignObject_SetToFloor) {
+				SB (vobTransportView_InstructionAlignToFloor);
 				SB (Print_LineSeperator);
 			};
 		};

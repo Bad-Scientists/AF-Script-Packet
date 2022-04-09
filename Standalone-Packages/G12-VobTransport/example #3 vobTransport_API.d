@@ -56,8 +56,9 @@ const string vobTransportView_TitleTransform		= "<< Transform mode >>";
  const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z to switch axes";
  const string vobTransportView_InstructionSpeed		= "Press SPACE to adjust speed: ";
 
- const string vobTransportView_InstructionAlign		= "Press V to align to surface (ON)";
- const string vobTransportView_InstructionDontAlign	= "Press V to align to surface (OFF)";
+ const string vobTransportView_InstructionDontAlign	= "Press V - do not align object (1/3).";
+ const string vobTransportView_InstructionAlignInFront	= "Press V - align in front (2/3).";
+ const string vobTransportView_InstructionAlignToFloor	= "Press V - align to floor (3/3).";
 
 const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 463;
 

@@ -96,7 +96,6 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_zCVobSpot (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
-
 	{
 		return TRUE;
 	};
@@ -220,41 +219,41 @@ func int Npc_GetFP (var int slfInstance, var string freepointName, var int distF
  *	Several modifications done:
  *	 - functions saves/restores BBox
  *	 - functions tries to align objects at free points starting with name FP_SLOT
- *	 - object is offset by additional half of a diameter from player
  */
-func void MoveVobInFront__VobTransport (var int slfInstance, var int vobPtr, var int delta) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+func void MoveVobInFront__VobTransport (var int vobPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (hero);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	if (!vobPtr) { return; };
-
 	var zCVob vob; vob = _^ (vobPtr);
 
 	//Save BBox
 	var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
 
-	//--> Offset position based on how huge the object is
-	var int minsXZ[3]; MEM_CopyBytes (_@ (bbox.mins), _@ (minsXZ), 12);
-	var int maxsXZ[3]; MEM_CopyBytes (_@ (bbox.maxs), _@ (maxsXZ), 12);
-
-	//we don't care about Y coordinates
-	minsXZ[1] = FLOATNULL;
-	maxsXZ[1] = FLOATNULL;
-
-	var int sizeXZ[3]; SubVectors (_@ (sizeXZ), _@ (minsXZ), _@ (maxsXZ));
-	var int diameter; diameter = zVEC3_LengthApprox (_@ (sizeXZ));
-	delta = addF (delta, divf (diameter, mkf (2)));
-	//<--
-
 	//Move vob to NPC X Y Z coordinates
-	vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
-	vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
-	vob.trafoObjToWorld [11] = slf._zCVob_trafoObjToWorld [11];
+	var int dir[3]; MEM_CopyBytes (_@ (vobTransportOffset), _@ (dir), 12);
+	var int delta;
 
-	//Adjust 'elevation'
-	vob.trafoObjToWorld [07] = addf (vob.trafoObjToWorld [07], mkf (vobTransportElevationLevel));
+	if (vobTransportAlignObject) {
+		vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
+		vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
+		vob.trafoObjToWorld [11] = slf._zCVob_trafoObjToWorld [11];
 
-	zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[6], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
+		delta = zVEC3_LengthApprox (_@ (dir));
+
+		zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[06], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
+	} else {
+		vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
+		//Do not update Y position
+		//vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
+		vob.trafoObjToWorld [11] = slf._zCVob_trafoObjToWorld [11];
+
+		//null Y pos
+		dir[1] = FLOATNULL;
+		delta = zVEC3_LengthApprox (_@ (dir));
+
+		zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), FLOATNULL, mulf (slf._zCVob_trafoObjToWorld[2], delta));
+	};
 
 	//Vob-spot-slotting
 	if (vobTransportMode == vobTransportMode_Movement) {
@@ -297,7 +296,7 @@ func void Vob_CancelSelection (var int vobPtr) {
 	Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 };
 
-func int Ativate__VobTransport () {
+func int Activate__VobTransport () {
 	//Can we activate Vob transport ?
 	if (VobTransportCanBeActivated__VobTransport_API ()) {
 		//Init default values
@@ -310,6 +309,57 @@ func int Ativate__VobTransport () {
 	};
 
 	return FALSE;
+};
+
+func void GetPositionOffset__VobTransport (var int vobPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (hero);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!vobPtr) { return; };
+	var zCVob vob; vob = _^ (vobPtr);
+
+	var int posSelf[3]; TrfToPos (_@ (slf._zCVob_trafoObjToWorld), _@ (posSelf));
+	var int posVob[3]; TrfToPos ( _@ (vob.trafoObjToWorld), _@ (posVob));
+
+	//Figure out distane between player and the object
+	SubVectors (_@ (vobTransportOffset), _@ (posSelf), _@ (posVob));
+};
+
+func void SetupBuyVob__VobTransport (var int vobPtr) {
+	if (!vobPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (hero);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var zCVob vob; vob = _^ (vobPtr);
+
+	var int delta; delta = mkf (100);
+
+	//Save BBox
+	var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
+
+	//--> Offset position based on how huge the object is
+	var int minsXZ[3]; MEM_CopyBytes (_@ (bbox.mins), _@ (minsXZ), 12);
+	var int maxsXZ[3]; MEM_CopyBytes (_@ (bbox.maxs), _@ (maxsXZ), 12);
+
+	//we don't care about Y coordinates
+	minsXZ[1] = FLOATNULL;
+	maxsXZ[1] = FLOATNULL;
+
+	var int sizeXZ[3]; SubVectors (_@ (sizeXZ), _@ (minsXZ), _@ (maxsXZ));
+	var int diameter; diameter = zVEC3_LengthApprox (_@ (sizeXZ));
+	delta = addF (delta, divf (diameter, mkf (2)));
+	//<--
+
+	//Move vob to NPC X Y Z coordinates
+	vob.trafoObjToWorld [03] = slf._zCVob_trafoObjToWorld [03];
+	vob.trafoObjToWorld [07] = slf._zCVob_trafoObjToWorld [07];
+	vob.trafoObjToWorld [11] = slf._zCVob_trafoObjToWorld [11];
+
+	zCVob_Move (vobPtr, mulf (slf._zCVob_trafoObjToWorld[10], delta), mulf (slf._zCVob_trafoObjToWorld[6], delta), mulf (slf._zCVob_trafoObjToWorld[2], delta));
+
+	//Update offset for object movement
+	GetPositionOffset__VobTransport (vobPtr);
 };
 
 func int BuyingHandleKey__VobTransport (var int key) {
@@ -351,11 +401,14 @@ func int BuyingHandleKey__VobTransport (var int key) {
 			if (!vobTransportShowcaseVobPtr) {
 				//Create new vob
 				vobTransportShowcaseVobPtr = InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
+				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			} else {
 				//Update visual and objectName
 				zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
 				vob = _^ (vobTransportShowcaseVobPtr);
 				vob._zCObject_objectName = objectName;
+
+				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			};
 
 			var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (vobTransportShowcaseVobPtr);
@@ -432,11 +485,12 @@ func void BuyingConfirmSelection__VobTransport () {
 	BuyingDisposeShowcaseVob__VobTransport ();
 
 	vobTransportActionMode = vobTransportActionMode_Clone;
-	vobTransportMode = vobTransportMode_SelectConfirm;
+	vobTransportMode = vobTransportMode_BuyVobSelect;
 };
 
 func void DoDeleteObject__VobTransport () {
-	zCVob_SetDrawBBox3D (vobTransportVobPtr, 0);
+	Vob_CancelSelection (vobTransportVobPtr);
+
 
 	oCNpc_SetFocusVob (hero, 0);
 	oCNpc_ClearVobList (hero);
@@ -558,7 +612,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 	if (vobTransportMode == vobTransportMode_Idle) {
 		//--- Activate vob Transport mode
 		if (key == KEY_C) {
-			cancel = Ativate__VobTransport ();
+			cancel = Activate__VobTransport ();
 		} else
 
 		//--- Activate buying
@@ -657,9 +711,16 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 //--- Movement mode
 
 	if ((vobTransportMode == vobTransportMode_Movement) && (!cancel)) {
-		//Toggle alignment to surface
+		//Toggle object alignment
 		if (key == KEY_V) {
-			vobTransportAlignToFloor = !vobTransportAlignToFloor;
+			if (vobTransportAlignObject == vobTransportAlignObject_Dont) {
+				vobTransportAlignObject = vobTransportAlignObject_InFront;
+			} else
+			if (vobTransportAlignObject == vobTransportAlignObject_InFront) {
+				vobTransportAlignObject = vobTransportAlignObject_SetToFloor;
+			} else {
+				vobTransportAlignObject = vobTransportAlignObject_Dont;
+			};
 		};
 
 		//Apply physics
@@ -679,13 +740,15 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			//Cloning mode - cancel >> delete object
 			if (vobTransportActionMode == vobTransportActionMode_Clone) {
 
-				Vob_CancelSelection (vobTransportVobPtr);
+				//Vob_CancelSelection (vobTransportVobPtr);
+				//oCNpc_SetFocusVob (hero, 0);
+				//oCNpc_ClearVobList (hero);
 
-				oCNpc_SetFocusVob (hero, 0);
 				oCNpc_ClearVobList (hero);
+				//RemoveoCVobSafe (vobTransportVobPtr, 1);
+				//vobTransportVobPtr = 0;
 
-				RemoveoCVobSafe (vobTransportVobPtr, 1);
-				vobTransportVobPtr = 0;
+				DoDeleteObject__VobTransport ();
 
 				vobTransportMode = vobTransportMode_Done;
 			};
@@ -753,6 +816,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//Reset rotation
 		var int rotation; rotation = 0;
+		var int elevation; elevation = 0;
 
 		//--- Adjust movement speed - key Space
 
@@ -791,11 +855,11 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 
 		//--- Adjust elevation - Y position
 		if (key == KEY_UPARROW) {
-			vobTransportElevationLevel += vobTransportMovementSpeed;
+			elevation += vobTransportMovementSpeed;
 		};
 
 		if (key == KEY_DOWNARROW) {
-			vobTransportElevationLevel -= vobTransportMovementSpeed;
+			elevation -= vobTransportMovementSpeed;
 		};
 
 		if (rotation) {
@@ -816,9 +880,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		};
 
 		//When player is moving object elevation is being adjusted automatically, here we have to move object 'manually'
-		if (vobTransportElevationLevel) {
-			zCVob_Move (vobTransportVobPtr, FLOATNULL, mkf (vobTransportElevationLevel), FLOATNULL);
-			vobTransportElevationLevel = 0;
+		if (elevation) {
+			zCVob_Move (vobTransportVobPtr, FLOATNULL, mkf (elevation), FLOATNULL);
 		};
 
 		//'Handle' key
@@ -911,7 +974,6 @@ func void FrameFunction__VobTransport () {
 		vobPtrBackup = vobTransportVobPtr;
 
 		vobTransportVobPtr = 0;
-		vobTransportElevationLevel = 0;
 
 		//Is there anything in the hand?
 		vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
@@ -1118,7 +1180,7 @@ func void FrameFunction__VobTransport () {
 		};
 	};
 
-	if (vobTransportMode == vobTransportMode_SelectConfirm) {
+	if ((vobTransportMode == vobTransportMode_SelectConfirm) || (vobTransportMode == vobTransportMode_BuyVobSelect)) {
 		if (VobCanBeMovedAround__VobTransport (vobTransportVobPtr)) {
 			//Is this item in hand? If yes - drop from slot (insert into the world) and move around
 			vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
@@ -1164,6 +1226,13 @@ func void FrameFunction__VobTransport () {
 						//Remove active collisions
 						Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 
+						//If we were buying ... setup vob right in front of a player
+						if (vobTransportMode == vobTransportMode_BuyVobSelect) {
+							SetupBuyVob__VobTransport (vobTransportVobPtr);
+						};
+
+						GetPositionOffset__VobTransport (vobTransportVobPtr);
+
 						vobTransportMode = vobTransportMode_Movement;
 
 						PC_RemoveFromSleepingMode ();
@@ -1182,6 +1251,8 @@ func void FrameFunction__VobTransport () {
 
 				//Remove active collisions
 				Vob_RemoveCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+
+				GetPositionOffset__VobTransport (vobTransportVobPtr);
 
 				vobTransportMode = vobTransportMode_Movement;
 
@@ -1213,7 +1284,7 @@ func void FrameFunction__VobTransport () {
 
 	if (vobTransportMode == vobTransportMode_BuyVob) {
 		if (vobTransportShowcaseVobPtr) {
-			MoveVobInFront__VobTransport (hero, vobTransportShowcaseVobPtr, mkf (100));
+			MoveVobInFront__VobTransport (vobTransportShowcaseVobPtr);
 		};
 	};
 
@@ -1221,10 +1292,10 @@ func void FrameFunction__VobTransport () {
 	if (vobTransportMode == vobTransportMode_Movement) {
 		if (vobTransportVobPtr) {
 			//Move object in front of hero (X, Y, Z)
-			MoveVobInFront__VobTransport (hero, vobTransportVobPtr, mkf (100));
+			MoveVobInFront__VobTransport (vobTransportVobPtr);
 
 			//Align vob to floor
-			if (vobTransportAlignToFloor == TRUE) {
+			if (vobTransportAlignObject == vobTransportAlignObject_SetToFloor) {
 				SetVobToFloor (vobTransportVobPtr);
 			};
 		};
