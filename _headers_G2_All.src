@@ -25,6 +25,9 @@ EngineClasses_G2\zTSound3DParams.d
 EngineClasses_G2\zCActiveSnd.d
 EngineClasses_G2\zCSndFrame.d
 
+EngineClasses_G2\zCWay.d
+EngineClasses_G2\oSSpawnNode.d
+
 utils.d
 files.d
 
@@ -53,6 +56,8 @@ ObjectFactory\oCAIArrow.d
 
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
+
+ObjectFactory\zCWaypoint.d
 
 strings.d
 
@@ -164,3 +169,5 @@ Standalone-Packages\G12-VobThrowing\testing.d
 Standalone-Packages\G12-RainControl\rainControl.d
 Standalone-Packages\G12-FadeAway\fadeAway.d
 Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
+
+Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
