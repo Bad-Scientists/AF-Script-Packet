@@ -38,6 +38,18 @@ var int manaBarLastValue;
 var int manaBarDisplayMethod;
 var int manaBarDisplayTime;
 
+/*
+ *	Function that will update texture of health bar (using original Gothic health bar texture!)
+ */
+func void HealthBar_UpdateTexture () {
+	if (Hlp_IsValidHandle (hHealthBar)) {
+		var oCViewStatusBar hpBar;
+		hpBar = _^ (MEM_Game.hpBar);
+		Bar_SetBarTexture (hHealthBar, hpBar.texValue);
+		//Bar_SetBarTexture (hHealthBar, ViewPtr_GetTexture (hpBar.value_bar));
+	};
+};
+
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (BarGetOnDesk (BarType_HealthBar)) {
 		Bar_SetAlpha (hHealthBar, 255);
