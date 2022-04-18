@@ -241,7 +241,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vHealthPreview)) {
-		vHealthPreview = Bar_CreatePreview (hHealthBar, "Bar_Health_Preview.tga");
+		vHealthPreview = Bar_CreatePreview (hHealthBar, TEXTURE_BARPREVIEW_HEALTBAR);
 		View_SetAlpha (vHealthPreview, 255);
 	};
 
@@ -342,7 +342,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vManaPreview)) {
-		vManaPreview = Bar_CreatePreview (hManaBar, "Bar_Mana_Preview.tga");
+		vManaPreview = Bar_CreatePreview (hManaBar, TEXTURE_BARPREVIEW_MANABAR);
 		View_SetAlpha (vManaPreview, 255);
 	};
 
