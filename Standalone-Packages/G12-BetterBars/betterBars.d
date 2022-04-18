@@ -5,7 +5,7 @@
  *	By default this feature adds 3 visualisation options for new bars:
  *	 - standard (same as in vanilla Gothic)
  *	 - dynamic:
- *	    - health bar is visible: if player is hurt, in fight mode, in inventory, when health changes
+ *	    - health bar is visible: if player is hurt (and his health is below specified percentage), in fight mode, in inventory, when health changes
  *	    - mana bar is visible: in magic fight mode, in inventory, when mana changes
  *	 - always on
  *
@@ -260,7 +260,14 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 //-- Auto hiding/display for health bar (when updated)
 
-	if ((healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || (hero.attribute [ATR_HITPOINTS] != hero.attribute [ATR_HITPOINTS_MAX])) {
+	var int hurtPercentage;
+	if (HealthBar_DisplayWhenHurt_Percentage > 0) {
+		hurtPercentage = divf (mkf (hero.attribute [ATR_HITPOINTS]), mkf (hero.attribute [ATR_HITPOINTS_MAX]));
+		hurtPercentage = mulf (hurtPercentage, mkf (100));
+		hurtPercentage = roundf (hurtPercentage);
+	};
+
+	if ((healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= HealthBar_DisplayWhenHurt_Percentage) && (HealthBar_DisplayWhenHurt_Percentage > 0))) {
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
