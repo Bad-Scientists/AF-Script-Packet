@@ -400,6 +400,37 @@ func int Hlp_Is_zCVobAnimate (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCVobAnimate__classDef_G1, zCVobAnimate__classDef_G2));
 };
 
+func int Hlp_Is_oCAIVobMove (var int ptr) {
+	//0x008D8900 private: static class zCClassDef oCAIVobMove::classDef
+	const int oCAIVobMove__classDef_G1 = 9275648;
+
+	//0x00AAD720 private: static class zCClassDef oCAIVobMove::classDef
+	const int oCAIVobMove__classDef_G2 = 11196192;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCAIVobMove__classDef_G1, oCAIVobMove__classDef_G2));
+};
+
+/*
+0x008D8970 private: static class zCClassDef oCAIArrowBase::classDef
+0x008D89F8 private: static class zCClassDef oCAIDrop::classDef
+0x008D8A68 private: static class zCClassDef oCAIArrow::classDef
+0x008D8AD8 private: static class zCClassDef oCAISound::classDef
+
+0x00AAD790 private: static class zCClassDef oCAIArrowBase::classDef
+0x00AAD840 private: static class zCClassDef oCAIDrop::classDef
+0x00AAD8C0 private: static class zCClassDef oCAIArrow::classDef
+0x00AAD940 private: static class zCClassDef oCAISound::classDef
+*/
+func int Hlp_Is_oCAIVobMoveTorch (var int ptr) {
+	//0x008D8B48 private: static class zCClassDef oCAIVobMoveTorch::classDef
+	const int oCAIVobMoveTorch__classDef_G1 = 9276232;
+
+	//0x00AAD9D8 private: static class zCClassDef oCAIVobMoveTorch::classDef
+	const int oCAIVobMoveTorch__classDef_G2 = 11196888;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCAIVobMoveTorch__classDef_G1, oCAIVobMoveTorch__classDef_G2));
+};
+
 /*
  *	We don't have class definitions for these hmmmm ...
  */
