@@ -24,8 +24,7 @@
  *	 - our hooked function checks if player has anything in hand, if it is item, it 'activates' throwing mode ... and plays animation T_STAND_2_ITEMAIM (which is same as T_STAND_2_IAIM)
  *	 	!!! Important note: if you want to use this feature, you need to make sure that in your mod you are able to insert items into players right hand !!!
  *	 - player can turn (thanks to code from Gothic Free Aim) around with mouse and aim
- *	 - player can increase strength/charge by holding upKey
- *	 - as soon as actionKey is released vob will be thrown away in facing direction
+ *	 - throw by pressing Ctrl + Up key
  *
  *	-- How to update HUMANS.MDS: --
  *
@@ -66,10 +65,15 @@
 
  */
 
+const int PC_VobThrowing_BaseAngle = 45;
+const int PC_VobThrowing_BaseVelocity = 1500;
+
 //Global variables
 var int PC_VobThrowing_Activated;
+var int PC_VobThrowing_DoThrow;
+
 var int PC_VobThrowing_Velocity;
-var int PC_VobThrowing_Charging;
+
 var int PC_VobThrowing_Time;
 var int PC_VobThrowing_Timer;
 
@@ -91,9 +95,10 @@ func void _hook_oCNpc_GetRightHand__VobThrowing () {
 	//If we do have an item ...
 	if (Hlp_Is_oCItem (vobPtr)) {
 		//And Vob throwing is not yet activated
-		if (!PC_VobThrowing_Activated) {
+		if ((!PC_VobThrowing_Activated) && (!PC_VobThrowing_DoThrow)) {
 			//Activate it
 			PC_VobThrowing_Activated = TRUE;
+			PC_VobThrowing_Velocity = PC_VobThrowing_BaseVelocity;
 
 			//If we use AI_PlayAni, it freezes AI! and this function is no longer called --> therefore we cannot use this function for power charging :-/
 			//Another problem - if we hold action key, we cannot turn anymore!
@@ -105,30 +110,17 @@ func void _hook_oCNpc_GetRightHand__VobThrowing () {
 
 //keyUp while holding actionKey --> Charge throw power
 func void _eventPlayerActionKeyHeld__VobThrowing () {
-	if (PC_VobThrowing_Activated) {
+	if ((PC_VobThrowing_Activated) && (!PC_VobThrowing_DoThrow)) {
 		var int keyUp; keyUp = MEM_GetKey ("keyUp"); keyUp = MEM_KeyState (keyUp);
 		var int keySecondaryUp; keySecondaryUp = MEM_GetSecondaryKey ("keyUp"); keySecondaryUp = MEM_KeyState (keySecondaryUp);
 
 		if (((keyUp == KEY_PRESSED) || (keyUp == KEY_HOLD)) || ((keySecondaryUp == KEY_PRESSED) || (keySecondaryUp == KEY_HOLD))) {
+			PC_VobThrowing_DoThrow = TRUE;
 
-			if (PC_VobThrowing_Charging == FALSE) {
-				PC_VobThrowing_Charging = TRUE;
-				PC_VobThrowing_Timer = MEM_Timer.totalTime;
-			};
-
-			PC_VobThrowing_Time = MEM_Timer.totalTime - PC_VobThrowing_Timer;
-
-			PC_VobThrowing_Velocity = PC_VobThrowing_Time;
-
-			if (PC_VobThrowing_Velocity > 2000) {
-				PC_VobThrowing_Velocity = 2000;
-			};
-
-			var int timer1s; timer1s += MEM_Timer.frameTime;
-			if (timer1s >= 500) {
-				timer1s -= 500;
-				PrintS (ConcatStrings ("Charging ", IntToString (PC_VobThrowing_Velocity)));
-			};
+			//Throw
+			AI_PlayAni (hero, "T_ITEMAIM_2_ITEMTHROW");
+			AI_Function (hero, DoThrowVob__VobThrowing);
+			AI_PlayAni (hero, "T_ITEMTHROW_2_STAND");
 		};
 	};
 };
@@ -136,20 +128,12 @@ func void _eventPlayerActionKeyHeld__VobThrowing () {
 //actionKey release --> throw vob
 func void _eventPlayerActionKeyReleased__VobThrowing () {
 	if (PC_VobThrowing_Activated) {
-		//If player pressed upKey then we want to throw item
-		if (PC_VobThrowing_Charging) {
-			//Throw
-			AI_PlayAni (hero, "T_ITEMAIM_2_ITEMTHROW");
-			AI_Function (hero, DoThrowVob__VobThrowing);
-			AI_PlayAni (hero, "T_ITEMTHROW_2_STAND");
-
-			PC_VobThrowing_Charging = FALSE;
-		} else {
+		if (!PC_VobThrowing_DoThrow) {
 			//Go back to stand position
 			AI_PlayAni(hero, "T_ITEMAIM_2_STAND");
-		};
 
-		PC_VobThrowing_Activated = FALSE;
+			PC_VobThrowing_Activated = FALSE;
+		};
 	};
 };
 
@@ -164,7 +148,10 @@ func void DoThrowVob__VobThrowing () {
 	var int velocity; velocity = mkf (PC_VobThrowing_Velocity);
 
 	//Get position of players right hand
-	var int pos[3]; CopyVector (NPC_GetNodePositionWorld (hero, "ZS_RIGHTHAND"), _@ (pos));
+	var int pos[3];
+	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, "ZS_RIGHTHAND");
+	CopyVector (nodePosPtr, _@ (pos));
+	MEM_Free (nodePosPtr);
 
 	//Trafo for item insertion == position of right hand
 	/*
@@ -196,7 +183,9 @@ func void DoThrowVob__VobThrowing () {
 	//We will use oCNpc_DoThrowVob:
 	// - it removes an item from hand, inserts it back to the world
 	// - most likely attaches correct 'AI' (oCAIVobMove) to thrown item (seems like without AI PERC_ASSESSQUIETSOUND would not fire - NPCs would not 'recognize' that item dropped somewhere)
-	var int retVal; retVal = oCNpc_DoThrowVob (hero, vobPtr, FLOATNULL);
+	//var int retVal; retVal = oCNpc_DoThrowVob (hero, vobPtr, FLOATNULL);
+
+	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
 
 	//Get camera
 	var zCVob camVob; camVob = _^ (MEM_Game._zCSession_camVob);
@@ -228,12 +217,16 @@ func void DoThrowVob__VobThrowing () {
 */
 
 	//X axis rotation, in order to turn vektor up we have to use negative value for angle
-	var int angle; angle = 45;
+	var int angle; angle = PC_VobThrowing_BaseAngle;
+
 	VectorDirToTrf (_@ (dir), _@ (trafoRot));
 	zMAT4__PostRotateX (_@ (trafoRot), negf (mkf (angle)));
 	TrfDirToVector (_@ (trafoRot), _@ (dir));
 
 	MulVector (_@ (dir), velocity);
+
+	var int ai; ai = oCAIVobMove_Create ();
+	oCAIVobMove_Init (ai, vobPtr, _@ (hero), _@ (pos), mkf(angle), velocity, _@ (trafoRot));
 
 	//Set physics enabled
 	zCVob_SetPhysicsEnabled (vobPtr, 1);
@@ -317,8 +310,8 @@ func void DoThrowVob__VobThrowing () {
 	//Seems like we don't need to add ai with this function
 	//zCVob_SetAI (vobPtr, ai);
 
-	//Reset timer
-	PC_VobThrowing_Timer = MEM_Timer.totalTime;
+	PC_VobThrowing_DoThrow = FALSE;
+	PC_VobThrowing_Activated = FALSE;
 };
 
 /*
