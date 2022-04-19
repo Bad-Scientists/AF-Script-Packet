@@ -87,7 +87,7 @@ func void _hook_oCNPC_States_DoAIState () {
 
 	var oCNPC_States state; state = _^ (ECX);
 
-	if (!state.npc) { return; };
+	if (!Hlp_Is_oCNpc (state.npc)) { return; };
 
 	var oCNPC npc; npc = _^ (state.npc);
 
