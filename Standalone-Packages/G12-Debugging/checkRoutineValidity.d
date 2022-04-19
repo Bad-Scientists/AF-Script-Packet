@@ -231,7 +231,7 @@ func int oCRtnManager_RtnList_CheckIssues () {
 
 	MEM_ArrayFree (npcPtrList);
 
-	return issueCounter;
+	return + issueCounter;
 };
 
 func void oCRtnManager_RtnList_CheckValidity () {
