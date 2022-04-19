@@ -1013,32 +1013,75 @@ func void Vob_SetBitfield (var int vobPtr, var int bitfield, var int value) {
 	};
 
 	if (bitfield == zCVob_bitfield4_collButNoMove)
-	|| (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
 	{
+		vob.bitfield[4] = (vob.bitfield[4] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
+
 		vob.bitfield[4] = (vob.bitfield[4] & ~ bitfield) | value;
 		return;
 	};
 };
 
-func void _Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
-	if (!vobPtr) { return; };
+func int Vob_GetBitfield (var int vobPtr, var int bitfield) {
+	if (!vobPtr) { return 0; };
 	var zCVob vob; vob = _^ (vobPtr);
 
-	if (value) {
-		vob.bitfield[4] = (vob.bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive);
-	} else {
-		vob.bitfield[4] = (vob.bitfield[4] & ~ zCVob_bitfield4_dontWriteIntoArchive);
+	//Basically true/false values
+	if (bitfield == zCVob_bitfield0_showVisual)
+	|| (bitfield == zCVob_bitfield0_drawBBox3D)
+	|| (bitfield == zCVob_bitfield0_visualAlphaEnabled)
+	|| (bitfield == zCVob_bitfield0_physicsEnabled)
+	|| (bitfield == zCVob_bitfield0_staticVob)
+	|| (bitfield == zCVob_bitfield0_ignoredByTraceRay)
+	|| (bitfield == zCVob_bitfield0_collDetectionStatic)
+	|| (bitfield == zCVob_bitfield0_collDetectionDynamic)
+	|| (bitfield == zCVob_bitfield0_castDynShadow)
+	|| (bitfield == zCVob_bitfield0_lightColorStatDirty)
+	|| (bitfield == zCVob_bitfield0_lightColorDynDirty)
+	{
+		return (vob.bitfield[0] & bitfield);
 	};
+
+	if (bitfield == zCVob_bitfield1_isInMovementMode)
+	{
+		return (vob.bitfield[1] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield2_sleepingMode)
+	|| (bitfield == zCVob_bitfield2_mbHintTrafoLocalConst)
+	|| (bitfield == zCVob_bitfield2_mbInsideEndMovementMethod)
+	{
+		return (vob.bitfield[2] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield3_visualCamAlign)
+	{
+		return (vob.bitfield[3] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield4_collButNoMove)
+	|| (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
+	{
+		return (vob.bitfield[4] & bitfield);
+	};
+
+	return 0;
 };
 
 /*
- *	Function updates dontWriteIntoArchive flag for vob and its subtree
+ *	Function updates bitfields for vob and all it's children
  */
-func void Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
+func void VobTree_SetBitfield (var int vobPtr, var int bitfield, var int value) {
 	if (!vobPtr) { return; };
 
-	//Update vob data
-	_Vob_SetDontWriteIntoArchive (vobPtr, value);
+	Vob_SetBitfield (vobPtr, bitfield, value);
 
 	var zCVob vob; vob = _^ (vobPtr);
 
@@ -1054,8 +1097,10 @@ func void Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
 	while (treePtr);
 		var zCTree child; child = _^ (treePtr);
 
-		//Update data
-		_Vob_SetDontWriteIntoArchive (child.data, value);
+		if (child.data) {
+			//Update data
+			Vob_SetBitfield (child.data, bitfield, value);
+		};
 
 		//Get next child
 		treePtr = child.next;
@@ -1132,6 +1177,35 @@ func void Vob_SetAlpha (var int vobPtr, var int visualAlpha) {
 	var zCVob vob; vob = _^ (vobPtr);
 	vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
 	vob.visualAlpha = divf (mkf (visualAlpha), mkf (100));
+};
+
+func void VobTree_SetAlpha (var int vobPtr, var int visualAlpha) {
+	if (!vobPtr) { return; };
+
+	Vob_SetAlpha (vobPtr, visualAlpha);
+
+	var zCVob vob; vob = _^ (vobPtr);
+
+	//Loop through all child objects
+	var zCTree tree;
+	var int treePtr; treePtr = vob.globalVobTreeNode;
+	if (treePtr) {
+		tree = _^ (treePtr);
+		treePtr = tree.firstChild;
+	};
+
+	//Loop through tree (will this work?)
+	while (treePtr);
+		var zCTree child; child = _^ (treePtr);
+
+		//Update data
+		if (child.data) {
+			Vob_SetAlpha (child.data, visualAlpha);
+		};
+
+		//Get next child
+		treePtr = child.next;
+	end;
 };
 
 /*
