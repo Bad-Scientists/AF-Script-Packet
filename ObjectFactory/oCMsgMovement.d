@@ -39,7 +39,7 @@ func int oCMsgMovement_Create (var int subType, var string targetName, var int t
 	msg.targetVob = targetVob;
 
 	//We don't really need targetVobName, do we?
-	//msg.targetVobName = targetVobName;
+	//msg.targetVobName = targetName;
 
 	//EV_GOTOPOS, EV_TURNTOPOS, EV_JUMP
 	//Get target pos of vobPointer
