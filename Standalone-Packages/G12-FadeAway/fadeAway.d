@@ -111,10 +111,10 @@ func void _hook_oCAIHuman_DoAI__FadeAway () {
 	//Are we in ZS_FadeAway state?
 	if (state.curState_prgIndex == NPC_AISTATE_FADEAWAY) {
 		//Ignored by traceray (we will not be able to focus it)
-		Vob_SetBitfield (aniCtrl.npc, zCVob_bitfield0_ignoredByTraceRay, 1);
+		VobTree_SetBitfield (aniCtrl.npc, zCVob_bitfield0_ignoredByTraceRay, 1);
 
 		//Remove shadow casting
-		Vob_SetBitfield (aniCtrl.npc, zCVob_bitfield0_castDynShadow, 0);
+		VobTree_SetBitfield (aniCtrl.npc, zCVob_bitfield0_castDynShadow, 0);
 
 		//Remove from players focus
 		NPC_RemoveFromFocus (hero, aniCtrl.npc);
