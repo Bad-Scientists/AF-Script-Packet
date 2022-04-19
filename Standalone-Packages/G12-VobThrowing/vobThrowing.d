@@ -1,5 +1,5 @@
 /*
- *	Vob Throwing 0.1 [WIP]
+ *	Vob Throwing 0.2 [WIP]
  *
  *	This feature allows you to throw items in both G1 and G2A:
  *	 - if player has an item in hand and presses actionKey then throwing mode is activated
@@ -25,6 +25,12 @@
  *	 	!!! Important note: if you want to use this feature, you need to make sure that in your mod you are able to insert items into players right hand !!!
  *	 - player can turn (thanks to code from Gothic Free Aim) around with mouse and aim
  *	 - throw by pressing Ctrl + Up key
+ *
+ *	-- Additional files: --
+ *
+ *	Copy this file from AFSP to your _work\Data\Worlds\ folder and make sure it is also included in your .mod file
+ *
+ *	AFSP\Resources\Worlds\ITEM_TRAJECTORY.ZEN
  *
  *	-- How to update HUMANS.MDS: --
  *
@@ -76,6 +82,16 @@ var int PC_VobThrowing_Velocity;
 
 var int PC_VobThrowing_Time;
 var int PC_VobThrowing_Timer;
+
+instance ITEM_TRAJECTORY (C_Item) {
+	name = "Item trajectory";
+	mainflag = ITEM_KAT_NONE;
+	flags = ITEM_BURN | ITEM_TORCH;
+	value = 0;
+	visual = "ITEM_TRAJECTORY.ZEN";
+	material = MAT_WOOD;
+	description = name;
+};
 
 func void _hook_oCNpc_GetRightHand__VobThrowing () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
@@ -369,6 +385,108 @@ func void _eventMouseUpdate_VobThrowing_TurnPlayerModel () {
 	};
 };
 
+func void FrameFunction_Trajectory__VobThrowing () {
+	if ((PC_VobThrowing_Activated) && (!PC_VobThrowing_DoThrow)) {
+		var oCNPC her; her = Hlp_GetNPC (hero);
+
+		var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+		if (!vobPtr) { return; };
+
+		var oCItem itm; itm = _^ (vobPtr);
+
+		var int velocity; velocity = mkf (PC_VobThrowing_Velocity);
+
+		//Get position of players right hand
+		var int pos[3];
+		var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, "ZS_RIGHTHAND");
+		CopyVector (nodePosPtr, _@ (pos));
+		MEM_Free (nodePosPtr);
+
+		var int trafo[16];
+		NewTrafo (_@(trafo));
+		PosDirToTrf (_@ (pos), 0, _@ (trafo));
+
+		//vobPtr = InsertItem (GetSymbolName (itm.instanz), 1, _@ (trafo));
+		vobPtr = InsertItem ("ITEM_TRAJECTORY", 1, _@ (trafo));
+
+		//We cannot use this one - it would remove item from inventory
+		//var int retVal; retVal = oCNpc_DoThrowVob (hero, vobPtr, FLOATNULL);
+
+		//Get camera
+		var zCVob camVob; camVob = _^ (MEM_Game._zCSession_camVob);
+
+		//Get facing vector from camera
+		var int dir[3]; TrfDirToVector (_@ (camVob.trafoObjToWorld), _@ (dir));
+
+		var int trafoRot[16];
+		NewTrafo (_@(trafoRot));
+
+		VectorDirToTrf (_@ (dir), _@ (trafoRot));
+
+		//X axis rotation, in order to turn vektor up we have to use negative value for angle
+		var int angle; angle = PC_VobThrowing_BaseAngle;
+
+		VectorDirToTrf (_@ (dir), _@ (trafoRot));
+		zMAT4__PostRotateX (_@ (trafoRot), negf (mkf (angle)));
+		TrfDirToVector (_@ (trafoRot), _@ (dir));
+
+		MulVector (_@ (dir), velocity);
+
+		var int ai; ai = oCAIVobMove_Create ();
+		oCAIVobMove_Init (ai, vobPtr, _@ (hero), _@ (pos), mkf(angle), velocity, _@ (trafoRot));
+
+		//Set physics enabled
+		zCVob_SetPhysicsEnabled (vobPtr, 1);
+		zCVob_SetSleeping (vobPtr, 0);
+
+		VobTree_SetAlpha (vobPtr, 0);
+		VobTree_SetBitfield (vobPtr, zCVob_bitfield0_ignoredByTraceRay, 1);
+		VobTree_SetBitfield (vobPtr, zCVob_bitfield4_dontWriteIntoArchive, TRUE);
+
+		//Set to Non-focusable
+		itm = _^ (vobPtr);
+		itm.flags = itm.flags | ITM_FLAG_NFOCUS;
+
+		var int rigidBodyPtr; rigidBodyPtr = zCVob_GetRigidBody (vobPtr);
+
+		//Apply 'velocity'
+		zCRigidBody_SetVelocity (rigidBodyPtr, _@ (dir));
+	};
+};
+
+func void _hook_oCAIVobMove_ReportCollisionToAI () {
+	if (!Hlp_Is_oCAIVobMove (ECX)) {
+		return;
+	};
+
+	var oCAIVobMove ai; ai = _^ (ECX);
+
+	if (!Hlp_Is_oCItem (ai.vob)) { return; };
+
+	var oCItem itm; itm = _^ (ai.vob);
+
+	if (Vob_GetBitfield (ai.vob, zCVob_bitfield0_ignoredByTraceRay)) {
+		if (Vob_GetBitfield (ai.vob, zCVob_bitfield4_dontWriteIntoArchive)) {
+			//Hide visual
+			VobTree_SetBitfield (ai.vob, zCVob_bitfield0_showVisual, 0);
+			zCVob_SetSleeping (ai.vob, 1);
+
+			//Move to position 0, 1000000, 0 (because of DX11 renderers ... they do not react to zCVob_bitfield0_showVisual flags ... fk)
+			var float pos[3]; pos[0] = 0.0; pos[1] = 1000000.0; pos[2] = 0.0;
+
+			var int trafo[16];
+			NewTrafo(_@(trafo));
+
+			VectorPosToTrf (_@f (pos), _@ (trafo));
+
+			AlignVobAt (ai.vob, _@ (trafo));
+
+			//Prevent Assess quiet sound
+			ai.vob = 0;
+		};
+	};
+};
+
 func void G12_VobThrowing_Init () {
 	//Init mouse events
 	G12_MouseUpdate_Init ();
@@ -382,6 +500,8 @@ func void G12_VobThrowing_Init () {
 	//GameHandleEvent would register only mouse-down event, while our hook fires even when we hold left mouse button
 	PlayerActionKeyHeldEvent_AddListener (_eventPlayerActionKeyHeld__VobThrowing);
 	PlayerActionKeyReleasedEvent_AddListener (_eventPlayerActionKeyReleased__VobThrowing);
+
+	FF_ApplyOnceExtGT (FrameFunction_Trajectory__VobThrowing, 1000, -1);
 
 	const int once = 0;
 
@@ -397,6 +517,14 @@ func void G12_VobThrowing_Init () {
 
 		HookEngine (MEMINT_SwitchG1G2 (oCNpc__GetRightHand_G1, oCNpc__GetRightHand_G2), 10, "_hook_oCNpc_GetRightHand__VobThrowing");
 
+		//0x00617E80 public: virtual void __thiscall oCAIVobMove::ReportCollisionToAI(class zCCollisionReport const &)
+		const int oCAIVobMove__ReportCollisionToAI_G1 = 6389376;
+
+		//0x0069FA30 public: virtual void __thiscall oCAIVobMove::ReportCollisionToAI(class zCCollisionReport const &)
+		const int oCAIVobMove__ReportCollisionToAI_G2 = 6945328;
+
+		//G2A HookLen 7
+		HookEngine (MEMINT_SwitchG1G2 (oCAIVobMove__ReportCollisionToAI_G1, oCAIVobMove__ReportCollisionToAI_G2), MEMINT_SwitchG1G2 (6, 7), "_hook_oCAIVobMove_ReportCollisionToAI");
 		once = 1;
 	};
 };
