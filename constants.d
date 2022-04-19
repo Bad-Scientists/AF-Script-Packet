@@ -2,14 +2,14 @@
  *	Constants - same values for both G1 & G2A
  */
 
-//const float zMDL_ANI_BLEND_IN_ZERO   = float_MAX;
-//const float zMDL_ANI_BLEND_OUT_ZERO  =-float_MAX;
-const int zMDL_ANIEVENT_MAXSTRING    = 4;
-const int zMAN_VERS                  = 12;
-const int zMDL_MAX_ANIS_PARALLEL     = 6;
+//const float zMDL_ANI_BLEND_IN_ZERO = float_MAX;
+//const float zMDL_ANI_BLEND_OUT_ZERO =-float_MAX;
+const int zMDL_ANIEVENT_MAXSTRING = 4;
+const int zMAN_VERS = 12;
+const int zMDL_MAX_ANIS_PARALLEL = 6;
 const int zMDL_MAX_MESHLIBS_PARALLEL = 4;
-const int zMDL_VELRING_SIZE          = 8;
-const int MAX_ANIHISTORY             = 16;
+const int zMDL_VELRING_SIZE = 8;
+const int MAX_ANIHISTORY = 16;
 
 // Animation directions
 /*
@@ -19,9 +19,9 @@ enum zTMdl_AniDir {
 	zMDL_ANIDIR_ENDFASTEST
 };
 */
-const int AniDir_Forward	= 0;
-const int AniDir_Reverse	= 1;
-const int AniDir_EndFastest	= 2;
+const int AniDir_Forward = 0;
+const int AniDir_Reverse = 1;
+const int AniDir_EndFastest = 2;
 
 /*
 enum zTRnd_AlphaBlendFunc {
@@ -36,24 +36,26 @@ enum zTRnd_AlphaBlendFunc {
 };
 */
 
-const int ALPHA_FUNC_MAT_DEFAULT	= 0;
-const int ALPHA_FUNC_NONE		= 1;
-const int ALPHA_FUNC_BLEND		= 2;
-const int ALPHA_FUNC_ADD		= 3;
-const int ALPHA_FUNC_SUB		= 4;
-const int ALPHA_FUNC_MUL		= 5;
-const int ALPHA_FUNC_MUL2		= 6;
-const int ALPHA_FUNC_TEST		= 7;
+const int ALPHA_FUNC_MAT_DEFAULT = 0;
+const int ALPHA_FUNC_NONE = 1;
+const int ALPHA_FUNC_BLEND = 2;
+const int ALPHA_FUNC_ADD = 3;
+const int ALPHA_FUNC_SUB = 4;
+const int ALPHA_FUNC_MUL = 5;
+const int ALPHA_FUNC_MUL2 = 6;
+const int ALPHA_FUNC_TEST = 7;
 
 
-const int MAX_SPL_LEVEL          = 20;
-const int VFX_MAX_POS_SAMPLES    = 10;
-const int VFX_NUM_USERSTRINGS    = 3;
+const int MAX_SPL_LEVEL = 20;
+const int VFX_MAX_POS_SAMPLES = 10;
+const int VFX_NUM_USERSTRINGS = 3;
 const float VFX_LIFESPAN_FOREVER = -1;
 
-const int ITM_STATE_MAX       = 4;
-//const int ITM_TEXT_MAX        = 6;
-const int ITM_COND_MAX        = 3;
+const int ITM_STATE_MAX = 4;
+//const int ITM_TEXT_MAX = 6;
+const int ITM_COND_MAX = 3;
+
+const int ITM_FLAG_NFOCUS = 1 << 23;
 
 var int GFX_RED;
 var int GFX_PALEGREEN;
