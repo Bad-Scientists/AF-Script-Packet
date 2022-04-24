@@ -349,3 +349,64 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 
 	return firstPtr;
 };
+
+/*
+ *	zCVob_GetNearest_AtPos
+ *	 - function returns first pointer to object closest to fromPosPtr
+ */
+func int zCVob_GetNearest_AtPos (var string className, var int fromPosPtr) {
+	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
+
+	if (!SearchVobsByClass (className, vobListPtr)) {
+		MEM_ArrayFree (vobListPtr);
+		var string msg;
+		msg = ConcatStrings ("zCVob_GetNearest_AtPos: No ", className);
+		msg = ConcatStrings (msg, " objects found.");
+		MEM_Info (msg);
+		return 0;
+	};
+
+	var int dist;
+	var int maxDist; maxDist = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var int vobPtr;
+	var zCArray vobList; vobList = _^ (vobListPtr);
+
+	var int i; i = 0;
+
+	var int count; count = vobList.numInArray;
+
+	var int dir[3];
+	var int posPtr;
+
+	while (i < count);
+		//Read vobPtr from vobList array
+		vobPtr = MEM_ArrayRead (vobListPtr, i);
+
+		if (vobPtr) {
+			if (!firstPtr) { firstPtr = vobPtr; };
+
+			posPtr = zCVob_GetPositionWorld (vobPtr);
+			SubVectors (_@ (dir), fromPosPtr, posPtr);
+			MEM_Free (posPtr);
+
+			dist = zVEC3_LengthApprox (_@ (dir));
+
+			if (lf (dist, maxDist)) {
+				nearestPtr = vobPtr;
+				maxDist = dist;
+			};
+		};
+
+		i += 1;
+	end;
+
+	MEM_ArrayFree (vobListPtr);
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
