@@ -20,6 +20,12 @@ const int MOUSE_BUTTON_RIGHT = 2052;
 //527        - Forward button
 //528        - Backward button
 
+const int TRADE_SECTION_LEFT_INVENTORY_G1 = 0;
+const int TRADE_SECTION_LEFT_CONTAINER_G1 = 1;
+const int TRADE_SECTION_RIGHT_CONTAINER_G1 = 2;
+const int TRADE_SECTION_RIGHT_INVENTORY_G1 = 3;
+const int TRADE_SECTION_CHOICE_G1 = 4;
+
 /*
  *	Weapon stacking
  */
