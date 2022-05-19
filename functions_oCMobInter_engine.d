@@ -236,3 +236,40 @@ func int oCMobInter_GetFreeTrafo_ByNodeName (var int mobPtr, var string nodeName
 
 	return FALSE;
 };
+
+func void oCMobInter_SetInteractWith (var int mobPtr, var int npcPtr) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	oCMobInter_ScanIdealPositions (mobPtr);
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos;
+			mobOptPos = _^ (ptr);
+
+			//if (STR_StartsWith (mobOptPos.nodeName, "ZS_POS")) {
+				mobOptPos.npc = npcPtr;
+				//return;
+			//};
+		};
+
+		ptr = list.next;
+	end;
+};
+
+/*
+	//0x0067FC70 public: virtual int __thiscall oCMobInter::IsInteractingWith(class oCNpc *)
+	const int oCMobInter__IsInteractingWith_G1 = 6814832;
+	CALL_PtrParam (_@ (hero));
+	CALL__thiscall (spell.spellTarget, oCMobInter__IsInteractingWith_G1);
+	var int retVal; retVal = CALL_RetValAsInt ();
+*/
