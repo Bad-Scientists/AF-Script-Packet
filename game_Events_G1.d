@@ -95,6 +95,15 @@ func void _hook_oCViewDialogTrade_OnExit () {
 };
 
 func void _hook_oCViewDialogTrade_HandleEvent () {
+	//--> Safety check
+	if (!MEM_InformationMan.DlgTrade) { return; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (!dialogTrade.IsActivated) { return; };
+	//<--
+
 	_TradeHandleEvent_Event_Break = FALSE;
 	Event_Execute (_TradeHandleEvent_Event, 0);
 };
