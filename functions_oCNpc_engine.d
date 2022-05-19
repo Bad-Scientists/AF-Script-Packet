@@ -617,6 +617,32 @@ func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angle
 	};
 };
 
+func void oCNpc_GetAngles (var int slfInstance, var int posPtr, var int angleXPtr, var int angleYPtr) {
+	//0x0074BD00 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
+	const int oCNPC__GetAngles_G1 = 7650560;
+
+	//0x006812B0 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
+	const int oCNPC__GetAngles_G2 = 6820528;
+
+	if (!posPtr) { return; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+
+		CALL_PtrParam (_@ (angleYPtr));
+		CALL_PtrParam (_@ (angleXPtr));
+
+		CALL_PtrParam (_@ (posPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAngles_G1, oCNPC__GetAngles_G2));
+		call = CALL_End();
+	};
+};
+
 func int NPC_IsVobPtrInAngleX (var int slfInstance, var int vobPtr, var int angle) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
