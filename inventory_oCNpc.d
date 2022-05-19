@@ -1,8 +1,828 @@
 /*
- *	Required files:
- *		inventory_oCNpc_engine.d
+ *	Hlp_GetOpenInventoryType
+ *
+ *	 - identifies type of opened inventory:
+ *	 - 0 none
+ *	 - 1 players inventory
+ *	 - 2 looting NPC
+ *	 - 3 looting chest
+ *	 - 4 trading inventory
+ */
+
+const int OpenInvType_None = 0;
+const int OpenInvType_Player = 1;
+const int OpenInvType_NPC = 2;
+const int OpenInvType_Chest = 3;
+const int OpenInvType_Trading = 4;
+
+func int Hlp_GetOpenInventoryType () {
+	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G1 = 9283992;
+
+	//0x00AB0FD4 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G2 = 11210708;
+
+//-- TODO: add logic for G2A
+
+	//0x007DCDFC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G1 = 8244732;
+
+	//0x007DCEA4 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G1 = 8244900;
+
+	//0x007DCF54 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G1 = 8245076;
+
+	//0x007DD004 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G1 = 8245252;
+
+//--
+	var oCItemContainer container;
+
+	var int itemContainer; itemContainer = 0;
+	var int stealContainer; stealContainer = 0;
+	var int npcContainer; npcContainer = 0;
+	var int playerInventory; playerInventory = 0;
+
+	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
+
+	var zCList list;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			container = _^ (ptr);
+
+			if (container.inventory2_vtbl == oCItemContainer_vtbl_G1) { itemContainer = 1; };
+			if (container.inventory2_vtbl == oCStealContainer_vtbl_G1) { stealContainer = 1; };
+			if (container.inventory2_vtbl == oCNpcContainer_vtbl_G1) { npcContainer = 1; };
+			if (container.inventory2_vtbl == oCNpcInventory_vtbl_G1) { playerInventory = 1; };
+		};
+
+		ptr = list.next;
+	end;
+
+	//Players inventory
+	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Player; };
+
+	//Looting NPC
+	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_NPC; };
+
+	//Looting chest
+	if ((playerInventory) && (itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Chest; };
+
+	//Trading inventory
+	if ((playerInventory) && (itemContainer) && (stealContainer) && (!npcContainer)) { return OpenInvType_Trading; };
+
+	return OpenInvType_None;
+};
+
+func int Hlp_Trade_GetInventoryNpcContainer () {
+	if (!MEM_InformationMan.DlgTrade) { return 0; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (dialogTrade.dlgInventoryNpc) {
+		var oCViewDialogStealContainer dialogStealContainer;
+		dialogStealContainer = _^ (dialogTrade.dlgInventoryNpc);
+
+		//oCStealContainer
+		if (dialogStealContainer.stealContainer) {
+			return dialogStealContainer.stealContainer;
+		};
+	};
+
+	return 0;
+};
+
+func int Hlp_Trade_GetContainerNpcContainer () {
+	if (!MEM_InformationMan.DlgTrade) { return 0; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (dialogTrade.dlgContainerNpc) {
+		var oCViewDialogItemContainer dialogItemContainer;
+		dialogItemContainer = _^ (dialogTrade.dlgContainerNpc);
+
+		//oCItemContainer
+		if (dialogItemContainer.itemContainer) {
+			return dialogItemContainer.itemContainer;
+		};
+	};
+
+	return 0;
+};
+
+func int Hlp_Trade_GetContainerPlayerContainer () {
+	if (!MEM_InformationMan.DlgTrade) { return 0; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (dialogTrade.dlgContainerPlayer) {
+		var oCViewDialogItemContainer dialogItemContainer;
+		dialogItemContainer = _^ (dialogTrade.dlgContainerPlayer);
+
+		//oCItemContainer
+		if (dialogItemContainer.itemContainer) {
+			return dialogItemContainer.itemContainer;
+		};
+	};
+
+	return 0;
+};
+
+func int Hlp_Trade_GetInventoryPlayerContainer () {
+	if (!MEM_InformationMan.DlgTrade) { return 0; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (dialogTrade.dlgInventoryPlayer) {
+		var oCViewDialogInventory dialogInventory;
+		dialogInventory = _^ (dialogTrade.dlgInventoryPlayer);
+
+		//oCNpcInventory
+		if (dialogInventory.inventory) {
+			return dialogInventory.inventory;
+		};
+	};
+
+	return 0;
+};
+
+/*
+ *	Returns pointer to active oCItemContainer
+ */
+/*
+Not required ... we can get same result using Hlp_GetActiveOpenInvContainer
+func int Hlp_Trade_GetActiveTradeContainer () {
+	if (!MEM_InformationMan.DlgTrade) { return 0; };
+
+	var oCViewDialogTrade dialogTrade;
+	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_INVENTORY_G1) {
+		return +Hlp_Trade_GetInventoryNpcContainer ();
+	} else
+	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_CONTAINER_G1) {
+		return +Hlp_Trade_GetContainerNpcContainer ();
+	} else
+	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1) {
+		return +Hlp_Trade_GetContainerPlayerContainer ();
+	} else
+	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
+		return +Hlp_Trade_GetInventoryPlayerContainer ();
+	};
+
+	return 0;
+};
+*/
+
+/*
+ *	Returns pointer to active oCItemContainer
+ */
+func int Hlp_GetActiveOpenInvContainer () {
+	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G1 = 9283992;
+
+	//0x00AB0FD4 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G2 = 11210708;
+
+	var oCItemContainer container;
+
+	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
+
+	var zCList list;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			container = _^ (ptr);
+
+			if (container.inventory2_oCItemContainer_frame) {
+				return ptr;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return 0;
+};
+
+/*
+ *	Returns pointer to open containers
+ */
+func int Hlp_GetOpenContainer (var int vtbl) {
+	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G1 = 9283992;
+
+	//0x00AB0FD4 class zCList<class oCItemContainer> s_openContainers
+	const int s_openContainers_G2 = 11210708;
+
+	var oCItemContainer container;
+
+	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
+
+	var zCList list;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			container = _^ (ptr);
+			if (container.inventory2_vtbl == vtbl) {
+				return ptr;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return 0;
+};
+
+//-- TODO: add logic for G2A
+
+func int Hlp_GetOpenContainer_oCItemContainer () {
+	//0x007DCDFC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G1 = 8244732;
+
+	return +Hlp_GetOpenContainer (oCItemContainer_vtbl_G1);
+};
+
+func int Hlp_GetOpenContainer_oCStealContainer () {
+	//0x007DCEA4 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G1 = 8244900;
+
+	return +Hlp_GetOpenContainer (oCStealContainer_vtbl_G1);
+};
+
+func int Hlp_GetOpenContainer_oCNpcContainer () {
+	//0x007DCF54 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G1 = 8245076;
+
+	return +Hlp_GetOpenContainer (oCNpcContainer_vtbl_G1);
+};
+
+func int Hlp_GetOpenContainer_oCNpcInventory () {
+	//0x007DD004 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G1 = 8245252;
+
+	return +Hlp_GetOpenContainer (oCNpcInventory_vtbl_G1);
+};
+
+//-- oCItemContainer functions
+
+func int oCItemContainer_Insert (var int ptr, var int itemPtr) {
+	//0x00669250 public: virtual class oCItem * __thiscall oCItemContainer::Insert(class oCItem *)
+	const int oCItemContainer__Insert_G1 = 6722128;
+
+	//0x00709360 public: virtual class oCItem * __thiscall oCItemContainer::Insert(class oCItem *)
+	const int oCItemContainer__Insert_G2 = 7377760;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__Insert_G1, oCItemContainer__Insert_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func void oCItemContainer_Remove (var int ptr, var int itemPtr) {
+	//0x00669320 public: virtual void __thiscall oCItemContainer::Remove(class oCItem *)
+	const int oCItemContainer__Remove_G1 = 6722336;
+
+	//0x00709430 public: virtual void __thiscall oCItemContainer::Remove(class oCItem *)
+	const int oCItemContainer__Remove_G2 = 7377968;
+
+	if (!itemPtr) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__Remove_G1, oCItemContainer__Remove_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCItemContainer_RemoveByPtr (var int ptr, var int itemPtr, var int amount) {
+	//0x006693C0 public: virtual class oCItem * __thiscall oCItemContainer::RemoveByPtr(class oCItem *,int)
+	const int oCItemContainer__RemoveByPtr_G1 = 6722496;
+
+	//0x007094D0 public: virtual class oCItem * __thiscall oCItemContainer::RemoveByPtr(class oCItem *,int)
+	const int oCItemContainer__RemoveByPtr_G2 = 7378128;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (amount));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__RemoveByPtr_G1, oCItemContainer__RemoveByPtr_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+//Same as oCItemContainer::RemoveByPtr ?
+//0x006693D0 public: virtual class oCItem * __thiscall oCItemContainer::Remove(class oCItem *,int)
+
+func void oCItemContainer_DeleteContents (var int ptr, var int force) {
+	//0x00669490 protected: virtual void __thiscall oCItemContainer::DeleteContents(void)
+	const int oCItemContainer__DeleteContents_G1 = 6722704;
+
+	//0x00709590 protected: virtual void __thiscall oCItemContainer::DeleteContents(void)
+	const int oCItemContainer__DeleteContents_G2 = 7378320;
+
+	if (!ptr) { return; };
+
+	//only inventory2_oCItemContainer_ownList can be deleted, adding force option
+	if (force) {
+		var oCItemContainer itemContainer;
+		itemContainer = _^ (ptr);
+		itemContainer.inventory2_oCItemContainer_ownList = 1;
+	};
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__DeleteContents_G1, oCItemContainer__DeleteContents_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCItemContainer_SetContents (var int ptr, var int contents) {
+	//0x00667E60 public: virtual void __thiscall oCItemContainer::SetContents(class zCListSort<class oCItem> *)
+	const int oCItemContainer__SetContents_G1 = 6717024;
+
+	//0x007084F0 public: virtual void __thiscall oCItemContainer::SetContents(class zCListSort<class oCItem> *)
+	const int oCItemContainer__SetContents_G2 = 7374064;
+
+	if (!contents) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (contents));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__SetContents_G1, oCItemContainer__SetContents_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *
  */
+func int oCItemContainer_TransferItem (var int ptr, var int dir, var int amount) {
+	//0x00669780 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int)
+	const int oCItemContainer__TransferItem_G1 = 6723456;
+
+	//0x00709F40 protected: virtual int __thiscall oCItemContainer::TransferItem(int,int)
+	const int oCItemContainer__TransferItem_G2 = 7380800;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (amount));
+		CALL_IntParam (_@ (dir)); //dir -1 == left, 1 == right
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__TransferItem_G1, oCItemContainer__TransferItem_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func void oCItemContainer_Activate (var int ptr) {
+	//0x00668F60 public: virtual void __thiscall oCItemContainer::Activate(void)
+	const int oCItemContainer__Activate_G1 = 6721376;
+
+	//0x00709230 public: virtual void __thiscall oCItemContainer::Activate(void)
+	const int oCItemContainer__Activate_G2 = 709230;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__Activate_G1, oCItemContainer__Activate_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCItemContainer_IsActive (var int ptr) {
+	//0x006665A0 public: virtual int __thiscall oCItemContainer::IsActive(void)
+	const int oCItemContainer__IsActive_G1 = 6710688;
+
+	//0x007050D0 public: virtual int __thiscall oCItemContainer::IsActive(void)
+	const int oCItemContainer__IsActive_G2 = 7360720;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__IsActive_G1, oCItemContainer__IsActive_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+//-- oCNpcContainer functions
+
+func int oCNpcContainer_Insert (var int ptr, var int itemPtr) {
+	//0x0066B2D0 public: virtual class oCItem * __thiscall oCNpcContainer::Insert(class oCItem *)
+	const int oCNpcContainer__Insert_G1 = 6730448;
+
+	//0x0070B9F0 public: virtual class oCItem * __thiscall oCNpcContainer::Insert(class oCItem *)
+	const int oCNpcContainer__Insert_G2 = 7387632;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcContainer__Insert_G1, oCNpcContainer__Insert_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func void oCNpcContainer_CreateList (var int ptr) {
+	//0x0066AB10 public: virtual void __thiscall oCNpcContainer::CreateList(void)
+	const int oCNpcContainer__CreateList_G1 = 6728464;
+
+	//0x0070B570 public: virtual void __thiscall oCNpcContainer::CreateList(void)
+	const int oCNpcContainer__CreateList_G2 = 7386480;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcContainer__CreateList_G1, oCNpcContainer__CreateList_G2));
+		call = CALL_End();
+	};
+};
+
+//-- oCNpcInventory functions
+
+func int oCNpcInventory_RemoveByPtr (var int ptr, var int itemPtr, var int amount) {
+	//0x0066CF10 public: virtual class oCItem * __thiscall oCNpcInventory::RemoveByPtr(class oCItem *,int)
+	const int oCNpcInventory__RemoveByPtr_G1 = 6737680;
+
+	//0x0070CC70 public: virtual class oCItem * __thiscall oCNpcInventory::RemoveByPtr(class oCItem *,int)
+	const int oCNpcInventory__RemoveByPtr_G2 = 7392368;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (amount));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcInventory__RemoveByPtr_G1, oCNpcInventory__RemoveByPtr_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func int oCNpcInventory_Insert (var int ptr, var int itemPtr) {
+	//0x0066C7D0 public: virtual class oCItem * __thiscall oCNpcInventory::Insert(class oCItem *)
+	const int oCNpcInventory__Insert_G1 = 6735824;
+
+	//0x0070C730 public: virtual class oCItem * __thiscall oCNpcInventory::Insert(class oCItem *)
+	const int oCNpcInventory__Insert_G2 = 7391024;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcInventory__Insert_G1, oCNpcInventory__Insert_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
+func void oCNpcInventory_Close (var int ptr) {
+	//0x0066C1E0 public: virtual void __thiscall oCNpcInventory::Close(void)
+	const int oCNpcInventory__Close_G1 = 6734304;
+
+	if (!ptr) { return; };
+
+	CALL__thiscall (ptr, oCNpcInventory__Close_G1);
+};
+*/
+
+//G1 only
+func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
+	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
+	const int oCNpc__SwitchToCategory_G1 = 6741600;
+
+	//There is no G2A function
+	const int oCNpc__SwitchToCategory_G2 = 0;
+
+	if (!npcInventoryPtr) { return 0; };
+
+	//return 0 in G2A
+	if (MEMINT_SwitchG1G2 (0, 1)) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (invCategory));
+		CALL__thiscall (_@ (npcInventoryPtr), oCNpc__SwitchToCategory_G1);
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	oCNpcInventory_UnpackCategory
+ *	 - in case of G2A inventory category is redundant
+ */
+func void oCNpcInventory_UnpackCategory (var int npcInventoryPtr, var int invCategory) {
+	//0x0066FAD0 public: void __thiscall oCNpcInventory::UnpackCategory(int)
+	const int oCNpcInventory__UnpackCategory_G1 = 6748880;
+
+	//0x0070F620 public: void __thiscall oCNpcInventory::UnpackCategory(void)
+	const int oCNpcInventory__UnpackCategory_G2 = 7403040;
+
+	if (!npcInventoryPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		if (MEMINT_SwitchG1G2 (1, 0)) {
+			CALL_IntParam (_@ (invCategory));
+		};
+		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__UnpackCategory_G1, oCNpcInventory__UnpackCategory_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCNpcInventory_SetOwner (var int npcInventoryPtr, var int npcPtr) {
+	//0x0066C290 public: void __thiscall oCNpcInventory::SetOwner(class oCNpc *)
+	const int oCNpcInventory__SetOwner_G1 = 6734480;
+
+	//0x0070C320 public: void __thiscall oCNpcInventory::SetOwner(class oCNpc *)
+	const int oCNpcInventory__SetOwner_G2 = 7389984;
+
+	if (!npcInventoryPtr) { return; };
+	if (!npcPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (npcPtr));
+		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__SetOwner_G1, oCNpcInventory__SetOwner_G2));
+		call = CALL_End();
+	};
+};
+
+//0x0066C610 public: class oCItem * __thiscall oCNpcInventory::GetItem(int,int)
+//0x0070C450 public: class oCItem * __thiscall oCNpcInventory::GetItem(int)
+
+//-- oCStealContainer functions
+
+func void oCStealContainer_CreateList (var int ptr) {
+	//0x0066A5C0 public: virtual void __thiscall oCStealContainer::CreateList(void)
+	const int oCStealContainer__CreateList_G1 = 6727104;
+
+	//0x0070ADE0 public: virtual void __thiscall oCStealContainer::CreateList(void)
+	const int oCStealContainer__CreateList_G2 = 7384544;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCStealContainer__CreateList_G1, oCStealContainer__CreateList_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCStealContainer_SetOwner (var int stealContainerPtr, var int npcPtr) {
+	//0x0066A590 public: virtual void __thiscall oCStealContainer::SetOwner(class oCNpc *)
+	const int oCStealContainer__SetOwner_G1 = 6727056;
+
+	//0x0070ADB0 public: virtual void __thiscall oCStealContainer::SetOwner(class oCNpc *)
+	const int oCStealContainer__SetOwner_G2 = 7384496;
+
+	if (!stealContainerPtr) { return; };
+	if (!npcPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (npcPtr));
+		CALL__thiscall (_@ (stealContainerPtr), MEMINT_SwitchG1G2 (oCStealContainer__SetOwner_G1, oCStealContainer__SetOwner_G2));
+		call = CALL_End();
+	};
+};
+
+//-- oCViewDialogItemContainer functions
+
+func void oCViewDialogItemContainer_InsertItem (var int ptr, var int itemPtr) {
+	//0x007276C0 public: void __fastcall oCViewDialogItemContainer::InsertItem(class oCItem *)
+	const int oCViewDialogItemContainer__InsertItem_G1 = 7501504;
+
+	//0x00689C00 public: void __fastcall oCViewDialogItemContainer::InsertItem(class oCItem *)
+	const int oCViewDialogItemContainer__InsertItem_G2 = 6855680;
+
+	if (!itemPtr) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall(_@(ptr), _@(itemPtr), MEMINT_SwitchG1G2 (oCViewDialogItemContainer__InsertItem_G1, oCViewDialogItemContainer__InsertItem_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCViewDialogItemContainer_RemoveSelectedItem (var int ptr) {
+	//0x007275E0 public: class oCItem * __fastcall oCViewDialogItemContainer::RemoveSelectedItem(void)
+	const int oCViewDialogItemContainer__RemoveSelectedItem_G1 = 7501280;
+
+	//0x00689B90 public: class oCItem * __fastcall oCViewDialogItemContainer::RemoveSelectedItem(void)
+	const int oCViewDialogItemContainer__RemoveSelectedItem_G2 = 6855568;
+
+	if (!ptr) { return 0; };
+
+	const int null = 0;
+	const int call = 0;
+
+	var int retVal;
+
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__fastcall(_@(ptr), _@(null), MEMINT_SwitchG1G2 (oCViewDialogItemContainer__RemoveSelectedItem_G1, oCViewDialogItemContainer__RemoveSelectedItem_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+
+func void oCViewDialogItemContainer_UpdateValue (var int ptr) {
+	//0x00727900 protected: void __fastcall oCViewDialogItemContainer::UpdateValue(void)
+	const int oCViewDialogItemContainer__UpdateValue_G1 = 7502080;
+
+	//0x00689D10 protected: void __fastcall oCViewDialogItemContainer::UpdateValue(void)
+	const int oCViewDialogItemContainer__UpdateValue_G2 = 6855952;
+
+	if (!ptr) { return; };
+
+	const int null = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall(_@(ptr), _@(null), MEMINT_SwitchG1G2 (oCViewDialogItemContainer__UpdateValue_G1, oCViewDialogItemContainer__UpdateValue_G2));
+		call = CALL_End();
+	};
+};
+
+//-- oCViewDialogInventory functions
+
+func int oCViewDialogInventory_RemoveSelectedItem (var int ptr) {
+	//0x00726B50 public: class oCItem * __fastcall oCViewDialogInventory::RemoveSelectedItem(void)
+	const int oCViewDialogInventory__RemoveSelectedItem_G1 = 7498576;
+
+	//0x00689150 public: class oCItem * __fastcall oCViewDialogInventory::RemoveSelectedItem(void)
+	const int oCViewDialogInventory__RemoveSelectedItem_G2 = 6852944;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int null = 0;
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__fastcall(_@(ptr), _@(null), MEMINT_SwitchG1G2 (oCViewDialogInventory__RemoveSelectedItem_G1, oCViewDialogInventory__RemoveSelectedItem_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func void oCViewDialogInventory_InsertItem (var int ptr, var int itemPtr) {
+	//0x00726BE0 public: void __fastcall oCViewDialogInventory::InsertItem(class oCItem *)
+	const int oCViewDialogInventory__InsertItem_G1 = 7498720;
+
+	//0x006891E0 public: void __fastcall oCViewDialogInventory::InsertItem(class oCItem *)
+	const int oCViewDialogInventory__InsertItem_G2 = 6853088;
+
+	if (!itemPtr) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall(_@(ptr), _@(itemPtr), MEMINT_SwitchG1G2 (oCViewDialogInventory__InsertItem_G1, oCViewDialogInventory__InsertItem_G2));
+		call = CALL_End();
+	};
+};
+
+//-- oCViewDialogStealContainer functions
+
+func void oCViewDialogStealContainer_InsertItem (var int ptr, var int itemPtr) {
+	//0x00728130 public: void __fastcall oCViewDialogStealContainer::InsertItem(class oCItem *)
+	const int oCViewDialogStealContainer__InsertItem_G1 = 7504176;
+
+	//0x0068A500 public: void __fastcall oCViewDialogStealContainer::InsertItem(class oCItem *)
+	const int oCViewDialogStealContainer__InsertItem_G2 = 6857984;
+
+	if (!itemPtr) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall(_@(ptr), _@(itemPtr), MEMINT_SwitchG1G2 (oCViewDialogStealContainer__InsertItem_G1, oCViewDialogStealContainer__InsertItem_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCViewDialogStealContainer_RemoveItem (var int ptr, var int itemPtr) {
+	//0x007281F0 protected: void __fastcall oCViewDialogStealContainer::RemoveItem(class oCItem *)
+	const int oCViewDialogStealContainer__RemoveItem_G1 = 7504368;
+
+	//0x0068A550 protected: void __fastcall oCViewDialogStealContainer::RemoveItem(class oCItem *)
+	const int oCViewDialogStealContainer__RemoveItem_G2 = 6858064;
+
+	if (!itemPtr) { return; };
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall(_@(ptr), _@(itemPtr), MEMINT_SwitchG1G2 (oCViewDialogStealContainer__RemoveItem_G1, oCViewDialogStealContainer__RemoveItem_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCViewDialogStealContainer_RemoveSelectedItem (var int ptr) {
+	//0x00728010 public: class oCItem * __fastcall oCViewDialogStealContainer::RemoveSelectedItem(void)
+	const int oCViewDialogStealContainer__RemoveSelectedItem_G1 = 7503888;
+
+	//0x0068A440 public: class oCItem * __fastcall oCViewDialogStealContainer::RemoveSelectedItem(void)
+	const int oCViewDialogStealContainer__RemoveSelectedItem_G2 = 6857792;
+
+	if (!ptr) { return 0; };
+
+	const int null = 0;
+	const int call = 0;
+
+	var int retVal;
+
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__fastcall(_@(ptr), _@(null), MEMINT_SwitchG1G2 (oCViewDialogStealContainer__RemoveSelectedItem_G1, oCViewDialogStealContainer__RemoveSelectedItem_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+
 
 /*
  *	Returns pointer to currently drawn weapon (weapon in hand)
@@ -31,6 +851,48 @@ func int oCNpc_GetWeaponPtr (var int slfInstance) {
 
 	return +retVal;
 };
+
+//-- oCViewDialogTrade functions
+
+func int oCViewDialogTrade_OnTransferLeft (var int ptr, var int amount) {
+	//0x0072A2B0 protected: int __fastcall oCViewDialogTrade::OnTransferLeft(int)
+	const int oCViewDialogTrade__OnTransferLeft_G1 = 7512752;
+
+	//0x0068B840 protected: int __fastcall oCViewDialogTrade::OnTransferLeft(short)
+	const int oCViewDialogTrade__OnTransferLeft_G2 = 6862912;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__fastcall(_@(ptr), _@(amount), MEMINT_SwitchG1G2 (oCViewDialogTrade__OnTransferLeft_G1, oCViewDialogTrade__OnTransferLeft_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+func int oCViewDialogTrade_OnTransferRight (var int ptr, var int amount) {
+	//0x0072A530 protected: int __fastcall oCViewDialogTrade::OnTransferRight(int)
+	const int oCViewDialogTrade__OnTransferRight_G1 = 7513392;
+
+	//0x0068BB10 protected: int __fastcall oCViewDialogTrade::OnTransferRight(short)
+	const int oCViewDialogTrade__OnTransferRight_G2 = 6863632;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__fastcall(_@(ptr), _@(amount), MEMINT_SwitchG1G2 (oCViewDialogTrade__OnTransferRight_G1, oCViewDialogTrade__OnTransferRight_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+//--
 
 /*
  *	Removes from NPC inventory item with specified qty and returns pointer to removed item
@@ -247,32 +1109,6 @@ func int oCNpc_GetFromInv (var int slfInstance, var int itemInstance, var int qt
 	return +retVal;
 };
 
-//G1 only
-func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
-	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
-	const int oCNpc__SwitchToCategory_G1 = 6741600;
-
-	//There is no G2A function
-	const int oCNpc__SwitchToCategory_G2 = 0;
-
-	if (!npcInventoryPtr) { return 0; };
-
-	//return 0 in G2A
-	if (MEMINT_SwitchG1G2 (0, 1)) { return 0; };
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL_IntParam (_@ (invCategory));
-		CALL__thiscall (_@ (npcInventoryPtr), oCNpc__SwitchToCategory_G1);
-		call = CALL_End();
-	};
-
-	return +retVal;
-};
-
 /*
  *	LeGo version does not return pointer in G2A :-/
  */
@@ -300,68 +1136,6 @@ func int oCNpc_RemoveFromSlot_Fixed (var int slfInstance, var string slotName, v
 
 	return CALL_RetValAsPtr ();
 };
-
-/*
- *	oCNpcInventory_UnpackCategory
- *	 - in case of G2A inventory category is redundant
- */
-func void oCNpcInventory_UnpackCategory (var int npcInventoryPtr, var int invCategory) {
-	//0x0066FAD0 public: void __thiscall oCNpcInventory::UnpackCategory(int)
-	const int oCNpcInventory__UnpackCategory_G1 = 6748880;
-
-	//0x0070F620 public: void __thiscall oCNpcInventory::UnpackCategory(void)
-	const int oCNpcInventory__UnpackCategory_G2 = 7403040;
-
-	if (!npcInventoryPtr) { return; };
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		if (MEMINT_SwitchG1G2 (1, 0)) {
-			CALL_IntParam (_@ (invCategory));
-		};
-		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__UnpackCategory_G1, oCNpcInventory__UnpackCategory_G2));
-		call = CALL_End();
-	};
-};
-
-func void oCStealContainer_SetOwner (var int stealContainerPtr, var int npcPtr) {
-	//0x0066A590 public: virtual void __thiscall oCStealContainer::SetOwner(class oCNpc *)
-	const int oCStealContainer__SetOwner_G1 = 6727056;
-
-	//0x0070ADB0 public: virtual void __thiscall oCStealContainer::SetOwner(class oCNpc *)
-	const int oCStealContainer__SetOwner_G2 = 7384496;
-
-	if (!stealContainerPtr) { return; };
-	if (!npcPtr) { return; };
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall (_@ (stealContainerPtr), MEMINT_SwitchG1G2 (oCStealContainer__SetOwner_G1, oCStealContainer__SetOwner_G2));
-		call = CALL_End();
-	};
-};
-
-func void oCNpcInventory_SetOwner (var int npcInventoryPtr, var int npcPtr) {
-	//0x0066C290 public: void __thiscall oCNpcInventory::SetOwner(class oCNpc *)
-	const int oCNpcInventory__SetOwner_G1 = 6734480;
-
-	//0x0070C320 public: void __thiscall oCNpcInventory::SetOwner(class oCNpc *)
-	const int oCNpcInventory__SetOwner_G2 = 7389984;
-
-	if (!npcInventoryPtr) { return; };
-	if (!npcPtr) { return; };
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__SetOwner_G1, oCNpcInventory__SetOwner_G2));
-		call = CALL_End();
-	};
-};
-
-//0x0066C610 public: class oCItem * __thiscall oCNpcInventory::GetItem(int,int)
-//0x0070C450 public: class oCItem * __thiscall oCNpcInventory::GetItem(int)
 
 /*
  *	Returns pointer to specific item instance in NPC's inventory
