@@ -275,8 +275,8 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
 					itm = _^ (vobPtr);
 					if (Hlp_IsValidItem (itm)) {
-						if (itm.mainflag == mainflag) {
-							if (itm.flags & flags) {
+						if ((itm.mainflag == mainflag) || (!mainflag)) {
+							if ((itm.flags & flags) || (!flags)) {
 								if (!firstPtr) { firstPtr = vobPtr; };
 
 								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
