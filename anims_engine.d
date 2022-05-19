@@ -112,8 +112,17 @@ enum {
 };
 */
 
-//void zCModel::StartAni (const zSTRING& aniName, const int startMode)
-//0x005611A0 public: void __thiscall zCModel::StartAni(class zSTRING const &,int)
+func void zCModel_StartAni (var int modelPtr, var string aniName, var int startMode) {
+	//0x005611A0 public: void __thiscall zCModel::StartAni(class zSTRING const &,int)
+	const int zCModel__StartAni_G1 = 5640608;
+
+	//0x0057AF70 public: void __thiscall zCModel::StartAni(class zSTRING const &,int)
+	const int zCModel__StartAni_G2 = 5746544;
+
+	CALL_IntParam (startMode);
+	CALL_zStringPtrParam (STR_Upper (aniName));
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__StartAni_G1, zCModel__StartAni_G2));
+};
 
 //void zCModel::StartAni (zTModelAniID aniID, const int startMode)
 //0x005612A0 public: void __thiscall zCModel::StartAni(int,int)
