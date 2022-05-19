@@ -251,6 +251,21 @@ func void _hook_oCNpc_OnMessage () {
 					};
 				};
 			};
+
+			//EV_USEMOB
+			if (eMsg_MD_GetSubType (eMsg) == EV_USEMOB) {
+				//PrintS ("EV_USEMOB");
+
+				msgManipulate = _^ (eMsg);
+				if (Hlp_Is_oCMobInter (msgManipulate.targetVob)) {
+					var oCMobInter mob; mob = _^ (msgManipulate.targetVob);
+
+					if ((msgManipulate.targetState == -1) && (mob.state == 1)) {
+						oCMobInter_SetInteractWith (msgManipulate.targetVob, 0);
+					};
+				};
+
+			};
 		};
 	} else {
 		//Additional logic for NPCs
