@@ -65,10 +65,8 @@ mobFunctions.d
 
 anims_engine.d
 
-infoManager_engine.d
 infoManager.d
 
-eventManager_engine.d
 eventManager.d
 
 functions_oCMobInter_engine.d
@@ -80,10 +78,8 @@ functions_PC.d
 
 functions_oCItem.d
 
-inventory_oCMob_engine.d
 inventory_oCMob.d
 
-inventory_oCNpc_engine.d
 inventory_oCNpc.d
 
 console.d

@@ -56,19 +56,20 @@ Improved Map handling when pressing 'M':
 
 1. Call `G1_PlayerMap_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
-### Gothic 1 Quick Loot
-Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
- - transfers items from dead NPC to players inventory, closes inventory
- - transfers items from chest to players inventory, closes inventory, ends interaction with chest
-
-1. Call `G1_QuickLoot_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
 ### Gothic 1 Better Inventory Controls
-Enables better navigation in inventories
+Enables better navigation in inventories:
  - use home/end keys to navigate to first/last item
  - use page up/page down keys to scroll faster through inventory
+
+ Players inventory:
  - key `E` will put item to hand
  - key `Q` will drop item (1 piece) from inventory
+ - key `Left Alt` will drop All items from inventory slot
+
+ All other inventories, looting NPC, looting chests or in trading:
+ - key `Left Ctrl` will move 1 piece to other oposite container
+ - key `Spacebar` will move 10 pieces to other oposite container
+ - key `Left Alt` will move All item pieces to other oposite container
 
 1. Call `G1_BetterInventoryControls_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
