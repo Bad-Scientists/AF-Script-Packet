@@ -785,3 +785,19 @@ func int oCNpc_GetTalkingWith (var int slfInstance) {
 
 	return CALL_RetValAsPtr ();
 };
+
+func int oCNPC_BeamTo (var int slfInstance, var string targetVob) {
+	//0x00693B10 public: int __thiscall oCNpc::BeamTo(class zSTRING const &)
+	const int oCNPC__BeamTo_G1 = 6896400;
+
+	//0x00736EE0 public: int __thiscall oCNpc::BeamTo(class zSTRING const &)
+	const int oCNPC__BeamTo_G2 = 7565024;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	CALL_zstringPtrParam (targetVob);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__BeamTo_G1, oCNPC__BeamTo_G2));
+	return CALL_RetValAsInt ();
+};
