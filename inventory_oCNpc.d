@@ -282,6 +282,24 @@ func int Hlp_GetOpenContainer_oCNpcInventory () {
 
 //-- oCItemContainer functions
 
+func int oCItemContainer_Draw (var int ptr) {
+	//0x00667660 protected: virtual void __thiscall oCItemContainer::Draw(void)
+	const int oCItemContainer__Draw_G1 = 6714976;
+
+	//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
+	const int oCItemContainer__Draw_G2 = 7370416;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__Draw_G1, oCItemContainer__Draw_G2));
+		call = CALL_End();
+	};
+};
+
 func int oCItemContainer_Insert (var int ptr, var int itemPtr) {
 	//0x00669250 public: virtual class oCItem * __thiscall oCItemContainer::Insert(class oCItem *)
 	const int oCItemContainer__Insert_G1 = 6722128;
