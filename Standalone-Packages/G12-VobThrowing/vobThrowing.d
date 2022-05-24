@@ -86,7 +86,7 @@ var int PC_VobThrowing_Timer;
 instance ITEM_TRAJECTORY (C_Item) {
 	name = "Item trajectory";
 	mainflag = ITEM_KAT_NONE;
-	flags = ITEM_BURN | ITEM_TORCH;
+	flags = ITEM_TORCH;
 	value = 0;
 	visual = "ITEM_TRAJECTORY.ZEN";
 	material = MAT_WOOD;
