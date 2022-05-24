@@ -330,6 +330,10 @@ func void Trade_MoveToContainerPlayer (var int itmPtr, var int amount) {
 	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 	oCViewDialogItemContainer_InsertItem (dialogTrade.dlgContainerPlayer, itmPtr);
 
+	//Redraw immediately
+	var int npcContainer; npcContainer = Hlp_Trade_GetContainerPlayerContainer ();
+	oCItemContainer_Draw (npcContainer);
+
 	//--> We don't have to update inventory ...
 	//Updating the owner of npcInventory will also update it's contents
 	//npcInventoryPtr = Hlp_Trade_GetInventoryPlayerContainer (); //oCNpcInventory*
@@ -393,6 +397,10 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 	var oCViewDialogTrade dialogTrade;
 	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 	oCViewDialogItemContainer_InsertItem (dialogTrade.dlgContainerNpc, itmPtr);
+
+	//Redraw immediately
+	var int npcContainer; npcContainer = Hlp_Trade_GetContainerNpcContainer ();
+	oCItemContainer_Draw (npcContainer);
 
 	//--> We **have to** update inventory ...
 	//Updating the owner of stealContainer will also update it's contents
