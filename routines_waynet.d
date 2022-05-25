@@ -138,6 +138,23 @@ func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnBeforePtr, va
 	return + retVal;
 };
 
+func int oCRtnManager_GetRoutinePos (var int slfInstance) {
+	//0x006CD970 public: class zVEC3 __thiscall oCRtnManager::GetRoutinePos(class oCNpc *)
+	const int oCRtnManager__GetRoutinePos_G1 = 7133552;
+
+	//0x007757D0 public: class zVEC3 __thiscall oCRtnManager::GetRoutinePos(class oCNpc *)
+	const int oCRtnManager__GetRoutinePos_G2 = 7821264;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	If (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int rtnManPtr; rtnManPtr = MEMINT_SwitchG1G2 (MEMINT_RtnMan_Address_G1, MEMINT_RtnMan_Address_G2);
+
+	CALL_RetValIsStruct (12);
+	CALL_PtrParam (_@ (slf));
+	CALL__thiscall (rtnManPtr, MEMINT_SwitchG1G2 (oCRtnManager__GetRoutinePos_G1, oCRtnManager__GetRoutinePos_G2));
+	return CALL_RetValAsPtr ();
+};
 
 func void oCRtnManager_RemoveAllRoutines () {
 	MEM_RtnMan_Init ();
