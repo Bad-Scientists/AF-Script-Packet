@@ -801,3 +801,26 @@ func int oCNPC_BeamTo (var int slfInstance, var string targetVob) {
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__BeamTo_G1, oCNPC__BeamTo_G2));
 	return CALL_RetValAsInt ();
 };
+
+func void oCNpc_Enable (var int slfInstance, var int posPtr) {
+	//0x006A2000 public: virtual void __thiscall oCNpc::Enable(class zVEC3 &)
+	const int oCNpc__Enable_G1 = 6955008;
+
+	//0x00745D40 public: virtual void __thiscall oCNpc::Enable(class zVEC3 &)
+	const int oCNpc__Enable_G2 = 7626048;
+
+	if (!posPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@ (posPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__Enable_G1, oCNpc__Enable_G2));
+		call = CALL_End();
+	};
+};
