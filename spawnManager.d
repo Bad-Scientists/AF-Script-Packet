@@ -74,6 +74,87 @@ func int oCSpawnManager_InsertNpc (var int slfPtr, var int posPtr) {
 	return CALL_RetValAsInt ();
 };
 
+
+/*
+ *	Set insert range
+ */
+func void oCSpawnManager_SetInsertRange (var int f) {
+	//0x006CF5D0 public: static void __cdecl oCSpawnManager::SetInsertRange(float)
+	const int oCSpawnManager__SetInsertRange_G1 = 7140816;
+
+	//0x00777820 public: static void __cdecl oCSpawnManager::SetInsertRange(float)
+	const int oCSpawnManager__SetInsertRange_G2 = 7829536;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (f));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__SetInsertRange_G1, oCSpawnManager__SetInsertRange_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	Get insert range
+ */
+func int oCSpawnManager_GetInsertRange () {
+	//0x006CF5E0 public: static float __cdecl oCSpawnManager::GetInsertRange(void)
+	const int oCSpawnManager__GetInsertRange_G1 = 7140832;
+
+	//0x00777830 public: static float __cdecl oCSpawnManager::GetInsertRange(void)
+	const int oCSpawnManager__GetInsertRange_G2 = 7829552;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetInsertRange_G1, oCSpawnManager__GetInsertRange_G2));
+		call = CALL_End ();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	Set remove range
+ */
+func void oCSpawnManager_SetRemoveRange (var int f) {
+	//0x006CF5F0 public: static void __cdecl oCSpawnManager::SetRemoveRange(float)
+	const int oCSpawnManager__SetRemoveRange_G1 = 7140848;
+
+	//0x00777840 public: static void __cdecl oCSpawnManager::SetRemoveRange(float)
+	const int oCSpawnManager__SetRemoveRange_G2 = 7829568;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (f));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__SetRemoveRange_G1, oCSpawnManager__SetRemoveRange_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	Get remove range
+ */
+func int oCSpawnManager_GetRemoveRange () {
+	//0x006CF600 public: static float __cdecl oCSpawnManager::GetRemoveRange(void)
+	const int oCSpawnManager__GetRemoveRange_G1 = 7140864;
+
+	//0x00777850 public: static float __cdecl oCSpawnManager::GetRemoveRange(void)
+	const int oCSpawnManager__GetRemoveRange_G2 = 7829584;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetRemoveRange_G1, oCSpawnManager__GetRemoveRange_G2));
+		call = CALL_End ();
+	};
+
+	return +retVal;
+};
+
 /*
  *	Set spawn time
  */
