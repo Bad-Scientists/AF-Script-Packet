@@ -27,6 +27,7 @@ EngineClasses_G2\zCSndFrame.d
 
 EngineClasses_G2\zCWay.d
 EngineClasses_G2\oSSpawnNode.d
+EngineClasses_G2\zCSkyState.d
 
 utils.d
 files.d
