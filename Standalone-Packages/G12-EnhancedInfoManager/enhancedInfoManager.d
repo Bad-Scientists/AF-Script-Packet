@@ -138,7 +138,7 @@ var int EnhancedInfoManagerReady;
 	const int cEIM_Initialized = 3;
 
 const int ALIGN_TAB = 255;
-const string InfoManagerTabSize = "WW";
+const string InfoManagerTabSize = "-";
 
 func void oCInfoManager_Reset_EIM () {
 	EnhancedInfoManagerReady = cEIM_Idle;
