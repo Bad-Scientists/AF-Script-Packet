@@ -2030,6 +2030,9 @@ MEM_InformationMan.LastMethod:
 
 	var int retVal;
 
+	var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
+	var int InfoManagerSpinnerReRunCondtion; InfoManagerSpinnerReRunCondtion = FALSE;
+
 	if (dlg.m_listLines_array)
 	&& (dlg.m_listLines_numInArray) {
 		var int nextPosY;
@@ -2049,9 +2052,9 @@ MEM_InformationMan.LastMethod:
 			loop = arr.numInArray;
 		};
 
-		var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
-
 		while (i < loop);
+
+			var int InfoManagerSpinnerLoop; InfoManagerSpinnerLoop = MEM_StackPos.position;
 
 			//Recalculate Y pos
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
@@ -2215,11 +2218,6 @@ MEM_InformationMan.LastMethod:
 					j += 1;
 				end;
 				//<-- remove old overlays
-
-
-				//if (i < dlg.m_listLines_numInArray) {
-
-				//	if (i < dlg.Choices) {
 
 				//Default values
 				dlgColor = InfoManagerDefaultColorDialogGrey;
@@ -2904,8 +2902,23 @@ MEM_InformationMan.LastMethod:
 						};
 					};
 				};
-				//	};
-				//};
+
+				//Well ... spinners are quite complex :)
+				//Condition function updates everything spinner-related
+				//However first time condition runs InfoManagerSpinnerID is not setup ... so only on second run EIM will refresh dialogue / choice descriptions
+				//There is 1 frame (maybe more) - where dialogue description won't be updated - so this condition below checks whether spinner is selected - if yes - we will re-evaluate condition one more time.
+				if (properties & dialogChoiceType_Spinner) {
+					if (i == dlg.ChoiceSelected) {
+						if (!InfoManagerSpinnerReRunCondtion) {
+							InfoManagerSpinnerID = spinnerID;
+							InfoManagerSpinnerReRunCondtion = TRUE;
+
+							//Reset for dialogue with choices
+							choiceConditionEvaluated = FALSE;
+							MEM_StackPos.position = InfoManagerSpinnerLoop;
+						};
+					};
+				};
 
 				if (alignment == ALIGN_LEFT) {
 					properties = properties | dialogChoiceType_AlignLeft;
