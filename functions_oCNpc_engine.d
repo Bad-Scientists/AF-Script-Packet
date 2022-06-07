@@ -824,3 +824,24 @@ func void oCNpc_Enable (var int slfInstance, var int posPtr) {
 		call = CALL_End();
 	};
 };
+
+func void oCNpc_ClearEM (var int slfInstance)
+{
+	//0x006A2610 public: void __thiscall oCNpc::ClearEM(void)
+	const int  oCNPC__ClearEM_G1 = 6956560;
+
+	//0x00746400 public: void __thiscall oCNpc::ClearEM(void)
+	const int  oCNPC__ClearEM_G2 = 7627776;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__ClearEM_G1, oCNPC__ClearEM_G2));
+		call = CALL_End();
+	};
+};
