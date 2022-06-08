@@ -25,6 +25,7 @@ EngineClasses_G1\oCRtnEntry.d
 EngineClasses_G1\oCRtnManager.d
 
 EngineClasses_G1\oCVisualFX.d
+EngineClasses_G1\oSSpawnNode.d
 
 //Sound
 EngineClasses_G1\zTSound3DParams.d
