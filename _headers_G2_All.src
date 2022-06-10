@@ -123,6 +123,7 @@ Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceFireDamage.d
 Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceSavingPolicy.d
 
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
+Standalone-Packages\G12-EnhancedInfoManager\stringOverlay.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
