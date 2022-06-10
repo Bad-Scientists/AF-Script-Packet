@@ -1,12 +1,13 @@
 /*
- *	Author: L-Titan
+ *	Author: L-Titan (Gelaos)
+ *	https://github.com/Gelaos/G2A-Gelaos-Mod/blob/master/CONTENT/GelaosMod/Functions/StringOverlay.d
  */
 
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 // PaddString()
 // pads the source string with padding string (multiple times, if needed) from the start or from the end of source string
-// until the resulting string reaches the given length
+// until the resulting string reaches the given length.
 //
 // EXAMPLES:
 // PaddString("abc", 2, "X",       PADD_START)    -->    "abc"
@@ -61,9 +62,66 @@ func string PaddStringRight(var string sourceStr, var int resultLen) {
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 // StringOverlay
-// generates EIM string overlay according to user setup
+// generates EIM formatted overlay according to user setup
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
+//
+// ----------- SETUP -----------
+// StringOverlay_Reset()
+//     Clears the formatter settings.
+//
+// ----------- COLORS -----------
+// StringOverlay_Set_Color(hexColor, hexColorSelected)
+//     Enables color formatting. Sets colors: 'hexColor' for non-selected dialogue text, 'hexColorSelected' for selected dialogue text.
+//     Both colors must be valid 6-digit hexadecimal color code strings without hashtag, i.e. 'FF5733'.
+//
+// StringOverlay_Set_ColorPreset(preset)
+//    Enables color formatting. Sets colors for non-selected dialogue text and for selected text according to predefined color preset.
+//    'preset' must be integer for valid preset. If color preset for 'preset' is not defined, default Gothic dialogue text colors are used.
+//    The color preset is defined by hexcolors stored in two arrays:
+//         StringOverlay_ColorPresets[]           - colors for non-selected dialogue text
+//         StringOverlay_ColorSelectedPresets[]   - colors for selected dialogue text
+//    When defining new preset, both arrays must be filled with respective colors and the constant 'StringOverlay_ColorPreset_Count' must be incremented.
+//
+// StringOverlay_Disable_Color()
+//    Disables color formatting. It's equivalent to StringOverlay_Disable_ColorPreset().
+//
+// StringOverlay_Disable_ColorPreset()
+//    Disables color formatting. It's equivalent to StringOverlay_Disable_Color().
+//
+// ----------- TEXT ALIGN -----------
+// StringOverlay_Set_TextAlign(align)
+//     Enables text-align formatting. Available aligns:
+//         StringOverlay_TextAlign_Left   (default)
+//         StringOverlay_TextAlign_Center
+//         StringOverlay_TextAlign_Right
+//
+// StringOverlay_Disable_TextAlign()
+//     Disables text-align formatting.
+//
+// ----------- TEXT PADDING -----------
+// StringOverlay_Set_Padding(length, side, padStr)
+//     Enables text padding formatting. Pads with string 'padStr' (multiple times, if needed)
+//     from the start or from the end of source string (defined by 'side') until the resulting string reaches the given length.
+//     Available sides:
+//         StringOverlay_Padding_Side_Start (default)
+//         StringOverlay_Padding_Side_End
+//     For more information, see documentation for function 'PaddString()'.
+//
+// StringOverlay_Set_PaddingStart(length, padStr)
+//     Enables text padding formatting. Pads with 'padStr' (multiple times, if needed) from the start of source string
+//     until the resulting string reaches the given length.
+//
+// StringOverlay_Set_PaddingEnd(length, padStr)
+//     Enables text padding formatting. Pads with 'padStr' (multiple times, if needed) from the end of source string
+//     until the resulting string reaches the given length.
+//
+// StringOverlay_Disable_Padding()
+//     Disables text padding formatting.
+//
+// ----------- APPLY FORMATTING -----------
+// StringOverlay_Generate('sourceStr')
+//     Returns overlay string formatted according to formatting settings.
 
 // Modifier  Usage                              Explanation
 // f@		'f@font_15_white.tga TEST'			- applies font_15_white.tga to greyed out dialog choice. Has to be separated by space.
@@ -91,25 +149,28 @@ var int    StringOverlay_ColorPreset; // color template (sets colors)
 var string StringOverlay_Color; // color for dialogue text not selected
 var string StringOverlay_ColorSelected; // color for selected dialogue text
 
-const int StringOverlay_ColorPreset_Count    = 4; // count of available colors
+const int StringOverlay_ColorPreset_Count    = 5; // count of available colors
 const int StringOverlay_ColorPreset_Default  = 0; // default preset
 const int StringOverlay_ColorPreset_Red      = 1;
 const int StringOverlay_ColorPreset_Green    = 2;
 const int StringOverlay_ColorPreset_Yellow   = 3;
+const int StringOverlay_ColorPreset_Blue     = 4;
 
 // colors for dialogue text not selected
 const string StringOverlay_ColorPresets[StringOverlay_ColorPreset_Count] = {
-    "C8C8C8", //G1 standard dialog - grey color
-    "FF3030",
-    "16DE45",
-    "FFF700"
+    "C8C8C8", // G1 standard dialog - grey color
+    "FF3030", // red
+    "16DE45", // green
+    "FFF700", // yellow
+    "6699FF"  // blue
 };
 // colors for selected dialogue text
 const string StringOverlay_ColorSelectedPresets[StringOverlay_ColorPreset_Count] = {
     "FFFFFF", // G1 standard dialog - white color
-    "FF4646",
-    "16DE45",
-    "FFF700"
+    "FF4646", // red
+    "16DE45", // green
+    "FFF700", // yellow
+    "99CCFF"  // blue
 };
 
 // text align ------------------------------------------------------
@@ -134,6 +195,15 @@ func void StringOverlay_Set_Color(var string hexColor, var string hexColorSelect
 
     StringOverlay_Color = hexColor;
     StringOverlay_ColorSelected = hexColorSelected;
+};
+
+func void StringOverlay_Disable_Color() {
+    // remove color enabled flag
+    StringOverlay_Settings = StringOverlay_Settings - (StringOverlay_Settings & StringOverlay_Settings_ColorEnabled);
+};
+
+func void StringOverlay_Disable_ColorPreset() {
+    StringOverlay_Disable_Color();
 };
 
 func void StringOverlay_Set_ColorPreset(var int colorPreset) {
@@ -161,8 +231,13 @@ func void StringOverlay_Set_TextAlign(var int align) {
         StringOverlay_TextAlign = StringOverlay_TextAlign_Left;
     };
 };
+
+func void StringOverlay_Disable_TextAlign() {
+    // remove text align enabled flag
+    StringOverlay_Settings = StringOverlay_Settings - (StringOverlay_Settings & StringOverlay_Settings_TextAlignEnabled);
+};
 // -----------------------------------------------------------------
-func void StringOverlay_Set_PaddingCustom(var int resultLen, var int padSide,  var string padStr) {
+func void StringOverlay_Set_Padding(var int resultLen, var int padSide,  var string padStr) {
     // set padding enabled flag
     StringOverlay_Settings = (StringOverlay_Settings | StringOverlay_Settings_PaddingEnabled);
 
@@ -176,18 +251,19 @@ func void StringOverlay_Set_PaddingCustom(var int resultLen, var int padSide,  v
     };
 };
 
-func void StringOverlay_Set_Padding(var int resultLen, var int padSide) {
-    StringOverlay_Set_PaddingCustom(resultLen, padSide, StringOverlay_Padding_StringDefault);
+func void StringOverlay_Disable_Padding() {
+    // remove padding enabled flag
+    StringOverlay_Settings = StringOverlay_Settings - (StringOverlay_Settings & StringOverlay_Settings_PaddingEnabled);
+};
+
+func void StringOverlay_Set_PaddingStart(var int resultLen, var string padStr) {
+    StringOverlay_Set_Padding(resultLen, StringOverlay_Padding_Side_Start, padStr);
+};
+
+func void StringOverlay_Set_PaddingEnd(var int resultLen, var string padStr) {
+    StringOverlay_Set_Padding(resultLen, StringOverlay_Padding_Side_End, padStr);
 };
 // -----------------------------------------------------------------
-func void StringOverlay_Set_SetDefaultValues() {
-    StringOverlay_Set_ColorPreset(StringOverlay_ColorPreset_Default);
-
-    StringOverlay_TextAlign       = StringOverlay_TextAlign_Left;
-    StringOverlay_Padding_Side    = StringOverlay_Padding_Side_Start;
-    StringOverlay_Padding_String  = StringOverlay_Padding_StringDefault;
-};
-
 func void StringOverlay_Reset() {
     StringOverlay_Settings = 0;
 };
@@ -198,7 +274,7 @@ func string StringOverlay_Generate(var string str) {
     };
 
     // start overlay
-    var string decorated; decorated = "o@";
+    var string overlayStr; overlayStr = "o@";
 
     // text align
     if (StringOverlay_Settings & StringOverlay_Settings_TextAlignEnabled) {
@@ -208,30 +284,35 @@ func string StringOverlay_Generate(var string str) {
         if (StringOverlay_TextAlign == StringOverlay_TextAlign_Center) {textAlignModifier = "ac@"; };
         if (StringOverlay_TextAlign == StringOverlay_TextAlign_Right ) {textAlignModifier = "ar@"; };
 
-        decorated = ConcatStrings3(decorated, textAlignModifier, " ");
+        overlayStr = ConcatStrings(overlayStr, textAlignModifier);
+        overlayStr = ConcatStrings(overlayStr, " ");
     };
 
     // text color
     if (StringOverlay_Settings & StringOverlay_Settings_ColorEnabled) {
-        decorated = ConcatStrings5(decorated, "h@", StringOverlay_Color, " hs@", StringOverlay_ColorSelected);
+        overlayStr = ConcatStrings(overlayStr, "h@");
+        overlayStr = ConcatStrings(overlayStr, StringOverlay_Color);
+        overlayStr = ConcatStrings(overlayStr, " hs@");
+        overlayStr = ConcatStrings(overlayStr, StringOverlay_ColorSelected);
     };
 
     // start content
-    decorated = ConcatStrings(decorated, ":");
+    overlayStr = ConcatStrings(overlayStr, ":");
 
     // padding
     if (StringOverlay_Settings & StringOverlay_Settings_PaddingEnabled) {
-        decorated = ConcatStrings(
-            decorated,
+        overlayStr = ConcatStrings(
+            overlayStr,
             PaddString(str, StringOverlay_Padding_ResultLength, StringOverlay_Padding_String, StringOverlay_Padding_Side)
         );
     }
+    // no padding
     else {
-        decorated = ConcatStrings(decorated, str);
+        overlayStr = ConcatStrings(overlayStr, str);
     };
 
     // end overlay
-    decorated = ConcatStrings(decorated, "~");
+    overlayStr = ConcatStrings(overlayStr, "~");
 
-    return decorated;
+    return overlayStr;
 };
