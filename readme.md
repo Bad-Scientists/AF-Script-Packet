@@ -3,7 +3,7 @@
 Authors: [Auronen](https://github.com/auronen) & [Fawkes](https://github.com/Fawkes-dev)
 
 Credits: We are using here many scripts sourced from great Gothic community. None of this would be possible without Ikarus/LeGo and of course without modders willing to share their amazing work/ideas.
-Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct and many more (we will try to keep list up to date :) )
+Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct, L-Titan (Gelaos) and many more (we will try to keep list up to date :) )
 
 Special thanks goes to: helpo1 :crown: & Kaiser, who endlessly debugged many features :sparkles:
 
