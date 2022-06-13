@@ -277,6 +277,44 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};
 					};
+				} else {
+					//If there are no more items - next Alt key will close inventory
+					if (key == KEY_LMENU) {
+						//Chest
+						if (openInvType == OpenInvType_Chest) {
+							//Players inventory
+							if (container.inventory2_oCItemContainer_right) {
+
+							} else {
+								//Chest is active
+
+								//Close container
+								oCItemContainer_Close (openInvContainerPtr);
+
+								//Close players inventory
+								oCNpc_CloseInventory (hero);
+
+								//Send mob state change (from state S1 to S0) - hero will stop interaction with mob
+								npc = Hlp_GetNPC (hero);
+								oCMobInter_SendStateChange (npc.interactMob, 1, 0);
+							};
+						} else
+						//Npc
+						if (openInvType == OpenInvType_NPC) {
+							//Players inventory
+							if (container.inventory2_oCItemContainer_right) {
+
+							} else {
+								//NPCs inventory is active
+
+								//Setting focus vob to 0 before closing players inventory will cause also NPCs inventory to close
+								oCNpc_SetFocusVob (hero, 0);
+
+								//Close players inventory
+								oCNpc_CloseInventory (hero);
+							};
+						};
+					};
 				};
 			};
 
