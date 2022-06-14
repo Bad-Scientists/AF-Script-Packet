@@ -2031,7 +2031,7 @@ MEM_InformationMan.LastMethod:
 	var int retVal;
 
 	var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
-	var int InfoManagerSpinnerReRunCondtion; InfoManagerSpinnerReRunCondtion = FALSE;
+	var int InfoManagerSpinnerReRunCondition; InfoManagerSpinnerReRunCondition = FALSE;
 
 	if (dlg.m_listLines_array)
 	&& (dlg.m_listLines_numInArray) {
@@ -2909,9 +2909,9 @@ MEM_InformationMan.LastMethod:
 				//There is 1 frame (maybe more) - where dialogue description won't be updated - so this condition below checks whether spinner is selected - if yes - we will re-evaluate condition one more time.
 				if (properties & dialogChoiceType_Spinner) {
 					if (i == dlg.ChoiceSelected) {
-						if (!InfoManagerSpinnerReRunCondtion) {
+						if (!InfoManagerSpinnerReRunCondition) {
 							InfoManagerSpinnerID = spinnerID;
-							InfoManagerSpinnerReRunCondtion = TRUE;
+							InfoManagerSpinnerReRunCondition = TRUE;
 
 							//Reset for dialogue with choices
 							choiceConditionEvaluated = FALSE;
