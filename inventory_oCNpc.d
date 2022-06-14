@@ -472,6 +472,22 @@ func int oCItemContainer_IsActive (var int ptr) {
 	return +retVal;
 };
 
+func void oCItemContainer_Close (var int ptr) {
+	//0x00668C10 public: virtual void __thiscall oCItemContainer::Close(void)
+	const int oCItemContainer__Close_G1 = 6720528;
+
+	//0x00708F30 public: virtual void __thiscall oCItemContainer::Close(void)
+	const int oCItemContainer__Close_G2 = 7376688;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__Close_G1, oCItemContainer__Close_G2));
+		call = CALL_End();
+	};
+};
+
 //-- oCNpcContainer functions
 
 func int oCNpcContainer_Insert (var int ptr, var int itemPtr) {
