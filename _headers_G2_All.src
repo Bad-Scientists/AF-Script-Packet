@@ -89,6 +89,7 @@ interface.d
 game_Events_G12.d
 
 bars.d
+consoleCommands.d
 
 game_engine.d
 
@@ -157,6 +158,7 @@ Standalone-Packages\G12-Debugging\setRoutine.d
 Standalone-Packages\G12-Debugging\unlock.d
 Standalone-Packages\G12-Debugging\checkLockValidity.d
 Standalone-Packages\G12-Debugging\gotoNpc.d
+Standalone-Packages\G12-Debugging\gotoZEN.d
 Standalone-Packages\G12-Debugging\checkRoutineValidity.d
 Standalone-Packages\G12-Debugging\create.d
 Standalone-Packages\G12-Debugging\printPos.d
