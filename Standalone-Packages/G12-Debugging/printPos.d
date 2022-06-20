@@ -4,10 +4,9 @@
  */
 
  func string CC_PrintPos (var string param) {
-	var oCNpc her; her = Hlp_GetNpc (hero);
-
-	param = STR_Upper (param);
 	param = STR_Trim (param, " ");
+
+	var oCNpc her; her = Hlp_GetNpc (hero);
 
 	var int count; count = STR_SplitCount (param, " ");
 	var string objectName; objectName = "";

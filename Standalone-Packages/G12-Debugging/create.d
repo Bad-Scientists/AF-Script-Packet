@@ -4,6 +4,9 @@
  */
 
  func string CC_Create (var string param) {
+	param = STR_Trim (param, " ");
+	param = STR_Upper (param);
+
 	var string msg;
 
 	var oCNpc her; her = Hlp_GetNpc (hero);
@@ -13,15 +16,14 @@
 		npc = _^ (her.focus_vob);
 	};
 
-	param = STR_Upper (param);
-	param = STR_Trim (param, " ");
-
 	var string instanceName; instanceName = "";
 	var string amount; amount = "1";
 
 	var int count; count = STR_SplitCount (param, " ");
-	instanceName = STR_Split (param, " ", 0);
-	instanceName = STR_Trim (instanceName, " ");
+	if (count > 0) {
+		instanceName = STR_Split (param, " ", 0);
+		instanceName = STR_Trim (instanceName, " ");
+	};
 
 	if (count > 1) {
 		amount = STR_Split (param, " ", 1);

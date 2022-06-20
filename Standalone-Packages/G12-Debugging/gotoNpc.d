@@ -62,11 +62,14 @@ func void PC_BeamToNpc (var int npcInstance) {
 };
 
 func string CC_GotoNpc (var string param) {
+	param = STR_Trim (param, " ");
+	param = STR_Upper (param);
+
 	var int count; count = STR_SplitCount (param, " ");
 	var string objectName; objectName = "";
 
-	if (count > 1) {
-		objectName = STR_Split (param, " ", 1);
+	if (count > 0) {
+		objectName = STR_Split (param, " ", 0);
 		objectName = STR_Trim (objectName, " ");
 		objectName = STR_Upper (objectName);
 	};
