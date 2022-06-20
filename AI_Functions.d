@@ -324,9 +324,6 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
 
 	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
 
-	thisLevelName = STR_Upper (thisLevelName);
-	levelName = STR_Upper (levelName);
-
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
 		AI_TeleportKeepQueue (slfinstance, vobName);
 	} else {
