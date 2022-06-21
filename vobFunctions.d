@@ -650,6 +650,27 @@ func void Vob_TriggerVobByName (var string vobName) {
 	MEM_ArrayFree (arr);
 };
 
+/*
+ *
+ */
+func void Vob_UnTriggerVobByName (var string vobName) {
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray(zarr.array, i);
+		MEM_UntriggerVob (vobPtr);
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
+/*
+ *
+ */
 func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
 	var int arr; arr = MEM_SearchAllVobsByName (vobName);
 
