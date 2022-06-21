@@ -125,7 +125,7 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -163,7 +163,7 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 							if (!firstPtr) { firstPtr = vobPtr; };
 
 							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-							if (lf (dist, maxDist)) {
+							if (dist < maxDist) {
 								nearestPtr = vobPtr;
 								maxDist = dist;
 							};
@@ -191,7 +191,7 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -222,7 +222,7 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 
 					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
-					if (lf (dist, maxDist)) {
+					if (dist < maxDist) {
 						nearestPtr = vobPtr;
 						maxDist = dist;
 					};
@@ -249,7 +249,7 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -281,7 +281,7 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 
 								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
-								if (lf (dist, maxDist)) {
+								if (dist < maxDist) {
 									nearestPtr = vobPtr;
 									maxDist = dist;
 								};
@@ -304,7 +304,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -334,7 +334,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 
 						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
-						if (lf (dist, maxDist)) {
+						if (dist < maxDist) {
 							nearestPtr = vobPtr;
 							maxDist = dist;
 						};
