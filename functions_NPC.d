@@ -845,7 +845,7 @@ func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
 
-	var zCVob vob; vob = _^(vobPtr);
+	var zCVob vob; vob = _^ (vobPtr);
 
 	var int pos[3];
 	//TrfToPos (_@(vob.trafoObjToWorld), _@ (pos));
@@ -853,7 +853,7 @@ func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	MEM_WriteIntArray(_@ (pos), 1, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  7));
 	MEM_WriteIntArray(_@ (pos), 2, MEM_ReadIntArray(_@(vob.trafoObjToWorld), 11));
 
-	return NPC_GetDistToPos (slf, _@ (pos));
+	return + NPC_GetDistToPos (slf, _@ (pos));
 };
 
 func int NPC_GetShowAI (var int slfInstance) {

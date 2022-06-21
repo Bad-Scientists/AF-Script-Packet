@@ -1,6 +1,6 @@
 /*
  *	Better Inventory Controls
- *	 - requires functions enhancedTrading.d !
+ *	 - requires functions from enhancedTrading.d !
  *
  *	This feature enables better navigation in inventories:
  *	 - Home key moves cursor to first item
@@ -109,6 +109,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 	//Transfer items
 	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE)) {
+
 		openInvType = Hlp_GetOpenInventoryType ();
 
 		if ((openInvType == OpenInvType_Chest) || (openInvType == OpenInvType_NPC) || (openInvType == OpenInvType_Trading)) {

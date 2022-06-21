@@ -29,12 +29,12 @@ func void oCNpc_SetFocusVob (var int slfInstance, var int focusPtr) {
 /*
  *
  */
-func void oCNPC_DropUnconscious (var int slfInstance, var int attackerInstance) {
+func void oCNpc_DropUnconscious (var int slfInstance, var int attackerInstance) {
 	//0x00692C10 public: void __thiscall oCNpc::DropUnconscious(float,class oCNpc *)
-	const int oCNPC__DropUnconscious_G1 = 6892560;
+	const int oCNpc__DropUnconscious_G1 = 6892560;
 
 	//0x00735EB0 public: void __thiscall oCNpc::DropUnconscious(float,class oCNpc *)
-	const int oCNPC__DropUnconscious_G2 = 7560880;
+	const int oCNpc__DropUnconscious_G2 = 7560880;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -51,7 +51,7 @@ func void oCNPC_DropUnconscious (var int slfInstance, var int attackerInstance) 
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (attackerPtr));
 		CALL_FloatParam (_@ (FLOATNULL));	//???
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__DropUnconscious_G1, oCNPC__DropUnconscious_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DropUnconscious_G1, oCNpc__DropUnconscious_G2));
 		call = CALL_End();
 	};
 };
@@ -114,12 +114,12 @@ func int oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 /*
  *
  */
-func void oCNPC_OpenDeadNpc (var int slfInstance) {
+func void oCNpc_OpenDeadNpc (var int slfInstance) {
 	//0x006BB890 public: void __thiscall oCNpc::OpenDeadNpc(void)
-	const int oCNPC__OpenDeadNpc_G1 = 7059600;
+	const int oCNpc__OpenDeadNpc_G1 = 7059600;
 
 	//0x00762970 public: void __thiscall oCNpc::OpenDeadNpc(void)
-	const int oCNPC__OpenDeadNpc_G2 = 7743856;
+	const int oCNpc__OpenDeadNpc_G2 = 7743856;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -128,7 +128,7 @@ func void oCNPC_OpenDeadNpc (var int slfInstance) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__OpenDeadNpc_G1, oCNPC__OpenDeadNpc_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__OpenDeadNpc_G1, oCNpc__OpenDeadNpc_G2));
 		call = CALL_End();
 	};
 };
@@ -136,12 +136,12 @@ func void oCNPC_OpenDeadNpc (var int slfInstance) {
 /*
  *
  */
-func void oCNPC_CloseDeadNpc (var int slfInstance) {
+func void oCNpc_CloseDeadNpc (var int slfInstance) {
 	//0x006BBAA0 public: void __thiscall oCNpc::CloseDeadNpc(void)
-	const int oCNPC__CloseDeadNpc_G1 = 7060128;
+	const int oCNpc__CloseDeadNpc_G1 = 7060128;
 
 	//0x00762B40 public: void __thiscall oCNpc::CloseDeadNpc(void)
-	const int oCNPC__CloseDeadNpc_G2 = 7744320;
+	const int oCNpc__CloseDeadNpc_G2 = 7744320;
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
@@ -149,7 +149,7 @@ func void oCNPC_CloseDeadNpc (var int slfInstance) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__CloseDeadNpc_G1, oCNPC__CloseDeadNpc_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CloseDeadNpc_G1, oCNpc__CloseDeadNpc_G2));
 		call = CALL_End();
 	};
 };
@@ -157,12 +157,12 @@ func void oCNPC_CloseDeadNpc (var int slfInstance) {
 /*
  *
  */
-func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
+func void oCNpc_OpenInventory (var int slfInstance, var int param1) {
 	//0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void)
-	const int oCNPC__OpenInventory_G1 = 7057568;
+	const int oCNpc__OpenInventory_G1 = 7057568;
 
 	//0x00762250 public: void __thiscall oCNpc::OpenInventory(int)
-	const int oCNPC__OpenInventory_G2 = 7742032;
+	const int oCNpc__OpenInventory_G2 = 7742032;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -175,7 +175,7 @@ func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
 			CALL_IntParam (_@ (param1));
 		};
 
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__OpenInventory_G1, oCNPC__OpenInventory_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__OpenInventory_G1, oCNpc__OpenInventory_G2));
 		call = CALL_End();
 	};
 };
@@ -183,12 +183,12 @@ func void oCNPC_OpenInventory (var int slfInstance, var int param1) {
 /*
  *
  */
-func void oCNPC_CloseInventory (var int slfInstance) {
+func void oCNpc_CloseInventory (var int slfInstance) {
 	//0x006BB2F0 public: void __thiscall oCNpc::CloseInventory(void)
-	const int oCNPC__CloseInventory_G1 = 7058160;
+	const int oCNpc__CloseInventory_G1 = 7058160;
 
 	//0x00762410 public: void __thiscall oCNpc::CloseInventory(void)
-	const int oCNPC__CloseInventory_G2 = 7742480;
+	const int oCNpc__CloseInventory_G2 = 7742480;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -197,7 +197,7 @@ func void oCNPC_CloseInventory (var int slfInstance) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__CloseInventory_G1, oCNPC__CloseInventory_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CloseInventory_G1, oCNpc__CloseInventory_G2));
 		call = CALL_End();
 	};
 };
@@ -207,10 +207,10 @@ func void oCNPC_CloseInventory (var int slfInstance) {
  */
 func int oCNpc_UseItem (var int slfInstance, var int itemPtr) {
 	//0x00698810 public: int __thiscall oCNpc::UseItem(class oCItem *)
-	const int oCNPC__UseItem_G1 = 6916112;
+	const int oCNpc__UseItem_G1 = 6916112;
 
 	//0x0073BC10 public: int __thiscall oCNPC::UseItem(class oCItem *)
-	const int oCNPC__UseItem_G2 = 7584784;
+	const int oCNpc__UseItem_G2 = 7584784;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
@@ -220,7 +220,7 @@ func int oCNpc_UseItem (var int slfInstance, var int itemPtr) {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (itemPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__UseItem_G1, oCNPC__UseItem_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__UseItem_G1, oCNpc__UseItem_G2));
 		call = CALL_End();
 	};
 
@@ -233,16 +233,16 @@ func int oCNpc_UseItem (var int slfInstance, var int itemPtr) {
 func int oCNpc_GetSlotItem (var int slfInstance, var string slotName)  {
 
 	//0x0068F4F0 public: class oCItem * __thiscall oCNpc::GetSlotItem(class zSTRING const &)
-	const int oCNPC__GetSlotItem_G1 = 6878448;
+	const int oCNpc__GetSlotItem_G1 = 6878448;
 
 	//0x00731F90 public: class oCItem * __thiscall oCNpc::GetSlotItem(class zSTRING const &)
-	const int oCNPC__GetSlotItem_G2 = 7544720;
+	const int oCNpc__GetSlotItem_G2 = 7544720;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	CALL_zStringPtrParam (slotName);
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__GetSlotItem_G1, oCNPC__GetSlotItem_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__GetSlotItem_G1, oCNpc__GetSlotItem_G2));
 
 	return CALL_RetValAsPtr ();
 };
@@ -449,12 +449,12 @@ func void oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr) {
 /*
  *
  */
-func int oCNPC_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight){
+func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight){
 	//0x0069E010 public: int __thiscall oCNpc::CanSee(class zCVob *,int)
-	const int oCNPC__CanSee_G1 = 6938640;
+	const int oCNpc__CanSee_G1 = 6938640;
 
 	//0x00741C10 public: int __thiscall oCNPC::CanSee(class zCVob *,int)
-	const int oCNPC__CanSee_G2 = 7609360;
+	const int oCNpc__CanSee_G2 = 7609360;
 
 	if (!vobPtr) { return 0; };
 
@@ -467,19 +467,19 @@ func int oCNPC_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight)
 	if (CALL_Begin(call)) {
 		CALL_IntParam (_@ (lineOfSight));
 		CALL_PtrParam (_@ (vobPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__CanSee_G1, oCNPC__CanSee_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CanSee_G1, oCNpc__CanSee_G2));
 		call = CALL_End();
 	};
 
 	return CALL_RetValAsInt();
 };
 
-func int oCNPC_FreeLineOfSight (var int slfInstance, var int vobPtr){
+func int oCNpc_FreeLineOfSight (var int slfInstance, var int vobPtr){
 	//0x0069DE50 public: int __thiscall oCNpc::FreeLineOfSight(class zCVob *)
-	const int oCNPC__FreeLineOfSight_G1 = 6938192;
+	const int oCNpc__FreeLineOfSight_G1 = 6938192;
 
 	//0x007418E0 public: int __thiscall oCNpc::FreeLineOfSight(class zCVob *)
-	const int oCNPC__FreeLineOfSight_G2 = 7608544;
+	const int oCNpc__FreeLineOfSight_G2 = 7608544;
 
 	if (!vobPtr) { return 0; };
 
@@ -491,7 +491,7 @@ func int oCNPC_FreeLineOfSight (var int slfInstance, var int vobPtr){
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (vobPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__FreeLineOfSight_G1, oCNPC__FreeLineOfSight_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__FreeLineOfSight_G1, oCNpc__FreeLineOfSight_G2));
 		call = CALL_End();
 	};
 
@@ -522,13 +522,13 @@ func int oCNpc_DoDropVob (var int slfInstance, var int vobPtr) {
 	return CALL_RetValAsInt();
 };
 
-func void oCNPC_DropAllInHand (var int slfInstance)
+func void oCNpc_DropAllInHand (var int slfInstance)
 {
 	//0x00694230 public: void __thiscall oCNpc::DropAllInHand(void)
-	const int oCNPC__DropAllInHand_G1 = 6898224;
+	const int oCNpc__DropAllInHand_G1 = 6898224;
 
 	//0x007375E0 public: void __thiscall oCNpc::DropAllInHand(void)
-	const int oCNPC__DropAllInHand_G2 = 7566816;
+	const int oCNpc__DropAllInHand_G2 = 7566816;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -537,7 +537,7 @@ func void oCNPC_DropAllInHand (var int slfInstance)
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__DropAllInHand_G1, oCNPC__DropAllInHand_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DropAllInHand_G1, oCNpc__DropAllInHand_G2));
 		call = CALL_End();
 	};
 };
@@ -593,10 +593,10 @@ func void oCNpc_SetLeftHand (var int slfInstance, var int vobPtr) {
  */
 func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angleXPtr, var int angleYPtr) {
 	//0x0074C0D0 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
-	const int oCNPC__GetAnglesVob_G1 = 7651536;
+	const int oCNpc__GetAnglesVob_G1 = 7651536;
 
 	//0x00681680 public: void __thiscall oCNpc::GetAngles(class zCVob *,float &,float &)
-	const int oCNPC__GetAnglesVob_G2 = 6821504;
+	const int oCNpc__GetAnglesVob_G2 = 6821504;
 
 	if (!vobPtr) { return; };
 
@@ -612,17 +612,17 @@ func void oCNpc_GetAnglesVob (var int slfInstance, var int vobPtr, var int angle
 		CALL_PtrParam (_@ (angleXPtr));
 
 		CALL_PtrParam (_@ (vobPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAnglesVob_G1, oCNPC__GetAnglesVob_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetAnglesVob_G1, oCNpc__GetAnglesVob_G2));
 		call = CALL_End();
 	};
 };
 
 func void oCNpc_GetAngles (var int slfInstance, var int posPtr, var int angleXPtr, var int angleYPtr) {
 	//0x0074BD00 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
-	const int oCNPC__GetAngles_G1 = 7650560;
+	const int oCNpc__GetAngles_G1 = 7650560;
 
 	//0x006812B0 public: void __thiscall oCNpc::GetAngles(class zVEC3 &,float &,float &)
-	const int oCNPC__GetAngles_G2 = 6820528;
+	const int oCNpc__GetAngles_G2 = 6820528;
 
 	if (!posPtr) { return; };
 
@@ -638,7 +638,7 @@ func void oCNpc_GetAngles (var int slfInstance, var int posPtr, var int angleXPt
 		CALL_PtrParam (_@ (angleXPtr));
 
 		CALL_PtrParam (_@ (posPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetAngles_G1, oCNPC__GetAngles_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetAngles_G1, oCNpc__GetAngles_G2));
 		call = CALL_End();
 	};
 };
@@ -708,10 +708,10 @@ func int NPC_IsNpcInAngleY (var int slfInstance, var int npcInstance, var int an
  */
 func int oCNpc_DoThrowVob (var int slfInstance, var int vobPtr, var int speedF) {
 	//0x006A13C0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
-	const int oCNPC__DoThrowVob_G1 = 6951872;
+	const int oCNpc__DoThrowVob_G1 = 6951872;
 
 	//0x007450B0 public: virtual int __thiscall oCNPC::DoThrowVob(class zCVob *,float)
-	const int oCNPC__DoThrowVob_G2 = 7622832;
+	const int oCNpc__DoThrowVob_G2 = 7622832;
 
 	if (!vobPtr) { return 0; };
 
@@ -724,19 +724,19 @@ func int oCNpc_DoThrowVob (var int slfInstance, var int vobPtr, var int speedF) 
 	if (CALL_Begin(call)) {
 		CALL_FloatParam (_@ (speedF));
 		CALL_PtrParam (_@ (vobPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__DoThrowVob_G1, oCNPC__DoThrowVob_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DoThrowVob_G1, oCNpc__DoThrowVob_G2));
 		call = CALL_End();
 	};
 
 	return CALL_RetValAsInt ();
 };
 
-func int oCNPC_FindMobInter (var int slfInstance, var string scemeName) {
+func int oCNpc_FindMobInter (var int slfInstance, var string scemeName) {
 	//0x0069C720 public: class oCMobInter * __thiscall oCNpc::FindMobInter(class zSTRING const &)
-	const int oCNPC__FindMobInter_G1 = 6932256;
+	const int oCNpc__FindMobInter_G1 = 6932256;
 
 	//0x0073FE70 public: class oCMobInter * __thiscall oCNpc::FindMobInter(class zSTRING const &)
-	const int oCNPC__FindMobInter_G2 = 7601776;
+	const int oCNpc__FindMobInter_G2 = 7601776;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
@@ -744,7 +744,7 @@ func int oCNPC_FindMobInter (var int slfInstance, var string scemeName) {
 	scemeName = STR_Upper (scemeName);
 
 	CALL_zStringPtrParam (scemeName);
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__FindMobInter_G1, oCNPC__FindMobInter_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__FindMobInter_G1, oCNpc__FindMobInter_G2));
 
 	return CALL_RetValAsPtr ();
 };
@@ -786,19 +786,19 @@ func int oCNpc_GetTalkingWith (var int slfInstance) {
 	return CALL_RetValAsPtr ();
 };
 
-func int oCNPC_BeamTo (var int slfInstance, var string targetVob) {
+func int oCNpc_BeamTo (var int slfInstance, var string targetVob) {
 	//0x00693B10 public: int __thiscall oCNpc::BeamTo(class zSTRING const &)
-	const int oCNPC__BeamTo_G1 = 6896400;
+	const int oCNpc__BeamTo_G1 = 6896400;
 
 	//0x00736EE0 public: int __thiscall oCNpc::BeamTo(class zSTRING const &)
-	const int oCNPC__BeamTo_G2 = 7565024;
+	const int oCNpc__BeamTo_G2 = 7565024;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	CALL_zstringPtrParam (targetVob);
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNPC__BeamTo_G1, oCNPC__BeamTo_G2));
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__BeamTo_G1, oCNpc__BeamTo_G2));
 	return CALL_RetValAsInt ();
 };
 
@@ -825,13 +825,12 @@ func void oCNpc_Enable (var int slfInstance, var int posPtr) {
 	};
 };
 
-func void oCNpc_ClearEM (var int slfInstance)
-{
+func void oCNpc_ClearEM (var int slfInstance) {
 	//0x006A2610 public: void __thiscall oCNpc::ClearEM(void)
-	const int  oCNPC__ClearEM_G1 = 6956560;
+	const int oCNpc__ClearEM_G1 = 6956560;
 
 	//0x00746400 public: void __thiscall oCNpc::ClearEM(void)
-	const int  oCNPC__ClearEM_G2 = 7627776;
+	const int oCNpc__ClearEM_G2 = 7627776;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
@@ -841,7 +840,51 @@ func void oCNpc_ClearEM (var int slfInstance)
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__ClearEM_G1, oCNPC__ClearEM_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__ClearEM_G1, oCNpc__ClearEM_G2));
 		call = CALL_End();
 	};
+};
+
+func void oCNpc_MakeSpellBook (var int slfInstance) {
+	//0x006B86A0 public: void __thiscall oCNpc::MakeSpellBook(void)
+	const int oCNpc__MakeSpellBook_G1 = 7046816;
+
+	//0x0075F040 public: void __thiscall oCNpc::MakeSpellBook(void)
+	const int oCNpc__MakeSpellBook_G2 = 7729216;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__MakeSpellBook_G1, oCNpc__MakeSpellBook_G2));
+		call = CALL_End();
+	};
+};
+
+func int oCNpc_GetSpellBook (var int slfInstance) {
+	//0x0069B3C0 public: class oCMag_Book * __thiscall oCNpc::GetSpellBook(void)
+	const int oCNpc__GetSpellBook_G1 = 6927296;
+
+	//0x0073EA00 public: class oCMag_Book * __thiscall oCNpc::GetSpellBook(void)
+	const int oCNpc__GetSpellBook_G2 = 7729216;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetSpellBook_G1, oCNpc__GetSpellBook_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };

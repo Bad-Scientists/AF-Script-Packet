@@ -47,6 +47,7 @@ func string CC_GotoZEN (var string param) {
 		MEM_Info (msg);
 
 		oCGame_TriggerChangeLevel (levelName, vobName);
+
 		return "Done.";
 	};
 
