@@ -16,9 +16,15 @@
  *		- ID is extracted, script searches for all NPCs with this ID
  *		- script removes from routine manager all routines and inserts only found routine into routine manager
  *		- function oCRtnManager_RtnList_CheckIssues is called - this checks all issues
- *	 - This should be used only for testing - it can take up to 60 seconds to check all routines
+ *
+ *	 - This should be used only for testing - it can take up to 60 seconds to check all routines.
+ *
+ *	oCRtnManager_InfoManager_CheckAllRoutines
+ *	 - ultimate check which loops through all dialogues and calls their _info function (this might potentially update routine)
+ *
+ *	 - This should be used only for testing - it can take up to 10 minutes to check all routines.
  */
-func int oCRtnManager_RtnList_CheckIssues () {
+func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 	MEM_RtnMan_Init ();
 
 	var zCListSort list;
@@ -54,7 +60,7 @@ func int oCRtnManager_RtnList_CheckIssues () {
 			incompleteRoutine = FALSE;
 			overlappingRoutines = FALSE;
 
-			if (rtn.npc) {
+			if ((rtn.npc == checkNpcPtr) || ((rtn.npc) && (!checkNpcPtr))) {
 				var int i;
 				var int newNpc; newNpc = TRUE;
 
@@ -114,7 +120,7 @@ func int oCRtnManager_RtnList_CheckIssues () {
 
 							//If there is an overlay - then ignore this NPC
 							if (rtn2.overlay) {
-								MEM_Info (" - overlay routine --> ignoring");
+								zSpy_Info (" - overlay routine --> ignoring");
 								minsPerDay = 0;
 								continue;
 							};
@@ -152,76 +158,79 @@ func int oCRtnManager_RtnList_CheckIssues () {
 				};
 			};
 
-			//<--
+			if ((rtn.npc == checkNpcPtr) || (!checkNpcPtr)) {
 
-			msg = "";
+				//<--
 
-			wpIsValid = SearchWaypointByName (rtn.wpname);
+				msg = "";
 
-			//Is it possible that these could also be invalid??
-			npcIsValid = Hlp_Is_oCNpc (rtn.npc);
-			funcIDIsValid = rtn.f_script;
+				wpIsValid = SearchWaypointByName (rtn.wpname);
 
-			if ((!wpIsValid) || (!npcIsValid) || (!funcIDIsValid)) {
-				issueCounter += 1;
+				//Is it possible that these could also be invalid??
+				npcIsValid = Hlp_Is_oCNpc (rtn.npc);
+				funcIDIsValid = rtn.f_script;
 
-				msg = " - rtn: ";
+				if ((!wpIsValid) || (!npcIsValid) || (!funcIDIsValid)) {
+					issueCounter += 1;
 
-				//what is this?
-				if (rtn.inst) {
-				};
+					msg = " - rtn: ";
 
-				if (!npcIsValid) {
-					msg = ConcatStrings (msg, " invalid NPC ");
-				} else {
-					slf = _^ (rtn.npc);
-					msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
-					msg = ConcatStrings (msg, ", npc: ");
-					msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
-				};
+					//what is this?
+					if (rtn.inst) {
+					};
 
-				if (!funcIDIsValid) {
-					msg = ConcatStrings (msg, ", invalid function ID, ");
-				} else {
-					msg = ConcatStrings (msg, ", ");
-					msg = ConcatStrings (msg, GetSymbolName (rtn.f_script));
-				};
-
-				if (!wpIsValid) {
-					msg = ConcatStrings (msg, ", wp: ");
-
-					if (STR_Len (rtn.wpname) == 0) {
-						msg = ConcatStrings (msg, "N/A - blank waypoint! ");
+					if (!npcIsValid) {
+						msg = ConcatStrings (msg, " invalid NPC ");
 					} else {
-						msg = ConcatStrings (msg, rtn.wpname);
-						msg = ConcatStrings (msg, " - waypoint does not exist! ");
+						slf = _^ (rtn.npc);
+						msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
+						msg = ConcatStrings (msg, ", npc: ");
+						msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
+					};
+
+					if (!funcIDIsValid) {
+						msg = ConcatStrings (msg, ", invalid function ID, ");
+					} else {
+						msg = ConcatStrings (msg, ", ");
+						msg = ConcatStrings (msg, GetSymbolName (rtn.f_script));
+					};
+
+					if (!wpIsValid) {
+						msg = ConcatStrings (msg, ", wp: ");
+
+						if (STR_Len (rtn.wpname) == 0) {
+							msg = ConcatStrings (msg, "N/A - blank waypoint! ");
+						} else {
+							msg = ConcatStrings (msg, rtn.wpname);
+							msg = ConcatStrings (msg, " - waypoint does not exist! ");
+						};
+					};
+
+					zSpy_Info (msg);
+				};
+
+				if (overlappingRoutines) {
+					if (npcIsValid) {
+						slf = _^ (rtn.npc);
+						msg = " - rtn: ";
+						msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
+						msg = ConcatStrings (msg, ", npc: ");
+						msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
+						msg = ConcatStrings (msg, ", routines are overlapping - check the daily routine!");
+						zSpy_Info (msg);
 					};
 				};
 
-				MEM_Info (msg);
-			};
-
-			if (overlappingRoutines) {
-				if (npcIsValid) {
-					slf = _^ (rtn.npc);
-					msg = " - rtn: ";
-					msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
-					msg = ConcatStrings (msg, ", npc: ");
-					msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
-					msg = ConcatStrings (msg, ", routines are overlapping - check the daily routine!");
-					MEM_Info (msg);
-				};
-			};
-
-			if (incompleteRoutine) {
-				if (npcIsValid) {
-					slf = _^ (rtn.npc);
-					msg = " - rtn: ";
-					msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
-					msg = ConcatStrings (msg, ", npc: ");
-					msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
-					msg = ConcatStrings (msg, ", routine is incomplete - check the daily routine!");
-					MEM_Info (msg);
+				if (incompleteRoutine) {
+					if (npcIsValid) {
+						slf = _^ (rtn.npc);
+						msg = " - rtn: ";
+						msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
+						msg = ConcatStrings (msg, ", npc: ");
+						msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
+						msg = ConcatStrings (msg, ", routine is incomplete - check the daily routine!");
+						zSpy_Info (msg);
+					};
 				};
 			};
 		};
@@ -234,26 +243,32 @@ func int oCRtnManager_RtnList_CheckIssues () {
 	return + issueCounter;
 };
 
+/*
+ *
+ */
 func void oCRtnManager_RtnList_CheckValidity () {
 	var string msg;
-	MEM_Info ("oCRtnManager_RtnList_CheckValidity --> ");
+	zSpy_Info ("oCRtnManager_RtnList_CheckValidity --> ");
 	msg = oCWorld_GetWorldFilename ();
 	msg = ConcatStrings (" - world: ", msg);
-	MEM_Info (msg);
+	zSpy_Info (msg);
 
-	if (oCRtnManager_RtnList_CheckIssues () == 0) {
-		MEM_Info (" - no issues detected at this point of time.");
+	if (oCRtnManager_RtnList_CheckIssues (0) == 0) {
+		zSpy_Info (" - no issues detected at this point of time.");
 	};
 
-	MEM_Info ("oCRtnManager_RtnList_CheckValidity <--");
+	zSpy_Info ("oCRtnManager_RtnList_CheckValidity <--");
 };
 
+/*
+ *
+ */
 func void oCRtnManager_AllRoutines_CheckValidity () {
 	var string msg;
-	MEM_Info ("oCRtnManager_AllRoutines_CheckValidity --> ");
+	zSpy_Info ("oCRtnManager_AllRoutines_CheckValidity --> ");
 	msg = oCWorld_GetWorldFilename ();
 	msg = ConcatStrings (" - world: ", msg);
-	MEM_Info (msg);
+	zSpy_Info (msg);
 
 	var int issueCounter; issueCounter = 0;
 
@@ -313,15 +328,15 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 										var int daily_routine; daily_routine = NPC_GetDailyRoutineFuncID (slf);
 
 										//Remove all routines!
-										oCRtnManager_RemoveAllRoutines ();
+										//oCRtnManager_RemoveAllRoutines ();
 
 										self = Hlp_GetNpc (slf);
 
 										//Change daily_routine (engine will update routine list)
-										NPC_ChangeRoutine (slf, i);
+										NPC_ChangeRoutine (slf, i); //i is index in a symbol table
 
 										//Check issues in routine list
-										issueCounter += oCRtnManager_RtnList_CheckIssues ();
+										issueCounter += oCRtnManager_RtnList_CheckIssues (_@ (slf));
 
 										//Restore daily_routine
 										NPC_ChangeRoutine (slf, daily_routine);
@@ -360,7 +375,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 							msg = ConcatStrings (msg, " npcs: ");
 							msg = ConcatStrings (msg, npcWithID);
 							msg = ConcatStrings (msg, " have same ID! Results of routine check for this ID above might be wrong.");
-							MEM_Info (msg);
+							zSpy_Info (msg);
 						};
 
 						if (countNPC == 0) {
@@ -369,7 +384,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 							msg = ConcatStrings (msg, " no NPC found. Routine ");
 							msg = ConcatStrings (msg, symb.Name);
 							msg = ConcatStrings (msg, " is either redundant or NPC was not yet inserted into the world.");
-							MEM_Info (msg);
+							zSpy_Info (msg);
 						};
 					};
 				};
@@ -382,10 +397,10 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 	self = Hlp_GetNpc (selfBackup);
 
 	if (issueCounter == 0) {
-		MEM_Info (" - no issues detected at this point of time.");
+		zSpy_Info (" - no issues detected at this point of time.");
 	};
 
-	MEM_Info ("oCRtnManager_AllRoutines_CheckValidity <--");
+	zSpy_Info ("oCRtnManager_AllRoutines_CheckValidity <--");
 
 	//Remove any leftover routines ...
 
@@ -393,22 +408,22 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 
 	//Restart routines !
 
-	listPtr = MEM_World_Get_voblist_npcs ();
+	//listPtr = MEM_World_Get_voblist_npcs ();
 
-	while (listPtr);
-		list = _^ (listPtr);
-		if (list.data) {
-			if (Hlp_Is_oCNpc (list.data)) {
-				slf = _^ (list.data);
-				daily_routine = NPC_GetDailyRoutineFuncID (slf);
-				if (daily_routine) {
-					NPC_ChangeRoutine (slf, daily_routine);
-				};
-			};
-		};
+	//while (listPtr);
+	//	list = _^ (listPtr);
+	//	if (list.data) {
+	//		if (Hlp_Is_oCNpc (list.data)) {
+	//			slf = _^ (list.data);
+	//			daily_routine = NPC_GetDailyRoutineFuncID (slf);
+	//			if (daily_routine) {
+	//				NPC_ChangeRoutine (slf, daily_routine);
+	//			};
+	//		};
+	//	};
 
-		listPtr = list.next;
-	end;
+	//	listPtr = list.next;
+	//end;
 
 	/*
 	if (symb.offset) {
@@ -424,4 +439,64 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 		};
 	};
 	*/
+};
+
+/*
+ *
+ */
+func void oCRtnManager_InfoManager_CheckAllRoutines () {
+	zSpy_Info ("oCRtnManager_InfoManager_CheckAllRoutines --> ");
+
+	var string msg;
+	msg = oCWorld_GetWorldFilename ();
+	msg = ConcatStrings (" - world: ", msg);
+	zSpy_Info (msg);
+
+	var int lastDaily_routine; lastDaily_routine = 0;
+	var int rtnIssueCounter; rtnIssueCounter = 0;
+
+	var oCInfo dlgInstance;
+	var zCListSort list;
+
+	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+
+	while (infoPtr);
+		list = _^ (infoPtr);
+		dlgInstance = _^ (list.data);
+
+		var oCNpc slf; slf = Hlp_GetNpc (dlgInstance.npc);
+
+		if (Hlp_IsValidNpc (slf)) {
+			//Beam player to NPC!
+			PC_BeamToNpc (slf);
+
+			//Backup daily routine of this NPC
+			var int daily_routine; daily_routine = NPC_GetDailyRoutineFuncID (slf);
+
+			//Update self & other
+			self = Hlp_GetNPC (slf);
+			other = Hlp_GetNpc (hero);
+
+			//Call Info dialogue
+			MEM_CallByID (dlgInstance.information);
+
+			//If routine was changed ... check potential issues
+			if (lastDaily_routine != daily_routine) {
+				rtnIssueCounter += oCRtnManager_RtnList_CheckIssues (_@ (slf));
+
+				lastDaily_routine = daily_routine;
+			};
+		};
+
+		infoPtr = list.next;
+	end;
+
+	if (rtnIssueCounter == 0) {
+		zSpy_Info (" - no issues detected for changes triggere by dialogues.");
+	} else {
+		msg = " - total issues with routines: ";
+		msg = ConcatStrings (msg, IntToString (rtnIssueCounter));
+		zSpy_Info (msg);
+	};
+	zSpy_Info ("<-- oCRtnManager_InfoManager_CheckAllRoutines");
 };
