@@ -8,9 +8,16 @@ func void oCGame_TriggerChangeLevel (var string levelName, var string waypoint) 
 	waypoint = STR_Upper (waypoint);
 	levelName = STR_Upper (levelName);
 
-	CALL_zStringPtrParam (waypoint);
-	CALL_zStringPtrParam (levelName);
-	CALL__thiscall (_@(MEM_Game), MEMINT_SwitchG1G2 (oCGame__TriggerChangeLevel_G1, oCGame__TriggerChangeLevel_G2));
+	//Safety check - game crashes if you try to trigger change to current world
+	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
+
+	if (Hlp_StrCmp (thisLevelName, levelName)) {
+		oCNpc_BeamTo (hero, waypoint);
+	} else {
+		CALL_zStringPtrParam (waypoint);
+		CALL_zStringPtrParam (levelName);
+		CALL__thiscall (_@(MEM_Game), MEMINT_SwitchG1G2 (oCGame__TriggerChangeLevel_G1, oCGame__TriggerChangeLevel_G2));
+	};
 };
 
 /*
