@@ -350,6 +350,60 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	return firstPtr;
 };
 
+func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int canSeeCheck, var int verticalDist) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	objectName = STR_Upper (objectName);
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCNPC npc;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (vobPtr) {
+
+			if (canSeeCheck) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (canSee) {
+				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+					var zCVob vob; vob = _^ (vobPtr);
+
+					if (Hlp_StrCmp (STR_Upper (vob._zCObject_objectName), objectName)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
 /*
  *	zCVob_GetNearest_AtPos
  *	 - function returns first pointer to object closest to fromPosPtr
