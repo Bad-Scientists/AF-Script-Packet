@@ -29,6 +29,10 @@ EngineClasses_G2\zCWay.d
 EngineClasses_G2\oSSpawnNode.d
 EngineClasses_G2\zCSkyState.d
 
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+strings.d
 utils.d
 files.d
 
@@ -42,8 +46,6 @@ vobFunctions.d
 ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
-ScriptBin\strings.d
-ScriptBin\convert.d
 ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d
 
@@ -59,8 +61,6 @@ ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
 
 ObjectFactory\zCWaypoint.d
-
-strings.d
 
 mobFunctions.d
 
