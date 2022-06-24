@@ -671,16 +671,28 @@ func void Vob_UnTriggerVobByName (var string vobName) {
 /*
  *
  */
+func void Vob_ChangeDataByPtr (var int vobPtr, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
+	if (!vobPtr) { return; };
+
+	var int onBits; onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int offBits; offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
+
+	var zCVob vob; vob = _^ (vobPtr);
+
+	vob.bitfield[0] = vob.bitfield[0] | (onBits);
+	vob.bitfield[0] = vob.bitfield[0] & ~ (offBits);
+};
+
+/*
+ *
+ */
 func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
 	var int arr; arr = MEM_SearchAllVobsByName (vobName);
 
 	var zCArray zarr; zarr = _^ (arr);
 
-	var int onBits;
-	var int offBits;
-
-	onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
-	offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int onBits; onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int offBits; offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
 
 	var zCVob vob;
 	var int vobPtr;
