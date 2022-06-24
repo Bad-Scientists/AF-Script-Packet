@@ -34,6 +34,24 @@ func void oCItem_SetLightingSwell (var int value) {
 		call = CALL_End ();
 	};
 };
+
+func int oCItem_GetLightingSwell () {
+	//0x00670DD0 public: static int __cdecl oCItem::GetLightingSwell(void)
+	const int oCItem__GetLightingSwell_G1 = 6753744;
+
+	//0x00711280 public: static int __cdecl oCItem::GetLightingSwell(void)
+	const int oCItem__GetLightingSwell_G2 = 7410304;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__cdecl (MEMINT_SwitchG1G2 (oCItem__GetLightingSwell_G1, oCItem__GetLightingSwell_G2));
+		call = CALL_End ();
+	};
+
+	return +retVal;
 };
 
 
