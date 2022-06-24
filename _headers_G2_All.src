@@ -7,7 +7,6 @@ hlp_functions.d
 EngineClasses_G2\oInventory.d
 EngineClasses_G2\zEventMan.d
 EngineClasses_G2\zCViewDialog.d
-EngineClasses_G2\oViewDialogTrade.d
 EngineClasses_G2\oNpcStates.d
 EngineClasses_G2\oNpc.d
 EngineClasses_G2\zCVisual.d
