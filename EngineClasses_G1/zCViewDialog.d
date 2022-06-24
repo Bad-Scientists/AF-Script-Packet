@@ -1,866 +1,737 @@
 /*
- *	No idea where I got class definition for zCViewText2 and zCViewDialog from :( most likely from Lehona :)
- *
- *	TODO: are these classes identical for both G1 & G2A ???
- *
- *	I was able to derive from zCViewDialog all inheriting classes (hopefully!)
- *	- zCViewDialog [G1, G2A]
- *		- [X] oCViewDialogInventory		[G1, G2A]
- *		- [X] oCViewDialogItem			[G1, G2A]
- *		- [x] oCViewDialogItemContainer		[G1]
- *		- [x] oCViewDialogStealContainer	[G1]
- *		- [x] oCViewDialogTrade			[G1
- *		- [x] zCViewDialogChoice		[G1, G2A]
- */
+typedef enum zEViewFX {
+VIEW_FX_NONE        = 0,
+VIEW_FX_ZOOM        = 1,
+VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
+VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
+VIEW_FX_FORCE_DWORD = 0xffffffff
+} zTViewFX;
+
+
+typedef enum zEViewAlignment {
+VIEW_ALIGN_NONE,
+VIEW_ALIGN_MAX,
+VIEW_ALIGN_MIN,
+VIEW_ALIGN_CENTER
+} zTViewAlign;
+
+enum oEInventoryAlignment {
+oEInventoryAlignment_Left,
+oEInventoryAlignment_Right
+};
+
+enum oEItemContainerAlignment {
+oEItemContainerAlignment_Left,
+oEItemContainerAlignment_Right
+};
+
+enum oEStealContainerAlignment {
+oEStealContainerAlignment_Left,
+oEStealContainerAlignment_Right
+};
+
+typedef enum zETradeDialogSection {
+TRADE_SECTION_LEFT_INVENTORY,
+TRADE_SECTION_LEFT_CONTAINER,
+TRADE_SECTION_RIGHT_CONTAINER,
+TRADE_SECTION_RIGHT_INVENTORY,
+TRADE_SECTION_CHOICE
+} zTTradeSection;
+
+typedef enum zETradeDialogChoice {
+TRADE_CHOICE_ACCEPT,
+TRADE_CHOICE_RESET,
+TRADE_CHOICE_EXIT
+} zTTradeChoice;
+
+typedef enum zETradeCharacter {
+TRADE_CHARACTER_NPC,
+TRADE_CHARACTER_PLAYER
+} zTTradeNPC;
+*/
 
 class zCViewText2 {
-	var int enabledColor;	//0	int EnabledColor;
-	var int enabledTimer;	//4	int EnabledTimer;
+	var int enabledColor; //int // sizeof 04h offset 00h
+	var int enabledTimer; //int // sizeof 04h offset 04h
 
-	var int posX;		//8	zPOS PixelPosition;
-	var int posY;		//12	zPOS PixelPosition;
+	//zPOS PixelPosition; // sizeof 08h offset 08h
+	var int pixelPositionX;
+	var int pixelPositionY;
 
-	var int timer;		//16	float Timer;
-	var string text;	//20	zSTRING Text;
+	var int timer; //float // sizeof 04h offset 10h
+	var string text; //zSTRING // sizeof 14h offset 14h
 
-	//zCViewFont ViewFont;
-	var int funcAlphaBlend;	//40	zTRnd_AlphaBlendFunc FuncAlphaBlend;
-	var int font;		//44	zCFont* Font;
-	var int	color;		//48	zCOLOR Color;
-	var int alpha;		//52	int Alpha;
-	var int enabledBlend;	//56	int EnabledBlend; 
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
 };
-    
+
+//class zCViewDialog : public zCViewPrint, public zCInputCallback {
 class zCViewDialog {
-	var int _vtbl;               //0
-	var int refctr;              //4
-	var int hashindex;          //8
-	var int hashNext;                //12
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
 
-	var string objectName;		//16	8193786 zSTRING
-
-	var int _zCViewBase_vtbl; //36
-
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
-
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
-
-	var int key; //72
-	var int parent; //76
-
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
-
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
-
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
-
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
-
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
-
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
-
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
-
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
-
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
-
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-};
-
-class oCViewDialogInventory {
-	var int _vtbl;               //0
-	var int refctr;              //4
-	var int hashindex;          //8
-	var int hashNext;                //12
-
-	var string objectName;		//16	8193786 zSTRING
-
-	var int _zCViewBase_vtbl; //36
-
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
-
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
-
-	var int key; //72
-	var int parent; //76
-
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
-
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
-
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
-
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
-
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
-
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
-
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
-
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
-
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
-
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int u248;			//248
-	var int u252;			//252
-	
-	var int inventory;		//256	oCNpcInventory*
-	var int alignment;		//260
-};
-
-class oCViewDialogItem {
-	var int _vtbl;               //0
-	var int refctr;              //4
-	var int hashindex;          //8
-	var int hashNext;                //12
-
-	var string objectName;		//16	8193786 zSTRING
-
-	var int _zCViewBase_vtbl; //36
-
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
-
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
-
-	var int key; //72
-	var int parent; //76
-
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
-
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
-
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
-
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
-
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
-
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
-
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
-
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
-
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
-
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int item;			//248	oCItem*
-};
-
-class zCViewDialogChoice {
-	var int _vtbl;               //0
-	var int refctr;              //4
-	var int hashindex;          //8
-	var int hashNext;                //12
-
-	var string objectName;		//16	8193786 zSTRING
-
-	var int _zCViewBase_vtbl; //36
-
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
-
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
-
-	var int key; //72
-	var int parent; //76
-
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
-
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
-
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
-
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
-
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
-
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
-
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
-
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
-
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
-
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int ColorSelected;		//zCOLOR //248
-	var int ColorGrayed;		//zCOLOR //252
-	var int ChoiceSelected;		//256
-	var int Choices;		//260
-	var int LineStart;		//264
-};
-
-class oCViewDialogItemContainer {
-	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;			//12
-
-	/*
-	Seems like at u16 there is actually a string! which was so far completely empty
-	var int u16;                 //16			//zString_vtbl   				 = 8193768;	
-	var int u20;                 //20
-	var int u24;                 //24
-	var int u28;                 //28
-	var int u32;                 //32
-	*/
-	var string objectName;
-
-	var int _zCViewBase_vtbl; //36
-
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
-
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
-
-	var int key; //72
-	var int parent; //76
-
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
-
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
-
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
-
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
-
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
-
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
-
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
-
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
-
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
-
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int u248;			//248
-	var int u252;			//252
-
-	var int itemContainer;		//256	oCItemContainer*
-
-	var int alignment;		//260
-	var int value;			//264
-	var int multiplier;		//268
-};
-
-class oCViewDialogStealContainer  {
-	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;			//12
-
-	/*
-	Seems like at u16 there is actually a string! which was so far completely empty
-	var int u16;                 //16			//zString_vtbl   				 = 8193768;	
-	var int u20;                 //20
-	var int u24;                 //24
-	var int u28;                 //28
-	var int u32;                 //32
-	*/
 	var string objectName; //16
+      //}
 
 	var int _zCViewBase_vtbl; //36
 
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
 
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
 
-	var int key; //72
-	var int parent; //76
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
 
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
 
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
 
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
 
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
 
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
 
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
 
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
 
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
 
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
+	var int zCInputCallback_vtbl; //236
 
-	var int u200; //200
-
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int u248;				//248
-	var int u252;				//252
-	var int stealContainer;			//256 oCStealContainer*
-	var int alignment;			//260 oEStealContainerAlignment
-	var int value;				//264
-	var int multiplier;			//268
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
 };
 
+//class oCViewDialogInventory : public zCViewDialog {
+class oCViewDialogInventory {
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
+
+	var string objectName; //16
+      //}
+
+	var int _zCViewBase_vtbl; //36
+
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
+
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
+
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
+
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
+
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
+
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
+
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
+
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
+
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
+
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
+
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
+
+	var int zCInputCallback_vtbl; //236
+
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
+
+	var int oTInventoryAlignment; //oEInventoryAlignment // sizeof 04h offset F8h
+	var int oTAlignmentInventory; //oEInventoryAlignment // sizeof 04h offset FCh
+	var int inventory; //oCNpcInventory* // sizeof 04h offset 100h
+	var int alignment; //oEInventoryAlignment // sizeof 04h offset 104h
+};
+
+//class oCViewDialogItem : public zCViewDialog {
+class oCViewDialogItem {
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
+
+	var string objectName; //16
+      //}
+
+	var int _zCViewBase_vtbl; //36
+
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
+
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
+
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
+
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
+
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
+
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
+
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
+
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
+
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
+
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
+
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
+
+	var int zCInputCallback_vtbl; //236
+
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
+
+	var int item; //oCItem* // sizeof 04h offset F8h
+};
+
+//class oCViewDialogItemContainer : public zCViewDialog {
+class oCViewDialogItemContainer {
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
+
+	var string objectName; //16
+      //}
+
+	var int _zCViewBase_vtbl; //36
+
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
+
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
+
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
+
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
+
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
+
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
+
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
+
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
+
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
+
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
+
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
+
+	var int zCInputCallback_vtbl; //236
+
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
+
+	var int oTItemContainerAlignment; //oEItemContainerAlignment // sizeof 04h offset F8h
+	var int oTAlignmentItemContainer; //oEItemContainerAlignment // sizeof 04h offset FCh
+	var int itemContainer; //oCItemContainer* // sizeof 04h offset 100h
+	var int alignment; //oEItemContainerAlignment // sizeof 04h offset 104h
+	var int value; //unsigned long // sizeof 04h offset 108h
+	var int valueMultiplier; //float // sizeof 04h offset 10Ch
+};
+
+
+//class oCViewDialogStealContainer : public zCViewDialog {
+class oCViewDialogStealContainer {
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
+
+	var string objectName; //16
+      //}
+
+	var int _zCViewBase_vtbl; //36
+
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
+
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
+
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
+
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
+
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
+
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
+
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
+
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
+
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
+
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
+
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
+
+	var int zCInputCallback_vtbl; //236
+
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
+
+	var int oTStealContainerAlignment; //oEStealContainerAlignment // sizeof 04h offset F8h
+	var int oTAlignmentStealContainer; //oEStealContainerAlignment // sizeof 04h offset FCh
+	var int stealContainer; //oCStealContainer* // sizeof 04h offset 100h
+	var int alignment; //oEStealContainerAlignment // sizeof 04h offset 104h
+	var int value; //unsigned long // sizeof 04h offset 108h
+	var int valueMultiplier; //float // sizeof 04h offset 10Ch
+};
+
+//class oCViewDialogTrade : public zCViewDialog {
 class oCViewDialogTrade {
-	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
 
-	/*
-	Seems like at u16 there is actually a string! which was so far completely empty
-	var int u16;                 //16			//zString_vtbl   				 = 8193768;	
-	var int u20;                 //20
-	var int u24;                 //24
-	var int u28;                 //28
-	var int u32;                 //32
-	*/
-	var string objectName;		//16
+	var string objectName; //16
+      //}
 
 	var int _zCViewBase_vtbl; //36
 
-	var int vposx;              //int //40
-	var int vposy;              //int //44
-	var int vsizex;             //int //48
-	var int vsizey;             //int //52
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
 
-	//Aber auch "echt" Pixelpositionen
-	var int pposx;              //int //56
-	var int pposy;              //int //60
-	var int psizex;             //int //64
-	var int psizey;             //int //68
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
 
-	var int key; //72
-	var int parent; //76
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
 
-	// Childs
-	//zList <zCView>            childs
-	var int childs_compare;        //(*Compare)(zCView *ele1,zCView *ele2) // 80
-	var int childs_count;          //int //84
-	var int childs_last;           //zCView* //88
-	var int childs_wurzel;         //zCView* //92
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
 
-	//var int alphafunc;           //96
-	var int backTex;            //zCTexture* //96
-	var int color;                //100
-	var int alpha;                //104
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
 
-	//zVEC2 TexturePosition [2]; // probably UV coords on texture
-	var int texPos_0[2]; // 108, 112
-	var int texPos_1[2]; // 116, 120
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
 
-	var int isOpen;    //zBOOL  //124
-	var int isClosed;    //zBOOL //128
-	// time elapse during open/close, better not modify
-	var int timeOpen;    //zREAL //132
-	var int timeClose;    //zREAL //136
-	// duration open/close takes to finish
-	var int durOpen;    //zREAL //140
-	var int durClose;    //zREAL //144
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
 
-	/*
-	enum zTViewFX: {
-	VIEW_FX_NONE        = 0,
-	VIEW_FX_ZOOM        = 1,
-	VIEW_FX_FADE        = VIEW_FX_ZOOM << 1,
-	VIEW_FX_BOUNCE      = VIEW_FX_FADE << 1,
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
 
-	VIEW_FX_FORCE_DWORD = 0xffffffff
-	}*/
-	var int fxOpen;    //zTViewFX //148
-	var int fxClose;    //zTViewFX //152
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
 
-	//zVEC2       TextureOffset[2]; //  offset to be added to texture coordinates
-	var int texOffset_0[2]; // 156, 160
-	var int texOffset_1[2]; // 164, 168
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
 
-	//typedef zCArray< zCViewText2* > zCListViewText;
-	var int m_listLines_array;     //zstring*  //172
-	var int m_listLines_numAlloc;  //int     //176
-	var int m_listLines_numInArray;//int    //180
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
 
-	/*enum zEViewAlignment
-	{
-		VIEW_ALIGN_NONE     ,
-		VIEW_ALIGN_MAX      ,
-		VIEW_ALIGN_MIN      ,
-		VIEW_ALIGN_CENTER  
-	}
-	var int align //zTViewAlign;*/
-	/*
-		enum zTRnd_AlphaBlendFunc   {   zRND_ALPHA_FUNC_MAT_DEFAULT,
-		zRND_ALPHA_FUNC_NONE,          
-		zRND_ALPHA_FUNC_BLEND,          
-		zRND_ALPHA_FUNC_ADD,                    
-		zRND_ALPHA_FUNC_SUB,                    
-		zRND_ALPHA_FUNC_MUL,                    
-		zRND_ALPHA_FUNC_MUL2,                  
-		zRND_ALPHA_FUNC_TEST,          
-		zRND_ALPHA_FUNC_BLEND_TEST      
-	};  */
-	var int alphaFunc; // 184
-	var int font;              //188
-	var int fontColor;                  //zCOLOR b, g, r a //192
-	var int fontAlpha;                  //int //196
+	var int zCInputCallback_vtbl; //236
 
-	var int u200; //200
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
 
-	var int cursorx; //204
-	var int cursory; //208
-
-	var int offsetTextpx; //212
-	var int offsetTextpy; //216
-
-	var int sizeMargin_0[2]; // 220, 224
-	var int sizeMargin_1[2]; // 228, 232
-
-	var int event; //236
-	var int IsDone; //zBOOL //240
-	var int IsActivated; //zBOOL //244
-
-	var int dlgInventoryNpc;	//248	oCViewDialogStealContainer*
-	var int dlgContainerNpc;	//252	oCViewDialogItemContainer*
-	var int dlgChoice;		//256	zCViewDialogChoice*
-	var int dlgContainerPlayer;	//260	oCViewDialogItemContainer*
-	var int dlgInventoryPlayer;	//264	oCViewDialogInventory*
-	var int sectionTrade;		//268	zTTradeSection
-	var int NpcLeft;		//272	oCNpc*
-	var int NpcRight;		//276	oCNpc*
+	var int dlgInventoryNpc; //oCViewDialogStealContainer* // sizeof 04h offset F8h
+	var int dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
+	var int dlgChoice; //zCViewDialogChoice* // sizeof 04h offset 100h
+	var int dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
+	var int dlgInventoryPlayer; //oCViewDialogInventory* // sizeof 04h offset 108h
+	var int sectionTrade; //zTTradeSection // sizeof 04h offset 10Ch
+	var int npcLeft; //oCNpc* // sizeof 04h offset 110h
+	var int npcRight; //oCNpc* // sizeof 04h offset 114h
 };
 
+//class zCViewDialogChoice : public zCViewDialog {
+class zCViewDialogChoice {
+ //class zCViewDialog : public zCViewPrint, public zCInputCallback {
+  //class zCViewPrint : public zCViewFX {
+   //class zCViewFX : public zCViewDraw {
+    //class zCViewDraw : public zCViewObject {
+     //class zCViewObject : public zCObject, public zCViewBase {
+      //class zCObject {
+	var int _vtbl; //0
+	var int refctr; //4
+	var int hashindex; //8
+	var int hashNext; //12
+
+	var string objectName; //16
+      //}
+
+	var int _zCViewBase_vtbl; //36
+
+	var int virtualPositionX; //zPOS // sizeof 08h offset 28h
+	var int virtualPositionY;
+	var int virtualSizeX; //zPOS // sizeof 08h offset 30h
+	var int virtualSizeY;
+
+	var int pixelPositionX; //zPOS // sizeof 08h offset 38h
+	var int pixelPositionY;
+	var int pixelSizeX; //zPOS // sizeof 08h offset 40h
+	var int pixelSizeY;
+
+	var int ID; //unsigned long // sizeof 04h offset 48h
+	var int viewParent; //zCViewObject* // sizeof 04h offset 4Ch
+
+	//zCListSort<zCViewObject> ListChildren; // sizeof 0Ch offset 50h
+	var int listChildren_compare;
+	var int listChildren_data;
+	var int listChildren_next;
+     //}
+
+	var int textureFuncAlpha; //zTRnd_AlphaBlendFunc // sizeof 04h offset 5Ch
+	var int texture; //zCTexture* // sizeof 04h offset 60h
+	var int textureColor; //zCOLOR // sizeof 04h offset 64h
+	var int textureAlpha; //int // sizeof 04h offset 68h
+
+	//zVEC2 TexturePosition[2]; // sizeof 10h offset 6Ch
+	var int texturePosition_0[2];
+	var int texturePosition_1[2];
+    //}
+
+	var int hasOpened; //int // sizeof 04h offset 7Ch
+	var int hasClosed; //int // sizeof 04h offset 80h
+	var int timeOpen; //float // sizeof 04h offset 84h
+	var int timeClose; //float // sizeof 04h offset 88h
+	var int durationOpen; //float // sizeof 04h offset 8Ch
+	var int durationClose; //float // sizeof 04h offset 90h
+	var int modeOpen; //unsigned long // sizeof 04h offset 94h
+	var int modeClose; //unsigned long // sizeof 04h offset 98h
+
+	//zVEC2 TextureOffset[2]; // sizeof 10h offset 9Ch
+	var int textureOffset_0[2];
+	var int textureOffset_1[2];
+   //}
+
+	//zCArray<zCViewText2*> ListTextLines; // sizeof 0Ch offset ACh
+	var int listTextLines_array; //zCViewText2*
+	var int listTextLines_numAlloc;  //int
+	var int listTextLines_numInArray;//int
+
+	//zCViewFont ViewFont; // sizeof 14h offset B8h
+	//class zCViewFont {
+	var int funcAlphaBlend; //zTRnd_AlphaBlendFunc // sizeof 04h offset 00h
+	var int font; //zCFont* // sizeof 04h offset 04h
+	var int color; //zCOLOR // sizeof 04h offset 08h
+	var int alpha; //int // sizeof 04h offset 0Ch
+	var int enabledBlend; //int // sizeof 04h offset 10h
+	//};
+
+	var int positionCursorX; //zPOS // sizeof 08h offset CCh
+	var int positionCursorY;
+	var int offsetTextPixelX; //zPOS // sizeof 08h offset D4h
+	var int offsetTextPixelY;
+	var int sizeMargin_0[2]; //zPOS // sizeof 10h offset DCh
+	var int sizeMargin_1[2];
+  //}
+
+	var int zCInputCallback_vtbl; //236
+
+	var int isDone; //int // sizeof 04h offset F0h
+	var int isActivated; //int // sizeof 04h offset F4h
+ //}
+
+	var int colorSelected; //zCOLOR // sizeof 04h offset F8h
+	var int colorGrayed; //zCOLOR // sizeof 04h offset FCh
+	var int choiceSelected; //int // sizeof 04h offset 100h
+	var int choices; //int // sizeof 04h offset 104h
+	var int lineStart; //int // sizeof 04h offset 108h
+};

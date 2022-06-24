@@ -99,14 +99,25 @@ func int Hlp_Trade_GetInventoryNpcContainer () {
 };
 
 func int Hlp_Trade_GetContainerNpcContainer () {
+	//G2A does not have containers!
+	if (MEMINT_SwitchG1G2 (0, 1)) { return 0; };
+
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
 	var oCViewDialogTrade dialogTrade;
 	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
-	if (dialogTrade.dlgContainerNpc) {
+	//G2A class oCViewDialogTrade does not have property dlgContainerNpc
+	//Therefore we cannot use it directly, but we have to use offset instead
+	//var int dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
+
+	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 252;
+
+//	if (dialogTrade.dlgContainerNpc) {
+	if (itemContainerPtr) {
 		var oCViewDialogItemContainer dialogItemContainer;
-		dialogItemContainer = _^ (dialogTrade.dlgContainerNpc);
+		//dialogItemContainer = _^ (dialogTrade.dlgContainerNpc);
+		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
 		if (dialogItemContainer.itemContainer) {
@@ -118,14 +129,25 @@ func int Hlp_Trade_GetContainerNpcContainer () {
 };
 
 func int Hlp_Trade_GetContainerPlayerContainer () {
+	//G2A does not have containers!
+	if (MEMINT_SwitchG1G2 (0, 1)) { return 0; };
+
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
 	var oCViewDialogTrade dialogTrade;
 	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
-	if (dialogTrade.dlgContainerPlayer) {
+	//G2A class oCViewDialogTrade does not have property dlgContainerPlayer
+	//Therefore we cannot use it directly, but we have to use offset instead
+	//var int dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
+
+	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 260;
+
+	//if (dialogTrade.dlgContainerPlayer) {
+	if (itemContainerPtr) {
 		var oCViewDialogItemContainer dialogItemContainer;
-		dialogItemContainer = _^ (dialogTrade.dlgContainerPlayer);
+		//dialogItemContainer = _^ (dialogTrade.dlgContainerPlayer);
+		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
 		if (dialogItemContainer.itemContainer) {

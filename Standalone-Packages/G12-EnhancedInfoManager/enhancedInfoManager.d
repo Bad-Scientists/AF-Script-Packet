@@ -238,7 +238,7 @@ func void InfoManagerSpinnerAniFunction () {
 			textWidth = Print_GetStringWidthPtr (txtIndicator.text, txtIndicator.font);
 
 			if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-				txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+				txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 			};
 		};
 	};
@@ -1010,10 +1010,10 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 
 	if (!MEM_InformationMan.DlgChoice) { return; };
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
-	if (!dlg.m_listLines_array) { return; };
-	if (!dlg.m_listLines_numInArray) { return; };
+	if (!dlg.listTextLines_array) { return; };
+	if (!dlg.listTextLines_numInArray) { return; };
 
-	var zCArray arr; arr = _^ (_@ (dlg.m_listLines_array));
+	var zCArray arr; arr = _^ (_@ (dlg.listTextLines_array));
 
 	//Choices - have to be extracted from oCInfo.listChoices_next
 	//MEM_InformationMan.Info is oCInfo pointer
@@ -1055,10 +1055,10 @@ func string InfoManager_GetChoiceDescription_EIM (var int index) {
 
 	if (!MEM_InformationMan.DlgChoice) { return ""; };
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
-	if (!dlg.m_listLines_array) { return ""; };
-	if (!dlg.m_listLines_numInArray) { return ""; };
+	if (!dlg.listTextLines_array) { return ""; };
+	if (!dlg.listTextLines_numInArray) { return ""; };
 
-	var zCArray arr; arr = _^ (_@ (dlg.m_listLines_array));
+	var zCArray arr; arr = _^ (_@ (dlg.listTextLines_array));
 
 	if ((index >= 0) && (index < arr.numInArray)) {
 		var int infoPtr;
@@ -1699,8 +1699,8 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 	//More safety checks
 	if (!MEM_InformationMan.DlgChoice) { return; };
 	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
-	if (!dlg.m_listLines_array) { return; };
-	if (!dlg.m_listLines_numInArray) { return; };
+	if (!dlg.listTextLines_array) { return; };
+	if (!dlg.listTextLines_numInArray) { return; };
 
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
@@ -1734,7 +1734,7 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 		};
 	};
 
-	var zCArray arr; arr = _^ (_@ (dlg.m_listLines_array));
+	var zCArray arr; arr = _^ (_@ (dlg.listTextLines_array));
 
 	//crash
 	//zCInputCallback_SetHandleEventTop (MEM_InformationMan.DlgChoice);
@@ -1926,12 +1926,12 @@ MEM_InformationMan.LastMethod:
 		InfoManagerSpinnerID = "";
 
 		//Flag all overlays for deletion
-		if (dlg.m_listLines_numInArray > dlg.Choices) {
-			//arr = _^ (_@ (dlg.m_listLines_array));
+		if (dlg.listTextLines_numInArray > dlg.Choices) {
+			//arr = _^ (_@ (dlg.listTextLines_array));
 
 			if (arr.array) {
 				i = dlg.Choices;
-				while (i < dlg.m_listLines_numInArray);
+				while (i < dlg.listTextLines_numInArray);
 					txtIndicator = _^ (MEM_ReadIntArray (arr.array, i));
 					txtIndicator.enabledTimer = TRUE;
 					txtIndicator.timer = floatnull;
@@ -2033,8 +2033,8 @@ MEM_InformationMan.LastMethod:
 	var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
 	var int InfoManagerSpinnerReRunCondition; InfoManagerSpinnerReRunCondition = FALSE;
 
-	if (dlg.m_listLines_array)
-	&& (dlg.m_listLines_numInArray) {
+	if (dlg.listTextLines_array)
+	&& (dlg.listTextLines_numInArray) {
 		var int nextPosY;
 		var string dlgFont;
 		var string dlgFontSelected;
@@ -2166,7 +2166,7 @@ MEM_InformationMan.LastMethod:
 			};
 
 			//if (i >= dlg.LineStart)
-			//&& (txt.posy + dlg.offsetTextpy - dlg.sizeMargin_0[1] <= dlg.psizey)
+			//&& (txt.pixelPositionY + dlg.offsetTextPixelY - dlg.sizeMargin_0[1] <= dlg.pixelSizeY)
 			//{
 			//Store in cache
 			if (descriptionAvailable) {
@@ -2287,7 +2287,7 @@ MEM_InformationMan.LastMethod:
 						alignment = ALIGN_RIGHT;
 					};
 
-					//var int originalPosX; originalPosX = txt.posX;
+					//var int originalPosX; originalPosX = txt.pixelPositionX;
 
 					thisID = IntToString (i);
 
@@ -2308,27 +2308,27 @@ MEM_InformationMan.LastMethod:
 					//Recalculate pos X
 					//overlayPosX = originalPosX;
 					if (alignment == ALIGN_LEFT) {
-						txt.posX = defaultPosX;
+						txt.pixelPositionX = defaultPosX;
 					} else
 					if (alignment == ALIGN_CENTER) {
 						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-						if (txt.posX < defaultPosX) {
-							txt.posX = defaultPosX;
+						if (txt.pixelPositionX < defaultPosX) {
+							txt.pixelPositionX = defaultPosX;
 						};
 					} else
 					if (alignment == ALIGN_RIGHT) {
 						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 						//posX cannot be < defaultPosX - otherwise dialog choice will disappear
-						if (txt.posX < defaultPosX) {
-							txt.posX = defaultPosX;
+						if (txt.pixelPositionX < defaultPosX) {
+							txt.pixelPositionX = defaultPosX;
 						};
 					};
 
-					overlayPosX = txt.posX;
+					overlayPosX = txt.pixelPositionX;
 
 					if (STR_Len (overlayConcat) > 0)
 					&& (overlayIndex > 0)
@@ -2569,7 +2569,7 @@ MEM_InformationMan.LastMethod:
 								//Update overlay text and colors
 								overlayChoice = MEM_ReadIntArray (_@ (overlayListMapView), k);
 
-								//if (overlayChoice < dlg.m_listLines_numInArray)
+								//if (overlayChoice < dlg.listTextLines_numInArray)
 								if (overlayChoice)
 								{
 									//overlayChoiceTxt = _^ (MEM_ReadIntArray (arr.array, overlayChoice));
@@ -2580,33 +2580,33 @@ MEM_InformationMan.LastMethod:
 									//In line with text
 
 									if (overlayAlignment == -1) {
-										overlayChoiceTxt.posX = overlayPosX;
+										overlayChoiceTxt.pixelPositionX = overlayPosX;
 									} else
 									//align left
 									if (overlayAlignment == ALIGN_LEFT) {
-										overlayChoiceTxt.posX = defaultPosX;
+										overlayChoiceTxt.pixelPositionX = defaultPosX;
 									} else
 									//align center
 									if (overlayAlignment == ALIGN_CENTER) {
 										textWidth = Print_GetStringWidth (overlayText, dlgFont);
-										overlayChoiceTxt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+										overlayChoiceTxt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-										if (overlayChoiceTxt.posX < defaultPosX) {
-											overlayChoiceTxt.posX = defaultPosX;
+										if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
+											overlayChoiceTxt.pixelPositionX = defaultPosX;
 										};
 									} else
 									//align right
 									if (overlayAlignment == ALIGN_RIGHT) {
 										textWidth = Print_GetStringWidth (overlayText, dlgFont);
-										overlayChoiceTxt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+										overlayChoiceTxt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-										if (overlayChoiceTxt.posX < defaultPosX) {
-											overlayChoiceTxt.posX = defaultPosX;
+										if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
+											overlayChoiceTxt.pixelPositionX = defaultPosX;
 										};
 									} else
 									if (overlayAlignment == ALIGN_TAB) {
 										textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
-										overlayChoiceTxt.posX = defaultPosX + textWidth;
+										overlayChoiceTxt.pixelPositionX = defaultPosX + textWidth;
 									};
 								};
 
@@ -2652,33 +2652,33 @@ MEM_InformationMan.LastMethod:
 
 							//In line with text
 							if (overlayAlignment == -1) {
-								txtIndicator.posX = overlayPosX;
+								txtIndicator.pixelPositionX = overlayPosX;
 							} else
 							//align left
 							if (overlayAlignment == ALIGN_LEFT) {
-								txtIndicator.posX = defaultPosX;
+								txtIndicator.pixelPositionX = defaultPosX;
 							} else
 							//align center
 							if (overlayAlignment == ALIGN_CENTER) {
 								textWidth = Print_GetStringWidth (overlayText, dlgFont);
-								txtIndicator.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+								txtIndicator.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-								if (txtIndicator.posX < defaultPosX) {
-									txtIndicator.posX = defaultPosX;
+								if (txtIndicator.pixelPositionX < defaultPosX) {
+									txtIndicator.pixelPositionX = defaultPosX;
 								};
 							} else
 							//align right
 							if (overlayAlignment == ALIGN_RIGHT) {
 								textWidth = Print_GetStringWidth (overlayText, dlgFont);
-								txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+								txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-								if (txtIndicator.posX < defaultPosX) {
-									txtIndicator.posX = defaultPosX;
+								if (txtIndicator.pixelPositionX < defaultPosX) {
+									txtIndicator.pixelPositionX = defaultPosX;
 								};
 							} else
 							if (overlayAlignment == ALIGN_TAB) {
 								textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
-								txtIndicator.posX = defaultPosX + textWidth;
+								txtIndicator.pixelPositionX = defaultPosX + textWidth;
 							};
 
 							//We will exploit this variable a little bit
@@ -2686,7 +2686,7 @@ MEM_InformationMan.LastMethod:
 							txtIndicator.enabledTimer = FALSE;
 
 							//Insert indicator to dialog choices
-							MEM_ArrayInsert (_@ (dlg.m_listLines_array), overlayPtr);
+							MEM_ArrayInsert (_@ (dlg.listTextLines_array), overlayPtr);
 
 							//MEM_WriteIntArray (_@ (overlayID), nextAvailableOverlayIndex, thisID);
 							MEM_WriteStringArray (_@s (overlayID), nextAvailableOverlayIndex, thisID);
@@ -2695,11 +2695,11 @@ MEM_InformationMan.LastMethod:
 							MEM_WriteIntArray (_@ (overlayListColorSelected), nextAvailableOverlayIndex, overlayColorSelected);
 
 							MEM_WriteIntArray (_@ (overlayListMapChoice), nextAvailableOverlayIndex, i);
-							//MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, dlg.m_listLines_numInArray - 1);
+							//MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, dlg.listTextLines_numInArray - 1);
 							MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, overlayPtr);
 
 							//-->
-							txtIndicator.posY = txt.posY;
+							txtIndicator.pixelPositionY = txt.pixelPositionY;
 
 							//Update color
 							if (i == dlg.ChoiceSelected) {
@@ -2850,7 +2850,7 @@ MEM_InformationMan.LastMethod:
 						dlgDescription = Choice_RemoveModifierSpinner (dlgDescription);
 					};
 
-					//txtIndicator.posX = dlg.psizex - txt.posX - textWidth - dlg.offsetTextpx;
+					//txtIndicator.pixelPositionX = dlg.pixelSizeX - txt.pixelPositionX - textWidth - dlg.offsetTextPixelX;
 					//
 
 					if (STR_Len (dlgColor) > 0) {
@@ -2883,22 +2883,22 @@ MEM_InformationMan.LastMethod:
 
 					//
 					if (alignment == ALIGN_LEFT) {
-						txt.posX = defaultPosX;
+						txt.pixelPositionX = defaultPosX;
 					} else
 					if (alignment == ALIGN_CENTER) {
 						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.posX = (dlg.psizex / 2) - (textWidth / 2) - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-						if (txt.posX < defaultPosX) {
-							txt.posX = defaultPosX;
+						if (txt.pixelPositionX < defaultPosX) {
+							txt.pixelPositionX = defaultPosX;
 						};
 					} else
 					if (alignment == ALIGN_RIGHT) {
 						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-						if (txt.posX < defaultPosX) {
-							txt.posX = defaultPosX;
+						if (txt.pixelPositionX < defaultPosX) {
+							txt.pixelPositionX = defaultPosX;
 						};
 					};
 				};
@@ -2943,14 +2943,14 @@ MEM_InformationMan.LastMethod:
 			//Recalculate offsetTextpy and posY for dialog items in case fonts changed
 			if (i < dlg.Choices) {
 				if (i == 0) {
-					nextPosY = txt.posY;
-					dlg.offsetTextpy = 0;
+					nextPosY = txt.pixelPositionY;
+					dlg.offsetTextPixelY = 0;
 				} else {
-					txt.posY = nextPosY;
+					txt.pixelPositionY = nextPosY;
 				};
 
 				if (i < dlg.LineStart) {
-					dlg.offsetTextpy -= Print_GetFontHeight (dlgFont);
+					dlg.offsetTextPixelY -= Print_GetFontHeight (dlgFont);
 				};
 
 				//Apply new font (or re-apply old one)
@@ -2985,18 +2985,18 @@ MEM_InformationMan.LastMethod:
 				MEM_Info (txt.text);
 
 				var string m;
-				m = ConcatStrings ("posy ", IntToString (txt.posy));
+				m = ConcatStrings ("posy ", IntToString (txt.pixelPositionY));
 
 				m = ConcatStrings (m, " offsetTextpy ");
-				m = ConcatStrings (m, IntToString (dlg.offsetTextpy));
+				m = ConcatStrings (m, IntToString (dlg.offsetTextPixelY));
 
 				m = ConcatStrings (m, " psizey ");
-				m = ConcatStrings (m, IntToString (dlg.psizey));
+				m = ConcatStrings (m, IntToString (dlg.pixelSizeY));
 
 				MEM_Info (m);
 */
 				//Small optimization - recolor only visible dialog choices
-				if (txt.posy + dlg.offsetTextpy - dlg.sizeMargin_0[1] > dlg.psizey) {
+				if (txt.pixelPositionY + dlg.offsetTextPixelY - dlg.sizeMargin_0[1] > dlg.pixelSizeY) {
 					break;
 				};
 
@@ -3009,7 +3009,7 @@ MEM_InformationMan.LastMethod:
 					textWidth = Print_GetStringWidth (txt.text, dlgFont);
 
 					//Horizontal scrolling - if dialogue text > dialogue window
-					if (textWidth > dlg.psizex) {
+					if (textWidth > dlg.pixelSizeX) {
 						//Init scrolling
 						horizontalScrolling = HSCROLL_INIT;
 						timerHorizontalScrolling = 0;
@@ -3028,7 +3028,7 @@ MEM_InformationMan.LastMethod:
 						textWidth = Print_GetStringWidth (txt.text, dlgFont);
 
 						//Horizontal scrolling - if dialogue text > dialogue window
-						if (textWidth > dlg.psizex) {
+						if (textWidth > dlg.pixelSizeX) {
 							//Init scrolling
 							horizontalScrollingDisabled = HSCROLL_INIT;
 							timerHorizontalScrollingDisabled = 0;
@@ -3055,10 +3055,10 @@ MEM_InformationMan.LastMethod:
 					txtIndicator = _^ (overlayPtr);
 					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
 
-					if (overlayChoice < dlg.m_listLines_numInArray) {
+					if (overlayChoice < dlg.listTextLines_numInArray) {
 						//adjust posY
 						overlayChoiceTxt = _^ (MEM_ReadIntArray(arr.array, overlayChoice));
-						txtIndicator.posY = overlayChoiceTxt.posY;
+						txtIndicator.pixelPositionY = overlayChoiceTxt.pixelPositionY;
 
 						//Update color
 						if (dlg.ChoiceSelected == overlayChoice) {
@@ -3126,14 +3126,14 @@ MEM_InformationMan.LastMethod:
 
 						txtIndicator.enabledColor = txt.enabledColor;
 						txtIndicator.font = txt.font;
-						txtIndicator.posY = txt.posY;
+						txtIndicator.pixelPositionY = txt.pixelPositionY;
 
 						txtIndicator.enabledBlend = txt.enabledBlend;
 						txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
 						txtIndicator.alpha = InfoManagerIndicatorAlpha;
 
 						//Insert indicator to dialog choices
-						MEM_ArrayInsert (_@ (dlg.m_listLines_array), InfoManagerSpinnerIndicator);
+						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicator);
 
 						//if (InfoManagerSpinnerIndicatorAnimation) {
 						//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
@@ -3156,13 +3156,13 @@ MEM_InformationMan.LastMethod:
 						txtIndicator.alpha = txt.alpha;
 					};
 
-					txtIndicator.posY = txt.posY;
+					txtIndicator.pixelPositionY = txt.pixelPositionY;
 
 					//dlgFont = Print_GetFontName (txt.font);
 					//textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 					//if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
-					//	txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+					//	txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 					//};
 
 					InfoManagerSpinnerAlignment = alignment;
@@ -3172,7 +3172,7 @@ MEM_InformationMan.LastMethod:
 					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 					};
 				};
 
@@ -3193,7 +3193,7 @@ MEM_InformationMan.LastMethod:
 
 							txtIndicator.enabledColor = txt.enabledColor;
 							txtIndicator.font = txt.font;
-							txtIndicator.posY = txt.posY;
+							txtIndicator.pixelPositionY = txt.pixelPositionY;
 
 							txtIndicator.enabledBlend = txt.enabledBlend;
 							txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
@@ -3202,7 +3202,7 @@ MEM_InformationMan.LastMethod:
 							txtIndicator.text = InfoManagerAnswerIndicatorString;
 
 							//Insert indicator to dialog choices
-							MEM_ArrayInsert (_@ (dlg.m_listLines_array), InfoManagerAnswerIndicator);
+							MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerAnswerIndicator);
 						};
 
 						txtIndicator = _^ (InfoManagerAnswerIndicator);
@@ -3217,7 +3217,7 @@ MEM_InformationMan.LastMethod:
 							txtIndicator.alpha = txt.alpha;
 						};
 
-						txtIndicator.posY = txt.posY;
+						txtIndicator.pixelPositionY = txt.pixelPositionY;
 
 						InfoManagerAnswerAlignment = alignment;
 
@@ -3226,7 +3226,7 @@ MEM_InformationMan.LastMethod:
 						textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 						if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
-							txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+							txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 						};
 					};
 				};
@@ -3269,7 +3269,7 @@ MEM_InformationMan.LastMethod:
 			if (timerHorizontalScrolling >= 90) {
 				timerHorizontalScrolling -= 90;
 
-				//we cannot really change txt.posX if txt.posX < defaultPosX then dialogue choice wont render ...
+				//we cannot really change txt.pixelPositionX if txt.pixelPositionX < defaultPosX then dialogue choice wont render ...
 				//so the only option to scroll text is to trim it ...
 				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
 
@@ -3277,7 +3277,7 @@ MEM_InformationMan.LastMethod:
 				textWidth = Print_GetStringWidth (txt.text, dlgFont);
 
 				//Double check size - shall we trim?
-				if (textWidth > dlg.psizex) {
+				if (textWidth > dlg.pixelSizeX) {
 					txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
 				} else {
 					//If text was scrolled completely ... wait
@@ -3316,7 +3316,7 @@ MEM_InformationMan.LastMethod:
 			if (timerHorizontalScrollingDisabled >= 90) {
 				timerHorizontalScrollingDisabled -= 90;
 
-				//we cannot really change txt.posX if txt.posX < defaultPosX then dialogue choice wont render ...
+				//we cannot really change txt.pixelPositionX if txt.pixelPositionX < defaultPosX then dialogue choice wont render ...
 				//so the only option to scroll text is to trim it ...
 
 				//loop through all dialogues
@@ -3336,7 +3336,7 @@ MEM_InformationMan.LastMethod:
 						textWidth = Print_GetStringWidth (txt.text, dlgFont);
 
 						//Double check size - shall we trim?
-						if (textWidth > dlg.psizex) {
+						if (textWidth > dlg.pixelSizeX) {
 							txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
 							wasSomethingScrolled = TRUE;
 						};
@@ -3381,7 +3381,7 @@ MEM_InformationMan.LastMethod:
 					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 					};
 				};
 			} else {
@@ -3407,7 +3407,7 @@ MEM_InformationMan.LastMethod:
 					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 					if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
-						txtIndicator.posX = dlg.psizex - textWidth - dlg.offsetTextpx - dlg.sizeMargin_0[0];
+						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 					};
 				};
 			};

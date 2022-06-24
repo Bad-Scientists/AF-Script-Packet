@@ -20,12 +20,12 @@ func void Trade_SetBuyMultiplier (var int mulF) {
 
 		if (dialogTrade.dlgInventoryNpc) {
 			itemCont = _^ (dialogTrade.dlgInventoryNpc);
-			itemCont.multiplier = mulF;
+			itemCont.valueMultiplier = mulF;
 		};
 
 		if (dialogTrade.dlgContainerNpc) {
 			itemCont = _^ (dialogTrade.dlgContainerNpc);
-			itemCont.multiplier = mulF;
+			itemCont.valueMultiplier = mulF;
 		};
 	};
 };
@@ -39,12 +39,12 @@ func void Trade_SetSellMultiplier (var int mulF) {
 
 		if (dialogTrade.dlgContainerPlayer) {
 			itemCont = _^ (dialogTrade.dlgContainerPlayer);
-			itemCont.multiplier = mulF;
+			itemCont.valueMultiplier = mulF;
 		};
 
 		if (dialogTrade.dlgInventoryPlayer) {
 			itemCont = _^ (dialogTrade.dlgInventoryPlayer);
-			itemCont.multiplier = mulF;
+			itemCont.valueMultiplier = mulF;
 		};
 	};
 };
@@ -145,7 +145,7 @@ func int Trade_GetBuyMultiplier () {
 
 		if (dialogTrade.dlgContainerNpc) {
 			itemCont = _^ (dialogTrade.dlgContainerNpc);
-			return itemCont.multiplier;
+			return itemCont.valueMultiplier;
 		};
 	};
 
@@ -161,7 +161,7 @@ func int Trade_GetSellMultiplier () {
 
 		if (dialogTrade.dlgContainerPlayer) {
 			itemCont = _^ (dialogTrade.dlgContainerPlayer);
-			return itemCont.multiplier;
+			return itemCont.valueMultiplier;
 		};
 	};
 

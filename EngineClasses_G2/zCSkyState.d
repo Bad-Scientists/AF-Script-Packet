@@ -1,3 +1,4 @@
+/*
 const int zSKY_NUM_LAYER = 2;
 const int NUM_PLANETS = 2;
 const int zEFFECT_BOX_SIDES = 2500;
@@ -15,27 +16,30 @@ enum zTSkyStateEffect {
 zSKY_STATE_EFFECT_SUN,
 zSKY_STATE_EFFECT_CLOUDSHADOW
 };
-
-//G2A
-// sizeof 2Ch
-class zCSkyLayerData {
-public:
-zESkyLayerMode skyMode; // sizeof 04h offset 00h
-zCTexture* tex; // sizeof 04h offset 04h
-zSTRING texName; // sizeof 14h offset 08h
-float texAlpha; // sizeof 04h offset 1Ch
-float texScale; // sizeof 04h offset 20h
-zVEC2 texSpeed; // sizeof 08h offset 24h
+*/
 
 // sizeof 98h
 class zCSkyState {
-public:
-float time; // sizeof 04h offset 00h
-zVEC3 polyColor; // sizeof 0Ch offset 04h
-zVEC3 fogColor; // sizeof 0Ch offset 10h
-zVEC3 domeColor1; // sizeof 0Ch offset 1Ch
-zVEC3 domeColor0; // sizeof 0Ch offset 28h
-float fogDist; // sizeof 04h offset 34h
-int sunOn; // sizeof 04h offset 38h
-int cloudShadowOn; // sizeof 04h offset 3Ch
-zCSkyLayerData layer[zSKY_NUM_LAYER]; // sizeof 58h offset 40h
+	var int time; //float  // sizeof 04h offset 00h
+	var int polyColor[3]; //zVEC3  // sizeof 0Ch offset 04h
+	var int fogColor[3]; //zVEC3  // sizeof 0Ch offset 10h
+	var int domeColor1[3]; //zVEC3  // sizeof 0Ch offset 1Ch
+	var int domeColor0[3]; //zVEC3  // sizeof 0Ch offset 28h
+	var int fogDist; //float  // sizeof 04h offset 34h
+	var int sunOn; //int  // sizeof 04h offset 38h
+	var int cloudShadowOn; //int  // sizeof 04h offset 3Ch
+
+	var int layer0_skyMode; //zESkyLayerMode  // sizeof 04h offset 00h
+	var int layer0_tex; //zCTexture*  // sizeof 04h offset 04h
+	var string layer0_texName; //zSTRING  // sizeof 14h offset 08h
+	var int layer0_texAlpha; //float  // sizeof 04h offset 1Ch
+	var int layer0_texScale; //float  // sizeof 04h offset 20h
+	var int layer0_texSpeed[2]; //zVEC2  // sizeof 08h offset 24h
+
+	var int layer1_skyMode; //zESkyLayerMode  // sizeof 04h offset 00h
+	var int layer1_tex; //zCTexture*  // sizeof 04h offset 04h
+	var string layer1_texName; //zSTRING  // sizeof 14h offset 08h
+	var int layer1_texAlpha; //float  // sizeof 04h offset 1Ch
+	var int layer1_texScale; //float  // sizeof 04h offset 20h
+	var int layer1_texSpeed[2]; //zVEC2  // sizeof 08h offset 24h
+};
