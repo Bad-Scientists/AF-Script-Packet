@@ -1190,3 +1190,29 @@ func void NPC_RemoveFromFocus (var int slfInstance, var int vobPtr) {
 		oCNpc_SetFocusVob (slf, 0);
 	};
 };
+
+func void NPC_ClearAIState (var int slfInstance) {
+	//0x006C61A0 public: void __thiscall oCNpc_States::ClearAIState(void)
+	const int oCNpc_States__ClearAIState_G1 = 7102880;
+
+	//0x0076D6E0 public: void __thiscall oCNpc_States::ClearAIState(void)
+	const int oCNpc_States__ClearAIState_G2 = 7788256;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__ClearAIState_G1, oCNpc_States__ClearAIState_G2));
+};
+
+func void NPC_EndCurrentState (var int slfInstance) {
+	//0x006C6340 public: void __thiscall oCNpc_States::EndCurrentState(void)
+	const int oCNpc_States__EndCurrentState_G1 = 7103296;
+
+	//0x0076D880 public: void __thiscall oCNpc_States::EndCurrentState(void)
+	const int oCNpc_States__EndCurrentState_G2 = 7788672;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
+};
