@@ -72,6 +72,24 @@ func string GetLocalDateTimeStamp () {
 };
 
 /*
+ *	Returns YYYY-MM-DD
+ */
+func string GetLocalDate () {
+	var string timeStr; timeStr = GetLocalDateTimeStamp ();
+	timeStr = mySTR_Prefix (timeStr, 10);
+	return timeStr;
+};
+
+/*
+ *	Returns MM-DD
+ */
+func string GetLocalDate_MMDD () {
+	var string timeStr; timeStr = GetLocalDateTimeStamp ();
+	timeStr = mySTR_SubStr (timeStr, 5, 5);
+	return timeStr;
+};
+
+/*
  *	Function returns TRUE if it is raining
  */
 func int Wld_IsRaining_G1 () {
