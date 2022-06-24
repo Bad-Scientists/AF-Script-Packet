@@ -745,6 +745,14 @@ func void DeleteObject__VobTransport () {
 	};
 };
 
+func void LightningSwellOnItem__VobTransport () {
+	if (Hlp_Is_oCItem (vobTransportVobPtr)) {
+		var int onOff; onOff = oCItem_GetLightingSwell ();
+		onOff = !onOff;
+		oCItem_SetLightingSwell (onOff);
+	};
+};
+
 func void ApplyPhysicsOnItem__VobTransport () {
 	//Drop item (apply physics)
 	if (Hlp_Is_oCItem (vobTransportVobPtr)) {
@@ -848,6 +856,11 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 //--- Selection mode
 
 	if ((vobTransportMode == vobTransportMode_SelectVob) && (!cancel)) {
+		//Lightning swell on items
+		if (key == KEY_L) {
+			LightningSwellOnItem__VobTransport ();
+		};
+
 		//Apply physics / Print to zSpy
 		if (key == KEY_P) {
 			//Print to zSpy details relevant for object creation (via InsertAnything!)
@@ -927,7 +940,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 		};
 
 		//'Handle' key
-		if ((key == KEY_P) || (key == KEY_RETURN) || (key == KEY_C) || (key == KEY_LEFTARROW) || (key == KEY_RIGHTARROW) || (key == KEY_DELETE) || (key == KEY_ESCAPE)) {
+		if ((key == KEY_L) || (key == KEY_P) || (key == KEY_RETURN) || (key == KEY_C) || (key == KEY_LEFTARROW) || (key == KEY_RIGHTARROW) || (key == KEY_DELETE) || (key == KEY_ESCAPE)) {
 			cancel = TRUE;
 		};
 	};
