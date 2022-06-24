@@ -47,6 +47,37 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
 };
 
 /*
+ *
+ */
+func int Trafo_GetPortalNamePtr (var int trafoPtr) {
+	//0x005D5690 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
+	const int zCVob__GetSectorNameVobIsIn_G1             = 6117008;
+
+	//0x00600AE0 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
+	const int zCVob__GetSectorNameVobIsIn_G2             = 6294240;
+
+	if (!trafoPtr) { return 0; };
+
+	//--> Dirty workaround: Insert temporarily Vob at trafo position
+	var int vobPtr; vobPtr = InsertObject ("zCVob", "", "", trafoPtr, 0);
+	//<--
+
+	var int sectorNamePtr; sectorNamePtr = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(sectorNamePtr));
+		CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__GetSectorNameVobIsIn_G1, zCVob__GetSectorNameVobIsIn_G2));
+		call = CALL_End();
+	};
+
+	//--> remove our temporary vob
+	RemoveoCVobSafe (vobPtr, 0);
+	//<--
+	return +sectorNamePtr;
+};
+
+/*
  *	Returns 1st Guild owner of portal room
  *	 - takes into consideration also guild of NPC if there is an NPC owner (lower prio than guild owner)
  */
@@ -167,6 +198,26 @@ func string Vob_GetPortalName (var int vobPtr) {
 	};
 
 	return "";
+};
+
+/*
+ *
+ */
+func string Trafo_GetPortalName (var int trafoPtr) {
+	var int portalNamePtr; portalNamePtr = Trafo_GetPortalNamePtr (trafoPtr);
+
+	if (portalNamePtr) {
+		var string portalName; portalName = MEM_ReadString (portalNamePtr);
+		return portalName;
+	};
+
+	return "";
+};
+
+func string WP_GetPortalName (var string wpName) {
+	var int trafo[16]; NewTrafo(_@ (trafo));
+	GetTrafoFromWP (wpName, _@ (trafo));
+	return Trafo_GetPortalName (_@ (trafo));
 };
 
 /*

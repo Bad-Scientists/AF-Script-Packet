@@ -3,9 +3,9 @@
 Authors: [Auronen](https://github.com/auronen) & [Fawkes](https://github.com/Fawkes-dev)
 
 Credits: We are using here many scripts sourced from great Gothic community. None of this would be possible without Ikarus/LeGo and of course without modders willing to share their amazing work/ideas.
-Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct and many more (we will try to keep list up to date :) )
+Thank you: Sektenspinner, Lehona, Gottfried, Szapp (mud-freak), Neconspictor, OrcWarrior (PL), Dalai Zoll, Cryp18Struct, L-Titan (Gelaos) and many more (we will try to keep list up to date :) )
 
-Special thanks goes to: helpo1 :crown:, who endlessly debugged many features, even when we asked him not to.
+Special thanks goes to: helpo1 :crown: & Kaiser, who endlessly debugged many features :sparkles:
 
 In this Script Packet we would like to consolidate as many useful functions as possible.
 Main goal is to put together several useful features that any modder can simply enable by calling single init function.
@@ -16,30 +16,25 @@ In a future we will add wiki with examples explaining how to use each feature.
 1. Copy all files from this repository to your Gothic work folder `_work\data\Scripts\Content\AF-Script-Packet`.
 1. Gothic 1 users will have to add function `Init_Global();` into their Startup.d file (it is not there by default). Call `Init_Global ();` from all `INIT_*()` functions (don't call it from `INIT_SUB_*()` functions).
 
-### Gothic 1 Weapon stacking / splitting
-Emulates G2A inventory behaviour for weapons in G1 --> Stackable weapons (with flags | ITEM_MULTI) will be split into their own inventory slot when equipped.
 1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_WeaponStacking.src`
-1. Call `G1_WeaponStacking_Init ();` from your `Init_Global();` function in `Startup.d` file.
+    * G1: `AF-Script-Packet\_headers_G1_All.src`
+    * G2A: `AF-Script-Packet\_headers_G2_All.src`
 
+ ### Gothic 1 Weapon stacking / splitting
+ Emulates G2A inventory behaviour for weapons in G1 --> Stackable weapons (with flags | ITEM_MULTI) will be split into their own inventory slot when equipped.
+1. Call `G1_WeaponStacking_Init ();` from your `Init_Global();` function in `Startup.d` file.
     [![Gothic 1 Weapon stacking / splitting](https://img.youtube.com/vi/V3EHcfDa3GY/0.jpg)](https://www.youtube.com/watch?v=V3EHcfDa3GY)
 
 ### Gothic 1 Ever looming barrier
 Hooks Barrier render function and prevents Barrier from disappearing completely.
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_BarrierEverlooming.src`
 1. Call `G1_BarrierEverlooming_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
     [![Gothic 1 Ever looming barrier](https://img.youtube.com/vi/ZEyFpN-f0Y8/0.jpg)](https://www.youtube.com/watch?v=ZEyFpN-f0Y8)
-
 ### Gothic 1 Enhanced Trading
 Improves G1 trading:
  - ore is exchanged automatically
  - you can easily control selling/buying multiplier and define NPC/item-specific rules separately for every NPC. (for example Wolf can buy furs from you for 100% item value)
  - you can easily prevent selling items to NPC. (for example Huno will not buy from you anything but weapons)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_EnhancedTrading.src`
 1. Call `G1_EnhancedTrading_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 Enhanced Pick Locking
@@ -51,10 +46,7 @@ Package emulates G2A behaviour for PickLocking:
  - pickLock failrate (breaking) is based on Players dexterity. Higher it is lower the chance to break picklocks is. (by default minimum failrate is 10%)
  - hero will say whether: he needs to learn skill, get picklocks or specific key.
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_EnhancedPickLocking.src`
 1. Call `G1_EnhancedPickLocking_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
 ### Gothic 1 Player Map
 Improved Map handling when pressing 'M':
  - player's animation will not be reset if he does not have map (this removes exploit in which pressing M would allow you to jump in air)
@@ -62,28 +54,23 @@ Improved Map handling when pressing 'M':
  - if there is no map preferation defined, then script will re-open last opened map
  - if player didn't open any map yet, then script will try to open: ITWRWORLDMAP_ORC, if not in inventory then ITWRWORLDMAP. If none of these is in inventory then first available map in inventory.
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_PlayerMap.src`
 1. Call `G1_PlayerMap_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
-### Gothic 1 Quick Loot
-Allows you to quickly loot items from chests and dead NPCs by pressing Alt key
- - transfers items from dead NPC to players inventory, closes inventory
- - transfers items from chest to players inventory, closes inventory, ends interaction with chest
-
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_QuickLoot.src`
-1. Call `G1_QuickLoot_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
 ### Gothic 1 Better Inventory Controls
-Enables better navigation in inventories
+Enables better navigation in inventories:
  - use home/end keys to navigate to first/last item
  - use page up/page down keys to scroll faster through inventory
- - special move key (Alt) + key Up will put item to hand
- - special move key (Alt) + key Down will drop item (1 piece) from inventory
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_BetterInventoryControls.src`
+ Players inventory:
+ - key `E` will put item to hand
+ - key `Q` will drop item (1 piece) from inventory
+ - key `Left Alt` will drop All items from inventory slot
+
+ All other inventories, looting NPC, looting chests or in trading:
+ - key `Left Ctrl` will move 1 piece to other oposite container
+ - key `Spacebar` will move 10 pieces to other oposite container
+ - key `Left Alt` will move All item pieces to other oposite container
+
 1. Call `G1_BetterInventoryControls_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Enhanced Information Manager
@@ -94,11 +81,8 @@ Package adds several features for dialogues (Information manager):
  - Dialog control with numeric keys (1 .. 9)
  - Dialog overlays through which you can simply change color for specific words
 
-   [More on this feature here](https://forum.worldofplayers.de/forum/threads/1532719-G1-G2-Simple-dialogs-font-change-and-color-change?highlight=simple)
+   [More on this feature here](https://forum.worldofplayers.de/forum/threads/1571033-AFSP-ScriptPacket?p=26905995&viewfull=1#post26905995)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_EnhancedInfoManager.src` for G1
-    * `AF-Script-Packet\_headers_G2_EnhancedInfoManager.src` for G2A
 1. Call `G12_EnhancedInfoManager_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Enhanced oCTriggerScript
@@ -106,9 +90,6 @@ Package adds new features for oCTriggerScript objects:
  - zCTrigger_bitfield_callEventFuncs flag - which will cause call additional event functions: oCTriggerScript.scriptFunc + _OnTouch, _OnTrigger, _OnContact, _OnUnTouch
  - zCTrigger_bitfield_reactToOnContact flag - custom event replacing _OnTouch & _OnTrigger event. It is repeatedly fired as long as there is any object in oCTriggerScript._zCVob_touchVobList_numInArray.
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_EnhancedoCTriggerScript.src` for G1
-    * `AF-Script-Packet\_headers_G2_EnhancedoCTriggerScript.src` for G2A
 1. Call `G12_EnhancedoCTriggerScript_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 In a folder `AF-Script-Packet\Standalone-Packages\G12-EnhancedoCTriggerScript\` you can find practical examples:
@@ -126,18 +107,12 @@ Gothic 2: ZS_ASSESSMAGIC, ZS_ASSESSSTOPMAGIC, ZS_MAGICFREEZE, ZS_WHIRLWIND, ZS_S
 
 This package allows you to enable additional AI States. (without limitation)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_EnablePlayerStates.src` for G1
-    * `AF-Script-Packet\_headers_G2_EnablePlayerStates.src` for G2A
 1. Call `G12_EnablePlayerStates_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Pick Lock Helper
 
 Simple feature, that shows Pick Lock combination progress.
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_PickLockHelper.src` for G1
-    * `AF-Script-Packet\_headers_G2_PickLockHelper.src` for G2A
 1. Call `G12_PickLockHelper_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
     [![Gothic 1 & 2 Pick Lock Helper](https://img.youtube.com/vi/kdX9e3QlAbg/0.jpg)](https://www.youtube.com/watch?v=kdX9e3QlAbg)
@@ -145,9 +120,6 @@ Simple feature, that shows Pick Lock combination progress.
 ### Gothic 1 & 2 Prevent Looting
 Simple feature, that allows you to control which NPC's can be looted. (for example prevent looting from traders)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_PreventLooting.src` for G1
-    * `AF-Script-Packet\_headers_G2_PreventLooting.src` for G2A
 1. Call `G12_PreventLooting_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
 
@@ -159,9 +131,6 @@ Enables simple sprint mode
  - potions of speed disable stamina consumption (potions still have same effect)
  - potions of speed have their own texture of stamina bar - you will see how much time is left from potion effect
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_SprintMode.src` for G1
-    * `AF-Script-Packet\_headers_G2_SprintMode.src` for G2A
 1. Call `G12_SprintMode_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_FrameFunctions | LeGo_Bars, make sure you initialize them in your `LeGo_Init` function.
 1. Make sure you setup stamina level when game begins (in your `Startup_` function):
@@ -185,26 +154,17 @@ Simple feature, improving torches
  - will re-lit all mobs, that were previously lit by player (list can be maintained in file 'torchHotKey_API.d' in array TORCH_ASC_MODELS [];
  - Ctrl + 'keyTorchToggleKey' will put torch to right hand (with Union you can throw torch away in G1)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_TorchHotKey.src` for G1
-    * `AF-Script-Packet\_headers_G2_TorchHotKey.src` for G2A
 1. Call `G12_TorchHotKey_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_HookEngine | LeGo_Gamestate, make sure you initialize them in your `LeGo_Init` function.
 
 ### Gothic 1 & 2 No ammo print
 Simple feature, displays message when you are out of ammo and trying to put in hand ranged weapon
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_NoAmmoPrint.src` for G1
-    * `AF-Script-Packet\_headers_G2_NoAmmoPrint.src` for G2A
 1. Call `G12_NoAmmoPrint_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Vob Transport
 Allows player to move/clone/delete or buy objects (Vobs, Mobs, Items etc.) in game. Hands down one of the coolest features :)
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_VobTransport.src` for G1
-    * `AF-Script-Packet\_headers_G2_VobTransport.src` for G2A
 1. Call `G12_VobTransport_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Requires LeGo flags: LeGo_FrameFunctions | LeGo_View, make sure you initialize them in your `LeGo_Init` function.
 
@@ -218,17 +178,12 @@ Slightly improved version of LeGo focusnames feature:
     * to yellow if chest/mob can be picklocked
  - renames chest from MOBNAME_CHEST to MOBNAME_CHEST_EMPTY and crates from MOBNAME_CRATE to MOBNAME_CRATE_EMPTY when they are empty and vice versa
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_Focus.src` for G1
-    * `AF-Script-Packet\_headers_G2_Focus.src` for G2A
 1. Call `G12_Focus_Init ();` from your `Init_Global();` function in `Startup.d` file.
 1. Should not be used together with LeGo flag LeGo_Focusnames.
 
 ### Gothic 1 & 2 Inventory Item preview
 This feature updates global variables `PC_ItemPreviewMana` and `PC_ItemPreviewHealth` with HP and Mana values read out of `oCItem.count[]` property using `oCItem.text[]` property to recognize relevant values.
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_InvItemPreview.src` for G1
-    * `AF-Script-Packet\_headers_G2_InvItemPreview.src` for G2A
+
 1. Call `G12_InvItemPreview_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
 ### Gothic 1 & 2 Better Bars
@@ -242,53 +197,55 @@ By default this feature adds 3 visualisation options for new bars:
 
 In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover.
 
-    [![Gothic 1 & 2 Better Bars](https://img.youtube.com/vi/4hbQxHU-Utw/0.jpg)](https://www.youtube.com/watch?v=4hbQxHU-Utw)
-
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_BetterBars.src` for G1
-    * `AF-Script-Packet\_headers_G2_BetterBars.src` for G2A
 1. Call `G12_BetterBars_Init ();` from your `Init_Global();` function in `Startup.d` file.
+[![Gothic 1 & 2 Better Bars](https://img.youtube.com/vi/4hbQxHU-Utw/0.jpg)](https://www.youtube.com/watch?v=4hbQxHU-Utw)
 
 ### Gothic 1 & 2 Log Dialogues
 Simple feature that writes all dialogues as LOG_NOTE into player's log.
 
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_LogDialogue.src` for G1
-    * `AF-Script-Packet\_headers_G2_LogDialogue.src` for G2A
 1. Call `G12_LogDialogue_Init ();` from your `Init_Global();` function in `Startup.d` file.
 
     [![Gothic 1 & 2 Log Dialogues](https://img.youtube.com/vi/RG1UBn53ZpY/0.jpg)](https://www.youtube.com/watch?v=RG1UBn53ZpY)
 
+### Gothic 1 & 2 Spacer spawn
+Spacer allows you to insert NPCs into the `.ZEN` world. However game wont spawn them in the world. With this simple feature hooked spawn function will do just that.
+
+1. Call `G12_SpacerSpawn_Init ();` from your `Init_Global();` function in `Startup.d` file.
+
+    [![Gothic 1 & 2 Spacer spawn](https://img.youtube.com/vi/ytQtkdkwtv0/0.jpg)](https://www.youtube.com/watch?v=ytQtkdkwtv0)
+
+### Gothic 1 & 2 Fade away
+Gothic engine has built-in most likely unfinished feature - it is able to fade away dead NPCs and remove their bodies.
+
+1. Call `G12_FadeAway_Init ();` from your `Init_Global();` function in `Startup.d` file.
+2. Call `oCNpc_StartFadeAway (self);` on an NPC that you want to fade-away. (for example from ZS_Dead state, or whenever you want :smile:)
+
+    [![Gothic 1 & 2 Fade away](https://img.youtube.com/vi/0MdiT97w59c/0.jpg)](https://www.youtube.com/watch?v=0MdiT97w59c)
+
 ### Gothic 1 & 2 Debugging
-Several debugging features:
-1. Console command `show AI`
-    * will display AI of NPC in focus.
-1. Console command `debug dialogues`
+We have added several debugging features. In order to enable these call their respective init functions from `Init_Global();` function  in `Startup.d` file:
+1. Console command `show AI`. Init with `CC_ShowAI_Init ();`
+   * will display AI of NPC in focus.
+2. Console command `debug dialogues`. Init with `CC_DebugDialogues_Init ();`
     * will give you access to all dialogues which are assigned to NPC.
     * also will allow you to change dialogues to told/untold.
-1. Console command `unlock`
+    [![Gothic 1 & 2 Debugging](https://img.youtube.com/vi/T0Dm3VQXX40/0.jpg)](https://www.youtube.com/watch?v=T0Dm3VQXX40)
+3. Console command `unlock`. Init with `CC_UnLock_Init ();`
     * will unlock `oCMobLockable` object in focus.
-1. Console command `lock`
+4. Console command `lock`. Init with `CC_UnLock_Init ();`
     * will lock `oCMobLockable` object in focus.
-1. Console command `set routine`
+5. Console command `set routine`. Init with `CC_SetRoutine_Init();`
     * will change routine of NPC in focus.
-1. Console command `set sleepingMode`
+6. Console command `set sleepingMode`. Init with `CC_SetSleepingMode_Init();`
     * will put vob in focus into sleeping mode/awake mode.
-1. Function `oCMobLockable_CheckLockValidity`
+7. Function `oCMobLockable_CheckLockValidity`. (no initialization required)
     * traverses through all `oCMobLockable` objects and checks whether their pickLock string or key instances are valid.
-1. Function `oCRtnManager_RtnList_CheckValidity`
+8. Function `oCRtnManager_RtnList_CheckValidity`. (no initialization required)
     * traverses through all active routines in routine manager and checks whether they are properly setup:
         * checks if waypoint exists.
         * checks if 24h day cycle is complete.
         * checks if routines are not overlapping one another.
-1. Function `oCRtnManager_AllRoutines_CheckValidity`
-
-
-In order to enable these:
-1. Update file `_work\data\Scripts\Content\Gothic.src` - add new line **after** parsed **LeGo**.
-    * `AF-Script-Packet\_headers_G1_Debugging.src` for G1
-    * `AF-Script-Packet\_headers_G2_Debugging.src` for G2A
-1. Call `CC_ShowAI_Init ();` from your `Init_Global();` function in `Startup.d` file.
-1. Call `CC_DebugDialogues_Init ();` from your `Init_Global();` function in `Startup.d` file.
-
-    [![Gothic 1 & 2 Debugging](https://img.youtube.com/vi/T0Dm3VQXX40/0.jpg)](https://www.youtube.com/watch?v=T0Dm3VQXX40)
+9. Function `oCRtnManager_AllRoutines_CheckValidity`. (no initialization required)
+    * similar functionality as `oCRtnManager_RtnList_CheckValidity` however this one will traverse through all routines. (performance heavy)
+11. Console command `create itemInstanceName qty`.  Init with `CC_Create_Init ()`.
+    * will create specified amount of items in inventory of NPC in your focus / yours inventory (if no NPC is in focus)

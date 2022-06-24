@@ -18,7 +18,7 @@ const int vobTransportPropertiesView_VPosX		= -1;		//if not defined (-1) then vo
 const int vobTransportPropertiesView_VPosY		= -1;		//if not defined (-1) then vobTransportPropertiesView_VPosY will be taken into consideration. Virtual coordinates
 
 const int vobTransportPropertiesView_WidthPxl		= 360;		//In pixels
-const int vobTransportPropertiesView_Lines		= 25;		//24 lines + 1 empty delimiter
+const int vobTransportPropertiesView_Lines		= 30;		//29 lines + 1 empty delimiter
 
 const int vobTransportBuyVobViewPPosX			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
 const int vobTransportBuyVobViewPPosY			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
@@ -28,6 +28,8 @@ const int vobTransportBuyVobViewVPosY			= 6600;		//if not defined (-1) then vobT
 
 const int vobTransportBuyVobView_WidthPxl		= 540;
 const int vobTransportBuyVobView_Lines			= 7;		//7 lines
+
+const int vobTransportAlpha				= 80;
 
 //Interaction prints
 const string vobTransportPrint_BuyVobActivated		= "Select objects which you would like to buy.";
@@ -42,36 +44,24 @@ const string vobTransportPrint_CannotBeClonedMoved	= "Object cannot be cloned or
 
 //Vob transport modes
 const string vobTransportView_TitleSelection		= "<< Selection mode >>";
- const string vobTransportView_InstructionMove		= "Press M to move.";
- const string vobTransportView_InstructionClone		= "Press L Bracket to clone.";
- const string vobTransportView_InstructionCancel	= "Press R Bracket to cancel.";
- const string vobTransportView_InstructionDelete	= "Press Delete to delete.";
- const string vobTransportView_InstructionDropItem	= "Ctrl + L BRACKET to drop item.";
+ const string vobTransportView_InstructionMove		= "Press C to select";
+ const string vobTransportView_InstructionClone		= "Press Ctrl + C to copy object";
+ const string vobTransportView_InstructionTransform	= "Press Shift + C to enter transform mode";
+ const string vobTransportView_InstructionDelete	= "Press Del to delete object";
+ const string vobTransportView_InstructionCancel	= "Press Esc to cancel selection";
+ const string vobTransportView_InstructionDropItem	= "Press P to apply physics on an item";
+
+const string vobTransportView_TitleMovement		= "<< Movement mode >>";
+ const string vobTransportView_InstructionConfirm	= "Press C to confirm position";
+ //const string vobTransportView_InstructionTransform	= "L Shift + C - transform";
 
 const string vobTransportView_TitleTransform		= "<< Transform mode >>";
- const string vobTransportView_InstructionConfirm	= "Press L Bracket to confirm position.";
- const string vobTransportView_InstructionRotate	= "Press ENTER for Rotation mode.";
-
-const string vobTransportView_TitleRotation		= "<< Rotation mode >>";
- const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z for axis rotation.";
- const string vobTransportView_InstructionElevation	= "Press E for elevation adjustment.";
+ const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z to switch axes";
  const string vobTransportView_InstructionSpeed		= "Press SPACE to adjust speed: ";
 
-const string vobTransportView_TitleRotationX		= "<< Rotation mode >> X axis";
- const string vobTransportView_InstructionStopRotX	= "Press X to stop.";
-
-const string vobTransportView_TitleRotationY		= "<< Rotation mode >> Y axis";
- const string vobTransportView_InstructionStopRotY	= "Press Y to stop.";
-
-const string vobTransportView_TitleRotationZ		= "<< Rotation mode >> Z axis";
- const string vobTransportView_InstructionStopRotZ	= "Press Z to stop.";
-
-const string vobTransportView_TitleElevation		= "<< Elevation mode >>";
- const string vobTransportView_InstructionStopElevation	= "Press E to stop.";
- const string vobTransportView_InstructionElevationLvl	= "Elevation: ";
-
- const string vobTransportView_InstructionAlign		= "R Bracket - align to surface.";
- const string vobTransportView_InstructionDontAlign	= "R Bracket - don't align to surface.";
+ const string vobTransportView_InstructionDontAlign	= "Press V - do not align object (1/3).";
+ const string vobTransportView_InstructionAlignInFront	= "Press V - align in front (2/3).";
+ const string vobTransportView_InstructionAlignToFloor	= "Press V - align to floor (3/3).";
 
 const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 23;
 
@@ -239,7 +229,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	//Special categories
 
 	if (vobTransportShowcaseVobVerticalIndex == 1) {
-		repeat (i, 6); 
+		repeat (i, 6);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -276,7 +266,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 	var int j;
 
 	if (!vobPtr) { return FALSE; };
-	
+
 	vob = _^ (vobPtr);
 
 	repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX); var int i;
@@ -310,13 +300,13 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			sVobTransportBuyVobView_Count5 = IntToString (i + 1); //index starts with 0
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_MAX));
-			
+
 			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count3 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count4 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count5 = RGBA (255, 255, 255, 255);
-			
+
 			if (oreTotal >= vobTransportShowcaseVobBuyValue) {
 				colorVobTransportBuyVobView_Count2 = RGBA (102, 255, 102, 255);
 			} else {
@@ -326,7 +316,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			return TRUE;
 		};
 	end;
-	
+
 	return FALSE;
 };
 

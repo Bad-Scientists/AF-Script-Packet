@@ -129,89 +129,9 @@ func void PlayerPortalRoomChange_RemoveListener (var func f) {
 };
 
 /*
- *	Some made-up 'internal' constants
+ *
  */
 
-const int evOpenInventory = 1;		//Inventory open using 'standard' method (oCNPC__OpenInventory)
-
-const int evDrawWeapon = 1;		//Weapon drawing (oCNPC__EV_DrawWeapon, oCNPC__EV_DrawWeapon1, oCNPC__EV_DrawWeapon2)
-const int evCloseInventory = 2;		//Inventory closed using 'standard' method (oCNPC__CloseInventory)
-const int evOpenScreenMap = 3;		//Opening map (oCNPC__OpenScreen_Map replaced by _hook_oCNPC_OpenScreen_Map)
-const int evStatusScreenShow = 4;	//Opening status screen (oCStatusScreen__Show)
-const int evLogScreenShow = 5;		//Opening log screen (oCLogScreen__Show)
-const int evMapScreenShow = 6;		//Opening map (oCMapScreen__Show)
-
-/*
- *	'Standard' inventory opening method
- */
-func void _hook_oCNPC_OpenInventory () {
-	if (!Hlp_Is_oCNpc (ECX)) { return; };
-	var oCNPC slf; slf = _^ (ECX);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	//Event was called when there was an attempt to open inventory - if player was jumping/falling/running inventory was not actually opened
-	if ((!NPC_BodyStateContains (slf, BS_JUMP)) && (!NPC_BodyStateContains (slf, BS_FALL)) && (!NPC_BodyStateContains (slf, BS_DEAD)) && (!NPC_BodyStateContains (slf, BS_RUN))) {
-		if (_OpenInventory_Event) {
-			Event_Execute (_OpenInventory_Event, evOpenInventory);
-		};
-	};
-};
-
-/*
- *	'Standard' inventory closing method
- */
-func void _hook_oCNpc_CloseInventory () {
-	if (!Hlp_Is_oCNpc (ECX)) { return; };
-	var oCNPC slf; slf = _^ (ECX);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, evCloseInventory);
-	};
-};
-
-/*
- *	Weapon drawing closes inventory
- */
-func void _hook_oCNPC_EV_DrawWeapon () {
-	if (!Hlp_Is_oCNpc (ECX)) { return; };
-	var oCNPC slf; slf = _^ (ECX);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, evDrawWeapon);
-	};
-};
-
-/*
- *	Function is called when player presses 'B' for status screen
- */
-func void _hook_oCStatusScreen_Show () {
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, evStatusScreenShow);
-	};
-};
-
-/*
- *	Function is called when player presses 'L' for Log screen
- */
-func void _hook_oCLogScreen_Show () {
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, evLogScreenShow);
-	};
-};
-
-/*
- *	Function is called when player presses 'M' to show Map
- */
-func void _hook_oCMapScreen_Show () {
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, evMapScreenShow);
-	};
-};
-
-//Even though this function is supposedly method of oCItemContainer class, reading out vtbl in ECX gives me 8245076 (oCNPCContainer_vtbl)
-//After some trial-error testing, we can safely use oCNpcInventory here
 func void _hook_oCItemContainer_TransferItem () {
 	if (!Hlp_Is_oCNpcContainer (ECX)) { return; };
 	if (_TransferItem_Event) {
@@ -223,7 +143,6 @@ func void _hook_oCNPC_Equip () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-
 	if (_EquipItem_Event) {
 		Event_Execute (_EquipItem_Event, 0);
 	};
@@ -254,9 +173,9 @@ func void _hook_oCNpc_DoTakeVob () {
  *	It is also easier for me to keep them separate as they have different parameters ...
  *	In theory we can use event-type constant to recognize which event is calling event functions ...
  */
-const int evDoDropVob = 1;			//'Standard' Gothic function oCNpc::DoDropVob(class zCVob *)
+//const int evDoDropVob = 1;			//'Standard' Gothic function oCNpc::DoDropVob(class zCVob *)
 						//Pointer to dropped item is in function parameter (ESP + 4)
-const int evDoDropFromSlot = 2;			//Item dropped using oCNpc::DropFromSlot(class zSTRING const &)
+//const int evDoDropFromSlot = 2;			//Item dropped using oCNpc::DropFromSlot(class zSTRING const &)
 						//Pointer to dropped item has to be obtained by checking vobs in slot ! Items are still in slots when this event is called!
 
 //0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
@@ -265,17 +184,20 @@ func void _hook_oCNpc_DoDropVob () {
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	if (_DoDropVob_Event) {
-		Event_Execute (_DoDropVob_Event, evDoDropVob);
+		Event_Execute (_DoDropVob_Event, 0);
 	};
 };
 
-//0x006A61A0 public: class oCVob * __thiscall oCNpc::DropFromSlot(class zSTRING const &)
+//0x006A6270 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
 func void _hook_oCNpc_DropFromSlot () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
+
+	if (!MEM_ReadInt (ESP + 4)) { return; };
+
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	if (_DropFromSlot_Event) {
-		Event_Execute (_DropFromSlot_Event, evDoDropFromSlot);
+		Event_Execute (_DropFromSlot_Event, 0);
 	};
 };
 
@@ -357,15 +279,19 @@ func void _hook_oCGame_HandleEvent () {
 	};
 };
 
-var int PC_PortalManager_OldPlayerRoom;
+//var int PC_PortalManager_OldPlayerRoom;
+var int PC_PortalManager_OldPlayerPortal;
 
 func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
 	if (!MEM_Game.portalman) { return; };
 
 	var oCPortalRoomManager portalManager; portalManager = _^ (MEM_Game.portalman);
 
-	if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
-		PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
+	//if (portalManager.curPlayerRoom != PC_PortalManager_OldPlayerRoom) {
+	//	PC_PortalManager_OldPlayerRoom = portalManager.curPlayerRoom;
+
+	if (portalManager.curPlayerPortal != PC_PortalManager_OldPlayerPortal) {
+		PC_PortalManager_OldPlayerPortal = portalManager.curPlayerPortal;
 		if (_PlayerPortalRoomChange_Event) {
 			Event_Execute (_PlayerPortalRoomChange_Event, 0);
 		};
@@ -374,6 +300,22 @@ func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
 
 //---
 
+func void _hook_oCItemContainer_OpenPassive () {
+	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
+
+	var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
+
+	if (!Hlp_Is_oCNpc (npcInventory.inventory2_owner)) { return; };
+
+	var oCNpc slf; slf = _^ (npcInventory.inventory2_owner);
+
+	if (!NPC_IsPlayer (slf)) { return; };
+
+	if (_OpenInventory_Event) {
+		Event_Execute (_OpenInventory_Event, 0);
+	};
+};
+
 func void G12_OpenInventoryEvent_Init () {
 	if (!_OpenInventory_Event) {
 		_OpenInventory_Event = Event_Create ();
@@ -381,9 +323,31 @@ func void G12_OpenInventoryEvent_Init () {
 
 	const int once = 0;
 	if (!once) {
-		//[Open inventory events]
-		HookEngine (oCNPC__OpenInventory, 6, "_hook_oCNPC_OpenInventory");
+		//0x00668050 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,enum oCItemContainer::oTItemListMode)
+		const int oCItemContainer__OpenPassive_G1 = 6717520;
+
+		//0x007086D0 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,int)
+		const int oCItemContainer__OpenPassive_G2 = 7374544;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__OpenPassive_G1, oCItemContainer__OpenPassive_G2), 7, "_hook_oCItemContainer_OpenPassive");
+
 		once = 1;
+	};
+};
+
+func void _hook_oCItemContainer_Close () {
+	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
+
+	var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
+
+	if (!Hlp_Is_oCNpc (npcInventory.inventory2_owner)) { return; };
+
+	var oCNpc slf; slf = _^ (npcInventory.inventory2_owner);
+
+	if (!NPC_IsPlayer (slf)) { return; };
+
+	if (_CloseInventory_Event) {
+		Event_Execute (_CloseInventory_Event, 0);
 	};
 };
 
@@ -394,21 +358,14 @@ func void G12_CloseInventoryEvent_Init () {
 
 	const int once = 0;
 	if (!once) {
-		//[Close inventory events]
-		//Function is called when inventory is closed
-		//G2A HookLen 9
-		const int oCNPC__CloseInventory_G2 = 7742480;
-		HookEngine (MEMINT_SwitchG1G2 (oCNPC__CloseInventory, oCNPC__CloseInventory_G2), MEMINT_SwitchG1G2 (6, 9), "_hook_oCNpc_CloseInventory");
+		//0x00668C10 public: virtual void __thiscall oCItemContainer::Close(void)
+		const int oCItemContainer__Close_G1 = 6720528;
 
-		//Weapon drawing closes inventory
-		HookEngine (oCNPC__EV_DrawWeapon, 6, "_hook_oCNPC_EV_DrawWeapon");
-		HookEngine (oCNPC__EV_DrawWeapon1, 5, "_hook_oCNPC_EV_DrawWeapon");
-		HookEngine (oCNPC__EV_DrawWeapon2, 6, "_hook_oCNPC_EV_DrawWeapon");
+		//0x00708F30 public: virtual void __thiscall oCItemContainer::Close(void)
+		const int oCItemContainer__Close_G2 = 7376688;
 
-		HookEngine (oCStatusScreen__Show, 7, "_hook_oCStatusScreen_Show");
-		HookEngine (oCLogScreen__Show, 7, "_hook_oCLogScreen_Show");
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__Close_G1, oCItemContainer__Close_G2), 7, "_hook_oCItemContainer_Close");
 
-		HookEngine (oCMapScreen__Show, 7, "_hook_oCMapScreen_Show");
 		once = 1;
 	};
 };

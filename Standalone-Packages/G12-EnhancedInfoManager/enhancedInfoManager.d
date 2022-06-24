@@ -137,6 +137,9 @@ var int EnhancedInfoManagerReady;
 	const int cEIM_ChoicesCollected = 2;
 	const int cEIM_Initialized = 3;
 
+const int ALIGN_TAB = 255;
+const string InfoManagerTabSize = "-";
+
 func void oCInfoManager_Reset_EIM () {
 	EnhancedInfoManagerReady = cEIM_Idle;
 	InfoManagerDialogInstPtrCount = 0;
@@ -538,6 +541,73 @@ func string Choice_RemoveModifierColorSelected (var string s) {
 	return ConcatStrings (s1, s2);
 };
 
+func int Choice_GetModifierTab (var string s) {
+	var int len;
+	var int index;
+
+	var string s1; s1 = "";
+
+	len = STR_Len (s);
+	index = STR_IndexOf (s, "tab@");
+
+	if (index == -1) {
+		return 0;
+	};
+
+	s1 = mySTR_SubStr (s, index + 4, len - 4);
+
+	len = STR_Len (s1);
+	index = STR_IndexOf (s1, " ");
+
+	if (index == -1) {
+		index = len;
+	};
+
+	s1 = mySTR_Prefix (s1, index);
+
+	PrintS (s1);
+
+	if (!STR_IsNumeric (s1)) { return 0; };
+
+	return STR_ToInt (s1);
+};
+
+func string Choice_RemoveModifierTab (var string s) {
+	var int len;
+	var int index1;
+
+	var string s1; s1 = "";
+	var string s2; s2 = "";
+
+	len = STR_Len (s);
+	index1 = STR_IndexOf (s, "tab@");
+
+	if (index1 == -1) {
+		return s;
+	};
+
+	if (index1 > 0) {
+		s1 = mySTR_SubStr (s, 0, index1);
+	};
+
+	s2 = mySTR_SubStr (s, index1 + 4, len - 4);
+
+	len = STR_Len (s2);
+	index1 = STR_IndexOf (s2, " ");
+
+	if (index1 == -1) {
+		index1 = len;
+	};
+
+	if (index1 == len) {
+		s2 = "";
+	} else {
+		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
+	};
+
+	return ConcatStrings (s1, s2);
+};
+
 /*
  *	Removes modifier by text (removes also space after modifier!), for example: "a@", "a@ "
  *		Choice_RemoveModifierByText (s, "a@")
@@ -725,39 +795,38 @@ func string Choice_RemoveModifierOverlayKeepInline (var string s) {
 		//--> Extract overlay format modifiers
 		//Extract alignment
 		indexFormat = STR_IndexOf (overlayFormat, "al@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_LEFT;
 		};
 
 		indexFormat = STR_IndexOf (overlayFormat, "ac@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_CENTER;
 		};
 
 		indexFormat = STR_IndexOf (overlayFormat, "ar@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_RIGHT;
+		};
+
+		indexFormat = STR_IndexOf (overlayFormat, "tab@");
+		if (indexFormat > -1) {
+			overlayAlignment = ALIGN_TAB;
 		};
 
 		//---
 
 		indexFormat = STR_IndexOf (overlayText, "al@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_LEFT;
 		};
 
 		indexFormat = STR_IndexOf (overlayText, "ac@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_CENTER;
 		};
 
 		indexFormat = STR_IndexOf (overlayText, "ar@");
-
 		if (indexFormat > -1) {
 			overlayAlignment = ALIGN_RIGHT;
 		};
@@ -813,6 +882,7 @@ func string Choice_RemoveAllModifiers (var string s) {
 	s = Choice_RemoveModifierByText (s, "al@");
 	s = Choice_RemoveModifierByText (s, "ac@");
 	s = Choice_RemoveModifierByText (s, "ar@");
+	s = Choice_RemoveModifierByText (s, "tab@");
 
 	return s;
 };
@@ -925,6 +995,7 @@ func string Choice_GetCleanText (var string s) {
 	s = Choice_RemoveModifierByText (s, "al@");
 	s = Choice_RemoveModifierByText (s, "ac@");
 	s = Choice_RemoveModifierByText (s, "ar@");
+	s = Choice_RemoveModifierByText (s, "tab@");
 
 	return s;
 };
@@ -1777,6 +1848,7 @@ MEM_InformationMan.LastMethod:
 	var int k;
 
 	var int overlayAlignment;
+	var int overlayTab; overlayTab = 0;
 
 	var int textWidth;
 	var int defaultPosX;
@@ -1958,6 +2030,9 @@ MEM_InformationMan.LastMethod:
 
 	var int retVal;
 
+	var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
+	var int InfoManagerSpinnerReRunCondition; InfoManagerSpinnerReRunCondition = FALSE;
+
 	if (dlg.m_listLines_array)
 	&& (dlg.m_listLines_numInArray) {
 		var int nextPosY;
@@ -1977,9 +2052,9 @@ MEM_InformationMan.LastMethod:
 			loop = arr.numInArray;
 		};
 
-		var int choiceConditionEvaluated; choiceConditionEvaluated = FALSE;
-
 		while (i < loop);
+
+			var int InfoManagerSpinnerLoop; InfoManagerSpinnerLoop = MEM_StackPos.position;
 
 			//Recalculate Y pos
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
@@ -2144,11 +2219,6 @@ MEM_InformationMan.LastMethod:
 				end;
 				//<-- remove old overlays
 
-
-				//if (i < dlg.m_listLines_numInArray) {
-
-				//	if (i < dlg.Choices) {
-
 				//Default values
 				dlgColor = InfoManagerDefaultColorDialogGrey;
 				color = HEX2RGBA (dlgColor);
@@ -2201,21 +2271,18 @@ MEM_InformationMan.LastMethod:
 
 					//al@ align left
 					index = STR_IndexOf (dlgDescriptionNoOverlays, "al@");
-
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
 					};
 
 					//ac@ align center
 					index = STR_IndexOf (dlgDescriptionNoOverlays, "ac@");
-
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
 					};
 
 					//ar@ align right
 					index = STR_IndexOf (dlgDescriptionNoOverlays, "ar@");
-
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
 					};
@@ -2328,23 +2395,28 @@ MEM_InformationMan.LastMethod:
 						//--> Extract overlay format modifiers
 						//Extract alignment
 						index = STR_IndexOf (overlayFormat, "al@");
-
 						if (index > -1) {
 							overlayAlignment = ALIGN_LEFT;
 							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "al@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "ac@");
-
 						if (index > -1) {
 							overlayAlignment = ALIGN_CENTER;
 							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ac@");
 						};
-						index = STR_IndexOf (overlayFormat, "ar@");
 
+						index = STR_IndexOf (overlayFormat, "ar@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_RIGHT;
 							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ar@");
+						};
+
+						index = STR_IndexOf (overlayFormat, "tab@");
+						if (index > -1) {
+							overlayAlignment = ALIGN_TAB;
+							overlayTab = Choice_GetModifierTab (overlayFormat);
+							overlayFormat = Choice_RemoveModifierTab (overlayFormat);
 						};
 						//<--
 
@@ -2450,7 +2522,6 @@ MEM_InformationMan.LastMethod:
 
 								//al@ align left
 								index = (STR_IndexOf (overlayText, "al@"));
-
 								if (index > -1) {
 									//alignment = ALIGN_LEFT;
 									overlayAlignment = ALIGN_LEFT;
@@ -2459,7 +2530,6 @@ MEM_InformationMan.LastMethod:
 
 								//ac@ align center
 								index = (STR_IndexOf (overlayText, "ac@"));
-
 								if (index > -1) {
 									//alignment = ALIGN_CENTER;
 									overlayAlignment = ALIGN_CENTER;
@@ -2468,7 +2538,6 @@ MEM_InformationMan.LastMethod:
 
 								//ar@ align right
 								index = (STR_IndexOf (overlayText, "ar@"));
-
 								if (index > -1) {
 									//alignment = ALIGN_RIGHT;
 									overlayAlignment = ALIGN_RIGHT;
@@ -2534,6 +2603,10 @@ MEM_InformationMan.LastMethod:
 										if (overlayChoiceTxt.posX < defaultPosX) {
 											overlayChoiceTxt.posX = defaultPosX;
 										};
+									} else
+									if (overlayAlignment == ALIGN_TAB) {
+										textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
+										overlayChoiceTxt.posX = defaultPosX + textWidth;
 									};
 								};
 
@@ -2602,6 +2675,10 @@ MEM_InformationMan.LastMethod:
 								if (txtIndicator.posX < defaultPosX) {
 									txtIndicator.posX = defaultPosX;
 								};
+							} else
+							if (overlayAlignment == ALIGN_TAB) {
+								textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
+								txtIndicator.posX = defaultPosX + textWidth;
 							};
 
 							//We will exploit this variable a little bit
@@ -2745,7 +2822,6 @@ MEM_InformationMan.LastMethod:
 
 					//al@ align left
 					index = STR_IndexOf (dlgDescription, "al@");
-
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
 						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "al@");
@@ -2753,7 +2829,6 @@ MEM_InformationMan.LastMethod:
 
 					//ac@ align center
 					index = STR_IndexOf (dlgDescription, "ac@");
-
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
 						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ac@");
@@ -2761,7 +2836,6 @@ MEM_InformationMan.LastMethod:
 
 					//ar@ align right
 					index = STR_IndexOf (dlgDescription, "ar@");
-
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
 						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ar@");
@@ -2769,7 +2843,6 @@ MEM_InformationMan.LastMethod:
 
 					//spinner s@
 					index = STR_IndexOf (dlgDescription, "s@");
-
 					if (index > -1) {
 						properties = properties | dialogChoiceType_Spinner;
 						spinnerID = Choice_GetModifierSpinnerID (dlgDescription);
@@ -2829,8 +2902,23 @@ MEM_InformationMan.LastMethod:
 						};
 					};
 				};
-				//	};
-				//};
+
+				//Well ... spinners are quite complex :)
+				//Condition function updates everything spinner-related
+				//However first time condition runs InfoManagerSpinnerID is not setup ... so only on second run EIM will refresh dialogue / choice descriptions
+				//There is 1 frame (maybe more) - where dialogue description won't be updated - so this condition below checks whether spinner is selected - if yes - we will re-evaluate condition one more time.
+				if (properties & dialogChoiceType_Spinner) {
+					if (i == dlg.ChoiceSelected) {
+						if (!InfoManagerSpinnerReRunCondition) {
+							InfoManagerSpinnerID = spinnerID;
+							InfoManagerSpinnerReRunCondition = TRUE;
+
+							//Reset for dialogue with choices
+							choiceConditionEvaluated = FALSE;
+							MEM_StackPos.position = InfoManagerSpinnerLoop;
+						};
+					};
+				};
 
 				if (alignment == ALIGN_LEFT) {
 					properties = properties | dialogChoiceType_AlignLeft;

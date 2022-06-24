@@ -505,7 +505,7 @@ class oCMsgManipulate {
 
 };
 
-const int sizeof_oCMsgConversation = 156;
+const int sizeof_oCMsgConversation = 152;
 
 class oCMsgConversation {
 	var int _vtbl;			//0
@@ -520,9 +520,9 @@ class oCMsgConversation {
 
 	var string targetVobName;	//44	zSTRING targetVobName;
 
-	//int highPriority : 1;
-	//int deleted      : 1;
-	//int inUse        : 1;
+	//int highPriority : 1;	1
+	//int deleted      : 1;	2
+	//int inUse        : 1;	4
 	var int bitfield_oCNpcMessage;	//64
 
 /*
@@ -556,16 +556,17 @@ class oCMsgConversation {
 	var int targetPos[3];		//112	zVEC3 targetPos;
 	var int ani;			//124	int ani;
 
+	var int u4;			//128
 	//union {
-	var int cAni;			//128	zCModelAni* cAni;
-	var int watchMsg;		//132	zCEventMessage* watchMsg;
+	//var int cAni;			//128	zCModelAni* cAni;
+	//var int watchMsg;		//132	zCEventMessage* watchMsg;
 	//};
 
-	var int handle;			//136	int handle;
-	var int timer;			//140	float timer;
-	var int number;			//144	int number;
-	var int f_no;			//148	int f_no;
-	var int f_yes;			//152	int f_yes;
+	var int handle;			//132	int handle;
+	var int timer;			//136	float timer;
+	var int number;			//140	int number;
+	var int f_no;			//144	int f_no;
+	var int f_yes;			//148	int f_yes;
 };
 
 const int sizeof_oCMsgMagic = 108;

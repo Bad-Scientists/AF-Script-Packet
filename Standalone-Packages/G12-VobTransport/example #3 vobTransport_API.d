@@ -15,7 +15,7 @@ const int vobTransportPropertiesView_VPosX		= -1;		//if not defined (-1) then vo
 const int vobTransportPropertiesView_VPosY		= -1;		//if not defined (-1) then vobTransportPropertiesView_VPosY will be taken into consideration. Virtual coordinates
 
 const int vobTransportPropertiesView_WidthPxl		= 360;		//In pixels
-const int vobTransportPropertiesView_Lines		= 25;		//24 lines + 1 empty delimiter
+const int vobTransportPropertiesView_Lines		= 30;		//29 lines + 1 empty delimiter
 
 const int vobTransportBuyVobViewPPosX			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
 const int vobTransportBuyVobViewPPosY			= -1;		//if not defined (-1) it will go to the middle of screen on X axis
@@ -25,6 +25,8 @@ const int vobTransportBuyVobViewVPosY			= 6600;		//if not defined (-1) then vobT
 
 const int vobTransportBuyVobView_WidthPxl		= 540;
 const int vobTransportBuyVobView_Lines			= 7;		//7 lines
+
+const int vobTransportAlpha				= 80;
 
 //Interaction prints
 const string vobTransportPrint_BuyVobActivated		= "Select objects which you would like to buy.";
@@ -39,38 +41,26 @@ const string vobTransportPrint_CannotBeClonedMoved	= "Object cannot be cloned or
 
 //Vob transport modes
 const string vobTransportView_TitleSelection		= "<< Selection mode >>";
- const string vobTransportView_InstructionMove		= "Press M to move.";
- const string vobTransportView_InstructionClone		= "Press L Bracket to clone.";
- const string vobTransportView_InstructionCancel	= "Press R Bracket to cancel.";
- const string vobTransportView_InstructionDelete	= "Press Delete to delete.";
- const string vobTransportView_InstructionDropItem	= "Ctrl + L BRACKET to drop item.";
+ const string vobTransportView_InstructionMove		= "Press C to select";
+ const string vobTransportView_InstructionClone		= "Press Ctrl + C to copy object";
+ const string vobTransportView_InstructionTransform	= "Press Shift + C to enter transform mode";
+ const string vobTransportView_InstructionDelete	= "Press Del to delete object";
+ const string vobTransportView_InstructionCancel	= "Press Esc to cancel selection";
+ const string vobTransportView_InstructionDropItem	= "Press P to apply physics on an item";
+
+const string vobTransportView_TitleMovement		= "<< Movement mode >>";
+ const string vobTransportView_InstructionConfirm	= "Press C to confirm position";
+ //const string vobTransportView_InstructionTransform	= "L Shift + C - transform";
 
 const string vobTransportView_TitleTransform		= "<< Transform mode >>";
- const string vobTransportView_InstructionConfirm	= "Press L Bracket to confirm position.";
- const string vobTransportView_InstructionRotate	= "Press ENTER for Rotation mode.";
-
-const string vobTransportView_TitleRotation		= "<< Rotation mode >>";
- const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z for axis rotation.";
- const string vobTransportView_InstructionElevation	= "Press E for elevation adjustment.";
+ const string vobTransportView_InstructionRotateXYZ	= "Press X Y Z to switch axes";
  const string vobTransportView_InstructionSpeed		= "Press SPACE to adjust speed: ";
 
-const string vobTransportView_TitleRotationX		= "<< Rotation mode >> X axis";
- const string vobTransportView_InstructionStopRotX	= "Press X to stop.";
+ const string vobTransportView_InstructionDontAlign	= "Press V - do not align object (1/3).";
+ const string vobTransportView_InstructionAlignInFront	= "Press V - align in front (2/3).";
+ const string vobTransportView_InstructionAlignToFloor	= "Press V - align to floor (3/3).";
 
-const string vobTransportView_TitleRotationY		= "<< Rotation mode >> Y axis";
- const string vobTransportView_InstructionStopRotY	= "Press Y to stop.";
-
-const string vobTransportView_TitleRotationZ		= "<< Rotation mode >> Z axis";
- const string vobTransportView_InstructionStopRotZ	= "Press Z to stop.";
-
-const string vobTransportView_TitleElevation		= "<< Elevation mode >>";
- const string vobTransportView_InstructionStopElevation	= "Press E to stop.";
- const string vobTransportView_InstructionElevationLvl	= "Elevation: ";
-
- const string vobTransportView_InstructionAlign		= "R Bracket - align to surface.";
- const string vobTransportView_InstructionDontAlign	= "R Bracket - don't align to surface.";
-
-const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 462;
+const int VOBTRANSPORT_CANBUY_VOBLIST_MAX		= 463;
 
 const string VOBTRANSPORT_CANBUY_VOBLIST [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = {
 	"VOB_BUY_FIREPLACE_GROUND",
@@ -602,7 +592,9 @@ const string VOBTRANSPORT_CANBUY_VOBLIST [VOBTRANSPORT_CANBUY_VOBLIST_MAX] = {
 	"VOB_BUY_OC_STAIRS_V3",
 	"VOB_BUY_OC_STAIRS_V5",
 	"VOB_BUY_OC_STAIRS_V10",
-	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+	"VOB_BUY_OC_LOB_STAIRS_ROUND",
+
+	"VOB_BUY_HOUSE_01"
 };
 
 /*
@@ -1157,7 +1149,7 @@ const string VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS [23] = {
 	"VOB_BUY_METALTHORNS_DEADLY"
 };
 
-const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [11] = {
+const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [12] = {
 	"VOB_BUY_ARCH_V1",
 	"VOB_BUY_ARCH_V2",
 	"VOB_BUY_BOOKSHELF_V1",
@@ -1169,7 +1161,8 @@ const string VOBTRANSPORT_CANBUY_VOBLIST_OTHERS [11] = {
 	"VOB_BUY_OC_STAIRS_V3",
 	"VOB_BUY_OC_STAIRS_V5",
 	"VOB_BUY_OC_STAIRS_V10",
-	"VOB_BUY_OC_LOB_STAIRS_ROUND"
+	"VOB_BUY_OC_LOB_STAIRS_ROUND",
+	"VOB_BUY_HOUSE_01"
 };
 
 func int BuildBuyVobListGetCategoryCount () {
@@ -1193,7 +1186,7 @@ func int BuildBuyVobListGetCategoryCount () {
 	if (vobTransportShowcaseVobVerticalIndex == 13) { return 15; };	//VOBTRANSPORT_CANBUY_VOBLIST_STONES
 	if (vobTransportShowcaseVobVerticalIndex == 14) { return 45; };	//VOBTRANSPORT_CANBUY_VOBLIST_STATUES
 	if (vobTransportShowcaseVobVerticalIndex == 15) { return 23; };	//VOBTRANSPORT_CANBUY_VOBLIST_CAGEGRIDS
-	if (vobTransportShowcaseVobVerticalIndex == 16) { return 11; };	//VOBTRANSPORT_CANBUY_VOBLIST_OTHERS
+	if (vobTransportShowcaseVobVerticalIndex == 16) { return 12; };	//VOBTRANSPORT_CANBUY_VOBLIST_OTHERS
 
 	return 0;
 };
@@ -1254,7 +1247,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	//Special categories
 
 	if (vobTransportShowcaseVobVerticalIndex == 1) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_FIREPLACES, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1262,7 +1255,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 2) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_LADDERS, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1270,7 +1263,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 3) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_CHESTS, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1278,7 +1271,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 4) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_MOBS_OTHERS, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1286,7 +1279,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 5) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_STRUCTURES, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1302,7 +1295,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 7) {
-		repeat (i, count); 
+		repeat (i, count);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_PLANKS, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -1398,7 +1391,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 	var int vobCount;
 
 	if (!vobPtr) { return FALSE; };
-	
+
 	vob = _^ (vobPtr);
 
 	repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX); var int i;
@@ -1431,7 +1424,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 
 			//sVobTransportBuyVobView_Line2 = "Your ore: ";
 			//sVobTransportBuyVobView_Count2 = IntToString (oreTotal);
-			
+
 			sVobTransportBuyVobView_Line1 = "Use arrows to select objects / switch between categories.";
 			sVobTransportBuyVobView_Line2 = "L Bracket to confirm.";
 
@@ -1464,13 +1457,13 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			sVobTransportBuyVobView_Count5 = IntToString (vobTransportShowcaseVobVerticalIndex + 1); //index starts with 0
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX));
-			
+
 			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count3 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count4 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count5 = RGBA (255, 255, 255, 255);
-			
+
 			//if (oreTotal >= vobTransportShowcaseVobBuyValue) {
 			//	colorVobTransportBuyVobView_Count2 = RGBA (102, 255, 102, 255);
 			//} else {
@@ -1480,7 +1473,7 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			return TRUE;
 		};
 	end;
-	
+
 	return FALSE;
 };
 
@@ -1495,7 +1488,7 @@ func int VobTransportCanBeActivated__VobTransport_API () {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1508,7 +1501,7 @@ func int VobCanBeDeleted__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1521,7 +1514,7 @@ func int FocusVobCanBeSelected__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1534,7 +1527,7 @@ func int VobCanBeSelected__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1548,7 +1541,7 @@ func int VobCanBeMovedAround__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1561,7 +1554,7 @@ func int VobCanBeCloned__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };
 
@@ -1574,6 +1567,6 @@ func int VobCanBePlaced__VobTransport_API (var int vobPtr) {
 	if (MEM_Game.game_testmode) {
 		return TRUE;
 	};
-	
+
 	return FALSE;
 };

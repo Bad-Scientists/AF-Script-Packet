@@ -18,6 +18,9 @@ func void oCMob_SetOwnerStr (var int mobPtr, var string ownerStr, var string own
 
 	if (!mobPtr) { return; };
 
+	ownerStr = STR_Trim (ownerStr, " ");
+	ownerGuildStr = STR_Trim (ownerGuildStr, " ");
+
 	CALL_zStringPtrParam (ownerStr);
 	CALL_zStringPtrParam (ownerGuildStr);
 	CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMOB__SetOwner_G1, oCMOB__SetOwner_G2));

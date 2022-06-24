@@ -186,6 +186,8 @@ func int SearchWaypointByName(var string waypoint) {
     const int zCWayNet__GetWaypoint_G1 = 7366448; //0x706730
     const int zCWayNet__GetWaypoint_G2 = 8061744; //0x7B0330
 
+    waypoint = STR_Upper (waypoint);
+
     var int waynetPtr; waynetPtr = MEM_World.wayNet;
     var int wpNamePtr; wpNamePtr = _@s(waypoint);
 

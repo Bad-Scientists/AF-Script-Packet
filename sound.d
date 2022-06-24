@@ -12,41 +12,6 @@ const int zSND_LOOPING_DISABLED = 2;
 var int zSound;
 var int activeSndList;
 
-/*
- *	Seems like when sound is enabled, then zSound address points to zCSndSys_MSS object, when it is disabled it points to zCSoundSystemDummy
- *	If we try to play any sound using zCSndSys_MSS functions and sound is disabled then game crashes
- *	Therefore we have to add check to every function and check if Hlp_Is_zCSndSys_MSS (zSound) is true
- */
-func int Hlp_Is_zCSndSys_MSS (var int snd) {
-	//0x007D306C const zCSndSys_MSS::`vftable'
-	const int zCSndSys_MSS_vtbl_G1 = 8204396;
-
-	//0x0083120C const zCSndSys_MSS::`vftable'
-	const int zCSndSys_MSS_vtbl_G2 = 8589836;
-
-	if (!snd) { return FALSE; };
-	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSndSys_MSS_vtbl_G1, zCSndSys_MSS_vtbl_G2))) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCSoundSystemDummy (var int snd) {
-	//0x007DC134 const zCSoundSystemDummy::`vftable'
-	const int zCSoundSystemDummy_vtbl_G1 = 8241460;
-
-	//0x0083A6A4 const zCSoundSystemDummy::`vftable'
-	const int zCSoundSystemDummy_vtbl_G2 = 8627876;
-
-	if (!snd) { return FALSE; };
-	if (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSoundSystemDummy_vtbl_G1, zCSoundSystemDummy_vtbl_G2))) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
 func void MEM_InitSound () {
 	//0x008CEE4C class zCSoundSystem * zsound
 	const int zCSoundSystem__Address_G1 = 9236044;
@@ -115,30 +80,9 @@ func void oCNpc_StopAllVoices (var int slfInstance) {
 };
 
 /*
- *	Function will stop sound handle
- */
-func void zCSndSys_MSS_StopSound (var int soundHandle) {
-	//0x004E4610 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
-	const int zCSndSys_MSS__StopSound_G1 = 5129744;
-
-	//0x004F2300 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
-	const int zCSndSys_MSS__StopSound_G2 = 5186304;
-
-	MEM_InitSound ();
-	if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
-
-	const int call = 0;
-	if (CALL_Begin (call)) {
-		CALL_IntParam (_@ (soundHandle));
-		CALL__thiscall (_@ (zSound), MEMINT_SwitchG1G2 (zCSndSys_MSS__StopSound_G1, zCSndSys_MSS__StopSound_G2));
-		call = CALL_End();
-	};
-};
-
-/*
  *	Function stops all sounds
  */
-func void zCSndSys_MSS_StopAllSounds (var int soundHandle) {
+func void zCSndSys_MSS_StopAllSounds () {
 	//0x004E46D0 public: virtual void __thiscall zCSndSys_MSS::StopAllSounds(void)
 	const int zCSndSys_MSS__StopAllSounds_G1 = 5129936;
 
@@ -248,6 +192,56 @@ func int zCActiveSnd_GetHandleSound (var int soundHandle) {
 };
 
 /*
+ *	zCActiveSnd_RemoveSound
+ *	 - function removes sound by sound pointer zCActiveSnd*
+ */
+func void zCActiveSnd_RemoveSound (var int activeSndPtr) {
+	//0x004E9010 public: static void __cdecl zCActiveSnd::RemoveSound(class zCActiveSnd *)
+	const int zCActiveSnd__RemoveSound_G1 = 5148688;
+
+	//0x004F71A0 public: static void __cdecl zCActiveSnd::RemoveSound(class zCActiveSnd *)
+	const int zCActiveSnd__RemoveSound_G2 = 5206432;
+
+	if (!activeSndPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PtrParam (_@ (activeSndPtr));
+		CALL__cdecl (MEMINT_SwitchG1G2(zCActiveSnd__RemoveSound_G1, zCActiveSnd__RemoveSound_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Function will stop sound handle
+ */
+func void zCSndSys_MSS_StopSound (var int soundHandle) {
+	//--> Not sure if I am using this one incorrectly - but it crashed everytime
+
+	//0x004E4610 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
+	//const int zCSndSys_MSS__StopSound_G1 = 5129744;
+
+	//0x004F2300 public: virtual void __thiscall zCSndSys_MSS::StopSound(int const &)
+	//const int zCSndSys_MSS__StopSound_G2 = 5186304;
+
+	//MEM_InitSound ();
+	//if (!Hlp_Is_zCSndSys_MSS (zSound)) { return; };
+
+	//const int call = 0;
+	//if (CALL_Begin (call)) {
+	//	CALL_IntParam (_@ (soundHandle));
+	//	CALL__thiscall (_@ (zSound), MEMINT_SwitchG1G2 (zCSndSys_MSS__StopSound_G1, zCSndSys_MSS__StopSound_G2));
+	//	call = CALL_End();
+	//};
+
+	//<--
+
+	var int activeSndPtr; activeSndPtr = zCActiveSnd_GetHandleSound (soundHandle);
+	if (!activeSndPtr) { return; };
+	zCActiveSnd_RemoveSound (activeSndPtr);
+};
+
+/*
  *	zCActiveSnd_UpdateSoundsByFrame
  *	 - function updates sound by pointer to zCSndFrame *
  */
@@ -296,9 +290,8 @@ func void zTSound3DParams_SetDefaults (var int ptrParams) {
  *	Returns sound handle
  */
 func int zCSndSys_MSS_PlaySound3D (var int soundPtr, var int vobPtr) {
-	var int ptrParams; ptrParams = create (zTSound3DParams@);
-	zTSound3DParams_SetDefaults (ptrParams);
-	return +zCSndSys_MSS_PlaySound3D_Ext (soundPtr, vobPtr, 0,ptrParams);
+	var zTSound3DParams params; zTSound3DParams_SetDefaults (_@ (params));
+	return +zCSndSys_MSS_PlaySound3D_Ext (soundPtr, vobPtr, 0, _@ (params));
 };
 
 /*
@@ -320,16 +313,16 @@ func int WAV_PlaySound3D (var string fileName, var int vobPtr) {
 };
 
 /*
- *	Function loops thorugh list of active sounds and finds out, whether specified fileName is playing
+ *	Function loops thorugh list of active sounds and finds out, whether specified fileName or instance name is playing
  */
-func int WAV_IsPlaying (var string fileName) {
+func int WAV_IsPlaying (var string fileOrInstName) {
 	MEM_InitSound ();
 
 	if (!activeSndList) { return FALSE; };
 
 	var zCArray activeSndArray; activeSndArray = _^ (activeSndList);
 
-	fileName = STR_Upper (fileName);
+	fileOrInstName = STR_Upper (fileOrInstName);
 
 	var int i; i = 0;
 	while (i < activeSndArray.numInArray);
@@ -340,7 +333,7 @@ func int WAV_IsPlaying (var string fileName) {
 			if (activeSnd.bitfield_zCActiveSnd & bitfield_zCActiveSnd_active) {
 				if (activeSnd.sourceFrm) {
 					var zCSndFrame sndFrame; sndFrame = _^ (activeSnd.sourceFrm);
-					if (Hlp_StrCmp (sndFrame.fileName, fileName)) {
+					if ((Hlp_StrCmp (sndFrame.fileName, fileOrInstName)) || (Hlp_StrCmp (sndFrame.instance, fileOrInstName))) {
 						return TRUE;
 					};
 				};
@@ -354,29 +347,34 @@ func int WAV_IsPlaying (var string fileName) {
 };
 
 /*
- *	Function loops thorugh list of active sounds and returns a handle for fileName (if playing)
+ *	Function loops through list of active sounds and returns a handle for fileName or instance name (if playing)
  */
-func int WAV_GetSoundHandleByFileName (var string fileName) {
+func int WAV_GetSoundHandle (var string fileOrInstName) {
 	MEM_InitSound ();
 
-	if (!activeSndList) { return FALSE; };
+	if (!activeSndList) { return -1; };
 
 	var zCArray activeSndArray; activeSndArray = _^ (activeSndList);
 
-	fileName = STR_Upper (fileName);
+	fileOrInstName = STR_Upper (fileOrInstName);
 
 	var int i; i = 0;
 	while (i < activeSndArray.numInArray);
 		var int activeSndPtr; activeSndPtr = MEM_ArrayRead (activeSndList, i);
 		if (activeSndPtr) {
 			var zCActiveSnd activeSnd; activeSnd = _^ (activeSndPtr);
-			return activeSnd.handle;
+			if (activeSnd.sourceFrm) {
+				var zCSndFrame sndFrame; sndFrame = _^ (activeSnd.sourceFrm);
+				if ((Hlp_StrCmp (sndFrame.fileName, fileOrInstName)) || (Hlp_StrCmp (sndFrame.instance, fileOrInstName))) {
+					return activeSnd.handle;
+				};
+			};
 		};
 
 		i += 1;
 	end;
 
-	return 0;
+	return -1;
 };
 
 /*

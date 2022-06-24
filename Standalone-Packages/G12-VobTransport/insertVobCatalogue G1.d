@@ -201,7 +201,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_BRIDGE_3X4M", "orc_e_bridge_3x4m.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_BIGBRIDGE", "ow_o_bigbridge.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_BIGBRIDGEMIDDLE", "ow_o_bigbridgemiddle.3ds", _@ (trafo), 0);
-	
+
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_PC_BRIDGE_V1", "pc_bridge_1.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_PC_BRIDGE_V2", "pc_bridge_2.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_PC_BRIDGE_V3", "pc_bridge_3.3ds", _@ (trafo), 0);
@@ -248,7 +248,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_DEADTREE_07", "ow_lob_deadtree_07.3ds", _@ (trafo), 0);
 
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_TREE_DESTROYED_V2", "ow_lob_tree_destroyed_v2.3ds", _@ (trafo), 0);
-	
+
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_TREE_ROOT_V1", "ow_lob_tree_root_v1.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_TREE_ROOT_V2", "ow_lob_tree_root_v2.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_TREE_V13", "ow_lob_tree_v13.3ds", _@ (trafo), 0);
@@ -286,7 +286,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_ORC_E_WALL_V1", "orc_e_wall.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_ORC_E_WALL_V2", "orc_e_wall_02.3ds", _@ (trafo), 0);
-	
+
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_ORC_MASTERTHRONE", "orc_masterthrone.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_CAVEWEBS_V1", "ow_cavewebs_v1.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_CAVEWEBS_V2", "ow_cavewebs_v2.3ds", _@ (trafo), 0);
@@ -331,9 +331,9 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_FIREWOOD_V1", "oc_firewood_v1.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_FIREWOOD_V2", "oc_firewood_v2.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_FIREWOOD_V3", "oc_firewood_v3.3ds", _@ (trafo), 0);
-	
+
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_GARBAGE_V1", "oc_garbage_v1.3ds", _@ (trafo), 0);
-	
+
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_KITCHENSTUFF_V1", "oc_kitchenstuff_v01.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_LEATHERSTAND_V1", "oc_leatherstand_v01.3ds", _@ (trafo), 0);
 	vobPtr = InsertObject ("zCVob", "VOB_BUY_BOWTRAIN", "oc_lob_bowtrain.3ds", _@ (trafo), 0);
@@ -509,14 +509,14 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	vobPtr = InsertMobFire ("VOB_BUY_FIREPLACE_GROUND", "FIREPLACE_GROUND.ASC", _@ (trafo));
 	oCMob_SetMobName (vobPtr, "MOBNAME_CAMP");
 	oCMobInter_SetUseWithItem (vobPtr, "ITLSTORCHBURNING");
-//	oCMobInter_SetSceme (vobPtr, "FIREPLACE");	
+//	oCMobInter_SetSceme (vobPtr, "FIREPLACE");
 	oCMobFire_SetFireSlot (vobPtr, "BIP01 FIRE");
 	oCMobFire_SetFireVobtreeName (vobPtr, "FIRETREE_LARGE.ZEN");
 
 	vobPtr = InsertMobFire ("VOB_BUY_FIREPLACE_GROUND2", "FIREPLACE_GROUND2.ASC", _@ (trafo));
 	oCMob_SetMobName (vobPtr, "MOBNAME_CAMP");
 	oCMobInter_SetUseWithItem (vobPtr, "ITLSTORCHBURNING");
-//	oCMobInter_SetSceme (vobPtr, "FIREPLACE");	
+//	oCMobInter_SetSceme (vobPtr, "FIREPLACE");
 	oCMobFire_SetFireSlot (vobPtr, "BIP01 FIRE");
 	oCMobFire_SetFireVobtreeName (vobPtr, "FIRETREE_LARGE.ZEN");
 
@@ -622,9 +622,9 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 
 	//oCMobInter
 	vobPtr = InsertObject ("oCMobWheel", "VOB_BUY_WHEEL", "VWHEEL_1_OC.MDS", _@ (trafo), 0);
-	oCMob_SetMobName (vobPtr, "MOBNAME_WHEEL");	
-//	oCMob_SetOwnerStr (vobPtr, "", "GIL_GRD ");	
-//	oCMobInter_SetSceme (vobPtr, "VWHEEL");	
+	oCMob_SetMobName (vobPtr, "MOBNAME_WHEEL");
+//	oCMob_SetOwnerStr (vobPtr, "", "GIL_GRD ");
+//	oCMobInter_SetSceme (vobPtr, "VWHEEL");
 //	oCMobInter_SetConditionFunc (vobPtr, "WHEEL_INTRO_COND");
 //	oCMobInter_SetOnStateFuncName (vobPtr, "WHEEL_INTRO_STATE");
 
@@ -897,7 +897,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	//OC_THRONE_BIG
 	//THRONE_BIG.ASC
 	//BaronsThrone
-	
+
 	vobPtr = InsertObject ("oCMobSwitch", "VOB_BUY_TURNSWITCH_BLOCK", "TURNSWITCH_BLOCK.MDS", _@ (trafo), 0);
 	oCMob_SetMobName (vobPtr, "MOBNAME_SWITCH");
 
@@ -905,7 +905,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	oCMob_SetMobName (vobPtr, "MOBNAME_SWITCH");
 //	oCMobInter_SetTriggerTarget (vobPtr, "CAGEDOORS");
 //	oCMobInter_SetSceme (vobPtr, "LEVER");
-	
+
 	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_ORCDRUM_1", "ORCDRUM_1.ASC", _@ (trafo), 0);
 
 	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_BATHTUB_WOODEN", "BATHTUB_WOODEN.ASC", _@ (trafo), 0);
@@ -916,6 +916,8 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_LOVEBED_OC", "LOVEBED_OC.ASC", _@ (trafo), 0);
 
 	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_BARRELO_OC", "BARRELO_OC.ASC", _@ (trafo), 0);
+
+	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_HOUSE_01", "HOUSETEST.ASC", _@ (trafo), 0);
 
 /*
 vobPtr = InsertObject ("oCMobInter", "VOB_BUY_BACKPACK_1", "BACKPACK_1.ASC", _@ (trafo), 0);

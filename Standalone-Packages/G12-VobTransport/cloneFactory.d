@@ -11,9 +11,9 @@ func string CloneCreateNewName__VobTransport (var string vobName) {
 	if (i > -1) {
 		indexS = mySTR_SubStr (vobName, i + 7, STR_Len (vobName) - i + 1);
 		indexValue = STR_ToInt (indexS);
-		
+
 		indexValue += 1;
-		
+
 		indexS = IntToString (indexValue);
 		if (indexValue < 10) {
 			indexS = ConcatStrings ("00", indexS);
@@ -21,7 +21,7 @@ func string CloneCreateNewName__VobTransport (var string vobName) {
 		if (indexValue < 100) {
 			indexS = ConcatStrings ("0", indexS);
 		};
-		
+
 		vobName = mySTR_SubStr (vobName, 0, i + 7);
 		vobName = ConcatStrings (vobName, indexS);
 	} else {
@@ -38,7 +38,7 @@ func void CopyoCMobProperties__VobTransport (var int mobPtr1, var int mobPtr2) {
 
 	var oCMob mob1; mob1 = _^ (mobPtr1);
 	var oCMob mob2; mob2 = _^ (mobPtr2);
-	
+
 	mob2.name = mob1.name;
 	mob2.bitfield = mob1.bitfield;
 	mob2.visualDestroyed = mob1.visualDestroyed;
@@ -127,7 +127,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 	var int newVobPtr;
 	var zCVob newVob;
-	
+
 	/*
 	We can clone following objects:
 		TODO: add properties into view and cloning factory
@@ -155,7 +155,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 	*/
 	//zCDecal (TGA textures)
-	if (Hlp_Is_zCDecal (vobPtr)) {
+	if (Hlp_VobVisual_Is_zCDecal (vobPtr)) {
 		vob = _^ (vobPtr);
 		decal = _^ (vob.visual);
 
@@ -173,7 +173,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		newVob.lightColorDyn = vob.lightColorDyn;
 
 		newVob.vobPresetName = vob.vobPresetName;
-		
+
 		MEM_CopyBytes (_@ (vob.bitfield), _@ (newVob.bitfield), 20);
 
 		//Create new zCDecal visual
@@ -198,12 +198,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		newDecal.xoffset = decal.xoffset;
 		newDecal.yoffset = decal.yoffset;
 		newDecal.decal2Sided = decal.decal2Sided;
-	
+
 		//--> zCMaterial*
 
 		//Here we have to create new zCMaterial
 		newDecal.decalMaterial = zCMaterial_Create ();
-		
+
 		var zCMaterial m1; m1 = _^ (decal.decalMaterial);
 		var zCMaterial m2; m2 = _^ (newDecal.decalMaterial);
 
@@ -225,7 +225,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		m2.kambient = m1.kambient;
 		m2.kdiffuse = m1.kdiffuse;
-		
+
 		MEM_CopyBytes (_@ (m1.bitfield), _@ (m2.bitfield), 24);
 
 		m2.detailTexture = m1.detailTexture;
@@ -239,10 +239,10 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		m2.texScale[0] = m1.texScale[0];
 		m2.texScale[1] = m1.texScale[1];
-		
+
 		//<--
-		
-		return newVobPtr;		
+
+		return newVobPtr;
 	};
 
 	//0x007DB44C const zCVob::`vftable'
@@ -257,7 +257,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (vob._zCObject_objectName);
-		
+
 		newVobPtr = InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
 
 		newVob = _^ (newVobPtr);
@@ -268,7 +268,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		newVob.lightColorDyn = vob.lightColorDyn;
 
 		newVob.vobPresetName = vob.vobPresetName;
-		
+
 		MEM_CopyBytes (_@ (vob.bitfield), _@ (newVob.bitfield), 20);
 
 		return newVobPtr;
@@ -281,19 +281,19 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		instName = GetSymbolName (Hlp_GetInstanceID (itm));
 
 		vobPtr = InsertItem (instName, amount, _@ (itm._zCVob_trafoObjToWorld));
-		
+
 		return vobPtr;
 	};
 
 	//oCMobContainer (chest)
 	if (Hlp_Is_oCMobContainer (vobPtr)) {
 		mobContainer = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobContainer._zCObject_objectName);
-		
+
 		vobPtr = InsertMobContainer (objectName, visualName, _@ (mobContainer._zCVob_trafoObjToWorld));
-		
+
 		var oCMobContainer newMobContainer; newMobContainer = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobContainer._zCVob_bitfield), _@ (newMobContainer._zCVob_bitfield), 20);
@@ -321,12 +321,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCMobFire
 	if (Hlp_Is_oCMobFire (vobPtr)) {
 		mobFire = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobFire._zCObject_objectName);
 
 		vobPtr = InsertMobFire (objectName, visualName, _@ (mobFire._zCVob_trafoObjToWorld));
-		
+
 		var oCMobFire newMobFire; newMobFire = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobFire._zCVob_bitfield), _@ (newMobFire._zCVob_bitfield), 20);
@@ -336,19 +336,19 @@ func int CloneObject__VobTransport (var int vobPtr) {
 
 		newMobFire.fireSlot = mobFire.fireSlot;
 		newMobFire.fireVobtreeName = mobFire.fireVobtreeName;
-		
+
 		return vobPtr;
 	};
 
 	//oCMobDoor
 	if (Hlp_Is_oCMobDoor (vobPtr)) {
 		mobDoor = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobDoor._zCObject_objectName);
 
 		vobPtr = InsertMobDoor (objectName, visualName, _@ (mobDoor._zCVob_trafoObjToWorld));
-		
+
 		var oCMobDoor newMobDoor; newMobDoor = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobDoor._zCVob_bitfield), _@ (newMobDoor._zCVob_bitfield), 20);
@@ -357,7 +357,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		CopyoCMobInterProperties__VobTransport (_@ (mobDoor), _@ (newMobDoor));
 
 		newMobDoor.addName = mobDoor.addName;
-		
+
 		return vobPtr;
 	};
 
@@ -365,12 +365,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//class oCMobLadder same as oCMobInter
 	if (Hlp_Is_oCMobLadder (vobPtr)) {
 		mobLadder = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobLadder._zCObject_objectName);
 
 		vobPtr = InsertObject ("oCMobLadder", objectName, visualName, _@ (mobLadder._zCVob_trafoObjToWorld), 0);
-		
+
 		var oCMobInter newMobLadder; newMobLadder = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobLadder._zCVob_bitfield), _@ (newMobLadder._zCVob_bitfield), 20);
@@ -384,12 +384,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//Is this one redundant ?
 	if (Hlp_Is_oCMobLockable (vobPtr)) {
 		mobLockable = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobLockable._zCObject_objectName);
 
 		vobPtr = InsertObject ("oCMobLockable", objectName, visualName, _@ (mobLockable._zCVob_trafoObjToWorld), 0);
-		
+
 		var oCMobLockable newMobLockable; newMobLockable = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mobLockable._zCVob_bitfield), _@ (newMobLockable._zCVob_bitfield), 20);
@@ -404,7 +404,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//
 	if (Hlp_Is_oCMobSwitch (vobPtr)) {
 		mobSwitch = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobSwitch._zCObject_objectName);
 
@@ -425,7 +425,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCMobWheel
 	if (Hlp_Is_oCMobWheel (vobPtr)) {
 		mobWheel = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobWheel._zCObject_objectName);
 
@@ -445,7 +445,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCMobBed
 	if (Hlp_Is_oCMobBed (vobPtr)) {
 		mobBed = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobBed._zCObject_objectName);
 
@@ -465,7 +465,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCMobInter
 	if (Hlp_Is_oCMobInter (vobPtr)) {
 		mobInter = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mobInter._zCObject_objectName);
 
@@ -485,12 +485,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCMob
 	if (Hlp_Is_oCMob (vobPtr)) {
 		mob = _^ (vobPtr);
-		
+
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mob._zCObject_objectName);
 
 		vobPtr = InsertObject ("oCMob", objectName, visualName, _@ (mob._zCVob_trafoObjToWorld), 0);
-		
+
 		var oCMob newMob; newMob = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (mob._zCVob_bitfield), _@ (newMob._zCVob_bitfield), 20);
@@ -506,12 +506,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//zCTrigger
 	if (Hlp_Is_zCTrigger (vobPtr)) {
 		trigger = _^ (vobPtr);
-		
+
 		//visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (trigger._zCObject_objectName);
 
 		vobPtr = InsertTrigger (objectName, _@ (trigger._zCVob_trafoObjToWorld));
-		
+
 		var zCTrigger newTrigger; newTrigger = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (trigger._zCVob_bitfield), _@ (newTrigger._zCVob_bitfield), 20);
@@ -524,12 +524,12 @@ func int CloneObject__VobTransport (var int vobPtr) {
 	//oCTriggerScript
 	if (Hlp_Is_oCTriggerScript (vobPtr)) {
 		triggerScript = _^ (vobPtr);
-		
+
 		//visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (triggerScript._zCObject_objectName);
 
 		vobPtr = InsertTriggerScript (objectName, _@ (triggerScript._zCVob_trafoObjToWorld));
-		
+
 		var oCTriggerScript newTriggerScript; newTriggerScript = _^ (vobPtr);
 
 		MEM_CopyBytes (_@ (triggerScript._zCVob_bitfield), _@ (newTriggerScript._zCVob_bitfield), 20);

@@ -7,8 +7,8 @@ class zCVisual {
     var string _zCObject_objectName;
 
     var int nextLODVisual;	//zCVisual*
-    var int prevLODVisual;	//zCVisual*    
-    var int lodFarDistance;	//zREAL    
+    var int prevLODVisual;	//zCVisual*
+    var int lodFarDistance;	//zREAL
     var int lodNearFadeOutDistance;	//zREAL
 };
 */
@@ -26,7 +26,7 @@ class zCVisualAnimate {
 	var int refCtr;					//4	int refCtr;
 	var int hashIndex;				//8	unsigned short hashIndex;
 	var int hashNext;				//12	zCObject* hashNext;
-	var string objectName;				//16	zSTRING objectName 
+	var string objectName;				//16	zSTRING objectName
 	//};
 
 	var int nextLODVisual;				//36	zCVisual* nextLODVisual;
@@ -38,11 +38,11 @@ class zCVisualAnimate {
 	class zCArray {
 		T *parray;
 		int numAlloc;
-		int numInArray; 
+		int numInArray;
 	};
 	*/
 	//static properties
-	//static zCArray<zCVisual*>& s_visualClassList; 
+	//static zCArray<zCVisual*>& s_visualClassList;
 	//var int s_visualClassList_array;		//52	zCVisual*
 	//var int s_visualClassList_numAlloc;		//56
 	//var int s_visualClassList_numInArray;		//60
@@ -58,7 +58,7 @@ class zCModel {
 	var int refCtr;					//4	int refCtr;
 	var int hashIndex;				//8	unsigned short hashIndex;
 	var int hashNext;				//12	zCObject* hashNext;
-	var string objectName;				//16	zSTRING objectName 
+	var string objectName;				//16	zSTRING objectName
 	////};
 
 	var int nextLODVisual;				//36	zCVisual* nextLODVisual;
@@ -70,16 +70,16 @@ class zCModel {
 	class zCArray {
 		T *parray;
 		int numAlloc;
-		int numInArray; 
+		int numInArray;
 	};
 	*/
 	//static properties
-	//static zCArray<zCVisual*>& s_visualClassList; 
+	//static zCArray<zCVisual*>& s_visualClassList;
 	//var int s_visualClassList_array;		//	zCVisual*
 	//var int s_visualClassList_numAlloc;		//
 	//var int s_visualClassList_numInArray;		//
 	//};
-	//}; 
+	//};
 
 	/*
 	enum {
@@ -222,7 +222,7 @@ class zCModel {
 
 	/*
 	class zVEC3 {
-		float n[3]; 
+		float n[3];
 	};
 	*/
 	var int modelScale[3];				//284	zVEC3 modelScale;
@@ -258,7 +258,7 @@ class zCModel {
 	unsigned char dynLightMode      : 1;
 	};
 	*/
-	
+
 	var int timeScale;				//464	float timeScale;
 	var int aniHistoryListl;			//468	zCModelAni** aniHistoryList;
 };
@@ -273,7 +273,7 @@ class zCDecal {
 	var int refCtr;					//4	int refCtr;
 	var int hashIndex;				//8	unsigned short hashIndex;
 	var int hashNext;				//12	zCObject* hashNext;
-	var string objectName;				//16	zSTRING objectName 
+	var string objectName;				//16	zSTRING objectName
 	//};
 
 	var int nextLODVisual;				//36	zCVisual* nextLODVisual;
@@ -291,4 +291,99 @@ class zCDecal {
 	// static properties
 	//static zCMesh*& decalMesh1Sided;
 	//static zCMesh*& decalMesh2Sided;
+};
+
+// sizeof E4h
+class zCModelPrototype {
+	/*
+	enum zTFileSourceType {
+		zFROM_MDS,
+		zFROM_ASC
+	};
+
+	template <class T>
+	class zCTree {
+		zCTree* parent;
+		zCTree* firstChild;
+		zCTree* next;
+		zCTree* prev;
+		T* data;
+	};
+
+	template <class T>
+	class zCArraySort {
+		T *array;
+		int numAlloc;
+		int numInArray;
+		int compare
+	};
+	*/
+
+	var int next;	//zCModelPrototype* // sizeof 04h offset 00h
+	var int prev; //zCModelPrototype* // sizeof 04h offset 04h
+	var int refCtr; //int // sizeof 04h offset 08h
+	var string modelProtoName; //zSTRING // sizeof 14h offset 0Ch
+	var string modelProtoFileName; //zSTRING // sizeof 14h offset 20h
+	//zCTree<zCModelNode> meshTree; // sizeof 14h offset 34h
+	var int meshTree_parent;
+	var int meshTree_firstChild;
+	var int meshTree_next;
+	var int meshTree_prev;
+	var int meshTree_data;
+
+	//zCArraySort<zCModelAni*> protoAnis; // sizeof 10h offset 48h
+	var int protoAnis_array;
+	var int protoAnis_numAlloc;
+	var int protoAnis_numInArray;
+	var int protoAnis_compare;
+
+	//zCArray<zCModelAniEvent*> modelEvents; // sizeof 0Ch offset 58h
+	var int modelEvents_array;
+	var int modelEvents_numAlloc;
+	var int modelEvents_numInArray;
+
+	//zCArray<zCModelNode*> nodeList; // sizeof 0Ch offset 64h
+	var int nodeList_array;
+	var int nodeList_numAlloc;
+	var int nodeList_numInArray;
+
+	var int nodeListChecksum; //unsigned long // sizeof 04h offset 70h
+
+	//zCArray<zCMeshSoftSkin*> meshSoftSkinList; // sizeof 0Ch offset 74h
+	var int meshSoftSkinList_array;
+	var int meshSoftSkinList_numAlloc;
+	var int meshSoftSkinList_numInArray;
+
+	var string hierarchySourceASC; //zSTRING // sizeof 14h offset 80h
+
+	//zTBBox3D bbox3D; // sizeof 18h offset 94h
+	var int bbox3D_mins[3]; //zPOINT3
+	var int bbox3D_maxs[3]; //zPOINT3
+
+	//zTBBox3D bbox3DCollDet; // sizeof 18h offset ACh
+	var int bbox3DCollDet_mins[3]; //zPOINT3
+	var int bbox3DCollDet_maxs[3]; //zPOINT3
+
+	var int baseModelProto; //zCModelPrototype* // sizeof 04h offset C4h
+	var int rootNodeTrans[3]; //zVEC3 // sizeof 0Ch offset C8h
+	var int fileSourceType; //zTFileSourceType // sizeof 04h offset D4h
+
+	//zCArray<zCMesh*> sourceMeshSoftSkinList; // sizeof 0Ch offset D8h
+	var int sourceMeshSoftSkinList_array;
+	var int sourceMeshSoftSkinList_numAlloc;
+	var int sourceMeshSoftSkinList_numInArray;
+};
+
+// sizeof C0h
+class zCModelNode {
+	var int parentNode; //zCModelNode* // sizeof 04h offset 00h
+	var string nodeName; //zSTRING // sizeof 14h offset 04h
+	var int visual; //zCVisual* // sizeof 04h offset 18h
+	var int trafo[16]; //zMAT4 // sizeof 40h offset 1Ch
+	var int nodeRotAxis[3]; //zVEC3 // sizeof 0Ch offset 5Ch
+	var int nodeRotAngle; //float // sizeof 04h offset 68h
+	var int translation[3]; //zVEC3  // sizeof 0Ch offset 6Ch
+	var int trafoObjToWorld[16]; //zMAT4  // sizeof 40h offset 78h
+	var int nodeTrafoList; //zMAT4*  // sizeof 04h offset B8h
+	var int lastInstNode; //zCModelNodeInst*  // sizeof 04h offset BCh
 };

@@ -571,118 +571,6 @@ func void zCVob_SetVisual (var int vobPtr, var string visualName) {
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__SetVisual_G1, zCVob__SetVisual_G2));
 };
 
-
-func int Hlp_Is_zCDecal (var int vobPtr) {
-	if (!vobPtr) { return FALSE; };
-	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-	if (!visualPtr) { return FALSE; };
-	var zCVisual visual; visual = _^ (visualPtr);
-
-	//visual zCDecal
-
-	//Ikarus constant for G1 has incorrect value ... G2A is not defined
-	//0x007D3E04 const zCDecal::`vftable'
-	const int zCDecal_vtbl_G1 = 8207876;
-
-	//0x00832084 const zCDecal::`vftable'
-	const int zCDecal_vtbl_G2 = 8593540;
-
-	if (visual._vtbl == MEMINT_SwitchG1G2 (zCDecal_vtbl_G1, zCDecal_vtbl_G2)) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCModel (var int vobPtr) {
-	if (!vobPtr) { return FALSE; };
-	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-	if (!visualPtr) { return FALSE; };
-	var zCVisual visual; visual = _^ (visualPtr);
-
-	//visual zCModel
-
-	//0x007D3FEC const zCModel::`vftable'
-	const int zCModel_vtbl_G1 = 8208364;
-
-	//0x0083234C const zCModel::`vftable'
-	const int zCModel_vtbl_G2 = 8594252;
-
-	if (visual._vtbl == MEMINT_SwitchG1G2 (zCModel_vtbl_G1, zCModel_vtbl_G2)) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCProgMeshProto (var int vobPtr) {
-	if (!vobPtr) { return FALSE; };
-	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-	if (!visualPtr) { return FALSE; };
-	var zCVisual visual; visual = _^ (visualPtr);
-
-	//visual zCProgMeshProto
-
-	//0x007D45F4 const zCProgMeshProto::`vftable'
-	const int zCProgMeshProto_vtbl_G1 = 8209908;
-
-	//0x008329CC const zCProgMeshProto::`vftable'
-	const int zCProgMeshProto_vtbl_G2 = 8595916;
-
-	if (visual._vtbl == MEMINT_SwitchG1G2 (zCProgMeshProto_vtbl_G1, zCProgMeshProto_vtbl_G2)) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCParticleFX (var int vobPtr) {
-	if (!vobPtr) { return FALSE; };
-	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-	if (!visualPtr) { return FALSE; };
-	var zCVisual visual; visual = _^ (visualPtr);
-
-	//visual zCParticleFX
-
-	//0x007D4214 const zCParticleFX::`vftable'
-	const int zCParticleFX_vtbl_G1 = 8208916;
-
-	//0x008325C4 const zCParticleFX::`vftable'
-	const int zCParticleFX_vtbl_G2 = 8594884;
-
-	if (visual._vtbl == MEMINT_SwitchG1G2 (zCParticleFX_vtbl_G1, zCParticleFX_vtbl_G2)) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Hlp_Is_zCMorphMesh (var int vobPtr) {
-	if (!vobPtr) { return FALSE; };
-	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-	if (!visualPtr) { return FALSE; };
-	var zCVisual visual; visual = _^ (visualPtr);
-
-	//visual zCMorphMesh
-
-	//0x007D4144 const zCMorphMesh::`vftable'
-	const int zCMorphMesh_vtbl_G1 = 8208708;
-
-	//0x008324D4 const zCMorphMesh::`vftable'
-	const int zCMorphMesh_vtbl_G2 = 8594644;
-
-	if (visual._vtbl == MEMINT_SwitchG1G2 (zCMorphMesh_vtbl_G1, zCMorphMesh_vtbl_G2)) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
 func int zCVob_GetVelocity (var int vobPtr) {
 	//0x005EFC50 public: class zVEC3 __thiscall zCVob::GetVelocity(void)
 	const int zCVob__GetVelocity_G1 = 6224976;
@@ -762,16 +650,49 @@ func void Vob_TriggerVobByName (var string vobName) {
 	MEM_ArrayFree (arr);
 };
 
+/*
+ *
+ */
+func void Vob_UnTriggerVobByName (var string vobName) {
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray(zarr.array, i);
+		MEM_UntriggerVob (vobPtr);
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
+/*
+ *
+ */
+func void Vob_ChangeDataByPtr (var int vobPtr, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
+	if (!vobPtr) { return; };
+
+	var int onBits; onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int offBits; offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
+
+	var zCVob vob; vob = _^ (vobPtr);
+
+	vob.bitfield[0] = vob.bitfield[0] | (onBits);
+	vob.bitfield[0] = vob.bitfield[0] & ~ (offBits);
+};
+
+/*
+ *
+ */
 func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int collStat, var int collDyn, var int showVisual) {
 	var int arr; arr = MEM_SearchAllVobsByName (vobName);
 
 	var zCArray zarr; zarr = _^ (arr);
 
-	var int onBits;
-	var int offBits;
-
-	onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
-	offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int onBits; onBits = ( showVisual * zCVob_bitfield0_showVisual + staticVob * zCVob_bitfield0_staticVob + collStat * zCVob_bitfield0_collDetectionStatic + collDyn * zCVob_bitfield0_collDetectionDynamic);
+	var int offBits; offBits = (!showVisual * zCVob_bitfield0_showVisual + !staticVob * zCVob_bitfield0_staticVob + !collStat * zCVob_bitfield0_collDetectionStatic + !collDyn * zCVob_bitfield0_collDetectionDynamic);
 
 	var zCVob vob;
 	var int vobPtr;
@@ -1079,47 +1000,143 @@ func void zCRigidBody_SetVelocity (var int rigidBodyPtr, var int vecPtr) {
 	};
 };
 
-func void _Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
+func void Vob_SetBitfield (var int vobPtr, var int bitfield, var int value) {
 	if (!vobPtr) { return; };
+	var zCVob vob; vob = _^ (vobPtr);
 
-	var zCVob vob;
-	vob = _^ (vobPtr);
+	//Basically true/false values
+	if (bitfield == zCVob_bitfield0_showVisual)
+	|| (bitfield == zCVob_bitfield0_drawBBox3D)
+	|| (bitfield == zCVob_bitfield0_visualAlphaEnabled)
+	|| (bitfield == zCVob_bitfield0_physicsEnabled)
+	|| (bitfield == zCVob_bitfield0_staticVob)
+	|| (bitfield == zCVob_bitfield0_ignoredByTraceRay)
+	|| (bitfield == zCVob_bitfield0_collDetectionStatic)
+	|| (bitfield == zCVob_bitfield0_collDetectionDynamic)
+	|| (bitfield == zCVob_bitfield0_castDynShadow)
+	|| (bitfield == zCVob_bitfield0_lightColorStatDirty)
+	|| (bitfield == zCVob_bitfield0_lightColorDynDirty)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
 
-	if (value) {
-		vob.bitfield[4] = (vob.bitfield[4] | zCVob_bitfield4_dontWriteIntoArchive);
-	} else {
-		vob.bitfield[4] = (vob.bitfield[4] & ~ zCVob_bitfield4_dontWriteIntoArchive);
+		vob.bitfield[0] = (vob.bitfield[0] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield1_isInMovementMode)
+	{
+		vob.bitfield[1] = (vob.bitfield[1] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield2_sleepingMode)
+	|| (bitfield == zCVob_bitfield2_mbHintTrafoLocalConst)
+	|| (bitfield == zCVob_bitfield2_mbInsideEndMovementMethod)
+	{
+		vob.bitfield[2] = (vob.bitfield[2] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield3_visualCamAlign)
+	{
+		vob.bitfield[3] = (vob.bitfield[3] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield4_collButNoMove)
+	{
+		vob.bitfield[4] = (vob.bitfield[4] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
+
+		vob.bitfield[4] = (vob.bitfield[4] & ~ bitfield) | value;
+		return;
 	};
 };
 
+func int Vob_GetBitfield (var int vobPtr, var int bitfield) {
+	if (!vobPtr) { return 0; };
+	var zCVob vob; vob = _^ (vobPtr);
+
+	//Basically true/false values
+	if (bitfield == zCVob_bitfield0_showVisual)
+	|| (bitfield == zCVob_bitfield0_drawBBox3D)
+	|| (bitfield == zCVob_bitfield0_visualAlphaEnabled)
+	|| (bitfield == zCVob_bitfield0_physicsEnabled)
+	|| (bitfield == zCVob_bitfield0_staticVob)
+	|| (bitfield == zCVob_bitfield0_ignoredByTraceRay)
+	|| (bitfield == zCVob_bitfield0_collDetectionStatic)
+	|| (bitfield == zCVob_bitfield0_collDetectionDynamic)
+	|| (bitfield == zCVob_bitfield0_castDynShadow)
+	|| (bitfield == zCVob_bitfield0_lightColorStatDirty)
+	|| (bitfield == zCVob_bitfield0_lightColorDynDirty)
+	{
+		return (vob.bitfield[0] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield1_isInMovementMode)
+	{
+		return (vob.bitfield[1] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield2_sleepingMode)
+	|| (bitfield == zCVob_bitfield2_mbHintTrafoLocalConst)
+	|| (bitfield == zCVob_bitfield2_mbInsideEndMovementMethod)
+	{
+		return (vob.bitfield[2] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield3_visualCamAlign)
+	{
+		return (vob.bitfield[3] & bitfield);
+	};
+
+	if (bitfield == zCVob_bitfield4_collButNoMove)
+	|| (bitfield == zCVob_bitfield4_dontWriteIntoArchive)
+	{
+		return (vob.bitfield[4] & bitfield);
+	};
+
+	return 0;
+};
+
 /*
- *	Function updates dontWriteIntoArchive flag for vob and its subtree
+ *	Function updates bitfields for vob and all it's children
  */
-func void Vob_SetDontWriteIntoArchive (var int vobPtr, var int value) {
+func void VobTree_SetBitfield (var int vobPtr, var int bitfield, var int value) {
 	if (!vobPtr) { return; };
 
-	//Update vob data
-	_Vob_SetDontWriteIntoArchive (vobPtr, value);
+	Vob_SetBitfield (vobPtr, bitfield, value);
 
-	var zCVob vob;
-	vob = _^ (vobPtr);
+	var zCVob vob; vob = _^ (vobPtr);
 
-	//Update child-data
+	//Loop through all child objects
+	var zCTree tree;
 	var int treePtr; treePtr = vob.globalVobTreeNode;
+	if (treePtr) {
+		tree = _^ (treePtr);
+		treePtr = tree.firstChild;
+	};
 
 	//Loop through tree (will this work?)
 	while (treePtr);
-		//Get tree
-		var zCTree tree; tree = _^ (treePtr);
+		var zCTree child; child = _^ (treePtr);
 
-		//Get first child
-		var zCTree child; child = _^ (tree.firstChild);
-
-		//Update data
-		_Vob_SetDontWriteIntoArchive (child.data, value);
+		if (child.data) {
+			//Update data
+			Vob_SetBitfield (child.data, bitfield, value);
+		};
 
 		//Get next child
-		treePtr = tree.next;
+		treePtr = child.next;
 	end;
 };
 
@@ -1156,6 +1173,13 @@ func void zCVob_SetBBox3DLocal (var int vobPtr, var int bboxPtr) {
 	};
 };
 
+func int zCVob_GetBBox3DWorld (var int vobPtr) {
+	if (!vobPtr) { return 0; };
+
+	var zCVob vob; vob = _^ (vobPtr);
+	return _@ (vob.bbox3D_mins[0]);
+};
+
 func int zCVob_GetDistanceToVob (var int vobPtr1, var int vobPtr2) {
 	//0x005EE400 public: float __thiscall zCVob::GetDistanceToVob(class zCVob &)
 	const int zCVob__GetDistanceToVob_G1 = 6218752;
@@ -1186,4 +1210,114 @@ func void Vob_SetAlpha (var int vobPtr, var int visualAlpha) {
 	var zCVob vob; vob = _^ (vobPtr);
 	vob.bitfield[0] = vob.bitfield[0] | zCVob_bitfield0_visualAlphaEnabled;
 	vob.visualAlpha = divf (mkf (visualAlpha), mkf (100));
+};
+
+func void VobTree_SetAlpha (var int vobPtr, var int visualAlpha) {
+	if (!vobPtr) { return; };
+
+	Vob_SetAlpha (vobPtr, visualAlpha);
+
+	var zCVob vob; vob = _^ (vobPtr);
+
+	//Loop through all child objects
+	var zCTree tree;
+	var int treePtr; treePtr = vob.globalVobTreeNode;
+	if (treePtr) {
+		tree = _^ (treePtr);
+		treePtr = tree.firstChild;
+	};
+
+	//Loop through tree (will this work?)
+	while (treePtr);
+		var zCTree child; child = _^ (treePtr);
+
+		//Update data
+		if (child.data) {
+			Vob_SetAlpha (child.data, visualAlpha);
+		};
+
+		//Get next child
+		treePtr = child.next;
+	end;
+};
+
+/*
+ *	zCModel_SearchNode
+ *	 - returns pointer to node
+ */
+func int zCModel_SearchNode (var int modelPtr, var string nodeName) {
+	//0x00563F80 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G1 = 5652352;
+
+	//0x0057DFF0 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
+	const int zCModel__SearchNode_G2 = 5758960;
+
+	if (!modelPtr) { return 0; };
+
+	CALL_zStringPtrParam (nodeName);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
+
+	return CALL_RetValAsPtr ();
+};
+
+/*
+ *	zCModel_GetNodePositionWorld
+ *	 - returns true if node was found, posPtr is updated with position
+ */
+func int zCModel_GetNodePositionWorld (var int modelPtr, var int nodePtr, var int posPtr) {
+	//0x0055F8C0 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G1 = 5634240;
+
+	//0x00579140 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
+	const int zCModel__GetNodePositionWorld_G2 = 5738816;
+
+	if (!modelPtr) { return FALSE; };
+	if (!nodePtr) { return FALSE; };
+
+	CALL_RetValIsStruct (12);
+	CALL_PtrParam (nodePtr);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
+
+	var int vobPosPtr; vobPosPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (vobPosPtr, posPtr, 12);
+	MEM_Free (vobPosPtr);
+
+	return TRUE;
+};
+
+/*
+ *	zCVob_GetTrafoModelNodeToWorld
+ *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafof of object itself
+ */
+func void zCVob_GetTrafoModelNodeToWorld (var int vobPtr, var string nodeName, var int trafoPtr) {
+	//0x005D83E0 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
+	const int zCVob__GetTrafoModelNodeToWorld_G1 = 6128608;
+
+	//0x00604960 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
+	const int zCVob__GetTrafoModelNodeToWorld_G2 = 6310240;
+
+	if (!vobPtr) { return; };
+
+	CALL_RetValIsStruct (64);
+	CALL_zStringPtrParam (nodeName);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetTrafoModelNodeToWorld_G1, zCVob__GetTrafoModelNodeToWorld_G2));
+	var int vobTrafoPtr; vobTrafoPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (vobTrafoPtr, trafoPtr, 64);
+	MEM_Free (vobTrafoPtr);
+};
+
+/*
+ *	zCVob_GetTrafoModelNode
+ *	 - updates trafoPtr with trafo of the node, if node does not exist function returns value FALSE
+ */
+func int zCVob_GetTrafoModelNode (var int vobPtr, var string nodeName, var int trafoPtr) {
+	if (!Hlp_VobVisual_Is_zCModel (vobPtr)) { return FALSE; };
+
+	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
+
+	if (!zCModel_SearchNode (visualPtr, nodeName)) { return FALSE; };
+
+	zCVob_GetTrafoModelNodeToWorld (vobPtr, nodeName, trafoPtr);
+
+	return TRUE;
 };

@@ -194,7 +194,6 @@ func void oCMobInter_MarkAsUsed (var int mobPtr, var int timeDeltaF, var int vob
 	//0x00720F20 public: void __thiscall oCMobInter::MarkAsUsed(float,class zCVob *)
 	const int oCMobInter__MarkAsUsed_G2 = 7474976;
 
-	if (!vobPtr) { return; };
 	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
 
 	const int call = 0;
@@ -205,3 +204,72 @@ func void oCMobInter_MarkAsUsed (var int mobPtr, var int timeDeltaF, var int vob
 		call = CALL_End();
 	};
 };
+
+func int oCMobInter_GetFreeTrafo_ByNodeName (var int mobPtr, var string nodeName, var int trafoPtr) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return FALSE; };
+
+	oCMobInter_ScanIdealPositions (mobPtr);
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos;
+			mobOptPos = _^ (ptr);
+
+			//ZS_POS0_FRONT, ZS_POS0_BACK
+			if (STR_EndsWith (mobOptPos.nodeName, nodeName)) {
+				MEM_CopyBytes (_@ (mobOptPos.trafo), trafoPtr, 64);
+				return TRUE;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return FALSE;
+};
+
+func void oCMobInter_SetInteractWith (var int mobPtr, var int npcPtr) {
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return; };
+
+	oCMobInter_ScanIdealPositions (mobPtr);
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos;
+			mobOptPos = _^ (ptr);
+
+			//if (STR_StartsWith (mobOptPos.nodeName, "ZS_POS")) {
+				mobOptPos.npc = npcPtr;
+				//return;
+			//};
+		};
+
+		ptr = list.next;
+	end;
+};
+
+/*
+	//0x0067FC70 public: virtual int __thiscall oCMobInter::IsInteractingWith(class oCNpc *)
+	const int oCMobInter__IsInteractingWith_G1 = 6814832;
+	CALL_PtrParam (_@ (hero));
+	CALL__thiscall (spell.spellTarget, oCMobInter__IsInteractingWith_G1);
+	var int retVal; retVal = CALL_RetValAsInt ();
+*/

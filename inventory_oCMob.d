@@ -1,6 +1,83 @@
 /*
- *	Required files:
- *		inventory_oCMob_engine.d
+ *	func void oCMobContainer_Remove (var int mobPtr, var int itmPtr){
+ */
+
+/*
+ *	Removes Item from oCMobContainer
+ *		mobPtr			pointer to oCMobContainer
+ *		itmPtr			pointer to oCItem in oCMobContainer
+ *	Usage:
+ *		oCMobContainer_Remove(mobPtr, itmPtr);
+ */
+func void oCMobContainer_Remove (var int mobPtr, var int itmPtr){
+	//0x00683EB0 public: virtual void __thiscall oCMobContainer::Remove(class oCItem *)
+	const int oCMobContainer__Remove_G1 = 6831792;
+
+	//0x00725FF0 public: virtual void __thiscall oCMobContainer::Remove(class oCItem *)
+	const int oCMobContainer__Remove_G2 = 7495664;
+
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return; };
+	if (!Hlp_Is_oCItem (itmPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (itmPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobContainer__Remove_G1, oCMobContainer__Remove_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	I was hoping this one removes item from oCMobContainer without dicarding it - but returned pointer is 0
+ *
+
+func int oCMobContainer_GetRemoved (var int mobPtr, var int itmPtr, var int amount){
+	//0x00683F40 public: virtual class oCItem * __thiscall oCMobContainer::Remove(class oCItem *,int)
+	const int oCMobContainer__Remove_G1 = 6831936;
+
+	//0x00726080 public: virtual class oCItem * __thiscall oCMobContainer::Remove(class oCItem *,int)
+	const int oCMobContainer__Remove_G2 = 7495808;
+
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return 0; };
+	if (!Hlp_Is_oCItem (itmPtr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (amount));
+		CALL_PtrParam (_@ (itmPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobContainer__Remove_G1, oCMobContainer__Remove_G2));
+		call = CALL_End();
+	};
+
+	var int retVal; retVal = CALL_RetValAsPtr ();
+
+	B_Msg_Add (IntToString (retVal));
+
+	return retVal;
+};
+*/
+
+func void oCMobContainer_Insert (var int mobPtr, var int itmPtr){
+	//0x00683E80 public: virtual void __thiscall oCMobContainer::Insert(class oCItem *)
+	const int oCMobContainer__Insert_G1 = 6831744;
+
+	//0x00725FC0 public: virtual void __thiscall oCMobContainer::Insert(class oCItem *)
+	const int oCMobContainer__Insert_G2 = 7495616;
+
+	if (!Hlp_Is_oCMobContainer (mobPtr)) { return; };
+	if (!Hlp_Is_oCItem (itmPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (itmPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobContainer__Insert_G1, oCMobContainer__Insert_G2));
+		call = CALL_End();
+	};
+};
+
+//0x00726190 public: virtual void __thiscall oCMobContainer::CreateContents(class zSTRING const &)
+
+/*
  *
  *	This package 'sparkled' from Neconspictor's post about 'Mob_RemoveAllItems' function.
  *	Original post here: https://forum.worldofplayers.de/forum/threads/1449528-Mob_RemoveItems?p=24599541&viewfull=1#post24599541
@@ -32,7 +109,7 @@ func int oCMobContainer_GetItemPtrBySlot (var int mobPtr, var int itemSlot){
 	while (ptr);
 		list = _^ (ptr);
 		itmPtr = list.data;
-		
+
 		if (itmPtr) {
 			if (itemSlot == i) {
 				return itmPtr;
@@ -62,11 +139,11 @@ func void Mob_RemoveAllItems (var int mobPtr){
 	var zCListSort list;
 
 	ptr = container.containList_next;
-	
+
 	while (ptr != 0);
 		list = _^(ptr);
 		var int itmPtr; itmPtr = list.data;
-		
+
 		if (itmPtr == 0) {
 			ptr  = list.next;
 		} else {
@@ -77,7 +154,7 @@ func void Mob_RemoveAllItems (var int mobPtr){
 };
 
 /*
- *	Removes from oCMobContainer 1 item 
+ *	Removes from oCMobContainer 1 item
  *		mobPtr			pointer to oCMobContainer
  *		itemInstance		item instance
  *		qty			qty to be removed
@@ -95,7 +172,7 @@ func void Mob_RemoveItems (var int mobPtr, var int itemInstance, var int qty){
 	//Loop through all inventory slots to find itemInstance
 	while (itmPtr);
 		itmPtr = oCMobContainer_GetItemPtrBySlot (mobPtr, i);
-		
+
 		if (itmPtr) {
 			itm = _^ (itmPtr);
 
@@ -107,7 +184,7 @@ func void Mob_RemoveItems (var int mobPtr, var int itemInstance, var int qty){
 					//Remove everything
 					oCMobContainer_Remove (mobPtr, itmPtr);
 				};
-				
+
 				return;
 			};
 		};
@@ -154,11 +231,11 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 	var zCListSort list;
 
 	ptr = container.containList_next;
-	
+
 	while (ptr != 0);
 		list = _^(ptr);
 		var int itmPtr; itmPtr = list.data;
-		
+
 		if (itmPtr == 0) {
 			ptr  = list.next;
 		} else {
@@ -195,11 +272,11 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 	var zCListSort list;
 
 	ptr = container.containList_next;
-	
+
 	while (ptr != 0);
 		list = _^ (ptr);
 		var int itmPtr; itmPtr = list.data;
-		
+
 		if (itmPtr == 0) {
 			ptr  = list.next;
 		} else {
@@ -210,7 +287,7 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 
 			oCMobContainer_Insert (mobPtr2, itmPtr);
 			oCMobContainer_Remove (mobPtr1, itmPtr);
-	
+
 			ptr = container.containList_next;
 		};
 	end;
@@ -229,11 +306,11 @@ func void Mob_CopyItemsToMob (var int mobPtr1, var int mobPtr2){
 	var zCListSort list;
 
 	ptr = container.containList_next;
-	
+
 	while (ptr != 0);
 		list = _^ (ptr);
 		var int itmPtr; itmPtr = list.data;
-		
+
 		if (itmPtr) {
 			//Custom prints for transferred items
 			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {

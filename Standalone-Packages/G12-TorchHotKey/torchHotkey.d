@@ -69,7 +69,10 @@ func void FixBurningTorches__TorchHotKey () {
 				//Fix all ItLsTorchBurning items
 				//Why would PB not want these to be saved anyway?
 				if (Hlp_GetInstanceID (itm) == ItLsTorchBurning) {
-					Vob_SetDontWriteIntoArchive (vobPtr, FALSE);
+					//Save only those which do not have flag zCVob_bitfield0_ignoredByTraceRay
+					if (!Vob_GetBitfield (vobPtr, zCVob_bitfield0_ignoredByTraceRay)) {
+						VobTree_SetBitfield (vobPtr, zCVob_bitfield4_dontWriteIntoArchive, FALSE);
+					};
 				};
 			};
 		};
@@ -192,6 +195,7 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 	if (!key) { return; };
 
 	if (!Hlp_IsValidNPC (hero)) { return; };
+	if (Npc_IsDead (hero)) { return; };
 
 	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
 		//Get Ctrl key status
@@ -201,17 +205,19 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 		ctrlKey = MEM_KeyState (ctrlKey);
 		ctrlSecondaryKey = MEM_KeyState (ctrlSecondaryKey);
 
-		if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
-			//Put torch to right hand
-			//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
-			if (NPC_DoExchangeTorch (hero)) {
-				cancel = TRUE;
-			};
-		} else {
-			//On & Off
-			if (NPC_TorchSwitchOnOff (hero) != -1) {
-				PlayerReApplyOverlays__TorchHotKey ();
-				cancel = TRUE;
+		if (NPC_CanChangeOverlay (hero)) {
+			if (((ctrlKey == KEY_PRESSED) || (ctrlKey == KEY_HOLD)) || ((ctrlSecondaryKey == KEY_PRESSED) || (ctrlSecondaryKey == KEY_HOLD))) {
+				//Put torch to right hand
+				//Function NPC_DoExchangeTorch also removes overlay (when player would switch torch while walking - hero's hand still be in a carrying position)
+				if (NPC_DoExchangeTorch (hero)) {
+					cancel = TRUE;
+				};
+			} else {
+				//On & Off
+				if (NPC_TorchSwitchOnOff (hero) != -1) {
+					PlayerReApplyOverlays__TorchHotKey ();
+					cancel = TRUE;
+				};
 			};
 		};
 	};

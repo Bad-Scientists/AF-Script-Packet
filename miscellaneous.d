@@ -120,25 +120,32 @@ func void test_G2A_InsertItemsToChestsInOldCampCastle () {
  *	 - you can only search for mobs that NPC can see by using canSeeCheck == true
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int canSeeCheck, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
 
 	var int canSee;
+	var int available;
 
 	var int vobPtr;
 	var int i; i = 0;
 
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		//if (Hlp_Is_oCMobInter (vobPtr)) {
-		if (oCMobInter_IsAvailable (vobPtr, slf)) {
+
+		if (availabilityCheck) {
+			available = oCMobInter_IsAvailable (vobPtr, slf);
+		} else {
+			available = Hlp_Is_oCMobInter (vobPtr);
+		};
+
+		if (available) {
 			if (canSeeCheck) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
@@ -150,12 +157,13 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 					var oCMobInter mob;
 					mob = _^ (vobPtr);
 					//if (Hlp_StrCmp (mob.sceme, scemeName)) {
+
 					if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
-						if (mob.state == state) {
+						if ((mob.state == state) || (state == -1)) {
 							if (!firstPtr) { firstPtr = vobPtr; };
 
 							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-							if (lf (dist, maxDist)) {
+							if (dist < maxDist) {
 								nearestPtr = vobPtr;
 								maxDist = dist;
 							};
@@ -183,7 +191,7 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -214,7 +222,7 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 
 					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
-					if (lf (dist, maxDist)) {
+					if (dist < maxDist) {
 						nearestPtr = vobPtr;
 						maxDist = dist;
 					};
@@ -241,7 +249,7 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -267,13 +275,13 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
 					itm = _^ (vobPtr);
 					if (Hlp_IsValidItem (itm)) {
-						if (itm.mainflag == mainflag) {
-							if (itm.flags & flags) {
+						if ((itm.mainflag == mainflag) || (!mainflag)) {
+							if ((itm.flags & flags) || (!flags)) {
 								if (!firstPtr) { firstPtr = vobPtr; };
 
 								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
-								if (lf (dist, maxDist)) {
+								if (dist < maxDist) {
 									nearestPtr = vobPtr;
 									maxDist = dist;
 								};
@@ -285,6 +293,172 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 		};
 		i += 1;
 	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int canSeeCheck, var int verticalDist) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCNPC npc;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_oCNpc (vobPtr)) {
+
+			if (canSeeCheck) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (canSee) {
+				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+					npc = _^ (vobPtr);
+					if (NPC_IsInStateName (npc, stateName)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int canSeeCheck, var int verticalDist) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	objectName = STR_Upper (objectName);
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCNPC npc;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (vobPtr) {
+
+			if (canSeeCheck) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (canSee) {
+				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+					var zCVob vob; vob = _^ (vobPtr);
+
+					if (Hlp_StrCmp (STR_Upper (vob._zCObject_objectName), objectName)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+/*
+ *	zCVob_GetNearest_AtPos
+ *	 - function returns first pointer to object closest to fromPosPtr
+ */
+func int zCVob_GetNearest_AtPos (var string className, var int fromPosPtr) {
+	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
+
+	if (!SearchVobsByClass (className, vobListPtr)) {
+		MEM_ArrayFree (vobListPtr);
+		var string msg;
+		msg = ConcatStrings ("zCVob_GetNearest_AtPos: No ", className);
+		msg = ConcatStrings (msg, " objects found.");
+		MEM_Info (msg);
+		return 0;
+	};
+
+	var int dist;
+	var int maxDist; maxDist = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var int vobPtr;
+	var zCArray vobList; vobList = _^ (vobListPtr);
+
+	var int i; i = 0;
+
+	var int count; count = vobList.numInArray;
+
+	var int dir[3];
+	var int posPtr;
+
+	while (i < count);
+		//Read vobPtr from vobList array
+		vobPtr = MEM_ArrayRead (vobListPtr, i);
+
+		if (vobPtr) {
+			if (!firstPtr) { firstPtr = vobPtr; };
+
+			posPtr = zCVob_GetPositionWorld (vobPtr);
+			SubVectors (_@ (dir), fromPosPtr, posPtr);
+			MEM_Free (posPtr);
+
+			dist = zVEC3_LengthApprox (_@ (dir));
+
+			if (lf (dist, maxDist)) {
+				nearestPtr = vobPtr;
+				maxDist = dist;
+			};
+		};
+
+		i += 1;
+	end;
+
+	MEM_ArrayFree (vobListPtr);
 
 	if (nearestPtr) { return nearestPtr; };
 

@@ -12,7 +12,7 @@
 //oCAniCtrl_Human__RemoveWeapon2 is called when removing both melee weapon and also ranged weapons
 func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (ECX);
-	
+
 	var oCNPC slf; slf = _^ (aniCtrl.npc);
 
 	if (NPC_IsPlayer (slf)) {
@@ -23,7 +23,7 @@ func void _hook_oCAniCtrl_Human_RemoveWeapon2__weaponStacking (){
 func void _eventoCItemContainerActivate_weaponStacking (var int dummyVariable) {
 	if (Hlp_Is_oCNpcInventory (ECX)) {
 		var oCNpcInventory npcInventory; npcInventory = _^ (ECX);
-		
+
 		if (Hlp_Is_oCNpc (npcInventory.inventory2_owner)) {
 			var oCNpc slf; slf = _^ (npcInventory.inventory2_owner);
 
@@ -58,7 +58,7 @@ func void _eventEquipItem_WeaponStacking (var int dummyVariable){
 				//That is why we cannot use pointers and we have to use item instance instead afterwards to get 'new' pointer
 				var int itemInstance; itemInstance = Hlp_GetInstanceID (itm);
 				NPC_WeaponInstanceRemoveAddFlags (slf, itemInstance, ITEM_ACTIVE_LEGO, ITEM_MULTI);
-				
+
 				//We have to get new pointer using itemInstance
 				itemPtr = NPC_GetItemPtrByInstance (slf, INV_WEAPON, itemInstance);
 
@@ -123,7 +123,7 @@ func void _hook_weaponSorting__weaponStacking (){
 
 func void G1_WeaponStacking_Init (){
 	const int once = 0;
-	
+
 	G1_ItemContainerActivateEvent_Init ();
 
 	ItemContainerActivate_AddListener (_eventoCItemContainerActivate_weaponStacking);
@@ -160,13 +160,13 @@ func void G1_WeaponStacking_Init (){
 
 		//Applies ITEM_MULTI flag when picking items
 		//HookEngine (oCNPC__DoTakeVob, 6, "_hook_oCNpc_DoTakeVob__weaponStacking");
-		
+
 		//Hook on oCNpc__DoDropVob applying back on weapons ITEM_MULTI when dropping is not supported. (When weapon was equipped it messed up oCNPC__UnequipItem hook)
 		//It is probably not required. We can rethink this later if needed.
 
 		//Custom sorting function. Makes sure that weapons inventory is sorted consistently.
 		ReplaceEngineFunc (inventory2_inventory1_Compare, 0, "_hook_weaponSorting__weaponStacking");
-		
+
 		once = 1;
 	};
 };

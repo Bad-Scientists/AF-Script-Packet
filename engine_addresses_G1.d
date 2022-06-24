@@ -21,29 +21,46 @@ const int MOUSE_BUTTON_RIGHT = 2052;
 //528        - Backward button
 
 /*
+ *	Display time for subtitles (min / max time)
+ */
+
+const int NPC_TALK_TIME_MIN = 8707632; //Default 1000 ms
+const int NPC_TALK_TIME_MAX = 8707636; //Default 8000 ms
+
+/*
+ *	Trade sections
+ */
+
+const int TRADE_SECTION_LEFT_INVENTORY_G1 = 0;
+const int TRADE_SECTION_LEFT_CONTAINER_G1 = 1;
+const int TRADE_SECTION_RIGHT_CONTAINER_G1 = 2;
+const int TRADE_SECTION_RIGHT_INVENTORY_G1 = 3;
+const int TRADE_SECTION_CHOICE_G1 = 4;
+
+/*
  *	Weapon stacking
  */
 
 //0x0062A050 public: int __thiscall oCAniCtrl_Human::RemoveWeapon2(void)
-const int oCAniCtrl_Human__RemoveWeapon2	= 6463568;
+const int oCAniCtrl_Human__RemoveWeapon2 = 6463568;
 
 //0x00668F60 public: virtual void __thiscall oCItemContainer::Activate(void)
-const int oCItemContainer__Activate		= 6721376;
+const int oCItemContainer__Activate = 6721376;
 
 //0x006BB0A0 public: void __thiscall oCNpc::OpenInventory(void)
 //Already defined in LeGo
-//const int oCNPC__OpenInventory		= 7057568;
+//const int oCNPC__OpenInventory = 7057568;
 
 //0x006968F0 public: void __thiscall oCNpc::Equip(class oCItem *)
 //Already defined in LeGo
-//const int oCNPC__Equip			= 6908144;
+//const int oCNPC__Equip = 6908144;
 
 //0x0068FBC0 public: void __thiscall oCNpc::UnequipItem(class oCItem *)
 //Already defined in LeGo
-//const int oCNPC__UnequipItem			= 6880192;
+//const int oCNPC__UnequipItem = 6880192;
 
 //0x006A0D10 public: virtual int __thiscall oCNpc::DoTakeVob(class zCVob *)
-const int oCNPC__DoTakeVob			= 6950160;
+const int oCNPC__DoTakeVob = 6950160;
 
 /*
  *	Inventory sorting
@@ -51,57 +68,58 @@ const int oCNPC__DoTakeVob			= 6950160;
 
 //0x0066B3D0 public: __thiscall oCNpcInventory::oCNpcInventory(void)
 //inventory2_inventory1_Compare int(_cdecl*)(oCItem*, OCItem*)
-const int inventory2_inventory0_Compare		= 6732080;	//66B930	??
-const int inventory2_inventory1_Compare		= 6731024;	//66B510	INV_WEAPON
-const int inventory2_inventory2_Compare		= 6731488;	//66B6E0	INV_ARMOR
-const int inventory2_inventory3_Compare		= 6732080;	//66B930	INV_RUNE
-const int inventory2_inventory4_Compare		= 6732080;	//66B930	INV_MAGIC
-const int inventory2_inventory5_Compare		= 6731568;	//66B730	INV_FOOD
-const int inventory2_inventory6_Compare		= 6732080;	//66B930	INV_POTION
-const int inventory2_inventory7_Compare		= 6731216;	//66B5D0	INV_DOC
-const int inventory2_inventory8_Compare		= 6731648;	//66B780	INV_MISC
+
+const int inventory2_inventory0_Compare = 6732080;	//66B930	InventorySortDefault	??
+const int inventory2_inventory1_Compare = 6731024;	//66B510	InventorySortCombat	INV_WEAPON
+const int inventory2_inventory2_Compare = 6731488;	//66B6E0	InventorySortArmor	INV_ARMOR
+const int inventory2_inventory3_Compare = 6732080;	//66B930	InventorySortDefault	INV_RUNE
+const int inventory2_inventory4_Compare = 6732080;	//66B930	InventorySortDefault	INV_MAGIC
+const int inventory2_inventory5_Compare = 6731568;	//66B730	InventorySortFood	INV_FOOD
+const int inventory2_inventory6_Compare = 6732080;	//66B930	InventorySortDefault	INV_POTION
+const int inventory2_inventory7_Compare = 6731216;	//66B5D0	InventorySortDoc	INV_DOC
+const int inventory2_inventory8_Compare = 6731648;	//66B780	InventorySortOther	INV_MISC
 
 /*
  *	Barrier - ever looming threat
  */
 
 //0x006307C0 public: int __thiscall oCBarrier::Render(struct zTRenderContext &,int,int)
-const int oCBarrier__Render			= 6490048;
+const int oCBarrier__Render = 6490048;
 
 /*
  *	Enhanced InfoManager
  */
 
 //0x00758A60 public: virtual int __thiscall zCViewDialogChoice::HandleEvent(int)
-const int zCViewDialogChoice__HandleEvent	= 7703136;
+const int zCViewDialogChoice__HandleEvent = 7703136;
 
 //0x0072BE90 public: void __fastcall oCInformationManager::Update(void)
-const int oCInformationManager__Update		= 7519888;
+const int oCInformationManager__Update = 7519888;
 
 //0x0072CFC0 protected: int __fastcall oCInformationManager::CollectChoices(class oCInfo *)
-const int oCInformationManager__CollectChoices	= 7524288;
+const int oCInformationManager__CollectChoices = 7524288;
 
 //0x0072CD90 protected: void __fastcall oCInformationManager::CollectInfos(void)
-const int oCInformationManager__CollectInfos	= 7523728;
+const int oCInformationManager__CollectInfos = 7523728;
 
 /*
  *	Enhanced Trading
  */
 
 //0x0072A2B0 protected: int __fastcall oCViewDialogTrade::OnTransferLeft(int)
-const int oCViewDialogTrade__OnTransferLeft	= 7512752;
+const int oCViewDialogTrade__OnTransferLeft = 7512752;
 
 //0x0072A530 protected: int __fastcall oCViewDialogTrade::OnTransferRight(int)
-const int oCViewDialogTrade__OnTransferRight	= 7513392;
+const int oCViewDialogTrade__OnTransferRight = 7513392;
 
 //0x0072A870 protected: void __fastcall oCViewDialogTrade::OnAccept(void)
-const int oCViewDialogTrade__OnAccept		= 7514224;
+const int oCViewDialogTrade__OnAccept = 7514224;
 
 //0x0072AAB0 protected: void __fastcall oCViewDialogTrade::OnExit(void)
-const int oCViewDialogTrade__OnExit		= 7514800;
+const int oCViewDialogTrade__OnExit = 7514800;
 
 //0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
-const int oCViewDialogTrade__HandleEvent	= 7510432;
+const int oCViewDialogTrade__HandleEvent = 7510432;
 
 /*
  *	Enhanced oCTriggerScript
@@ -125,16 +143,6 @@ const int zCTrigger__OnTouch = 6174672;
 
 //0x005E37F0 public: virtual void __thiscall zCTrigger::OnUntouch(class zCVob *)
 const int zCTrigger__OnUntouch = 6174704;
-
-func int Hlp_Is_zCTrigger (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCTrigger_vtbl);
-};
-
-func int Hlp_Is_oCTriggerScript (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCTriggerScript_vtbl);
-};
 
 /*
  *	Enable Player States
@@ -209,11 +217,11 @@ const int oCItemContainer__TransferItem = 6723456;
  */
 
 //0x006A8500 public: int __thiscall oCNpc::EV_DrawWeapon(class oCMsgWeapon *)
-const int oCNPC__EV_DrawWeapon		= 6980864;
+const int oCNPC__EV_DrawWeapon = 6980864;
 //0x006A8B80 public: int __thiscall oCNpc::EV_DrawWeapon1(class oCMsgWeapon *)
-const int oCNPC__EV_DrawWeapon1		= 6982528;
+const int oCNPC__EV_DrawWeapon1 = 6982528;
 //0x006A8E20 public: int __thiscall oCNpc::EV_DrawWeapon2(class oCMsgWeapon *)
-const int oCNPC__EV_DrawWeapon2		= 6983200;
+const int oCNPC__EV_DrawWeapon2 = 6983200;
 
 //0x00477830 public: void __thiscall oCStatusScreen::Show(void)
 const int oCStatusScreen__Show = 4683824;
@@ -263,104 +271,64 @@ const int oCNpcInventory__HandleEvent = 6742928;
 //0x007D3ECC const zCMaterial::`vftable'
 
 //0x007D0894 const zCObject::`vftable'
-//const int zCObject_vtbl		= 8194196;
+//const int zCObject_vtbl = 8194196;
 
 //0x007D0D44 const zCCSBlockPosition::`vftable'
-//const int zCCSBlockPosition_vtbl	= 8195396;
+//const int zCCSBlockPosition_vtbl = 8195396;
 
 //0x007D0FAC const zCCSProps::`vftable'
-//const int zCCSProps_vtbl		= 8196012;
+//const int zCCSProps_vtbl = 8196012;
 
 //0x007D08F4 const oCCSPlayer::`vftable'{for `zCObject'}
-//const int zCObject__oCCSPlayer_vtbl	= 8194292;
+//const int zCObject__oCCSPlayer_vtbl = 8194292;
 
 //0x007D0754 const zCEventMessage::`vftable'
-const int zCEventMessage_vtbl		= 8193876;
+const int zCEventMessage_vtbl = 8193876;
 
 //0x007DE97C const zCEventManager::`vftable'
-const int zCEventManager_vtbl		= 8251772;
-
-func int Hlp_Is_zCEventManager (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCEventManager_vtbl);
-};
+const int zCEventManager_vtbl = 8251772;
 
 //0x007D0A24 const zCCSCutsceneContext::`vftable'
-const int zCCSCutsceneContext_vtbl	= 8194596;
-
-func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == zCCSCutsceneContext_vtbl);
-};
+const int zCCSCutsceneContext_vtbl = 8194596;
 
 //0x007DE28C const oCNpcMessage::`vftable'
-const int oCNpcMessage_vtbl		= 8249996;
-
-func int Hlp_Is_oCNpcMessage (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCNpcMessage_vtbl);
-};
+const int oCNpcMessage_vtbl = 8249996;
 
 //0x007DE2F4 const oCMsgDamage::`vftable'
-const int oCMsgDamage_vtbl		= 8250100;
+const int oCMsgDamage_vtbl = 8250100;
 
 //0x007DE35C const oCMsgWeapon::`vftable'
-const int oCMsgWeapon_vtbl		= 8250204;
+const int oCMsgWeapon_vtbl = 8250204;
 
 //0x007DE3C4 const oCMsgMovement::`vftable'
-const int oCMsgMovement_vtbl		= 8250308;
+const int oCMsgMovement_vtbl = 8250308;
 
 //0x007DE42C const oCMsgAttack::`vftable'
-const int oCMsgAttack_vtbl		= 8250412;
-
-func int Hlp_Is_oCMsgAttack (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgAttack_vtbl);
-};
+const int oCMsgAttack_vtbl = 8250412;
 
 //0x007DE494 const oCMsgUseItem::`vftable'
-const int oCMsgUseItem_vtbl		= 8250516;
+const int oCMsgUseItem_vtbl = 8250516;
 
 //0x007DE4FC const oCMsgState::`vftable'
-const int oCMsgState_vtbl		= 8250620;
+const int oCMsgState_vtbl = 8250620;
 
 //0x007DE564 const oCMsgManipulate::`vftable'
-const int oCMsgManipulate_vtbl		= 8250724;
-
-func int Hlp_Is_oCMsgManipulate (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgManipulate_vtbl);
-};
+const int oCMsgManipulate_vtbl = 8250724;
 
 //0x007DE5CC const oCMsgConversation::`vftable'
-const int oCMsgConversation_vtbl	= 8250828;
-
-func int Hlp_Is_oCMsgConversation (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgConversation_vtbl);
-};
-
-func int Hlp_Is_oCMsgMovement (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgMovement_vtbl);
-};
+const int oCMsgConversation_vtbl = 8250828;
 
 //0x007DE634 const oCMsgMagic::`vftable'
-const int oCMsgMagic_vtbl		= 8250932;
-
-func int Hlp_Is_oCMsgMagic (var int ptr) {
-	if (!ptr) { return 0; };
-	return (MEM_ReadInt (ptr) == oCMsgMagic_vtbl);
-};
+const int oCMsgMagic_vtbl = 8250932;
 
 //0x007DEDDC const zCEventMusicControler::`vftable'
-const int zCEventMusicControler_vtbl	= 8252892;
+const int zCEventMusicControler_vtbl = 8252892;
 
 //0x007D07B4 const zCEventCore::`vftable'
-const int zCEventCore_vtbl		= 8193972;
+const int zCEventCore_vtbl = 8193972;
 
 //0x007D0CE4 const zCEvMsgCutscene::`vftable'
-const int zCEvMsgCutscene_vtbl		= 8195300;
+const int zCEvMsgCutscene_vtbl = 8195300;
 
 //0x007D284C const zCCSCamera_EventMsg::`vftable'
 //0x007D06F4 const zCCSCamera_EventMsgActivate::`vftable'
@@ -372,7 +340,7 @@ const int zCEvMsgCutscene_vtbl		= 8195300;
 //0x007DBECC const zCEventScreenFX::`vftable'
 
 //0x007DDC9C const oCMobMsg::`vftable'
-const int oCMobMsg_vtbl			= 8248476;
+const int oCMobMsg_vtbl = 8248476;
 
 /*
  *	TriggerChangeLevel event
@@ -424,43 +392,17 @@ const int zCSkyControler_Outdoor__RenderSkyPre = 6031616;
 //0x007DCDFC const oCItemContainer::`vftable'
 const int oCItemContainer_vtbl = 8244732;
 
-func int Hlp_Is_oCItemContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCItemContainer_vtbl);
-};
-
 //0x007DCEA4 const oCStealContainer::`vftable'
 const int oCStealContainer_vtbl = 8244900;
 
-func int Hlp_Is_oCStealContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCStealContainer_vtbl);
-};
-
 //0x007DCF54 const oCNpcContainer::`vftable'
-const int oCNPCContainer_vtbl = 8245076;
-
-func int Hlp_Is_oCNpcContainer (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNPCContainer_vtbl);
-};
+const int oCNpcContainer_vtbl = 8245076;
 
 //0x007DD004 const oCNpcInventory::`vftable'
 const int oCNpcInventory_vtbl = 8245252;
 
-func int Hlp_Is_oCNpcInventory (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == oCNpcInventory_vtbl);
-};
-
 //0x007DEB3C const zCVobSpot::`vftable'
 const int zCVobSpot_vtbl = 8252220;
-
-func int Hlp_Is_zCVobSpot (var int ptr) {
-    if (!ptr) { return 0; };
-    return (MEM_ReadInt (ptr) == zCVobSpot_vtbl);
-};
-
 
 //========================================
 // Interface scaling
@@ -520,6 +462,12 @@ func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {
 
 //Gothic Sourcer compatibility - we cannot access MEM_World.voblist_npcs directly, because it seems like GS does not respect arrays > [255] ... which we do have in class oWorld ...
 //therefore we have to access voblist_npcs by accessing pointer @ offset
+
+//G1	offset 25192
+//G2A	offset 25216
+func int MEM_World_Get_voblist () {
+	return + (MEM_ReadInt (_@ (MEM_World) + MEMINT_SwitchG1G2 (25192, 25216)));
+};
 
 //G1	offset 25196
 //G2A	offset 25220

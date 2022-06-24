@@ -2,48 +2,42 @@
  *	Requires another package from AFSP: G12-InvItemPreview
  *
  *	This feature 'replaces' original Gothic health and mana bars with LeGo bars (with LeGo bars we can control textures, alpha values and when bars will be displayed)
- *	By default this feature adds 3 visualisation options for new bars:
+ *	By default this feature adds 4 visualisation options for new bars:
  *	 - standard (same as in vanilla Gothic)
  *	 - dynamic:
- *	    - health bar is visible: if player is hurt, in fight mode, in inventory, when health changes
+ *	    - health bar is visible: if player is hurt (and his health is below specified percentage), in fight mode, in inventory, when health changes
  *	    - mana bar is visible: in magic fight mode, in inventory, when mana changes
  *	 - always on
+ *	 - only in inventory
  *
  *	In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover
  */
 
-var int hHealthBar;			//handle for HP bar
-var int vHealthPreview;			//handle for HP bar preview (view)
-
-var int healthBarPreviewVisible;
-var int healthBarPreviewAlpha;
-var int healthBarPreviewFlashingFadeOut;
-
-var int healthBarLastValue;
-var int healthBarDisplayMethod;
-var int healthBarDisplayTime;
-var int healthBarIsVisible;
-
-//---
-
-var int hManaBar;			//handle for Mana bar
-var int vManaPreview;			//handle for Mana bar preview (view)
-
-var int manaBarPreviewVisible;
-var int manaBarPreviewAlpha;
-var int manaBarPreviewFlashingFadeOut;
-
-var int manaBarLastValue;
-var int manaBarDisplayMethod;
-var int manaBarDisplayTime;
-var int manaBarIsVisible;
+/*
+ *	Function that will update texture of health bar (using original Gothic health bar texture!)
+ */
+func void HealthBar_UpdateTexture () {
+	if (Hlp_IsValidHandle (hHealthBar)) {
+		var oCViewStatusBar hpBar;
+		hpBar = _^ (MEM_Game.hpBar);
+		Bar_SetBarTexture (hHealthBar, hpBar.texValue);
+		//Bar_SetBarTexture (hHealthBar, ViewPtr_GetTexture (hpBar.value_bar));
+	};
+};
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
-	if (BarGetOnDesk (BarType_HealthBar)) {
+	//If this method returns true - then bar should be 100% visible
+	if (BarGetOnDesk (BarType_HealthBar, healthBarDisplayMethod)) {
 		Bar_SetAlpha (hHealthBar, 255);
 		return;
 	};
 
+	//If we somehow ended up here with bar display method inventory ... then remove display time
+	if (healthBarDisplayMethod == BarDisplay_OnlyInInventory) {
+		healthBarDisplayTime = 0;
+	};
+
+	//If we run out of display time - hide bar
 	if (!healthBarDisplayTime) {
 		Bar_Hide (hHealthBar);
 
@@ -51,38 +45,57 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 		return;
 	};
 
-	if (!healthBarIsVisible) {
+	//Check - is bar visible? If not show it
+	if (!Bar_IsVisible (hHealthBar)) {
+		//Show it only if allowed by game itself
 		if (_Bar_PlayerStatus ()) {
 			Bar_Show (hHealthBar);
-			healthBarIsVisible = TRUE;
 		};
 	};
 
-	if (healthBarIsVisible) {
+	//If bar is visible (this is not redundant condition, _Bar_PlayerStatus might return FALSE)
+	if (Bar_IsVisible (hHealthBar)) {
+		//Decrease display time
 		healthBarDisplayTime -= 1;
 
+		/*
+			Fade effect logic - in relation to display time:
+			Fade in		Display		Fade out
+			120 - 80	80 - 40		40 - 0
+		*/
 		var int alpha;
 
+		//Fade in
 		if (healthBarDisplayTime > 80) {
 			alpha = roundf (mulf (mkf (255), divf (mkf (120 - healthBarDisplayTime), mkf (40))));
 		} else
+		//Display
 		if (healthBarDisplayTime > 40) {
 			alpha = 255;
 		} else {
+		//Fade out
 			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - healthBarDisplayTime), mkf (40))));
 		};
 
+		//Check boundaries min/max and set alpha
 		alpha = clamp (alpha, 0, 255);
 		Bar_SetAlpha (hHealthBar, alpha);
 	};
 };
 
 func void FrameFunction_FadeInOutManaBar__BetterBars () {
-	if (BarGetOnDesk (BarType_ManaBar)) {
+	//If this method returns true - then bar should be 100% visible
+	if (BarGetOnDesk (BarType_ManaBar, manaBarDisplayMethod)) {
 		Bar_SetAlpha (hManaBar, 255);
 		return;
 	};
 
+	//If we somehow ended up here with bar display method inventory ... then remove display time
+	if (manaBarDisplayMethod == BarDisplay_OnlyInInventory) {
+		manaBarDisplayTime = 0;
+	};
+
+	//If we run out of display time - hide bar
 	if (!manaBarDisplayTime) {
 		Bar_Hide (hManaBar);
 
@@ -90,29 +103,40 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 		return;
 	};
 
-	if (!manaBarIsVisible) {
+	//Check - is bar visible? If not show it
+	if (!Bar_IsVisible (hManaBar)) {
+		//Show it only if allowed by game itself
 		if (_Bar_PlayerStatus ()) {
 			Bar_Show (hManaBar);
-			manaBarIsVisible = TRUE;
 		};
 	};
 
-	if (manaBarIsVisible) {
+	//If bar is visible (this is not redundant condition, _Bar_PlayerStatus might return FALSE)
+	if (Bar_IsVisible (hManaBar)) {
+		//Decrease display time
 		manaBarDisplayTime -= 1;
 
+		/*
+			Fade effect logic - in relation to display time:
+			Fade in		Display		Fade out
+			120 - 80	80 - 40		40 - 0
+		*/
 		var int alpha;
 
+		//Fade in
 		if (manaBarDisplayTime > 80) {
 			alpha = roundf (mulf (mkf (255), divf (mkf (120 - manaBarDisplayTime), mkf (40))));
 		} else
+		//Display
 		if (manaBarDisplayTime > 40) {
 			alpha = 255;
 		} else {
+		//Fade out
 			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - manaBarDisplayTime), mkf (40))));
 		};
 
+		//Check boundaries min/max and set alpha
 		alpha = clamp (alpha, 0, 255);
-
 		Bar_SetAlpha (hManaBar, alpha);
 	};
 };
@@ -125,7 +149,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		return;
 	};
 
-	if (healthBarPreviewVisible) {
+	if ((healthBarPreviewVisible) && (healthBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
 		if (Hlp_IsValidHandle (vHealthPreview)) {
 
 			if (healthBarPreviewFlashingFadeOut) {
@@ -149,7 +173,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		};
 	};
 
-	if (manaBarPreviewVisible) {
+	if ((manaBarPreviewVisible) && (manaBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
 		if (Hlp_IsValidHandle (vManaPreview)) {
 
 			if (manaBarPreviewFlashingFadeOut) {
@@ -182,7 +206,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 	//Custom setup from Gothic.ini
 	if (MEM_GothOptExists ("GAME", "healthBarDisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - alwas on
+		//0 - standard, 1 - dynamic update, 2 - always on
 		healthBarDisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "healthBarDisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
@@ -212,8 +236,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 //--
-	var int healthBarOnDesk; healthBarOnDesk = BarGetOnDesk (BarType_HealthBar);
-	var int manaBarOnDesk; manaBarOnDesk = BarGetOnDesk (BarType_ManaBar);
+	var int healthBarOnDesk; healthBarOnDesk = BarGetOnDesk (BarType_HealthBar, healthBarDisplayMethod);
+	var int manaBarOnDesk; manaBarOnDesk = BarGetOnDesk (BarType_ManaBar, manaBarDisplayMethod);
 
 //-- Health bar
 
@@ -243,7 +267,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vHealthPreview)) {
-		vHealthPreview = Bar_CreatePreview (hHealthBar, "Bar_Health_Preview.tga");
+		vHealthPreview = Bar_CreatePreview (hHealthBar, TEXTURE_BARPREVIEW_HEALTBAR);
+		View_SetAlpha (vHealthPreview, 255);
 	};
 
 	//
@@ -261,7 +286,19 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 //-- Auto hiding/display for health bar (when updated)
 
-	if ((healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || (hero.attribute [ATR_HITPOINTS] != hero.attribute [ATR_HITPOINTS_MAX])) {
+	var int hurtPercentage;
+	if (HealthBar_DisplayWhenHurt_Percentage > 0) {
+		hurtPercentage = divf (mkf (hero.attribute [ATR_HITPOINTS]), mkf (hero.attribute [ATR_HITPOINTS_MAX]));
+		hurtPercentage = mulf (hurtPercentage, mkf (100));
+		hurtPercentage = roundf (hurtPercentage);
+	};
+
+	//Display only in inventory ...
+	if ((healthBarDisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk) && (!healthBarForceOnDesk)) {
+		//... don't do anything :)
+	} else
+	if ((healthBarForceOnDesk) || (healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= HealthBar_DisplayWhenHurt_Percentage) && (HealthBar_DisplayWhenHurt_Percentage > 0)))
+	{
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
@@ -284,7 +321,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (healthBarDisplayTime)) {
-		if (!healthBarIsVisible) {
+		if (!Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hHealthBar, 0);
 
@@ -295,16 +332,16 @@ func void FrameFunction_EachFrame__BetterBars () {
 				};
 
 				Bar_Show (hHealthBar);
-				healthBarIsVisible = TRUE;
 			};
 		};
 	};
 
-	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime)) {
-		if (healthBarIsVisible) {
+	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime))
+	|| ((healthBarDisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk))
+	{
+		if (Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hHealthBar);
-				healthBarIsVisible = FALSE;
 			};
 		};
 	};
@@ -323,8 +360,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 		Bar_SetBarTexture (hManaBar, manaBar.texValue);
 		Bar_MoveTo (hManaBar, manaBar.zCView_vposx + (manaBar.zCView_vsizex / 2), manaBar.zCView_vposy + (manaBar.zCView_vsizey / 2));
 
-		manaBarIsVisible = manaBarOnDesk;
-		if (!manaBarIsVisible) {
+		if (!manaBarOnDesk) {
 			Bar_Hide (hManaBar);
 		};
 
@@ -346,7 +382,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vManaPreview)) {
-		vManaPreview = Bar_CreatePreview (hManaBar, "Bar_Mana_Preview.tga");
+		vManaPreview = Bar_CreatePreview (hManaBar, TEXTURE_BARPREVIEW_MANABAR);
+		View_SetAlpha (vManaPreview, 255);
 	};
 
 	//
@@ -364,7 +401,11 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 //-- Auto hiding/display for mana bar (when updated)
 
-	if (manaBarLastValue != hero.attribute [ATR_MANA]) {
+	//Display only in inventory ...
+	if ((manaBarDisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk) && (!manaBarForceOnDesk)) {
+		//... don't do anything :)
+	} else
+	if ((manaBarForceOnDesk) || (manaBarLastValue != hero.attribute [ATR_MANA])) {
 		manaBarLastValue = hero.attribute [ATR_MANA];
 
 		//
@@ -383,8 +424,9 @@ func void FrameFunction_EachFrame__BetterBars () {
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutManaBar__BetterBars, 60, -1);
 	};
 
-	if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime)) {
-		if (!manaBarIsVisible) {
+	if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime))
+	{
+		if (!Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hManaBar, 0);
 
@@ -395,16 +437,16 @@ func void FrameFunction_EachFrame__BetterBars () {
 				};
 
 				Bar_Show (hManaBar);
-				manaBarIsVisible = TRUE;
 			};
 		};
 	};
 
-	if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime)) {
-		if (manaBarIsVisible) {
+	if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime))
+	|| ((manaBarDisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk))
+	{
+		if (Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_Hide (hManaBar);
-				manaBarIsVisible = FALSE;
 			};
 		};
 	};

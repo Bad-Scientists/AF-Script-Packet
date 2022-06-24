@@ -16,6 +16,11 @@ var int vobTransportShowcaseVobIndex;
 var int vobTransportShowcaseVobVerticalIndex;
 var int vobTransportShowcaseVobBuyValue;
 
+var int vobTransportVobChanged;
+
+var int vobTransportBBoxPtr;
+
+var int lastVobTransportMode;
 var int vobTransportMode;
 	const int vobTransportMode_Idle			= 0;
 	const int vobTransportMode_Init			= 1;
@@ -30,6 +35,7 @@ var int vobTransportMode;
 	const int vobTransportMode_Done			= 8;
 
 	const int vobTransportMode_BuyVob		= 9;
+	const int vobTransportMode_BuyVobSelect		= 10;
 
 var int vobTransportActionMode;
 	const int vobTransportActionMode_Clone		= 0;
@@ -38,16 +44,18 @@ var int vobTransportActionMode;
 	const int vobTransportActionMode_Edit		= 3;	//Not yet implemented
 
 var int vobTransportTransformationMode;
-	const int vobTransportTransformation_None	= 0;
-	const int vobTransportTransformation_On		= 1;
-	const int vobTransportTransformation_RotX	= 2;
-	const int vobTransportTransformation_RotY	= 3;
-	const int vobTransportTransformation_RotZ	= 4;
-	const int vobTransportTransformation_Elevation	= 5;
+	const int vobTransportTransformation_RotY	= 0;	//Default - rotation on Y axies
+	const int vobTransportTransformation_RotX	= 1;
+	const int vobTransportTransformation_RotZ	= 2;
 
-var int vobTransportAlignToFloor;
+var int vobTransportAlignObject;
+	const int vobTransportAlignObject_Dont		= 0;
+	const int vobTransportAlignObject_InFront	= 1;
+	const int vobTransportAlignObject_SetToFloor	= 2;
+
 var int vobTransportMovementSpeed;
-var int vobTransportElevationLevel;
+
+var int vobTransportOffset[3];
 
 //--- Vob Transport view handles
 

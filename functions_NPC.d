@@ -498,21 +498,112 @@ func void NPC_RemoveTimedOverlay (var int slfInstance, var string testOverlay) {
 	end;
 };
 
-func void NPC_AddBitfield (var int slfInstance, var int addBitfield) {
+func int NPC_GetBitfield (var int slfInstance, var int bitfield) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	if (addBitfield & zCVob_bitfield2_sleepingMode) {
-		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 0;
+	//Simple true/false values
+	if (bitfield == oCNpc_bitfield0_showaidebug)
+	|| (bitfield == oCNpc_bitfield0_showNews)
+	|| (bitfield == oCNpc_bitfield0_csAllowedAsRole)
+	|| (bitfield == oCNpc_bitfield0_isSummoned)
+	|| (bitfield == oCNpc_bitfield0_respawnOn)
+	|| (bitfield == oCNpc_bitfield0_movlock)
+	|| (bitfield == oCNpc_bitfield0_drunk)
+	|| (bitfield == oCNpc_bitfield0_mad)
+	|| (bitfield == oCNpc_bitfield0_overlay_wounded)
+	|| (bitfield == oCNpc_bitfield0_inOnDamage)
+	|| (bitfield == oCNpc_bitfield0_autoremoveweapon)
+	|| (bitfield == oCNpc_bitfield0_openinventory)
+	|| (bitfield == oCNpc_bitfield0_askroutine)
+	|| (bitfield == oCNpc_bitfield0_spawnInRange)
+	|| (bitfield == oCNpc_bitfield0_body_TexVarNr)
+	{
+		return (slf.bitfield[0] & bitfield);
 	};
+
+	if (bitfield == oCNpc_bitfield1_body_TexColorNr) //65535
+	|| (bitfield == oCNpc_bitfield1_head_TexVarNr) //4294901760
+	{
+		return (slf.bitfield[1] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield2_teeth_TexVarNr)
+	|| (bitfield == oCNpc_bitfield2_guildTrue)
+	|| (bitfield == oCNpc_bitfield2_drunk_heal)
+	{
+		return (slf.bitfield[2] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield3_mad_heal)
+	|| (bitfield == oCNpc_bitfield3_spells)
+	{
+		return (slf.bitfield[3] & bitfield);
+	};
+
+	if (bitfield == oCNpc_bitfield4_bodyState)
+	{
+		return (slf.bitfield[4] & bitfield);
+	};
+
+	return 0;
 };
 
-func void NPC_RemoveBitfield (var int slfInstance, var int removeBitfield) {
+func void NPC_SetBitfield (var int slfInstance, var int bitfield, var int value) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	if (removeBitfield & zCVob_bitfield2_sleepingMode) {
-		slf._zCVob_bitfield[2] = (slf._zCVob_bitfield[2] & ~ zCVob_bitfield2_sleepingMode) | 1;
+	//Basically true/false values
+	if (bitfield == oCNpc_bitfield0_showaidebug)
+	|| (bitfield == oCNpc_bitfield0_showNews)
+	|| (bitfield == oCNpc_bitfield0_csAllowedAsRole)
+	|| (bitfield == oCNpc_bitfield0_isSummoned)
+	|| (bitfield == oCNpc_bitfield0_respawnOn)
+	|| (bitfield == oCNpc_bitfield0_movlock)
+	|| (bitfield == oCNpc_bitfield0_drunk)
+	|| (bitfield == oCNpc_bitfield0_mad)
+	|| (bitfield == oCNpc_bitfield0_overlay_wounded)
+	|| (bitfield == oCNpc_bitfield0_inOnDamage)
+	|| (bitfield == oCNpc_bitfield0_autoremoveweapon)
+	|| (bitfield == oCNpc_bitfield0_openinventory)
+	|| (bitfield == oCNpc_bitfield0_askroutine)
+	|| (bitfield == oCNpc_bitfield0_spawnInRange)
+	|| (bitfield == oCNpc_bitfield0_body_TexVarNr)
+	{
+		if ((value == 0) || (value == 1)) {
+			value = bitfield * value;
+		};
+
+		slf.bitfield[0] = (slf.bitfield[0] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield1_body_TexColorNr)
+	|| (bitfield == oCNpc_bitfield1_head_TexVarNr)
+	{
+		slf.bitfield[1] = (slf.bitfield[1] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield2_teeth_TexVarNr)
+	|| (bitfield == oCNpc_bitfield2_guildTrue)
+	|| (bitfield == oCNpc_bitfield2_drunk_heal)
+	{
+		slf.bitfield[2] = (slf.bitfield[2] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield3_mad_heal)
+	|| (bitfield == oCNpc_bitfield3_spells)
+	{
+		slf.bitfield[3] = (slf.bitfield[3] & ~ bitfield) | value;
+		return;
+	};
+
+	if (bitfield == oCNpc_bitfield4_bodyState)
+	{
+		slf.bitfield[4] = (slf.bitfield[4] & ~ bitfield) | value;
+		return;
 	};
 };
 
@@ -693,16 +784,13 @@ func int NPC_GetNode (var int slfInstance, var string nodeName) {
 	const int zCModel__SearchNode_G2 = 5758960;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var int model; model = oCNPC_GetModel (slfInstance);
-
-	if (!model) { return 0; };
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return 0; };
 
 	CALL_zStringPtrParam (nodeName);
-	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
-
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
 	return CALL_RetValAsPtr ();
 };
 
@@ -713,18 +801,15 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 	//0x00579140 public: class zVEC3 __thiscall zCModel::GetNodePositionWorld(class zCModelNodeInst *)
 	const int zCModel__GetNodePositionWorld_G2 = 5738816;
 
-	var int model; model = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return 0; };
 
-	if (!model) { return 0; };
-
-	var int node; node = NPC_GetNode (slfInstance, nodeName);
-
-	if (!node) { return 0; };
+	var int nodePtr; nodePtr = NPC_GetNode (slfInstance, nodeName);
+	if (!nodePtr) { return 0; };
 
 	CALL_RetValIsStruct (12);
-	CALL_PtrParam (node);
-	CALL__thiscall (model, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
-
+	CALL_PtrParam (nodePtr);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetNodePositionWorld_G1, zCModel__GetNodePositionWorld_G2));
 	return CALL_RetValAsPtr ();
 };
 
@@ -760,7 +845,7 @@ func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
 
-	var zCVob vob; vob = _^(vobPtr);
+	var zCVob vob; vob = _^ (vobPtr);
 
 	var int pos[3];
 	//TrfToPos (_@(vob.trafoObjToWorld), _@ (pos));
@@ -768,7 +853,7 @@ func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	MEM_WriteIntArray(_@ (pos), 1, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  7));
 	MEM_WriteIntArray(_@ (pos), 2, MEM_ReadIntArray(_@(vob.trafoObjToWorld), 11));
 
-	return NPC_GetDistToPos (slf, _@ (pos));
+	return + NPC_GetDistToPos (slf, _@ (pos));
 };
 
 func int NPC_GetShowAI (var int slfInstance) {
@@ -981,4 +1066,153 @@ func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
 	MEM_Free (vobPosPtr);
 
 	return +(Npc_GetHeightDiffToPos (slfInstance, _@ (pos)));
+};
+
+func int NPC_GetNearestMobOptPosition (var int slfInstance, var int mobPtr) {
+
+//func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+	//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+	const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+		call = CALL_End();
+	};
+//};
+
+	var int dist;
+	var int maxDist; maxDist = mkf (999999);
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCMobInter mob; mob = _^ (mobPtr);
+
+	var int ptr;
+	var zCList list;
+	ptr = mob.optimalPosList_next;
+
+	while (ptr);
+		list = _^ (ptr);
+		ptr = list.data;
+
+		if (ptr) {
+			var TMobOptPos mobOptPos; mobOptPos = _^ (ptr);
+
+			var int pos[3];
+			pos[0] = mobOptPos.trafo[03];
+			pos[1] = mobOptPos.trafo[07];
+			pos[2] = mobOptPos.trafo[11];
+
+			if (!firstPtr) { firstPtr = ptr; };
+
+			dist = NPC_GetDistToPos (slfInstance, _@ (pos));
+			if (lf (dist, maxDist)) {
+				nearestPtr = ptr;
+				maxDist = dist;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func string NPC_GetNearestMobNodeName (var int slfInstance, var int mobPtr) {
+	var int ptr; ptr = NPC_GetNearestMobOptPosition (slfInstance, mobPtr);
+
+	if (!ptr) { return ""; };
+
+	var TMobOptPos mobOptPos; mobOptPos = _^ (ptr);
+	return mobOptPos.nodeName;
+};
+
+func void NPC_SetWalkMode (var int slfInstance, var int walkMode) {
+	//0x006211E0 public: void __thiscall oCAniCtrl_Human::SetWalkMode(int)
+	const int oCAniCtrl_Human__SetWalkMode_G1 = 6427104;
+
+	//0x006A9820 public: void __thiscall oCAniCtrl_Human::SetWalkMode(int)
+	const int oCAniCtrl_Human__SetWalkMode_G2 = 6985760;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!slf.aniCtrl) { return; };
+
+	var int aniCtrl; aniCtrl = slf.aniCtrl;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (walkMode));
+		CALL__thiscall (_@ (aniCtrl), MEMINT_SwitchG1G2 (oCAniCtrl_Human__SetWalkMode_G1, oCAniCtrl_Human__SetWalkMode_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	There are several body-states with which we should not change overlays (to sprint mode, or equip torch) ... all hopefully listed here
+ */
+func int NPC_CanChangeOverlay (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+
+	//[C_BodyStateContains (hero, BS_JUMP)]
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_FALL & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_DEAD & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_UNCONSCIOUS & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_SWIM & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_DIVE & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_LIE & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_INVENTORY & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_MOBINTERACT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_MOBINTERACT_INTERRUPT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+
+	return TRUE;
+};
+
+/*
+ *	Function removes specified focus vob pointer
+ */
+func void NPC_RemoveFromFocus (var int slfInstance, var int vobPtr) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (slf.focus_vob == vobPtr) {
+		oCNpc_SetFocusVob (slf, 0);
+	};
+};
+
+func void NPC_ClearAIState (var int slfInstance) {
+	//0x006C61A0 public: void __thiscall oCNpc_States::ClearAIState(void)
+	const int oCNpc_States__ClearAIState_G1 = 7102880;
+
+	//0x0076D6E0 public: void __thiscall oCNpc_States::ClearAIState(void)
+	const int oCNpc_States__ClearAIState_G2 = 7788256;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__ClearAIState_G1, oCNpc_States__ClearAIState_G2));
+};
+
+func void NPC_EndCurrentState (var int slfInstance) {
+	//0x006C6340 public: void __thiscall oCNpc_States::EndCurrentState(void)
+	const int oCNpc_States__EndCurrentState_G1 = 7103296;
+
+	//0x0076D880 public: void __thiscall oCNpc_States::EndCurrentState(void)
+	const int oCNpc_States__EndCurrentState_G2 = 7788672;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
 };

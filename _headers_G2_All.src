@@ -2,6 +2,8 @@ constants.d
 
 engine_addresses_G2.d
 
+hlp_functions.d
+
 EngineClasses_G2\oInventory.d
 EngineClasses_G2\zEventMan.d
 EngineClasses_G2\zCViewDialog.d
@@ -14,12 +16,23 @@ EngineClasses_G2\zPhysics.d
 EngineClasses_G2\oAiShoot.d
 EngineClasses_G2\TMobOptPos.d
 EngineClasses_G2\TNpcSlot.d
+EngineClasses_G2\zCVobSpot.d
+EngineClasses_G2\oCRtnEntry.d
+EngineClasses_G2\oCRtnManager.d
 
 //Sound
-EngineClasses_G1\zTSound3DParams.d
-EngineClasses_G1\zCActiveSnd.d
-EngineClasses_G1\zCSndFrame.d
+EngineClasses_G2\zTSound3DParams.d
+EngineClasses_G2\zCActiveSnd.d
+EngineClasses_G2\zCSndFrame.d
 
+EngineClasses_G2\zCWay.d
+EngineClasses_G2\oSSpawnNode.d
+EngineClasses_G2\zCSkyState.d
+
+ScriptBin\strings.d
+ScriptBin\convert.d
+
+strings.d
 utils.d
 files.d
 
@@ -33,8 +46,6 @@ vobFunctions.d
 ScriptBin\insertAnything.d
 ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
-ScriptBin\strings.d
-ScriptBin\convert.d
 ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d
 
@@ -49,16 +60,14 @@ ObjectFactory\oCAIArrow.d
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
 
-strings.d
+ObjectFactory\zCWaypoint.d
 
 mobFunctions.d
 
 anims_engine.d
 
-infoManager_engine.d
 infoManager.d
 
-eventManager_engine.d
 eventManager.d
 
 functions_oCMobInter_engine.d
@@ -70,10 +79,8 @@ functions_PC.d
 
 functions_oCItem.d
 
-inventory_oCMob_engine.d
 inventory_oCMob.d
 
-inventory_oCNpc_engine.d
 inventory_oCNpc.d
 
 console.d
@@ -82,10 +89,10 @@ interface.d
 game_Events_G12.d
 
 bars.d
-
-game_engine.d
+consoleCommands.d
 
 world_engine.d
+game_engine.d
 
 portals.d
 
@@ -116,6 +123,7 @@ Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceFireDamage.d
 Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceSavingPolicy.d
 
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
+Standalone-Packages\G12-EnhancedInfoManager\stringOverlay.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
@@ -139,15 +147,21 @@ Standalone-Packages\G12-VobTransport\vobTransport.d
 Standalone-Packages\G12-Focus\focus_API.d
 Standalone-Packages\G12-Focus\focus.d
 Standalone-Packages\G12-InvItemPreview\invItemPreview.d
+Standalone-Packages\G12-BetterBars\betterBars_API.d
 Standalone-Packages\G12-BetterBars\betterBars.d
 
+Standalone-Packages\G12-Debugging\focusPlay.d
 Standalone-Packages\G12-Debugging\debugDialogues.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
 Standalone-Packages\G12-Debugging\unlock.d
 Standalone-Packages\G12-Debugging\checkLockValidity.d
+Standalone-Packages\G12-Debugging\gotoNpc.d
+Standalone-Packages\G12-Debugging\gotoZEN.d
 Standalone-Packages\G12-Debugging\checkRoutineValidity.d
+Standalone-Packages\G12-Debugging\create.d
+Standalone-Packages\G12-Debugging\printPos.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
@@ -156,3 +170,7 @@ Standalone-Packages\G12-VobThrowing\vobThrowing.d
 Standalone-Packages\G12-VobThrowing\testing.d
 
 Standalone-Packages\G12-RainControl\rainControl.d
+Standalone-Packages\G12-FadeAway\fadeAway.d
+Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
+
+Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d

@@ -144,7 +144,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	//0x0083997C const zCVob::`vftable'
 	const int zCVob_vtbl_G2 = 8624508;
 
-	if (Hlp_Is_zCDecal (vobPtr)) {
+	if (Hlp_VobVisual_Is_zCDecal (vobPtr)) {
 		MEM_Info ("zCDecal not supported yet.");
 	} else
 	if (MEM_ReadInt (vobPtr) == MEMINT_SwitchG1G2 (zCVob_vtbl_G1, zCVob_vtbl_G2)) {

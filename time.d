@@ -48,36 +48,6 @@ func int zCSkyControler_Indoor_GetTime () {
 	return +retVal;
 };
 
-//G1
-//0x008CE9E0 private: static class zCClassDef zCSkyControler::classDef
-//0x008CEAD0 private: static class zCClassDef zCSkyControler_Mid::classDef
-//0x008CEBB8 protected: static class zCSkyControler * zCSkyControler::s_activeSkyControler
-
-//G2
-//0x0099AB40 private: static class zCClassDef zCSkyControler::classDef
-//0x0099ABB0 private: static class zCClassDef zCSkyControler_Mid::classDef
-//0x0099AC8C protected: static class zCSkyControler * zCSkyControler::s_activeSkyControler
-
-func int Hlp_Is_zCSkyControler_Outdoor (var int ptr) {
-	//0x008CEA60 private: static class zCClassDef zCSkyControler_Outdoor::classDef
-	const int zCSkyControler_Outdoor__classDef_G1 = 9235040;
-
-	//0x0099ACD8 private: static class zCClassDef zCSkyControler_Outdoor::classDef
-	const int zCSkyControler_Outdoor__classDef_G2 = 10071256;
-
-	return MEM_CheckInheritance(ptr, MEMINT_SwitchG1G2 (zCSkyControler_Outdoor__classDef_G1, zCSkyControler_Outdoor__classDef_G2));
-};
-
-func int Hlp_Is_zCSkyControler_Indoor (var int ptr) {
-	//0x008CEB48 private: static class zCClassDef zCSkyControler_Indoor::classDef
-	const int zCSkyControler_Indoor__classDef_G1 = 9235272;
-
-	////0x0099AC20 private: static class zCClassDef zCSkyControler_Indoor::classDef
-	const int zCSkyControler_Indoor__classDef_G2 = 10071072;
-
-	return MEM_CheckInheritance(ptr, MEMINT_SwitchG1G2 (zCSkyControler_Indoor__classDef_G1, zCSkyControler_Indoor__classDef_G2));
-};
-
 /*
  *	Function calculates hour from float time
  */
