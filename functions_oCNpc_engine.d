@@ -888,3 +888,27 @@ func int oCNpc_GetSpellBook (var int slfInstance) {
 
 	return + retVal;
 };
+
+//0x00639840 private: virtual void __thiscall oCGame::SetAsPlayer(class zSTRING const &)
+//0x006C3D20 private: virtual void __thiscall oCGame::SetAsPlayer(class zSTRING const &)
+
+func void oCNpc_SetAsPlayer (var int slfInstance)
+{
+	//0x0069EAE0 public: virtual void __thiscall oCNpc::SetAsPlayer(void)
+	const int oCNpc__SetAsPlayer_G1 = 6941408;
+
+	//0x007426A0 public: virtual void __thiscall oCNpc::SetAsPlayer(void)
+	const int oCNpc__SetAsPlayer_G2 = 7612064;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetAsPlayer_G1, oCNpc__SetAsPlayer_G2));
+		call = CALL_End();
+	};
+};
