@@ -888,6 +888,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				lastVobTransportMode = vobTransportMode;
 				vobTransportMode = vobTransportMode_Transform;
 
+				vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobTransportVobPtr);
+
 				vob = _^ (vobTransportVobPtr);
 				MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
 
@@ -1013,6 +1015,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				vobTransportTransformationMode = vobTransportTransformation_RotY;
 				lastVobTransportMode = vobTransportMode;
 				vobTransportMode = vobTransportMode_Transform;
+
+				vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobTransportVobPtr);
+
 				PC_PutInSleepingMode ();
 			} else {
 				if (VobCanBePlaced__VobTransport_API (vobTransportVobPtr)) {
@@ -1046,6 +1051,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			} else
 			//Switch back to selection mode
 			if (lastVobTransportMode == vobTransportMode_SelectVob) {
+				vobTransportBBoxPtr = 0;
 				vobTransportMode = vobTransportMode_SelectVob;
 
 				//Restore trafo and alpha
@@ -1584,7 +1590,12 @@ func void _hook_BBox3D_Draw () {
 	};
 
 	if (ECX == vobTransportBBoxPtr) {
-		MEM_WriteInt (vobTransportBBoxColor, GFX_BLUE);
+		if (vobTransportMode == vobTransportMode_Movement) {
+			MEM_WriteInt (vobTransportBBoxColor, GFX_BLUE);
+		} else
+		if (vobTransportMode == vobTransportMode_Transform) {
+			MEM_WriteInt (vobTransportBBoxColor, GFX_GREEN);
+		};
 	};
 
 	MEM_WriteInt (ESP + 4, vobTransportBBoxColor);
