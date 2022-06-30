@@ -1,4 +1,48 @@
 /*
+ *	Engine function that returns time using oCWorldTimer
+ */
+func void oCWorldTimer_GetTime (var int hourPtr, var int minPtr) {
+	//0x006D7BB0 public: void __thiscall oCWorldTimer::GetTime(int &,int &)
+	const int oCWorldTimer__GetTime_G1 = 7175088;
+
+	//0x00780DF0 public: void __thiscall oCWorldTimer::GetTime(int &,int &)
+	const int oCWorldTimer__GetTime_G2 = 7867888;
+
+	var int wldTimerPtr; wldTimerPtr = MEM_Game.wldTimer;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (minPtr));
+		CALL_PtrParam (_@ (hourPtr));
+
+		CALL__thiscall (_@ (wldTimerPtr), MEMINT_SwitchG1G2 (oCWorldTimer__GetTime_G1, oCWorldTimer__GetTime_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Engine function that sets up time
+ */
+func void oCWorldTimer_SetTime (var int hourPtr, var int minPtr) {
+	//0x006D7C00 public: void __thiscall oCWorldTimer::SetTime(int,int)
+	const int oCWorldTimer__SetTime_G1 = 7175168;
+
+	//0x00780E40 public: void __thiscall oCWorldTimer::SetTime(int,int)
+	const int oCWorldTimer__SetTime_G2 = 7867968;
+
+	var int wldTimerPtr; wldTimerPtr = MEM_Game.wldTimer;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (minPtr));
+		CALL_PtrParam (_@ (hourPtr));
+
+		CALL__thiscall (_@ (wldTimerPtr), MEMINT_SwitchG1G2 (oCWorldTimer__SetTime_G1, oCWorldTimer__SetTime_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *	Engine function that returns current world time from zCSkyControler_Outdoor
  */
 func int zCSkyControler_Outdoor_GetTime () {
@@ -70,35 +114,43 @@ func int GetTime_GetMinute (var int timeF) {
 };
 
 func int Wld_GetHour () {
-	var int time; time = -1;
+//	var int time; time = -1;
+//
+//	if (!MEM_World.activeSkyControler) { return -1; };
+//
+//	if (Hlp_Is_zCSkyControler_Outdoor (MEM_World.activeSkyControler)) {
+//		time = zCSkyControler_Outdoor_GetTime ();
+//	} else
+//
+//	if (Hlp_Is_zCSkyControler_Indoor (MEM_World.activeSkyControler)) {
+//		time = zCSkyControler_Indoor_GetTime ();
+//	};
+//
+//	return +GetTime_GetHour (time);
 
-	if (!MEM_World.activeSkyControler) { return -1; };
-
-	if (Hlp_Is_zCSkyControler_Outdoor (MEM_World.activeSkyControler)) {
-		time = zCSkyControler_Outdoor_GetTime ();
-	} else
-
-	if (Hlp_Is_zCSkyControler_Indoor (MEM_World.activeSkyControler)) {
-		time = zCSkyControler_Indoor_GetTime ();
-	};
-
-	return +GetTime_GetHour (time);
+	var int hour; var int min;
+	oCWorldTimer_GetTime (_@ (hour), _@ (min));
+	return +hour;
 };
 
 func int Wld_GetMinute () {
-	var int time; time = -1;
+//	var int time; time = -1;
+//
+//	if (!MEM_World.activeSkyControler) { return -1; };
+//
+//	if (Hlp_Is_zCSkyControler_Outdoor (MEM_World.activeSkyControler)) {
+//		time = zCSkyControler_Outdoor_GetTime ();
+//	} else
+//
+//	if (Hlp_Is_zCSkyControler_Indoor (MEM_World.activeSkyControler)) {
+//		time = zCSkyControler_Indoor_GetTime ();
+//	};
+//
+//	return +GetTime_GetMinute (time);
 
-	if (!MEM_World.activeSkyControler) { return -1; };
-
-	if (Hlp_Is_zCSkyControler_Outdoor (MEM_World.activeSkyControler)) {
-		time = zCSkyControler_Outdoor_GetTime ();
-	} else
-
-	if (Hlp_Is_zCSkyControler_Indoor (MEM_World.activeSkyControler)) {
-		time = zCSkyControler_Indoor_GetTime ();
-	};
-
-	return +GetTime_GetMinute (time);
+	var int hour; var int min;
+	oCWorldTimer_GetTime (_@ (hour), _@ (min));
+	return +min;
 };
 
 func int Wld_GetTime () {
