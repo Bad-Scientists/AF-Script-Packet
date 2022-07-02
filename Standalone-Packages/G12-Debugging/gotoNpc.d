@@ -15,10 +15,9 @@ func void PC_BeamToNpc (var int npcInstance) {
 	if (!Hlp_IsValidNPC (npc)) { return; };
 
 	//Default position - players position
-	var int posPtr;
-	posPtr = zCVob_GetPositionWorld (_@ (hero));
-	MEM_CopyBytes (posPtr, _@ (pos), 12);
-	MEM_Free (posPtr);
+	if (zCVob_GetPositionWorldToPos (_@ (hero), _@ (pos))) {
+		//...
+	};
 
 	//Get NPC state
 	var int statePtr; statePtr = NPC_GetNPCState (npc);
@@ -27,7 +26,7 @@ func void PC_BeamToNpc (var int npcInstance) {
 
 		//Get routine position
 		if (state.hasRoutine) {
-			posPtr = oCRtnManager_GetRoutinePos (npc);
+			var int posPtr; posPtr = oCRtnManager_GetRoutinePos (npc);
 			MEM_CopyBytes (posPtr, _@ (pos), 12);
 			MEM_Free (posPtr);
 		} else {
