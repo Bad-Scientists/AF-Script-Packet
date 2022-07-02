@@ -276,7 +276,7 @@ func int zCWayNet_FindRoute_Positions (var int fromPosPtr, var int toPosPtr, var
 
 func int zCWayNet_FindRoute_PosToWp (var int fromPosPtr, var int toWaypointPtr, var int vobPtr) {
 	//0x00706960 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zCWaypoint *,class zCVob const *)
-	const int zCWayNet__FindRoute_G1 = 7366864;
+	const int zCWayNet__FindRoute_G1 = 7367008;
 
 	//0x007B0560 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zCWaypoint *,class zCVob const *)
 	const int zCWayNet__FindRoute_G2 = 8062304;

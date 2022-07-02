@@ -646,14 +646,14 @@ func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) 
 
 func int zCEventMessage_GetClassDef (var int eventMessage) {
 	//0x00401DF0 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const
-	const int zCEventManage__GetClassDef_G1 = 4201968;
+	const int zCEventMessage___GetClassDef_G1 = 4201968;
 
 	//0x00401F30 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const
-	const int zCEventManage__GetClassDef_G2 = 4202288;
+	const int zCEventMessage___GetClassDef_G2 = 4202288;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__GetClassDef_G1, zCEventManage__GetClassDef_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage___GetClassDef_G1, zCEventMessage___GetClassDef_G2));
 		call = CALL_End();
 	};
 
@@ -662,14 +662,14 @@ func int zCEventMessage_GetClassDef (var int eventMessage) {
 
 func int zCEventMessage_IsOverlay (var int eventMessage) {
 	//0x00401E00 public: virtual int __thiscall zCEventMessage::IsOverlay(void)
-	const int zCEventManage__IsOverlay_G1 = 4201984;
+	const int zCEventMessage__IsOverlay_G1 = 4201984;
 
 	//0x00401F40 public: virtual int __thiscall zCEventMessage::IsOverlay(void)
-	const int zCEventManage__IsOverlay_G2 = 4202304;
+	const int zCEventMessage__IsOverlay_G2 = 4202304;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsOverlay_G1, zCEventManage__IsOverlay_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsOverlay_G1, zCEventMessage__IsOverlay_G2));
 		call = CALL_End();
 	};
 
@@ -678,14 +678,14 @@ func int zCEventMessage_IsOverlay (var int eventMessage) {
 
 func int zCEventMessage_IsNetRelevant (var int eventMessage) {
 	//0x00401E10 public: virtual int __thiscall zCEventMessage::IsNetRelevant(void)
-	const int zCEventManage__IsNetRelevant_G1 = 4202000;
+	const int zCEventMessage__IsNetRelevant_G1 = 4202000;
 
 	//0x00401F50 public: virtual int __thiscall zCEventMessage::IsNetRelevant(void)
-	const int zCEventManage__IsNetRelevant_G2 = 4202304;
+	const int zCEventMessage__IsNetRelevant_G2 = 4202320;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsNetRelevant_G1, zCEventManage__IsNetRelevant_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsNetRelevant_G1, zCEventMessage__IsNetRelevant_G2));
 		call = CALL_End();
 	};
 
@@ -694,14 +694,14 @@ func int zCEventMessage_IsNetRelevant (var int eventMessage) {
 
 func int zCEventMessage_IsHighPriority (var int eventMessage) {
 	//0x00401E20 public: virtual int __thiscall zCEventMessage::IsHighPriority(void)
-	const int zCEventManage__IsHighPriority_G1 = 4202016;
+	const int zCEventMessage__IsHighPriority_G1 = 4202016;
 
 	//0x00401F60 public: virtual int __thiscall zCEventMessage::IsHighPriority(void)
-	const int zCEventManage__IsHighPriority_G2 = 4202336;
+	const int zCEventMessage__IsHighPriority_G2 = 4202336;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsHighPriority_G1, zCEventManage__IsHighPriority_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsHighPriority_G1, zCEventMessage__IsHighPriority_G2));
 		call = CALL_End();
 	};
 
@@ -710,14 +710,14 @@ func int zCEventMessage_IsHighPriority (var int eventMessage) {
 
 func int zCEventMessage_IsJob (var int eventMessage) {
 	//0x00401E30 public: virtual int __thiscall zCEventMessage::IsJob(void)
-	const int zCEventManage__IsJob_G1 = 4202032;
+	const int zCEventMessage__IsJob_G1 = 4202032;
 
 	//0x00401F70 public: virtual int __thiscall zCEventMessage::IsJob(void)
-	const int zCEventManage__IsJob_G2 = 4202352;
+	const int zCEventMessage__IsJob_G2 = 4202352;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsJob_G1, zCEventManage__IsJob_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsJob_G1, zCEventMessage__IsJob_G2));
 		call = CALL_End();
 	};
 
@@ -726,14 +726,14 @@ func int zCEventMessage_IsJob (var int eventMessage) {
 
 func int zCEventMessage_IsDeleteable (var int eventMessage) {
 	//0x00401E50 public: virtual int __thiscall zCEventMessage::IsDeleteable(void)
-	const int zCEventManage__IsDeleteable_G1 = 4202064;
+	const int zCEventMessage__IsDeleteable_G1 = 4202064;
 
 	//0x00401FA0 public: virtual int __thiscall zCEventMessage::IsDeleteable(void)
-	const int zCEventManage__IsDeleteable_G2 = 4202400;
+	const int zCEventMessage__IsDeleteable_G2 = 4202400;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsDeleteable_G1, zCEventManage__IsDeleteable_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsDeleteable_G1, zCEventMessage__IsDeleteable_G2));
 		call = CALL_End();
 	};
 
@@ -742,14 +742,14 @@ func int zCEventMessage_IsDeleteable (var int eventMessage) {
 
 func int zCEventMessage_IsDeleted (var int eventMessage) {
 	//0x00401E60 public: virtual int __thiscall zCEventMessage::IsDeleted(void)
-	const int zCEventManage__IsDeleted_G1 = 4202080;
+	const int zCEventMessage__IsDeleted_G1 = 4202080;
 
 	//0x00401FB0 public: virtual int __thiscall zCEventMessage::IsDeleted(void)
-	const int zCEventManage__IsDeleted_G2 = 4202416;
+	const int zCEventMessage__IsDeleted_G2 = 4202416;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__IsDeleted_G1, zCEventManage__IsDeleted_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__IsDeleted_G1, zCEventMessage__IsDeleted_G2));
 		call = CALL_End();
 	};
 
@@ -758,14 +758,14 @@ func int zCEventMessage_IsDeleted (var int eventMessage) {
 
 func int zCEventMessage_GetCutsceneMode (var int eventMessage) {
 	//0x00401E80 public: virtual int __thiscall zCEventMessage::GetCutsceneMode(void)
-	const int zCEventManage__GetCutsceneMode_G1 = 4202032;
+	const int zCEventMessage__GetCutsceneMode_G1 = 4202112;
 
 	//0x00401FD0 public: virtual int __thiscall zCEventMessage::GetCutsceneMode(void)
-	const int zCEventManage__GetCutsceneMode_G2 = 4202448;
+	const int zCEventMessage__GetCutsceneMode_G2 = 4202448;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventManage__GetCutsceneMode_G1, zCEventManage__GetCutsceneMode_G2));
+		CALL__thiscall (_@ (eventMessage), MEMINT_SwitchG1G2 (zCEventMessage__GetCutsceneMode_G1, zCEventMessage__GetCutsceneMode_G2));
 		call = CALL_End();
 	};
 
@@ -791,8 +791,8 @@ func void zCEventMessage_Delete (var int eventMessage) {
 	//0x00401E40 public: virtual void __thiscall zCEventMessage::Delete(void)
 	const int zCEventMessage__Delete_G1 = 4202048;
 
-	//
-	const int zCEventMessage__Delete_G2 = 4202480;
+	//0x00401F90 public: virtual void __thiscall zCEventMessage::Delete(void)
+	const int zCEventMessage__Delete_G2 = 4202384;
 
 	if (!eventMessage) { return; };
 
@@ -969,10 +969,10 @@ func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 
 func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
 	//0x006DE760 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
-	const int zCEventManager__OnTrigger_G1 = 7202256;
+	const int zCEventManager__OnTrigger_G1 = 7202656;
 
 	//0x007879F0 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
-	const int zCEventManager__OnTrigger_G2 = 7895136;
+	const int zCEventManager__OnTrigger_G2 = 7895536;
 
 	if (!eMgr) { return; };
 	if (!vobPtr) { return; };

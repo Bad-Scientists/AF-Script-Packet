@@ -462,7 +462,7 @@ func void oCItemContainer_Activate (var int ptr) {
 	const int oCItemContainer__Activate_G1 = 6721376;
 
 	//0x00709230 public: virtual void __thiscall oCItemContainer::Activate(void)
-	const int oCItemContainer__Activate_G2 = 709230;
+	const int oCItemContainer__Activate_G2 = 7377456;
 
 	if (!ptr) { return; };
 
@@ -614,10 +614,10 @@ func void oCNpcInventory_Close (var int ptr) {
 //G1 only
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
 	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
-	const int oCNpc__SwitchToCategory_G1 = 6741600;
+	const int oCNpcInventory__SwitchToCategory_G1 = 6741600;
 
 	//There is no G2A function
-	const int oCNpc__SwitchToCategory_G2 = 0;
+	const int oCNpcInventory__SwitchToCategory_G2 = 0;
 
 	if (!npcInventoryPtr) { return 0; };
 
@@ -630,7 +630,7 @@ func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCa
 	if (CALL_Begin(call)) {
 		CALL_PutRetValTo(_@ (retVal));
 		CALL_IntParam (_@ (invCategory));
-		CALL__thiscall (_@ (npcInventoryPtr), oCNpc__SwitchToCategory_G1);
+		CALL__thiscall (_@ (npcInventoryPtr), oCNpcInventory__SwitchToCategory_G1);
 		call = CALL_End();
 	};
 

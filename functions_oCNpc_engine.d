@@ -870,7 +870,7 @@ func int oCNpc_GetSpellBook (var int slfInstance) {
 	const int oCNpc__GetSpellBook_G1 = 6927296;
 
 	//0x0073EA00 public: class oCMag_Book * __thiscall oCNpc::GetSpellBook(void)
-	const int oCNpc__GetSpellBook_G2 = 7729216;
+	const int oCNpc__GetSpellBook_G2 = 7596544;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 

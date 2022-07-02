@@ -1,4 +1,4 @@
-	/*
+/*
  *	These are some useful engine ANIMATION functions
  *	by Milgos, Fawkes and Auronen
  */
@@ -484,10 +484,10 @@ func void zCModel_StopAni_ByModelAniPtr (var int modelPtr, var int modelAniPtr) 
 // Function renamed from zCModel_DoCombineAni to zCModelAniActive_DoCombineAni --> to match engine name
 func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int modelPtr, var int aniID1, var int aniID2) {
 	//0x00565D30 public: void __thiscall zCModelAniActive::DoCombineAni(class zCModel *,int,int)
-	const int zCModel__DoCombineAni_G1 = 5659952;
+	const int zCModelAniActive__DoCombineAni_G1 = 5659952;
 
 	//0x0057FDB0 public: void __thiscall zCModelAniActive::DoCombineAni(class zCModel *,int,int)
-	const int zCModel__DoCombineAni_G2 = 5766576;
+	const int zCModelAniActive__DoCombineAni_G2 = 5766576;
 
 	// check
 	if (!modelAniActivePtr) { return; };
@@ -498,7 +498,7 @@ func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int model
 		CALL_IntParam (_@ (aniID2));
 		CALL_IntParam (_@ (aniID1));
 		CALL_PtrParam (_@ (modelPtr));
-		CALL__thiscall (_@ (modelAniActivePtr), MEMINT_SwitchG1G2 (zCModel__DoCombineAni_G1, zCModel__DoCombineAni_G2));
+		CALL__thiscall (_@ (modelAniActivePtr), MEMINT_SwitchG1G2 (zCModelAniActive__DoCombineAni_G1, zCModelAniActive__DoCombineAni_G2));
 		call = CALL_End();
 	};
 };

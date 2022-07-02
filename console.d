@@ -24,8 +24,8 @@ func void zCConsole_Evaluate (var string command) {
 	//0x006DB5D0 public: int __thiscall zCConsole::Evaluate(class zSTRING const &)
 	const int zCConsole__Evaluate_G1 = 7189968;
 
-	//0x00724E20 public: int __thiscall zCConsole::Evaluate(class zSTRING const &)
-	const int zCConsole__Evaluate_G2 = 7491104;
+	//0x00784860 public: int __thiscall zCConsole::Evaluate(class zSTRING const &)
+	const int zCConsole__Evaluate_G2 = 7882848;
 
 	//0x008DC5A0 class zCConsole zcon
 	//const int zcon_address_G1 = 9291168;
@@ -76,8 +76,8 @@ func void oCGame_TestKeys (var int key) {
 	//0x00660000 private: int __thiscall oCGame::TestKeys(int)
 	const int oCGame__TestKeys_G1 = 6684672;
 
-	//0x0069FAC0 private: int __thiscall oCGame::TestKeys(int)
-	const int oCGame__TestKeys_G2 = 6945472;
+	//0x006FD560 private: int __thiscall oCGame::TestKeys(int)
+	const int oCGame__TestKeys_G2 = 7329120;
 
 	var int ptr; ptr = _@ (MEM_Game);
 
