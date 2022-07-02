@@ -503,6 +503,23 @@ func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int model
 	};
 };
 
+func void oCAniCtrl_Human_StopCombineAni (var int aniCtrlPtr, var int aniID) {
+	//0x0062D2E0 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
+	const int oCAniCtrl_Human__StopCombineAni_G1 = 6476512;
+
+	//0x006B6A80 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
+	const int oCAniCtrl_Human__StopCombineAni_G2 = 7039616;
+
+	if (aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam ( _@ (aniID));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__StopCombineAni_G1, oCAniCtrl_Human__StopCombineAni_G2));
+		call = CALL_End();
+	};
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //  oCAniCtrl functions - they might have some use, mainly -> oCAniCtrl_Human_SetNextAni <-
 //  but I haven't found a real use for them yet.
