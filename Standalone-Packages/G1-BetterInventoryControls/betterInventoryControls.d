@@ -455,54 +455,59 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 						vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
 						//Put item to hand only if hand is empty!
 						if (!vobPtr) {
-							if ((npcInventory.inventory2_oCItemContainer_selectedItem > -1) && List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
-								vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+							if (npcInventory.inventory2_oCItemContainer_selectedItem > -1) {
+								//if (List_LengthS (npcInventory.inventory2_oCItemContainer_contents) > 1) {
+								//Here we don't need to get length - all we need to know is whether list is empty :)
+								var zCListSort l; l = _^ (npcInventory.inventory2_oCItemContainer_contents);
+								if (l.next) {
+									vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
 
-								if (vobPtr) {
-									//Put in hand
-									if (action == action_PutInHand) {
-										//Take 1 piece from inventory, put in hand
-										vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
-										oCNpc_SetRightHand (slf, vobPtr);
-										//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
-
-										//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
-										//Close inventory
-										//const int oCNpcInventory__Close = 6734304;
-										//CALL__thiscall (ECX, oCNpcInventory__Close);
-									} else
-									//Drop item - 1 piece / all pieces
-									if ((action == action_DropItem) || (action == action_DropAllItems)) {
-										amount = 0;
-
-										if (action == action_DropItem) {
-											amount = 1;
-										} else
-										if (action == action_DropAllItems) {
-											itm = _^ (vobPtr);
-											amount = itm.amount;
-										};
-
-										if (amount > 0) {
-											//Take 1 piece from inventory, put in hand, remove from hand
-											vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, amount);
+									if (vobPtr) {
+										//Put in hand
+										if (action == action_PutInHand) {
+											//Take 1 piece from inventory, put in hand
+											vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
 											oCNpc_SetRightHand (slf, vobPtr);
-											//oCNpc_RemoveFromHand__BetterInvControls (slf);
+											//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
 
-											//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
-											//We can't play any animations here
-											//Npc_PlayAni (slf, "T_STAND_2_IDROP");
-											//
-											vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-											AI_DropVobPtr (slf, vobPtr);
+											//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
+											//Close inventory
+											//const int oCNpcInventory__Close = 6734304;
+											//CALL__thiscall (ECX, oCNpcInventory__Close);
+										} else
+										//Drop item - 1 piece / all pieces
+										if ((action == action_DropItem) || (action == action_DropAllItems)) {
+											amount = 0;
 
-											//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
-											//const int oCNpcInventory__FindNextCategory_G1 = 6741840;
-											//CALL__thiscall (ECX, oCNpcInventory__FindNextCategory_G1);
+											if (action == action_DropItem) {
+												amount = 1;
+											} else
+											if (action == action_DropAllItems) {
+												itm = _^ (vobPtr);
+												amount = itm.amount;
+											};
+
+											if (amount > 0) {
+												//Take 1 piece from inventory, put in hand, remove from hand
+												vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, amount);
+												oCNpc_SetRightHand (slf, vobPtr);
+												//oCNpc_RemoveFromHand__BetterInvControls (slf);
+
+												//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
+												//We can't play any animations here
+												//Npc_PlayAni (slf, "T_STAND_2_IDROP");
+												//
+												vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+												AI_DropVobPtr (slf, vobPtr);
+
+												//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
+												//const int oCNpcInventory__FindNextCategory_G1 = 6741840;
+												//CALL__thiscall (ECX, oCNpcInventory__FindNextCategory_G1);
+											};
 										};
-									};
 
-									cancel = TRUE;
+										cancel = TRUE;
+									};
 								};
 							};
 						} else {
