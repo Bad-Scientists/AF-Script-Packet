@@ -243,6 +243,36 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 };
 
 /*
+ *	Function calculate total value of an item
+ */
+func int Trade_CalculateTotalValue (var int itemValue, var int amount, var int multiplier) {
+	var int itemValueF;
+
+	if (itemValue > 1) {
+		var int totalValue; totalValue = 0;
+
+		while (amount > 0);
+			itemValueF = mulf (multiplier, mkf (itemValue));
+
+			if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
+				itemValue = 1;
+			} else {
+				itemValue = RoundF (itemValueF);
+			};
+
+			totalValue += itemValue;
+			amount -= 1;
+		end;
+
+		itemValue = totalValue;
+	} else {
+		itemValue *= amount;
+	};
+
+	return +itemValue;
+};
+
+/*
  *	Function moves amount of items (by item pointer) from players container back to players inventory
  */
 func void Trade_MoveToInventoryPlayer (var int itmPtr, var int amount) {
@@ -277,25 +307,12 @@ func void Trade_MoveToInventoryPlayer (var int itmPtr, var int amount) {
 	//oCViewDialogItemContainer_UpdateValue (dialogTrade.dlgContainerPlayer);
 
 	//... we have to calculate value ourselves!
-	var int itemValue;
-	var int itemValueF;
+	var int multiplier; multiplier = Trade_GetSellMultiplier ();
 
 	var oCItem itm; itm = _^ (itmPtr);
+	var int itemValue; itemValue = itm.value;
 
-	itemValue = itm.value;
-	if (itemValue > 1) {
-		itemValueF = mulf (Trade_GetSellMultiplier (), mkf (itemValue));
-		itemValueF = mulf (itemValueF, mkf (amount));
-
-		if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
-			itemValue = 1;
-		} else {
-			itemValue = RoundF (itemValueF);
-		};
-	} else {
-		itemValue *= amount;
-	};
-
+	itemValue = Trade_CalculateTotalValue (itemValue, amount, multiplier);
 	Trade_SetPlayerContainerValue (Trade_GetPlayerContainerValue () - itemValue);
 };
 
@@ -346,25 +363,12 @@ func void Trade_MoveToContainerPlayer (var int itmPtr, var int amount) {
 	//oCViewDialogItemContainer_UpdateValue (dialogTrade.dlgContainerPlayer);
 
 	//... we have to calculate value ourselves!
-	var int itemValue;
-	var int itemValueF;
+	var int multiplier; multiplier = Trade_GetSellMultiplier ();
 
 	var oCItem itm; itm = _^ (itmPtr);
+	var int itemValue; itemValue = itm.value;
 
-	itemValue = itm.value;
-	if (itemValue > 1) {
-		itemValueF = mulf (Trade_GetSellMultiplier (), mkf (itemValue));
-		itemValueF = mulf (itemValueF, mkf (amount));
-
-		if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
-			itemValue = 1;
-		} else {
-			itemValue = RoundF (itemValueF);
-		};
-	} else {
-		itemValue *= amount;
-	};
-
+	itemValue = Trade_CalculateTotalValue (itemValue, amount, multiplier);
 	Trade_SetPlayerContainerValue (containerValue + itemValue);
 };
 
@@ -415,25 +419,12 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 	//oCViewDialogItemContainer_UpdateValue (dialogTrade.dlgContainerPlayer);
 
 	//... we have to calculate value ourselves!
-	var int itemValue;
-	var int itemValueF;
+	var int multiplier; multiplier = Trade_GetBuyMultiplier ();
 
 	var oCItem itm; itm = _^ (itmPtr);
+	var int itemValue; itemValue = itm.value;
 
-	itemValue = itm.value;
-	if (itemValue > 1) {
-		itemValueF = mulf (Trade_GetBuyMultiplier (), mkf (itemValue));
-		itemValueF = mulf (itemValueF, mkf (amount));
-
-		if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
-			itemValue = 1;
-		} else {
-			itemValue = RoundF (itemValueF);
-		};
-	} else {
-		itemValue *= amount;
-	};
-
+	itemValue = Trade_CalculateTotalValue (itemValue, amount, multiplier);
 	Trade_SetNpcContainerValue (containerValue + itemValue);
 };
 
@@ -468,25 +459,12 @@ func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 	//oCViewDialogItemContainer_UpdateValue (dialogTrade.dlgContainerPlayer);
 
 	//... we have to calculate value ourselves!
-	var int itemValue;
-	var int itemValueF;
+	var int multiplier; multiplier = Trade_GetBuyMultiplier ();
 
 	var oCItem itm; itm = _^ (itmPtr);
+	var int itemValue; itemValue = itm.value;
 
-	itemValue = itm.value;
-	if (itemValue > 1) {
-		itemValueF = mulf (Trade_GetBuyMultiplier (), mkf (itemValue));
-		itemValueF = mulf (itemValueF, mkf (amount));
-
-		if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
-			itemValue = 1;
-		} else {
-			itemValue = RoundF (itemValueF);
-		};
-	} else {
-		itemValue *= amount;
-	};
-
+	itemValue = Trade_CalculateTotalValue (itemValue, amount, multiplier);
 	Trade_SetNpcContainerValue (Trade_GetNpcContainerValue () - itemValue);
 };
 
