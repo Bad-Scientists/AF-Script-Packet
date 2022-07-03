@@ -111,7 +111,7 @@ func int Hlp_Trade_GetContainerNpcContainer () {
 	//Therefore we cannot use it directly, but we have to use offset instead
 	//var int dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
 
-	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 252;
+	var int itemContainerPtr; itemContainerPtr = MEM_ReadInt (_@ (dialogTrade) + 252);
 
 //	if (dialogTrade.dlgContainerNpc) {
 	if (itemContainerPtr) {
@@ -141,7 +141,7 @@ func int Hlp_Trade_GetContainerPlayerContainer () {
 	//Therefore we cannot use it directly, but we have to use offset instead
 	//var int dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
 
-	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 260;
+	var int itemContainerPtr; itemContainerPtr = MEM_ReadInt (_@ (dialogTrade) + 260);
 
 	//if (dialogTrade.dlgContainerPlayer) {
 	if (itemContainerPtr) {
