@@ -237,8 +237,10 @@ func void _hook_oCMobLockable_PickLock () {
 func void _hook_oCMobInter_StartInteraction () {
 	if (!Hlp_Is_oCMobLockable (ECX))  { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	var oCMobLockable mob; mob = _^ (ECX);
@@ -282,8 +284,10 @@ func void _hook_oCMobInter_StartInteraction () {
 func void _hook_oCMobInter_EndInteraction () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	PickLockHelper_Hide ();
@@ -293,8 +297,10 @@ func void _hook_oCMobInter_EndInteraction () {
 func void _hook_oCMobInter_StopInteraction () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	PickLockHelper_Hide ();
