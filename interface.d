@@ -328,7 +328,13 @@ func void G12_InterceptNpcEventMessages_Init () {
 
 	const int once = 0;
 	if (!once) {
-		HookEngine (oCNpc__OnMessage, 7, "_hook_oCNpc_OnMessage");
+		//0x006A69E0 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
+		const int oCNpc__OnMessage_G1 = 6973920;
+
+		//0x0074B020 public: virtual void __thiscall oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
+		const int oCNpc__OnMessage_G2 = 7647264;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__OnMessage_G1, oCNpc__OnMessage_G2), 7, "_hook_oCNpc_OnMessage");
 		once = 1;
 	};
 };
