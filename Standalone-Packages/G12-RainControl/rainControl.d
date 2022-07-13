@@ -548,13 +548,11 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl () {
 	};
 
 	/*
-	 *	Dynamic rain setup - adjust as you need!
+	 *	API rain setup
 	 */
-	if (Wld_SetRainTime (04, 30, 05, 30)) {
-	} else if (Wld_SetRainTime (09, 30, 10, 30)) {
-	} else if (Wld_SetRainTime (12, 30, 13, 30)) {
-	} else if (Wld_SetRainTime (16, 30, 17, 30)) {
-	} else if (Wld_SetRainTime (19, 30, 20, 30)) {
+	var int symbID; symbID = MEM_FindParserSymbol ("RainControl_API");
+	if (symbID != -1) {
+		MEM_CallByID (symbID);
 	};
 };
 

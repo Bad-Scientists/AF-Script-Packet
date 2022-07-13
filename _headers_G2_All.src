@@ -170,6 +170,7 @@ Standalone-Packages\G12-LogDialogues\logDialogues.d
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 
 Standalone-Packages\G12-RainControl\rainControl.d
+Standalone-Packages\G12-RainControl\rainControl_API.d
 Standalone-Packages\G12-FadeAway\fadeAway.d
 Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
 
