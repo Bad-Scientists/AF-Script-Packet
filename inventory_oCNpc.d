@@ -878,36 +878,6 @@ func int oCViewDialogStealContainer_RemoveSelectedItem (var int ptr) {
 	return +retVal;
 };
 
-
-
-/*
- *	Returns pointer to currently drawn weapon (weapon in hand)
- *		slfInstance		NPC instance
- */
-func int oCNpc_GetWeaponPtr (var int slfInstance) {
-	//0x006943F0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
-	const int oCNpc__GetWeapon_G1 = 6898672;
-
-	//0x007377A0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
-	const int oCNpc__GetWeapon_G2 = 7567264;
-
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetWeapon_G1, oCNpc__GetWeapon_G2));
-		call = CALL_End();
-	};
-
-	return +retVal;
-};
-
 //-- oCViewDialogTrade functions
 
 func int oCViewDialogTrade_OnTransferLeft (var int ptr, var int amount) {
@@ -1069,6 +1039,33 @@ func void oCNPC_UnequipItemPtr (var int slfInstance, var int itemPtr){
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__UnequipItem_G1, oCNPC__UnequipItem_G2));
 		call = CALL_End();
 	};
+};
+
+/*
+ *	Returns pointer to currently drawn weapon (weapon in hand)
+ *		slfInstance		NPC instance
+ */
+func int oCNpc_GetWeapon (var int slfInstance) {
+	//0x006943F0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
+	const int oCNpc__GetWeapon_G1 = 6898672;
+
+	//0x007377A0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
+	const int oCNpc__GetWeapon_G2 = 7567264;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetWeapon_G1, oCNpc__GetWeapon_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };
 
 /*
