@@ -63,6 +63,7 @@ ObjectFactory\oCAIArrow.d
 
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
+ObjectFactory\oCMsgWeapon.d
 
 ObjectFactory\zCWaypoint.d
 
