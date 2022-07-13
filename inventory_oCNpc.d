@@ -1095,6 +1095,52 @@ func int oCNpc_GetEquippedMeleeWeapon (var int slfInstance) {
 	return + retVal;
 };
 
+func int oCNpc_GetEquippedRangedWeapon (var int slfInstance) {
+	//0x00694690 public: class oCItem * __thiscall oCNpc::GetEquippedRangedWeapon(void)
+	const int oCNpc__GetEquippedRangedWeapon_G1 = 6899344;
+
+	//0x00737A40 public: class oCItem * __thiscall oCNpc::GetEquippedRangedWeapon(void)
+	const int oCNpc__GetEquippedRangedWeapon_G2 = 7567936;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedRangedWeapon_G1, oCNpc__GetEquippedRangedWeapon_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+func int oCNpc_GetEquippedArmor (var int slfInstance) {
+	//0x006947A0 public: class oCItem * __thiscall oCNpc::GetEquippedArmor(void)
+	const int oCNpc__GetEquippedArmor_G1 = 6899616;
+
+	//0x00737B50 public: class oCItem * __thiscall oCNpc::GetEquippedArmor(void)
+	const int oCNpc__GetEquippedArmor_G2 = 7568208;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedArmor_G1, oCNpc__GetEquippedArmor_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 /*
  *	TODO: test this one
  *    		npcInstance		NPC instance
@@ -1560,4 +1606,32 @@ func int NPC_HasMissionItem (var int slfInstance) {
 	end;
 
 	return FALSE;
+};
+
+/*
+ *	Function unequips melee weapon
+ */
+func void Npc_UnequipMeleeWeapon (var int slfInstance) {
+	var int itemPtr; itemPtr = oCNpc_GetEquippedMeleeWeapon (slfInstance);
+	if (itemPtr) {
+		oCNpc_UnequipItemPtr (slfInstance, itemPtr);
+	};
+};
+
+/*
+ *	Function unequips ranged weapon
+ */
+func void Npc_UnequipRangedWeapon (var int slfInstance) {
+	var int itemPtr; itemPtr = oCNpc_GetEquippedRangedWeapon (slfInstance);
+	if (itemPtr) {
+		oCNpc_UnequipItemPtr (slfInstance, itemPtr);
+	};
+};
+
+/*
+ *	Function unequips all weapons
+ */
+func void Npc_UnequipWeapons (var int slfInstance) {
+	Npc_UnequipMeleeWeapon (slfInstance);
+	Npc_UnequipRangedWeapon (slfInstance);
 };
