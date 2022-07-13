@@ -510,7 +510,7 @@ func void oCAniCtrl_Human_StopCombineAni (var int aniCtrlPtr, var int aniID) {
 	//0x006B6A80 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
 	const int oCAniCtrl_Human__StopCombineAni_G2 = 7039616;
 
-	if (aniCtrlPtr) { return; };
+	if (!aniCtrlPtr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -534,7 +534,7 @@ func int oCAniCtrl_Human_StartAni (var int aniCtrlPtr, var int aniID1, var int a
 	//0x006A3DC0 public: int __thiscall oCAniCtrl_Human::StartAni(int,int)
 	const int oCAniCtrl_Human__StartAni_G2 = 6962624;
 
-	if (aniCtrlPtr) { return 0; };
+	if (!aniCtrlPtr) { return 0; };
 
 	var int retVal;
 
