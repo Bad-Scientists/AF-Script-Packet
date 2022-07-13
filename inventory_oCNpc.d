@@ -1072,28 +1072,27 @@ func int oCNpc_GetWeapon (var int slfInstance) {
  *	Gets pointer of equipped melee weapon
  *    		npcInstance		NPC instance
  */
-func int oCNpc_GetEquippedMeleeWeapon (var int npcInstance){
+func int oCNpc_GetEquippedMeleeWeapon (var int slfInstance) {
 	//0x00694580 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G1 = 6899072;
 
 	//0x00737930 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G2 = 7567664;
 
-	var oCNPC slf; slf = Hlp_GetNPC (npcInstance);
-	if (!slf) { return 0; };
-
-	var int slfPtr; slfPtr = _@ (slf);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2(oCNpc__GetEquippedMeleeWeapon_G1, oCNpc__GetEquippedMeleeWeapon_G2));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedMeleeWeapon_G1, oCNpc__GetEquippedMeleeWeapon_G2));
 		call = CALL_End();
 	};
 
-	return +retVal;
+	return + retVal;
 };
 
 /*
