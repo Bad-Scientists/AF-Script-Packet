@@ -825,6 +825,25 @@ func void oCNpc_Enable (var int slfInstance, var int posPtr) {
 	};
 };
 
+func void oCNpc_Disable (var int slfInstance) {
+	//0x006A1D20 public: virtual void __thiscall oCNpc::Disable(void)
+	const int oCNpc__Disable_G1 = 6954272;
+
+	//0x00745A20 public: virtual void __thiscall oCNpc::Disable(void)
+	const int oCNpc__Disable_G2 = 7625248;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__Disable_G1, oCNpc__Disable_G2));
+		call = CALL_End();
+	};
+};
+
 func void oCNpc_ClearEM (var int slfInstance) {
 	//0x006A2610 public: void __thiscall oCNpc::ClearEM(void)
 	const int oCNpc__ClearEM_G1 = 6956560;
@@ -909,6 +928,42 @@ func void oCNpc_SetAsPlayer (var int slfInstance)
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetAsPlayer_G1, oCNpc__SetAsPlayer_G2));
+		call = CALL_End();
+	};
+};
+
+func string oCNpc_GetVisualBody (var int slfInstance) {
+	//0x006953A0 public: class zSTRING __thiscall oCNpc::GetVisualBody(void)
+	const int oCNpc__GetVisualBody_G1 = 6902688;
+
+	//0x007387C0 public: class zSTRING __thiscall oCNpc::GetVisualBody(void)
+	const int oCNpc__GetVisualBody_G2 = 7571392;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	CALL_RetValIszString ();
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__GetVisualBody_G1, oCNpc__GetVisualBody_G2));
+	return CALL_RetValAszstring ();
+};
+
+func void oCNpc_ResetPos (var int slfInstance, var int posPtr) {
+	//0x0074CED0 public: virtual void __thiscall oCNpc::ResetPos(class zVEC3 &)
+	const int oCNPC__ResetPos_G1 = 7655120;
+
+	//0x006824D0 public: virtual void __thiscall oCNpc::ResetPos(class zVEC3 &)
+	const int oCNPC__ResetPos_G2 = 6825168;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@ (posPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__ResetPos_G1, oCNPC__ResetPos_G2));
 		call = CALL_End();
 	};
 };
