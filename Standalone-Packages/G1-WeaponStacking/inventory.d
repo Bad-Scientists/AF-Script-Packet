@@ -20,7 +20,7 @@ func void NPC_SplitMultipleEquippedWeapons (var int slfInstance){
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	//We can't run item splitting when weapon is drawn!
-	var int readyWeaponPtr; readyWeaponPtr = oCNpc_GetWeaponPtr (slf);
+	var int readyWeaponPtr; readyWeaponPtr = oCNpc_GetWeapon (slf);
 	if (readyWeaponPtr) { return; };
 
 /*

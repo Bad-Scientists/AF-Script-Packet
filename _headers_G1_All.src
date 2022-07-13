@@ -63,6 +63,7 @@ ObjectFactory\oCAIArrow.d
 
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
+ObjectFactory\oCMsgWeapon.d
 
 ObjectFactory\zCWaypoint.d
 
@@ -190,6 +191,7 @@ Standalone-Packages\G12-Debugging\gotoZEN.d
 Standalone-Packages\G12-Debugging\checkRoutineValidity.d
 Standalone-Packages\G12-Debugging\create.d
 Standalone-Packages\G12-Debugging\printPos.d
+Standalone-Packages\G12-Debugging\holdTime.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
@@ -197,6 +199,7 @@ Standalone-Packages\G12-LogDialogues\logDialogues.d
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 
 Standalone-Packages\G12-RainControl\rainControl.d
+Standalone-Packages\G12-RainControl\rainControl_API.d
 Standalone-Packages\G12-FadeAway\fadeAway.d
 Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
 

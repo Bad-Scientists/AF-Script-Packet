@@ -1,4 +1,4 @@
-	/*
+/*
  *	These are some useful engine ANIMATION functions
  *	by Milgos, Fawkes and Auronen
  */
@@ -484,10 +484,10 @@ func void zCModel_StopAni_ByModelAniPtr (var int modelPtr, var int modelAniPtr) 
 // Function renamed from zCModel_DoCombineAni to zCModelAniActive_DoCombineAni --> to match engine name
 func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int modelPtr, var int aniID1, var int aniID2) {
 	//0x00565D30 public: void __thiscall zCModelAniActive::DoCombineAni(class zCModel *,int,int)
-	const int zCModel__DoCombineAni_G1 = 5659952;
+	const int zCModelAniActive__DoCombineAni_G1 = 5659952;
 
 	//0x0057FDB0 public: void __thiscall zCModelAniActive::DoCombineAni(class zCModel *,int,int)
-	const int zCModel__DoCombineAni_G2 = 5766576;
+	const int zCModelAniActive__DoCombineAni_G2 = 5766576;
 
 	// check
 	if (!modelAniActivePtr) { return; };
@@ -498,7 +498,24 @@ func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int model
 		CALL_IntParam (_@ (aniID2));
 		CALL_IntParam (_@ (aniID1));
 		CALL_PtrParam (_@ (modelPtr));
-		CALL__thiscall (_@ (modelAniActivePtr), MEMINT_SwitchG1G2 (zCModel__DoCombineAni_G1, zCModel__DoCombineAni_G2));
+		CALL__thiscall (_@ (modelAniActivePtr), MEMINT_SwitchG1G2 (zCModelAniActive__DoCombineAni_G1, zCModelAniActive__DoCombineAni_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCAniCtrl_Human_StopCombineAni (var int aniCtrlPtr, var int aniID) {
+	//0x0062D2E0 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
+	const int oCAniCtrl_Human__StopCombineAni_G1 = 6476512;
+
+	//0x006B6A80 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
+	const int oCAniCtrl_Human__StopCombineAni_G2 = 7039616;
+
+	if (!aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam ( _@ (aniID));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__StopCombineAni_G1, oCAniCtrl_Human__StopCombineAni_G2));
 		call = CALL_End();
 	};
 };
@@ -517,7 +534,7 @@ func int oCAniCtrl_Human_StartAni (var int aniCtrlPtr, var int aniID1, var int a
 	//0x006A3DC0 public: int __thiscall oCAniCtrl_Human::StartAni(int,int)
 	const int oCAniCtrl_Human__StartAni_G2 = 6962624;
 
-	if (aniCtrlPtr) { return 0; };
+	if (!aniCtrlPtr) { return 0; };
 
 	var int retVal;
 

@@ -85,20 +85,21 @@ func void oCMobLockable_CheckLockValidity () {
 
 				//Get position
 				var int pos[3];
-				MEM_CopyBytes (zCVob_GetPositionWorld (vobPtr), _@ (pos), 12);
+				if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
 
-				var int x; x = roundF (pos[0]);
-				var int y; y = roundF (pos[1]) + 250; //add just enough for player to be able to teleport to location
-				var int z; z = roundF (pos[2]);
+					var int x; x = roundF (pos[0]);
+					var int y; y = roundF (pos[1]) + 250; //add just enough for player to be able to teleport to location
+					var int z; z = roundF (pos[2]);
 
-				msg = ConcatStrings (msg, ", pos: ");
-				msg = ConcatStrings (msg, IntToString (x));
-				msg = ConcatStrings (msg, " ");
+					msg = ConcatStrings (msg, ", pos: ");
+					msg = ConcatStrings (msg, IntToString (x));
+					msg = ConcatStrings (msg, " ");
 
-				msg = ConcatStrings (msg, IntToString (y));
-				msg = ConcatStrings (msg, " ");
+					msg = ConcatStrings (msg, IntToString (y));
+					msg = ConcatStrings (msg, " ");
 
-				msg = ConcatStrings (msg, IntToString (z));
+					msg = ConcatStrings (msg, IntToString (z));
+				};
 
 				if (keyIsValid == -1) {
 					//Key does not exits

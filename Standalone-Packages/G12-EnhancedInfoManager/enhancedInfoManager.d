@@ -239,6 +239,8 @@ func void InfoManagerSpinnerAniFunction () {
 
 			if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
 				txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+			} else {
+				txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 			};
 		};
 	};
@@ -564,8 +566,6 @@ func int Choice_GetModifierTab (var string s) {
 	};
 
 	s1 = mySTR_Prefix (s1, index);
-
-	PrintS (s1);
 
 	if (!STR_IsNumeric (s1)) { return 0; };
 
@@ -3077,52 +3077,122 @@ MEM_InformationMan.LastMethod:
 			end;
 
 			//<-- Overlays
+		};
 
-			//Special properties
-			if (dlg.ChoiceSelected > -1)
-			&& (dlg.ChoiceSelected < dlg.choices)
-			&& (dlg.ChoiceSelected < DIALOG_MAX) {
-				properties = (MEM_ReadIntArray (_@ (dialogProperties), dlg.ChoiceSelected));
+		//Special properties
+		if (dlg.ChoiceSelected > -1)
+		&& (dlg.ChoiceSelected < dlg.choices)
+		&& (dlg.ChoiceSelected < DIALOG_MAX) {
+			properties = (MEM_ReadIntArray (_@ (dialogProperties), dlg.ChoiceSelected));
 
-				alignment = InfoManagerDefaultDialogAlignment;
+			alignment = InfoManagerDefaultDialogAlignment;
 
-				if (properties & dialogChoiceType_AlignLeft) {
-					alignment = ALIGN_LEFT;
-				} else
-				if (properties & dialogChoiceType_AlignCenter) {
-					alignment = ALIGN_CENTER;
-				} else
-				if (properties & dialogChoiceType_AlignRight) {
-					alignment = ALIGN_RIGHT;
+			if (properties & dialogChoiceType_AlignLeft) {
+				alignment = ALIGN_LEFT;
+			} else
+			if (properties & dialogChoiceType_AlignCenter) {
+				alignment = ALIGN_CENTER;
+			} else
+			if (properties & dialogChoiceType_AlignRight) {
+				alignment = ALIGN_RIGHT;
+			};
+
+			//var int lastInfoManagerSpinnerPossible; lastInfoManagerSpinnerPossible = InfoManagerSpinnerPossible;
+
+			InfoManagerSpinnerPossible = properties & dialogChoiceType_Spinner;
+
+			//if (lastInfoManagerSpinnerPossible != InfoManagerSpinnerPossible) {
+				//Reset value
+			//	InfoManagerSpinnerNumber = "";
+			//};
+
+			if (InfoManagerSpinnerPossible) {
+				//Get spinner ID
+				InfoManagerSpinnerID = MEM_ReadStringArray (_@s (dialogSpinnerID), dlg.ChoiceSelected);
+
+				//Dokazeme tu pridat novy 'dialog' s transparentnym textom '<>' ako overlay ???
+				//Funguje !
+
+				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+
+				//Add spinner indicator if it does not exist anymore
+				if (!InfoManagerSpinnerIndicator) {
+
+					txt.enabledBlend = TRUE;
+					txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+
+					//Create new zCViewText2 instance for our indicator
+					InfoManagerSpinnerIndicator = create (zCViewText2@);
+					txtIndicator = _^ (InfoManagerSpinnerIndicator);
+
+					txtIndicator.enabledColor = txt.enabledColor;
+					txtIndicator.font = txt.font;
+					txtIndicator.pixelPositionY = txt.pixelPositionY;
+
+					txtIndicator.enabledBlend = txt.enabledBlend;
+					txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+					txtIndicator.alpha = InfoManagerIndicatorAlpha;
+
+					//Insert indicator to dialog choices
+					MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicator);
+
+					//if (InfoManagerSpinnerIndicatorAnimation) {
+					//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
+					//	InfoManagerSpinnerAnimate (FALSE);
+					//};
 				};
 
-				//var int lastInfoManagerSpinnerPossible; lastInfoManagerSpinnerPossible = InfoManagerSpinnerPossible;
+				//
+				txtIndicator = _^ (InfoManagerSpinnerIndicator);
 
-				InfoManagerSpinnerPossible = properties & dialogChoiceType_Spinner;
+				txtIndicator.text = InfoManagerSpinnerIndicatorString;
+				txtIndicator.font = txt.font;
 
-				//if (lastInfoManagerSpinnerPossible != InfoManagerSpinnerPossible) {
-					//Reset value
-				//	InfoManagerSpinnerNumber = "";
+				if (STR_Len (InfoManagerIndicatorColorDefault)) {
+					color = HEX2RGBA (InfoManagerIndicatorColorDefault);
+					txtIndicator.color = color;
+					txtIndicator.alpha = GetAlpha (color);
+				} else {
+					txtIndicator.color = txt.color;
+					txtIndicator.alpha = txt.alpha;
+				};
+
+				txtIndicator.pixelPositionY = txt.pixelPositionY;
+
+				//dlgFont = Print_GetFontName (txt.font);
+				//textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+
+				//if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
+				//	txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 				//};
 
-				if (InfoManagerSpinnerPossible) {
-					//Get spinner ID
-					InfoManagerSpinnerID = MEM_ReadStringArray (_@s (dialogSpinnerID), dlg.ChoiceSelected);
+				InfoManagerSpinnerAlignment = alignment;
 
-					//Dokazeme tu pridat novy 'dialog' s transparentnym textom '<>' ako overlay ???
-					//Funguje !
+				//Initial alignment
+				dlgFont = Print_GetFontName (txtIndicator.font);
+				textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
-					txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+				if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
+					txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+				} else {
+					txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
+				};
+			};
 
-					//Add spinner indicator if it does not exist anymore
-					if (!InfoManagerSpinnerIndicator) {
+			InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
 
+			if (InfoManagerAnswerPossible) {
+				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+
+				//Add answer indicator
+				if (!InfoManagerAnswerMode) {
+					if (!InfoManagerAnswerIndicator) {
 						txt.enabledBlend = TRUE;
 						txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
 
 						//Create new zCViewText2 instance for our indicator
-						InfoManagerSpinnerIndicator = create (zCViewText2@);
-						txtIndicator = _^ (InfoManagerSpinnerIndicator);
+						InfoManagerAnswerIndicator = create (zCViewText2@);
+						txtIndicator = _^ (InfoManagerAnswerIndicator);
 
 						txtIndicator.enabledColor = txt.enabledColor;
 						txtIndicator.font = txt.font;
@@ -3132,19 +3202,13 @@ MEM_InformationMan.LastMethod:
 						txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
 						txtIndicator.alpha = InfoManagerIndicatorAlpha;
 
-						//Insert indicator to dialog choices
-						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicator);
+						txtIndicator.text = InfoManagerAnswerIndicatorString;
 
-						//if (InfoManagerSpinnerIndicatorAnimation) {
-						//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
-						//	InfoManagerSpinnerAnimate (FALSE);
-						//};
+						//Insert indicator to dialog choices
+						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerAnswerIndicator);
 					};
 
-					//
-					txtIndicator = _^ (InfoManagerSpinnerIndicator);
-
-					txtIndicator.text = InfoManagerSpinnerIndicatorString;
+					txtIndicator = _^ (InfoManagerAnswerIndicator);
 					txtIndicator.font = txt.font;
 
 					if (STR_Len (InfoManagerIndicatorColorDefault)) {
@@ -3158,93 +3222,33 @@ MEM_InformationMan.LastMethod:
 
 					txtIndicator.pixelPositionY = txt.pixelPositionY;
 
-					//dlgFont = Print_GetFontName (txt.font);
-					//textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
-
-					//if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
-					//	txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
-					//};
-
-					InfoManagerSpinnerAlignment = alignment;
+					InfoManagerAnswerAlignment = alignment;
 
 					//Initial alignment
 					dlgFont = Print_GetFontName (txtIndicator.font);
 					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
-					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
+					if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
 						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+					} else {
+						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 					};
 				};
+			};
 
-				InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
-
-				if (InfoManagerAnswerPossible) {
-					txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
-
-					//Add answer indicator
-					if (!InfoManagerAnswerMode) {
-						if (!InfoManagerAnswerIndicator) {
-							txt.enabledBlend = TRUE;
-							txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
-
-							//Create new zCViewText2 instance for our indicator
-							InfoManagerAnswerIndicator = create (zCViewText2@);
-							txtIndicator = _^ (InfoManagerAnswerIndicator);
-
-							txtIndicator.enabledColor = txt.enabledColor;
-							txtIndicator.font = txt.font;
-							txtIndicator.pixelPositionY = txt.pixelPositionY;
-
-							txtIndicator.enabledBlend = txt.enabledBlend;
-							txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-							txtIndicator.alpha = InfoManagerIndicatorAlpha;
-
-							txtIndicator.text = InfoManagerAnswerIndicatorString;
-
-							//Insert indicator to dialog choices
-							MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerAnswerIndicator);
-						};
-
-						txtIndicator = _^ (InfoManagerAnswerIndicator);
-						txtIndicator.font = txt.font;
-
-						if (STR_Len (InfoManagerIndicatorColorDefault)) {
-							color = HEX2RGBA (InfoManagerIndicatorColorDefault);
-							txtIndicator.color = color;
-							txtIndicator.alpha = GetAlpha (color);
-						} else {
-							txtIndicator.color = txt.color;
-							txtIndicator.alpha = txt.alpha;
-						};
-
-						txtIndicator.pixelPositionY = txt.pixelPositionY;
-
-						InfoManagerAnswerAlignment = alignment;
-
-						//Initial alignment
-						dlgFont = Print_GetFontName (txtIndicator.font);
-						textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
-
-						if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
-							txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
-						};
-					};
+			//Remove if not required (or if we are already answering)
+			if (!InfoManagerAnswerPossible) || (InfoManagerAnswerMode) {
+				if (InfoManagerAnswerIndicator) {
+					//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+					InfoManagerHighlightSelected = TRUE;
 				};
+			};
 
-				//Remove if not required (or if we are already answering)
-				if (!InfoManagerAnswerPossible) || (InfoManagerAnswerMode) {
-					if (InfoManagerAnswerIndicator) {
-						//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
-						InfoManagerHighlightSelected = TRUE;
-					};
-				};
-
-				//Remove if not required
-				if (!InfoManagerSpinnerPossible) {
-					if (InfoManagerSpinnerIndicator) {
-						//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
-						InfoManagerHighlightSelected = TRUE;
-					};
+			//Remove if not required
+			if (!InfoManagerSpinnerPossible) {
+				if (InfoManagerSpinnerIndicator) {
+					//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
+					InfoManagerHighlightSelected = TRUE;
 				};
 			};
 		};
@@ -3382,6 +3386,8 @@ MEM_InformationMan.LastMethod:
 
 					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
 						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+					} else {
+						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 					};
 				};
 			} else {
@@ -3408,6 +3414,8 @@ MEM_InformationMan.LastMethod:
 
 					if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
 						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+					} else {
+						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 					};
 				};
 			};

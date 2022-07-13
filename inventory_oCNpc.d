@@ -111,7 +111,7 @@ func int Hlp_Trade_GetContainerNpcContainer () {
 	//Therefore we cannot use it directly, but we have to use offset instead
 	//var int dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
 
-	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 252;
+	var int itemContainerPtr; itemContainerPtr = MEM_ReadInt (_@ (dialogTrade) + 252);
 
 //	if (dialogTrade.dlgContainerNpc) {
 	if (itemContainerPtr) {
@@ -141,7 +141,7 @@ func int Hlp_Trade_GetContainerPlayerContainer () {
 	//Therefore we cannot use it directly, but we have to use offset instead
 	//var int dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
 
-	var int itemContainerPtr; itemContainerPtr = _@ (dialogTrade) + 260;
+	var int itemContainerPtr; itemContainerPtr = MEM_ReadInt (_@ (dialogTrade) + 260);
 
 	//if (dialogTrade.dlgContainerPlayer) {
 	if (itemContainerPtr) {
@@ -462,7 +462,7 @@ func void oCItemContainer_Activate (var int ptr) {
 	const int oCItemContainer__Activate_G1 = 6721376;
 
 	//0x00709230 public: virtual void __thiscall oCItemContainer::Activate(void)
-	const int oCItemContainer__Activate_G2 = 709230;
+	const int oCItemContainer__Activate_G2 = 7377456;
 
 	if (!ptr) { return; };
 
@@ -614,10 +614,10 @@ func void oCNpcInventory_Close (var int ptr) {
 //G1 only
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
 	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
-	const int oCNpc__SwitchToCategory_G1 = 6741600;
+	const int oCNpcInventory__SwitchToCategory_G1 = 6741600;
 
 	//There is no G2A function
-	const int oCNpc__SwitchToCategory_G2 = 0;
+	const int oCNpcInventory__SwitchToCategory_G2 = 0;
 
 	if (!npcInventoryPtr) { return 0; };
 
@@ -630,7 +630,7 @@ func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCa
 	if (CALL_Begin(call)) {
 		CALL_PutRetValTo(_@ (retVal));
 		CALL_IntParam (_@ (invCategory));
-		CALL__thiscall (_@ (npcInventoryPtr), oCNpc__SwitchToCategory_G1);
+		CALL__thiscall (_@ (npcInventoryPtr), oCNpcInventory__SwitchToCategory_G1);
 		call = CALL_End();
 	};
 
@@ -878,36 +878,6 @@ func int oCViewDialogStealContainer_RemoveSelectedItem (var int ptr) {
 	return +retVal;
 };
 
-
-
-/*
- *	Returns pointer to currently drawn weapon (weapon in hand)
- *		slfInstance		NPC instance
- */
-func int oCNpc_GetWeaponPtr (var int slfInstance) {
-	//0x006943F0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
-	const int oCNpc__GetWeapon_G1 = 6898672;
-
-	//0x007377A0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
-	const int oCNpc__GetWeapon_G2 = 7567264;
-
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetWeapon_G1, oCNpc__GetWeapon_G2));
-		call = CALL_End();
-	};
-
-	return +retVal;
-};
-
 //-- oCViewDialogTrade functions
 
 func int oCViewDialogTrade_OnTransferLeft (var int ptr, var int amount) {
@@ -1072,31 +1042,103 @@ func void oCNPC_UnequipItemPtr (var int slfInstance, var int itemPtr){
 };
 
 /*
+ *	Returns pointer to currently drawn weapon (weapon in hand)
+ *		slfInstance		NPC instance
+ */
+func int oCNpc_GetWeapon (var int slfInstance) {
+	//0x006943F0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
+	const int oCNpc__GetWeapon_G1 = 6898672;
+
+	//0x007377A0 public: class oCItem * __thiscall oCNpc::GetWeapon(void)
+	const int oCNpc__GetWeapon_G2 = 7567264;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetWeapon_G1, oCNpc__GetWeapon_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
  *	Gets pointer of equipped melee weapon
  *    		npcInstance		NPC instance
  */
-func int oCNpc_GetEquippedMeleeWeapon (var int npcInstance){
+func int oCNpc_GetEquippedMeleeWeapon (var int slfInstance) {
 	//0x00694580 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G1 = 6899072;
 
 	//0x00737930 public: class oCItem * __thiscall oCNpc::GetEquippedMeleeWeapon(void)
 	const int oCNpc__GetEquippedMeleeWeapon_G2 = 7567664;
 
-	var oCNPC slf; slf = Hlp_GetNPC (npcInstance);
-	if (!slf) { return 0; };
-
-	var int slfPtr; slfPtr = _@ (slf);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2(oCNpc__GetEquippedMeleeWeapon_G1, oCNpc__GetEquippedMeleeWeapon_G2));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedMeleeWeapon_G1, oCNpc__GetEquippedMeleeWeapon_G2));
 		call = CALL_End();
 	};
 
-	return +retVal;
+	return + retVal;
+};
+
+func int oCNpc_GetEquippedRangedWeapon (var int slfInstance) {
+	//0x00694690 public: class oCItem * __thiscall oCNpc::GetEquippedRangedWeapon(void)
+	const int oCNpc__GetEquippedRangedWeapon_G1 = 6899344;
+
+	//0x00737A40 public: class oCItem * __thiscall oCNpc::GetEquippedRangedWeapon(void)
+	const int oCNpc__GetEquippedRangedWeapon_G2 = 7567936;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedRangedWeapon_G1, oCNpc__GetEquippedRangedWeapon_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+func int oCNpc_GetEquippedArmor (var int slfInstance) {
+	//0x006947A0 public: class oCItem * __thiscall oCNpc::GetEquippedArmor(void)
+	const int oCNpc__GetEquippedArmor_G1 = 6899616;
+
+	//0x00737B50 public: class oCItem * __thiscall oCNpc::GetEquippedArmor(void)
+	const int oCNpc__GetEquippedArmor_G2 = 7568208;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetEquippedArmor_G1, oCNpc__GetEquippedArmor_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };
 
 /*
@@ -1564,4 +1606,32 @@ func int NPC_HasMissionItem (var int slfInstance) {
 	end;
 
 	return FALSE;
+};
+
+/*
+ *	Function unequips melee weapon
+ */
+func void Npc_UnequipMeleeWeapon (var int slfInstance) {
+	var int itemPtr; itemPtr = oCNpc_GetEquippedMeleeWeapon (slfInstance);
+	if (itemPtr) {
+		oCNpc_UnequipItemPtr (slfInstance, itemPtr);
+	};
+};
+
+/*
+ *	Function unequips ranged weapon
+ */
+func void Npc_UnequipRangedWeapon (var int slfInstance) {
+	var int itemPtr; itemPtr = oCNpc_GetEquippedRangedWeapon (slfInstance);
+	if (itemPtr) {
+		oCNpc_UnequipItemPtr (slfInstance, itemPtr);
+	};
+};
+
+/*
+ *	Function unequips all weapons
+ */
+func void Npc_UnequipWeapons (var int slfInstance) {
+	Npc_UnequipMeleeWeapon (slfInstance);
+	Npc_UnequipRangedWeapon (slfInstance);
 };

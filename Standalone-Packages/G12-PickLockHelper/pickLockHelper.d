@@ -234,11 +234,13 @@ func void _hook_oCMobLockable_PickLock () {
 	};
 };
 
-func void _hook_oCMobInter_StartInteraction () {
+func void _eventMobStartInteraction__PickLockHelper () {
 	if (!Hlp_Is_oCMobLockable (ECX))  { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	var oCMobLockable mob; mob = _^ (ECX);
@@ -282,8 +284,10 @@ func void _hook_oCMobInter_StartInteraction () {
 func void _hook_oCMobInter_EndInteraction () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	PickLockHelper_Hide ();
@@ -293,8 +297,10 @@ func void _hook_oCMobInter_EndInteraction () {
 func void _hook_oCMobInter_StopInteraction () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
-	var oCNPC slf; slf = _^ (MEM_ReadInt (ESP + 4));
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
+	var oCNPC slf; slf = _^ (slfPtr);
 	if (!NPC_IsPlayer (slf)) { return; };
 
 	PickLockHelper_Hide ();
@@ -304,6 +310,13 @@ func void _hook_oCMobInter_StopInteraction () {
 };
 
 func void G12_PickLockHelper_Init () {
+	G12_oCMobInterStartInterationEvent_Init ();
+
+	//Add listener for mob use
+	MobStartInteraction_AddListener (_eventMobStartInteraction__PickLockHelper);
+
+	//--
+
 	const int once = 0;
 
 	if (!once) {
@@ -311,8 +324,6 @@ func void G12_PickLockHelper_Init () {
 		HookEngine (oCMobLockable__PickLock, MEMINT_SwitchG1G2 (13, 6), "_hook_oCMobLockable_PickLock");
 
 		HookDaedalusFunc (G_PickLock, _daedalusHook_G_PickLock);
-
-		HookEngine (oCMobInter__StartInteraction, 6, "_hook_oCMobInter_StartInteraction");
 
 		HookEngine (oCMobInter__EndInteraction, 6, "_hook_oCMobInter_EndInteraction");
 		HookEngine (oCMobInter__StopInteraction, 6, "_hook_oCMobInter_StopInteraction");

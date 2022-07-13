@@ -59,7 +59,9 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 //--- Print object trafo
 
 	var int vec[3];
-	MEM_CopyBytes (zCVob_GetPositionWorld (vobPtr), _@ (vec), 12);
+	if (zCVob_GetPositionWorldToPos (vobPtr, _@ (vec))) {
+		//...
+	};
 
 	//pos[0] = 3684.757080; pos[1] = 6424.923340; pos[2] = 32131.988281;
 	msg = "pos[0] = ";

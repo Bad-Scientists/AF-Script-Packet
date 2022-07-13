@@ -17,12 +17,10 @@ var int _DoDropVob_Event;
 var int _DropFromSlot_Event;
 var int _DoThrowVob_Event;
 var int _OpenDeadNPC_Event;
-
 var int _MobStartStateChange_Event;
-
 var int _GameHandleEvent_Event;
-
 var int _PlayerPortalRoomChange_Event;
+var int _MobStartInteraction_Event;
 
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
@@ -126,6 +124,14 @@ func void PlayerPortalRoomChange_AddListener (var func f) {
 
 func void PlayerPortalRoomChange_RemoveListener (var func f) {
 	Event_Remove (_PlayerPortalRoomChange_Event, f);
+};
+
+func void MobStartInteraction_AddListener (var func f) {
+	Event_AddOnce (_MobStartInteraction_Event, f);
+};
+
+func void MobStartInteraction_RemoveListener (var func f) {
+	Event_Remove (_MobStartInteraction_Event, f);
 };
 
 /*
@@ -313,6 +319,17 @@ func void _hook_oCItemContainer_OpenPassive () {
 
 	if (_OpenInventory_Event) {
 		Event_Execute (_OpenInventory_Event, 0);
+	};
+};
+
+func void _hook_oCMobInter_StartInteraction () {
+	if (!Hlp_Is_oCMobInter (ECX))  { return; };
+
+	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
+
+	if (_MobStartInteraction_Event) {
+		Event_Execute (_MobStartInteraction_Event, 0);
 	};
 };
 
@@ -589,6 +606,23 @@ func void G12_PlayerPortalRoomChangeEvent_Init () {
 	};
 };
 
+func void G12_oCMobInterStartInterationEvent_Init () {
+	if (!_MobStartInteraction_Event) {
+		_MobStartInteraction_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x0067FCA0 protected: virtual void __thiscall oCMobInter::StartInteraction(class oCNpc *)
+		const int oCMobInter__StartInteraction_G1 = 6814880;
+		//0x00721580 protected: virtual void __thiscall oCMobInter::StartInteraction(class oCNpc *)
+		const int oCMobInter__StartInteraction_G2 = 7476608;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobInter__StartInteraction_G1, oCMobInter__StartInteraction_G2), 6, "_hook_oCMobInter_StartInteraction");
+		once = 1;
+	};
+};
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -599,10 +633,8 @@ func void G12_GameEvents_Init () {
 	G12_DoDropVobEvent_Init ();
 	G12_DoThrowVobEvent_Init ();
 	G12_OpenDeadNPCEvent_Init ();
-
 	G12_GameState_Extended_Init ();
-
 	G12_MobStartStateChangeEvent_Init ();
-
 	G12_PlayerPortalRoomChangeEvent_Init ();
+	G12_oCMobInterStartInterationEvent_Init ();
 };

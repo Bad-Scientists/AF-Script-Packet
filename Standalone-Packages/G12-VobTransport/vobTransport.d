@@ -70,7 +70,7 @@ func int FocusVobCanBeSelected__VobTransport (var int vobPtr) {
 
 /*
  *	Following objects can be selected by this feature
- *	NPC can't be selected (unless in focus)
+ *	NPC can't be selected (unless in focus / Marvin mode)
  */
 func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	//API function
@@ -89,6 +89,9 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_oCMobBed (vobPtr))
 	|| (Hlp_Is_oCMobInter (vobPtr))
 	|| (Hlp_Is_oCItem (vobPtr))
+
+	//Allow NPC selection in marvin mode
+	|| ((Hlp_Is_oCNpc (vobPtr)) && (MEM_Game.game_testmode))
 
 	|| (Hlp_Is_zCTrigger (vobPtr))
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
@@ -885,6 +888,8 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				lastVobTransportMode = vobTransportMode;
 				vobTransportMode = vobTransportMode_Transform;
 
+				vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobTransportVobPtr);
+
 				vob = _^ (vobTransportVobPtr);
 				MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (vobTransportOriginalTrafo), 64);
 
@@ -1010,6 +1015,9 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 				vobTransportTransformationMode = vobTransportTransformation_RotY;
 				lastVobTransportMode = vobTransportMode;
 				vobTransportMode = vobTransportMode_Transform;
+
+				vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobTransportVobPtr);
+
 				PC_PutInSleepingMode ();
 			} else {
 				if (VobCanBePlaced__VobTransport_API (vobTransportVobPtr)) {
@@ -1043,6 +1051,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 			} else
 			//Switch back to selection mode
 			if (lastVobTransportMode == vobTransportMode_SelectVob) {
+				vobTransportBBoxPtr = 0;
 				vobTransportMode = vobTransportMode_SelectVob;
 
 				//Restore trafo and alpha
@@ -1339,7 +1348,7 @@ func void FrameFunction__VobTransport () {
 			while (i < loop);
 				vobPtr = MEM_ReadIntArray (her.vobList_array, i);
 
-				if (VobCanBeSelected__VobTransport (vobPtr)) {
+				if (VobCanBeSelected__VobTransport (vobPtr)) || (vobTransportVobPtr == vobPtr) {
 					if (flagSelectNext == FALSE) {
 						if (vobTransportVobPtr == vobPtr) {
 							flagSelectNext = TRUE;
@@ -1387,7 +1396,7 @@ func void FrameFunction__VobTransport () {
 			while (i > 0);
 				vobPtr = MEM_ReadIntArray (her.vobList_array, i - 1);
 
-				if (VobCanBeSelected__VobTransport (vobPtr)) {
+				if (VobCanBeSelected__VobTransport (vobPtr)) || (vobTransportVobPtr == vobPtr) {
 					if (flagSelectPrevious == FALSE) {
 						if (vobTransportVobPtr == vobPtr) {
 							flagSelectPrevious = TRUE;
@@ -1581,7 +1590,12 @@ func void _hook_BBox3D_Draw () {
 	};
 
 	if (ECX == vobTransportBBoxPtr) {
-		MEM_WriteInt (vobTransportBBoxColor, GFX_BLUE);
+		if (vobTransportMode == vobTransportMode_Movement) {
+			MEM_WriteInt (vobTransportBBoxColor, GFX_BLUE);
+		} else
+		if (vobTransportMode == vobTransportMode_Transform) {
+			MEM_WriteInt (vobTransportBBoxColor, GFX_GREEN);
+		};
 	};
 
 	MEM_WriteInt (ESP + 4, vobTransportBBoxColor);

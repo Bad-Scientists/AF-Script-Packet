@@ -42,7 +42,7 @@ const int zCTrigger_bitfield_sendUntrigger     = ((1 << 1) - 1) << (8 + 2);		//1
 const int zCTrigger_bitfield_reactToOnContact	= ((1 << 1) - 1) << (8 + 4);		//4096
 
 func int zCTrigger_CanBeActivatedNow (var int trigger, var int vobPtr) {
-	//005E33B0  .text     Debug data           ?CanBeActivatedNow@zCTrigger@@MAEHPAVzCVob@@@Z
+	//0x005E33B0 protected: virtual int __thiscall zCTrigger::CanBeActivatedNow(class zCVob *)
 	const int zCTrigger__CanBeActivatedNow_G1 = 6173616;
 	
 	//0x00610220 protected: virtual int __thiscall zCTrigger::CanBeActivatedNow(class zCVob *)

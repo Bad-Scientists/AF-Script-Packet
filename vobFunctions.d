@@ -731,6 +731,20 @@ func int zCVob_GetPositionWorld (var int vobPtr) {
 	return CALL_RetValAsPtr ();
 };
 
+//Wrapper function that frees allocated memory
+//return TRUE if everything went ok
+func int zCVob_GetPositionWorldToPos (var int vobPtr, var int posPtr) {
+	if (!posPtr) { return FALSE; };
+
+	var int vobPosPtr; vobPosPtr = zCVob_GetPositionWorld (vobPtr);
+	if (!vobPosPtr) { return FALSE; };
+
+	MEM_CopyBytes (vobPosPtr, posPtr, 12);
+	MEM_Free (vobPosPtr);
+
+	return TRUE;
+};
+
 func int zCVob_GetAtVectorWorld (var int vobPtr) {
 	//0x0051B3E0 public: class zVEC3 __thiscall zCVob::GetAtVectorWorld(void)const
 	const int zCVob__GetAtVectorWorld_G1 = 5354464;

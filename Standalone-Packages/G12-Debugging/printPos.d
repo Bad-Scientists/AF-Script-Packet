@@ -19,13 +19,9 @@
 	var string msg;
 
 	if (her.focus_vob) {
-		var int posPtr;
-		posPtr = zCVob_GetPositionWorld (her.focus_vob);
+		var int pos[3];
 
-		if (posPtr) {
-			var int pos[3];
-			MEM_CopyBytes (posPtr, _@(pos), 12);
-
+		if (zCVob_GetPositionWorldToPos (her.focus_vob, _@ (pos))) {
 			var int oldErrorLevel; oldErrorLevel = zERROR_GetFilterLevel ();
 			zERROR_SetFilterLevel (1);
 
@@ -47,8 +43,6 @@
 
 			zERROR_SetFilterLevel (oldErrorLevel);
 		};
-
-		MEM_Free (posPtr);
 	} else {
 		msg = "Nothing in focus.";
 	};

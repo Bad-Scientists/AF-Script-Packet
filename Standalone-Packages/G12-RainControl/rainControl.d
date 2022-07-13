@@ -108,6 +108,9 @@ func void zCOutdoorRainFX_SetWeatherType (var int weatherType) {
  *	Seems like all we have to do to 'reset' weather is to temporarily update hero's status - this will also update weather!
  */
 func void Wld_ResetWeather () {
+	//0x008DE508 protected: static enum oHEROSTATUS oCZoneMusic::s_herostatus
+	const int oCZoneMusic__s_herostatus_G1 = 9299208;
+
 	//0x009A4A20 protected: static enum oHEROSTATUS oCZoneMusic::s_herostatus
 	const int oCZoneMusic__s_herostatus_G2 = 10111520;
 
@@ -119,11 +122,11 @@ func void Wld_ResetWeather () {
 	RainControl_StopRainOverride = FALSE;
 
 	//Don't do anything in G1 (we don't need to do anything in G1 ...)
-	if (MEMINT_SwitchG1G2 (1, 0)) {	return;	};
+	//if (MEMINT_SwitchG1G2 (1, 0)) { return; };
 
 	//Override status - this will force update
-	MemoryProtectionOverride (oCZoneMusic__s_herostatus_G2, 4);
-	MEM_WriteInt (oCZoneMusic__s_herostatus_G2, -1);
+	MemoryProtectionOverride (MEMINT_SwitchG1G2 (oCZoneMusic__s_herostatus_G1, oCZoneMusic__s_herostatus_G2), 4);
+	MEM_WriteInt (MEMINT_SwitchG1G2 (oCZoneMusic__s_herostatus_G1, oCZoneMusic__s_herostatus_G2), -1);
 };
 
 /*
@@ -319,7 +322,7 @@ func void Wld_StartRain (var int newDuration) {
 			//Are we fading-in?
 			percentage = divF (deltaFadeIn, duration);
 			if lef (percentage, castToIntF (0.2)) {
-				MEM_Info ("Wld_StartRain: rain was fading-in ... extending end time by 60 mins");
+				MEM_Info ("Wld_StartRain: rain was fading-in ... extending end time");
 
 				//Ratio for actual percentage
 				offsetStart = mulf (mkf (newDuration), percentage);
@@ -329,7 +332,7 @@ func void Wld_StartRain (var int newDuration) {
 				//Are we fading-out?
 				percentage = divF (deltaFadeOut, duration);
 				if lef (percentage, castToIntF (0.2)) {
-					MEM_Info ("Wld_StartRain: rain was fading out ... extending end time by 60 mins");
+					MEM_Info ("Wld_StartRain: rain was fading out ... extending end time");
 
 					//Flipped ratio for actual percentage
 					offsetStart = mulf (mkf (newDuration), percentage);
@@ -346,7 +349,7 @@ func void Wld_StartRain (var int newDuration) {
 		offsetEnd = mkf (newDuration);
 	} else
 	if (!fadeInOut) {
-		MEM_Info ("Wld_StartRain: set raining for 60 mins ...");
+		MEM_Info ("Wld_StartRain: set raining ...");
 
 		//Add more time
 		offsetStart = addf (mkf (newDuration), mulf (mkf (newDuration), castToIntF (0.2)));
@@ -382,10 +385,10 @@ func void Wld_StopRain () {
 	//What we want is a nice transition when turning off the rain, at the same time we want stop rain fairly quickly
 
 	//Here is the idea ... when we call Wld_StopRain we will change both values:
-	//	rainFX_timeStopRain	to current time + 5 minutes (ingame)
+	//	rainFX_timeStopRain	to current time + 4 minutes (ingame)
 	//	rainFX_timeStartRain	to current time - 15 minutes (ingame)
 
-	//This gives us buffer 25% --> fade out transition is smooth
+	//This gives us buffer 20% --> fade out transition is smooth
 
 	//Problem: when it is not fully raining (rainFX_outdoorRainFXWeight <> FLOATONE) then transition is not smooth anymore
 	//1. figure out whether we are fading in or out
@@ -425,11 +428,11 @@ func void Wld_StopRain () {
 			offsetEnd = mulf (mkf (20), percentage);
 			offsetStart = subf (mkf (20), offsetEnd);
 		} else {
-			MEM_Info ("Wld_StopRain: Heavy rain ... shutting off rain in next 5 minutes");
+			MEM_Info ("Wld_StopRain: Heavy rain ... shutting off rain in next 4 minutes");
 
-			//ratio exactly 25%
-			offsetStart = mkf (15);
-			offsetEnd = mkf (5);
+			//ratio exactly 20%
+			offsetStart = mkf (16);
+			offsetEnd = mkf (4);
 		};
 	};
 
@@ -459,7 +462,7 @@ func void Wld_StopRain () {
 func int Wld_SetRainTime (var int start_hr, var int start_min, var int end_hr, var int end_min) {
 	if (Wld_IsTime (start_hr, start_min, end_hr, end_min)) {
 		start_hr = (start_hr + 12) % 24;
-		end_hr   = (end_hr   + 12) % 24;
+		end_hr   = (end_hr + 12) % 24;
 
 		if (start_hr > end_hr) {
 			MEM_Info ("Wld_SetRainTime: Rain at 12 noon is not possible!");
@@ -468,8 +471,8 @@ func int Wld_SetRainTime (var int start_hr, var int start_min, var int end_hr, v
 
 		/* 24 Stunden auf Bereich 0 bis 1 runterskalieren (float) */
 		var int start_float; var int end_float;
-		start_float = divf(mkf(start_hr*60 + start_min), mkf(24*60));
-		end_float   = divf(mkf(end_hr  *60 + end_min)  , mkf(24*60));
+		start_float = divf(mkf(start_hr * 60 + start_min), mkf(24 * 60));
+		end_float = divf(mkf(end_hr * 60 + end_min), mkf(24 * 60));
 
 		MEM_SkyController.rainFX_timeStartRain = start_float;
 		MEM_SkyController.rainFX_timeStopRain = end_float;
@@ -545,13 +548,11 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl () {
 	};
 
 	/*
-	 *	Dynamic rain setup - adjust as you need!
+	 *	API rain setup
 	 */
-	if (Wld_SetRainTime (04, 30, 05, 30)) {
-	} else if (Wld_SetRainTime (09, 30, 10, 30)) {
-	} else if (Wld_SetRainTime (12, 30, 13, 30)) {
-	} else if (Wld_SetRainTime (16, 30, 17, 30)) {
-	} else if (Wld_SetRainTime (19, 30, 20, 30)) {
+	var int symbID; symbID = MEM_FindParserSymbol ("RainControl_API");
+	if (symbID != -1) {
+		MEM_CallByID (symbID);
 	};
 };
 
