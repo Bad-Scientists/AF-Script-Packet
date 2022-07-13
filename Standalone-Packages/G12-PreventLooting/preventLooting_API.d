@@ -19,10 +19,14 @@ func int NPC_PreventLooting (var int slfInstance) {
 	//--> define conditions here
 
 	//I have defined function C_NpcIsTrader outside of this package - so calling it the safe way
-	var int retVal;
-	MEM_PushInstParam (slf);
-	MEM_CallByString ("C_NpcIsTrader");
-	retVal = MEM_PopIntResult ();
+	var int retVal; retVal = 0;
+
+	var int symbID; symbID = MEM_FindParserSymbol ("C_NpcIsTrader");
+	if (symbID != -1) {
+		MEM_PushInstParam (slf);
+		MEM_CallByID (symbID);
+		retVal = MEM_PopIntResult ();
+	};
 
 	//By default we wont allow looting of traders
 	if (retVal) {

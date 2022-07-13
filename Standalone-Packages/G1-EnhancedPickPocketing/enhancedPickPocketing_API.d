@@ -59,11 +59,15 @@ const int AIV_MOD_PICKPOCKET				= 49;
 //oth - victim
 func int C_CanPickPocket (var C_NPC slf, var C_NPC oth) {
 	//My custom mod function located outside of this package
-	var int retVal;
-	MEM_PushInstParam (slf);
-	MEM_PushInstParam (oth);
-	MEM_CallByString ("C_ModCanPickPocket");
-	retVal = MEM_PopIntResult ();
+	var int retVal; retVal = 0;
+
+	var int symbID; symbID = MEM_FindParserSymbol ("C_ModCanPickPocket");
+	if (symbID != -1) {
+		MEM_PushInstParam (slf);
+		MEM_PushInstParam (oth);
+		MEM_CallByID (symbID);
+		retVal = MEM_PopIntResult ();
+	};
 
 	return retVal;
 };
