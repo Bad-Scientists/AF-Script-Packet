@@ -82,6 +82,22 @@ const int EV_STOPPROCESSINFOS = 17;
 const int EV_OUTPUTSVM_OVERLAY = 18;
 const int EV_CONV_MAX = 19;
 
+const int EV_DRAWWEAPON = 0;
+const int EV_DRAWWEAPON1 = 1;
+const int EV_DRAWWEAPON2 = 2;
+const int EV_REMOVEWEAPON = 3;
+const int EV_REMOVEWEAPON1 = 4;
+const int EV_REMOVEWEAPON2 = 5;
+const int EV_CHOOSEWEAPON = 6;
+const int EV_FORCEREMOVEWEAPON = 7;
+const int EV_ATTACK = 8;
+const int EV_EQUIPBESTWEAPON = 9;
+const int EV_EQUIPBESTARMOR = 10;
+const int EV_UNEQUIPWEAPONS = 11;
+const int EV_UNEQUIPARMOR = 12;
+const int EV_EQUIPARMOR = 13;
+const int EV_WEAPON_MAX = 14;
+
 class zCEventManager {
 	var int _vtbl;			//0	8251772		zCEventManager_vtbl
 	var int refctr;			//4	1
