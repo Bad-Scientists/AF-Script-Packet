@@ -191,9 +191,12 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	//Get inventory owner
 	var oCNPC npc; npc = _^ (NpcContainer.inventory2_owner);
 
+	var int itmPtr; itmPtr = List_GetS (NpcContainer.inventory2_oCItemContainer_contents, NpcContainer.inventory2_oCItemContainer_selectedItem + 2);
+	if (!itmPtr) { return; };
+
 	//Get item
-	var oCItem itm; itm = _^ (List_GetS (NpcContainer.inventory2_oCItemContainer_contents, NpcContainer.inventory2_oCItemContainer_selectedItem + 2));
-	
+	var oCItem itm; itm = _^ (itmPtr);
+
 	//Get amount
 	var int amount; amount = itm.amount;
 	
