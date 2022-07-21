@@ -49,11 +49,7 @@
  *
  *	C_CanPickPocket - define your own conditions
  *
- *	This feature requires 1 reserved AI variable !
  */
-const int AIV_MOD_PICKPOCKET				= 49;
-	const int PickPocketing_CanBePickPocketed	= 0;
-	const int PickPocketing_PickPocketed		= 1;
 
 //slf - thief
 //oth - victim
@@ -101,6 +97,4 @@ func void B_PickPocketing_Successfull () {
 	//My custom mod function located outside of this package
 	MEM_CallByString ("B_PickPocketing_GiveXP");
 
-	var C_NPC npc; npc = Hlp_GetNPC (StealVictim);
-	npc.aivar [AIV_MOD_PICKPOCKET] = PickPocketing_PickPocketed;
 };
