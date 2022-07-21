@@ -1,6 +1,6 @@
 /*
  *	oCItemContainer, oCNpcInventory are taken from Ikarus G1 oCNPC class definition
- */ 
+ */
 
 /*
 class oCItemContainer : public zCInputCallback {
@@ -44,13 +44,13 @@ class oCItemContainer : public zCInputCallback {
 	zCOLOR image_chroma;
 	zCOLOR blit_chroma;
 };
- 
+
 class oCStealContainer : public oCItemContainer {
-	oCNpc* owner; 
-}; 
+	oCNpc* owner;
+};
 
 class oCNpcContainer : public oCStealContainer {
-}; 
+};
 
 class oCNpcInventory : public oCItemContainer {
 	oCNpc* owner;
@@ -76,7 +76,7 @@ class oCItemContainer {
             var int    inventory2_oCItemContainer_frame;                           // 0x056C zBOOL
             var int    inventory2_oCItemContainer_right;                           // 0x0570 zBOOL
             var int    inventory2_oCItemContainer_ownList;                         // 0x0574 zBOOL
-            var int    inventory2_oCItemContainer_prepared;                        // 0x0578 zBOOL
+            var int    inventory2_oCItemContainer_prepared;                        // 0x0578 zBOOL (unused?)
             var int    inventory2_oCItemContainer_passive;                         // 0x057C zBOOL
             var int    inventory2_oCItemContainer_viewCat;                         // 0x0580 zCView*
             var int    inventory2_oCItemContainer_viewItem;                        // 0x0584 zCView*

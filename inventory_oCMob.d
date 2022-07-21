@@ -145,7 +145,7 @@ func void Mob_RemoveAllItems (var int mobPtr){
 		var int itmPtr; itmPtr = list.data;
 
 		if (itmPtr == 0) {
-			ptr  = list.next;
+			ptr= list.next;
 		} else {
 			oCMobContainer_Remove(mobPtr, itmPtr);
 			ptr = container.containList_next;
@@ -237,7 +237,7 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 		var int itmPtr; itmPtr = list.data;
 
 		if (itmPtr == 0) {
-			ptr  = list.next;
+			ptr = list.next;
 		} else {
 			itm = _^ (itmPtr);
 
@@ -278,7 +278,7 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 		var int itmPtr; itmPtr = list.data;
 
 		if (itmPtr == 0) {
-			ptr  = list.next;
+			ptr = list.next;
 		} else {
 			//Custom prints for transferred items
 			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
@@ -320,7 +320,7 @@ func void Mob_CopyItemsToMob (var int mobPtr1, var int mobPtr2){
 			oCMobContainer_Insert (mobPtr2, itmPtr);
 		};
 
-		ptr  = list.next;
+		ptr = list.next;
 	end;
 };
 

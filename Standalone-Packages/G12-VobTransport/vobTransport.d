@@ -516,7 +516,7 @@ func void Vob_CancelSelection (var int vobPtr) {
 	};
 
 	//Restore collisions
-	Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+	Vob_AddCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 
 	//Correct height of all waypints
 	WaypointsCorrectHeight__VobTransport (vobTransportVobPtr);
@@ -1059,7 +1059,7 @@ func void _eventGameHandleEvent__VobTransport (var int dummyVariable) {
 					AlignVobAt (vobTransportVobPtr, _@ (vobTransportOriginalTrafo));
 					UpdateWaypoints__VobTransport (vobTransportVobPtr);
 
-					Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+					Vob_AddCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 				};
 			};
 		};
@@ -1569,7 +1569,7 @@ func void FrameFunction__VobTransport () {
 		PC_RemoveFromSleepingMode ();
 
 		//Restore collision bitfields
-		Vob_RestoreCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
+		Vob_AddCollBits (vobTransportVobPtr, vobTransportOriginalCollisions);
 
 		//Disable vobTransportMode
 		vobTransportMode = vobTransportMode_Idle;

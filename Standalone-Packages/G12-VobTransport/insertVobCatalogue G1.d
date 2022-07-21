@@ -7,7 +7,6 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	var float right[3];
 
 	var int trafo[16];
-
 	NewTrafo(_@(trafo));
 
 //--
@@ -917,7 +916,8 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 
 	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_BARRELO_OC", "BARRELO_OC.ASC", _@ (trafo), 0);
 
-	vobPtr = InsertObject ("oCMobInter", "VOB_BUY_HOUSE_01", "HOUSETEST.ASC", _@ (trafo), 0);
+	//vobPtr = InsertObject ("oCMobInter", "VOB_BUY_HOUSE_01", "HOUSETEST.ASC", _@ (trafo), 0);
+	vobPtr = InsertObject ("zCVob", "VOB_BUY_HOUSE_01", "HOUSETEST.ASC", _@ (trafo), 0);
 
 /*
 vobPtr = InsertObject ("oCMobInter", "VOB_BUY_BACKPACK_1", "BACKPACK_1.ASC", _@ (trafo), 0);

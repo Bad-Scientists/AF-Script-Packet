@@ -386,6 +386,7 @@ func void zCViewDialogChoice_SelectNext () {
 func void zCViewDialogChoice_RemoveChoice (var int index) {
 	//0x00759800 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G1 = 7706624;
+
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
 

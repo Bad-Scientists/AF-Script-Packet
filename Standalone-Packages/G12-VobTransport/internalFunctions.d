@@ -18,6 +18,8 @@ func int Hlp_Is_zCVob__vobTransport (var int vobPtr) {
 		if (Hlp_Is_zCParticleFX (vobPtr)) { return FALSE; };
 
 		//All other zCVob objects should be supported
+		//MEM_Info (IntToString (MEM_ReadInt (vobPtr)));
+		//return TRUE;
 
 		var zCVob vob; vob = _^ (vobPtr);
 		if (vob.type == 0) {
@@ -39,6 +41,7 @@ func int Hlp_Is_zCVob__vobTransport (var int vobPtr) {
 			*/
 
 			//Ignore all vobs without visual (I noticed weird behaviour - game crashed sometimes - not sure what kind of vobs these are :-/)
+			//Camera vob ...
 			var string visualName; visualName = Vob_GetVisualName (vobPtr);
 			if (STR_Len (visualName)) {
 				return TRUE;

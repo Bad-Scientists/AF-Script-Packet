@@ -236,7 +236,7 @@ func void DoThrowVob__VobThrowing () {
 	var int angle; angle = PC_VobThrowing_BaseAngle;
 
 	VectorDirToTrf (_@ (dir), _@ (trafoRot));
-	zMAT4__PostRotateX (_@ (trafoRot), negf (mkf (angle)));
+	zMAT4_PostRotateX (_@ (trafoRot), negf (mkf (angle)));
 	TrfDirToVector (_@ (trafoRot), _@ (dir));
 
 	MulVector (_@ (dir), velocity);
@@ -427,7 +427,7 @@ func void FrameFunction_Trajectory__VobThrowing () {
 		var int angle; angle = PC_VobThrowing_BaseAngle;
 
 		VectorDirToTrf (_@ (dir), _@ (trafoRot));
-		zMAT4__PostRotateX (_@ (trafoRot), negf (mkf (angle)));
+		zMAT4_PostRotateX (_@ (trafoRot), negf (mkf (angle)));
 		TrfDirToVector (_@ (trafoRot), _@ (dir));
 
 		MulVector (_@ (dir), velocity);

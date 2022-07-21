@@ -42,7 +42,7 @@ instance ARMOR_PREVENT_DESPAWN (C_Item)
 	text[3] = NAME_Prot_Fire;	count[3] = protection[PROT_FIRE];
 	text[4] = NAME_Prot_Magic;	count[4] = protection[PROT_MAGIC];
 	text[5] = NAME_Value;		count[5] = value;
-};    
+};
 
 instance StealHelper (C_NPC) {
 	name				= "StealHelper";
@@ -70,7 +70,7 @@ func void ZS_PickPocketing () {
 func int ZS_PickPocketing_Loop () {
 	//If player cancelled action ... exit AI state
 	//If player successfully stole item ... exit AI state
-	if ((PickPocketingStatus == PickPocketingStatus_Cancelled) || (PickPocketingStatus == PickPocketingStatus_Finished)) {		
+	if ((PickPocketingStatus == PickPocketingStatus_Cancelled) || (PickPocketingStatus == PickPocketingStatus_Finished)) {
 		PickPocketingStatus = PickPocketingStatus_InActive;
 		return LOOP_END;
 	};
@@ -82,7 +82,7 @@ func int ZS_PickPocketing_Loop () {
 	MEM_PushInstParam (StealVictim);
 	MEM_Call (C_NPCIsDown);
 	npcIsDown = MEMINT_PopInt();
-	
+
 	//Npc can see player! (and is not sleeping/down)
 	if (NPC_CanSeeNPC (StealVictim, self))
 	&& (!STR_StartsWith (aniName, "S_BED"))
@@ -91,7 +91,7 @@ func int ZS_PickPocketing_Loop () {
 	{
 		//Close inventory
 		oCNPC_CloseInventory (self);
-		
+
 		NPC_SetTarget (StealVictim, self);
 		NPC_GetTarget (StealVictim);
 		AI_StartState (StealVictim, ZS_AssessEnemy, 0, "");
@@ -159,7 +159,7 @@ func int _daedalusHook_G_CanSteal () {
 		PickPocketingStatus = PickPocketingStatus_Active;
 
 		PC_IgnoreAnimations += 1;
-	
+
 		//Start state on thief (player)
 		AI_StartState (self, ZS_PickPocketing, 1, "");
 	};
@@ -182,7 +182,7 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	//ESP + 8	1 -> quantity
 
 	var oCNPC her;
-	
+
 	//PickPocketingStatus finished
 	PickPocketingStatus = PickPocketingStatus_Finished;
 
@@ -191,12 +191,15 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	//Get inventory owner
 	var oCNPC npc; npc = _^ (NpcContainer.inventory2_owner);
 
+	var int itmPtr; itmPtr = List_GetS (NpcContainer.inventory2_oCItemContainer_contents, NpcContainer.inventory2_oCItemContainer_selectedItem + 2);
+	if (!itmPtr) { return; };
+
 	//Get item
-	var oCItem itm; itm = _^ (List_GetS (NpcContainer.inventory2_oCItemContainer_contents, NpcContainer.inventory2_oCItemContainer_selectedItem + 2));
-	
+	var oCItem itm; itm = _^ (itmPtr);
+
 	//Get amount
 	var int amount; amount = itm.amount;
-	
+
 	//Get item instance
 	var int itmInstance; itmInstance = Hlp_GetInstanceID (itm);
 
@@ -206,29 +209,28 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 
 	//Adjust 'stolen qty' - set to 0 - this will not transfer anything in original function
 	MEM_WriteInt (ESP + 8, 0);
-			
+
 	oCNPC_SetFocusVob (hero, 0);
 
 	//Close inventory
-	//0x0066C1E0 public: virtual void __thiscall oCNpcInventory::Close(void) 
-	const int oCNpcInventory__Close = 6734304;
-	CALL__thiscall (_@ (NpcContainer), oCNpcInventory__Close);
+	oCNpcInventory_Close (_@ (NpcContainer));
 
 	//Transfer inventory back to victim
 	NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
 
 	//API function called (for XP, anything else you want)
-	B_PickPocketing_Successfull ();
+	B_PickPocketing_Successfull (StealVictim);
 };
 
 func void _eventCloseInventory_PickPocketing (var int eventType) {
 	//Is player in pickpocketing dialog?
 	if (PickPocketingStatus == PickPocketingStatus_Active) {
-
+		//--> no longer required (TODO: test more thoroughly!)
 		//In certain situations we have to close inventory dead npc inventary by ourselves (otherwise it would remain opened)
-		if (eventType == evOpenScreenMap) || (eventType == evStatusScreenShow) || (eventType == evLogScreenShow) {
-			oCNPC_CloseDeadNpc (StealHelper);
-		};
+		//if (eventType == evOpenScreenMap) || (eventType == evStatusScreenShow) || (eventType == evLogScreenShow) {
+		//	oCNPC_CloseDeadNpc (StealHelper);
+		//};
+		//<--
 
 		oCNPC_SetFocusVob (hero, 0);
 		NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
@@ -258,7 +260,7 @@ func void G1_EnhancedPickPocketing_Init () {
 		//Here I will replace it with new function - that will always return FALSE - this will never trigger vanilla pickpocketing.
 		//Instead we will create our own pickpocketing system.
 		HookDaedalusFunc (G_CanSteal, _daedalusHook_G_CanSteal);
-		
+
 		//Function is called on transfer from npc to npc, from npc to chest
 		//HookEngine (oCItemContainer__TransferItem, 5, "_hook_oCItemContainer__TransferItem");
 

@@ -14,10 +14,10 @@
  */
 func int Vob_GetPortalNamePtr (var int vobPtr) {
 	//0x005D5690 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
-	const int zCVob__GetSectorNameVobIsIn_G1             = 6117008;
+	const int zCVob__GetSectorNameVobIsIn_G1 = 6117008;
 
 	//0x00600AE0 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
-	const int zCVob__GetSectorNameVobIsIn_G2             = 6294240;
+	const int zCVob__GetSectorNameVobIsIn_G2 = 6294240;
 
 	//In G1 item is no longer physically in the room, when called from B_AssessTheft ?! because of that function does not return portal room pointer
 	//Sooo here I am using dirty solution, which szapp did not recommend as it might cause issues ... but so far I didn't recognize any
@@ -51,10 +51,10 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
  */
 func int Trafo_GetPortalNamePtr (var int trafoPtr) {
 	//0x005D5690 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
-	const int zCVob__GetSectorNameVobIsIn_G1             = 6117008;
+	const int zCVob__GetSectorNameVobIsIn_G1 = 6117008;
 
 	//0x00600AE0 public: class zSTRING const * __thiscall zCVob::GetSectorNameVobIsIn(void)const
-	const int zCVob__GetSectorNameVobIsIn_G2             = 6294240;
+	const int zCVob__GetSectorNameVobIsIn_G2 = 6294240;
 
 	if (!trafoPtr) { return 0; };
 
@@ -332,7 +332,7 @@ func int Wld_PortalIsOwnedByGuild (var string portalName, var int guild) {
  *	Code taken from szapps function Wld_PortalMergeDuplicates
  *	Original post: https://forum.worldofplayers.de/forum/threads/1495001-Scriptsammlung-ScriptBin/page7?p=26646175&viewfull=1#post26646175
  */
-func void Wld_RoomRemoveNPC (var string portalName, var int slfInstance) {
+func void Wld_RoomRemoveNpc (var string portalName, var int slfInstance) {
 	if (!MEM_Game.portalman) { return; };
 
 	//Why zCMenu ?

@@ -1,6 +1,22 @@
 /*
- *	Dependencies: vectors.d
+ *	Vob functions
  */
+
+func void zCObject_Release (var int ptr) {
+	//0x0042AC30 public: int __thiscall zCObject::Release(void)
+	const int zCObject__Release_G1 = 4369456;
+
+	//0x0040C310 public: int __thiscall zCObject::Release(void)
+	const int zCObject__Release_G2 = 4244240;
+
+	if (!Hlp_Is_zCObject (ptr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (zCObject__Release_G1, zCObject__Release_G2));
+		call = CALL_End();
+	};
+};
 
 /*
  *
@@ -393,15 +409,6 @@ func void Vob_RemoveCollBits (var int vobPtr, var int collBits) {
 };
 
 /*
- *	Vob_RestoreCollBits - will apply collisions based on input bitfield values in collBits
- */
-func void Vob_RestoreCollBits (var int vobPtr, var int collBits) {
-	if (!vobPtr) { return; };
-	var zCVob vob; vob = _^ (vobPtr);
-	vob.bitfield[0] = (vob.bitfield[0] | collBits);
-};
-
-/*
  *	Rotates vob on its X axis
  */
 func void zCVob_RotateLocalX (var int vobPtr, var int x) {
@@ -716,7 +723,6 @@ func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int c
 
 //0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
 
-
 func int zCVob_GetPositionWorld (var int vobPtr) {
 	//0x0051B3C0 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
 	const int zCVob__GetPositionWorld_G1 = 5354432;
@@ -864,7 +870,7 @@ func void zMAT4_SetRightVector (var int trafoPtr, var int vecPtr)
 /*
  *
  */
-func void zMAT4__PostRotateX (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateX (var int trafoPtr, var int degrees) {
 	//0x00507A40 public: void __thiscall zMAT4::PostRotateX(float)
 	const int zMAT4__PostRotateX_G1 = 5274176;
 
@@ -881,7 +887,7 @@ func void zMAT4__PostRotateX (var int trafoPtr, var int degrees) {
 	};
 };
 
-func void zMAT4__PostRotateY (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateY (var int trafoPtr, var int degrees) {
 	//0x00507A90 public: void __thiscall zMAT4::PostRotateY(float)
 	const int zMAT4__PostRotateY_G1 = 5274256;
 
@@ -898,7 +904,7 @@ func void zMAT4__PostRotateY (var int trafoPtr, var int degrees) {
 	};
 };
 
-func void zMAT4__PostRotateZ (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateZ (var int trafoPtr, var int degrees) {
 	//0x00507AE0 public: void __thiscall zMAT4::PostRotateZ(float)
 	const int zMAT4__PostRotateZ_G1 = 5274336;
 
@@ -912,6 +918,84 @@ func void zMAT4__PostRotateZ (var int trafoPtr, var int degrees) {
 		CALL_FloatParam (_@ (degrees));
 		CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2(zMAT4__PostRotateZ_G1, zMAT4__PostRotateZ_G2));
 		call = CALL_End();
+	};
+};
+
+/*
+ *
+ */
+func string zMAT4_GetDescriptionRot (var int trafoPtr) {
+	//0x00506090 public: class zSTRING __thiscall zMAT4::GetDescriptionRot(void)const
+	const int zMAT4__GetDescriptionRot_G1 = 5267600;
+
+	//0x00515CA0 public: class zSTRING __thiscall zMAT4::GetDescriptionRot(void)const
+	const int zMAT4__GetDescriptionRot_G2 = 5332128;
+
+	if (!trafoPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionRot_G1, zMAT4__GetDescriptionRot_G2));
+	return CALL_RetValAszstring ();
+};
+
+/*
+ *
+ */
+func string zMAT4_GetDescriptionPos (var int trafoPtr) {
+	//0x00506260 public: class zSTRING __thiscall zMAT4::GetDescriptionPos(void)const
+	const int zMAT4__GetDescriptionPos_G1 = 5268064;
+
+	//0x00515EE0 public: class zSTRING __thiscall zMAT4::GetDescriptionPos(void)const
+	const int zMAT4__GetDescriptionPos_G2 = 5332704;
+
+	if (!trafoPtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionPos_G1, zMAT4__GetDescriptionPos_G2));
+	return CALL_RetValAszstring ();
+};
+
+/*
+ *
+ */
+func void zMAT4_SetByDescriptionRot (var int trafoPtr, var string desc) {
+	//0x005063F0 public: void __thiscall zMAT4::SetByDescriptionRot(class zSTRING &)
+	const int zMAT4__SetByDescriptionRot_G1 = 5268464;
+
+	//0x005160E0 public: void __thiscall zMAT4::SetByDescriptionRot(class zSTRING &)
+	const int zMAT4__SetByDescriptionRot_G2 = 5333216;
+
+	if (!trafoPtr) { return; };
+
+	CALL_zStringPtrParam (desc);
+	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__SetByDescriptionRot_G1, zMAT4__SetByDescriptionRot_G2));
+};
+
+/*
+ *
+ */
+func void zMAT4_SetByDescriptionPos (var int trafoPtr, var string desc) {
+	//0x00506550 public: void __thiscall zMAT4::SetByDescriptionPos(class zSTRING &)
+	const int zMAT4__SetByDescriptionPos_G1 = 5268816;
+
+	//0x00516240 public: void __thiscall zMAT4::SetByDescriptionPos(class zSTRING &)
+	const int zMAT4__SetByDescriptionPos_G2 = 5333568;
+
+	if (!trafoPtr) { return; };
+
+	CALL_zStringPtrParam (desc);
+	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__SetByDescriptionPos_G1, zMAT4__SetByDescriptionPos_G2));
+};
+
+/*
+ *
+ */
+func void zCVob_GetTrafo (var int vobPtr, var int trafoPtr) {
+	if (!trafoPtr) { return; };
+
+	if (Hlp_Is_zCVob (vobPtr)) {
+		var zCVob vob; vob = _^ (vobPtr);
+		MEM_CopyBytes (_@ (vob.trafoObjToWorld), trafoPtr, 64);
 	};
 };
 
@@ -1194,6 +1278,24 @@ func int zCVob_GetBBox3DWorld (var int vobPtr) {
 	return _@ (vob.bbox3D_mins[0]);
 };
 
+func void zCVob_SetBBox3DWorld (var int vobPtr, var int bboxPtr) {
+	//0x005EDBE0 public: void __thiscall zCVob::SetBBox3DWorld(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DWorld_G1 = 6216672;
+
+	//0x0061B0E0 public: void __thiscall zCVob::SetBBox3DWorld(struct zTBBox3D const &)
+	const int zCVob__SetBBox3DWorld_G2 = 6402272;
+
+	if (!vobPtr) { return; };
+	if (!bboxPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (bboxPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetBBox3DWorld_G1, zCVob__SetBBox3DWorld_G2));
+		call = CALL_End();
+	};
+};
+
 func int zCVob_GetDistanceToVob (var int vobPtr1, var int vobPtr2) {
 	//0x005EE400 public: float __thiscall zCVob::GetDistanceToVob(class zCVob &)
 	const int zCVob__GetDistanceToVob_G1 = 6218752;
@@ -1275,6 +1377,29 @@ func int zCModel_SearchNode (var int modelPtr, var string nodeName) {
 };
 
 /*
+ *	zCModel_GetBBox3DNodeWorld
+ */
+func void zCModel_GetBBox3DNodeWorld (var int modelPtr, var int modelNodeInstPtr, var int bboxPtr) {
+	//0x0055F870 public: struct zTBBox3D __thiscall zCModel::GetBBox3DNodeWorld(class zCModelNodeInst *)
+	const int zCModel__GetBBox3DNodeWorld_G1 = 5634160;
+
+	//0x005790F0 public: struct zTBBox3D __thiscall zCModel::GetBBox3DNodeWorld(class zCModelNodeInst *)
+	const int zCModel__GetBBox3DNodeWorld_G2 = 5738736;
+
+	if (!modelPtr) { return; };
+	if (!modelNodeInstPtr) { return; };
+	if (!bboxPtr) { return; };
+
+	CALL_RetValIsStruct (24);
+	CALL_PtrParam (modelNodeInstPtr);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetBBox3DNodeWorld_G1, zCModel__GetBBox3DNodeWorld_G2));
+
+	var int bboxPosPtr; bboxPosPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (bboxPosPtr, bboxPtr, 24);
+	MEM_Free (bboxPosPtr);
+};
+
+/*
  *	zCModel_GetNodePositionWorld
  *	 - returns true if node was found, posPtr is updated with position
  */
@@ -1301,9 +1426,32 @@ func int zCModel_GetNodePositionWorld (var int modelPtr, var int nodePtr, var in
 
 /*
  *	zCVob_GetTrafoModelNodeToWorld
- *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafof of object itself
+ *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafo of object itself
  */
-func void zCVob_GetTrafoModelNodeToWorld (var int vobPtr, var string nodeName, var int trafoPtr) {
+func void zCVob_GetTrafoModelNodeToWorld (var int vobPtr, var int modelNodeInstPtr, var int trafoPtr) {
+	//0x005D84D0 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zCModelNodeInst *)
+	const int zCVob__GetTrafoModelNodeToWorld_G1 = 6128848;
+
+	//0x00604A50 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zCModelNodeInst *)
+	const int zCVob__GetTrafoModelNodeToWorld_G2 = 6310480;
+
+	if (!vobPtr) { return; };
+	if (!modelNodeInstPtr) { return; };
+
+	CALL_RetValIsStruct (64);
+	CALL_PtrParam (modelNodeInstPtr);
+	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetTrafoModelNodeToWorld_G1, zCVob__GetTrafoModelNodeToWorld_G2));
+
+	var int vobTrafoPtr; vobTrafoPtr = CALL_RetValAsPtr ();
+	MEM_CopyBytes (vobTrafoPtr, trafoPtr, 64);
+	MEM_Free (vobTrafoPtr);
+};
+
+/*
+ *	zCVob_GetTrafoModelNodeToWorldByName
+ *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafo of object itself
+ */
+func void zCVob_GetTrafoModelNodeToWorldByName (var int vobPtr, var string nodeName, var int trafoPtr) {
 	//0x005D83E0 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
 	const int zCVob__GetTrafoModelNodeToWorld_G1 = 6128608;
 
@@ -1331,7 +1479,36 @@ func int zCVob_GetTrafoModelNode (var int vobPtr, var string nodeName, var int t
 
 	if (!zCModel_SearchNode (visualPtr, nodeName)) { return FALSE; };
 
-	zCVob_GetTrafoModelNodeToWorld (vobPtr, nodeName, trafoPtr);
+	zCVob_GetTrafoModelNodeToWorldByName (vobPtr, nodeName, trafoPtr);
 
 	return TRUE;
+};
+
+func void zCModel_SetDrawSkeleton (var int enabled) {
+	//0x00873C20 private: static int zCModel::s_drawSkeleton
+	const int zCModel__s_drawSkeleton_G1 = 8862752;
+
+	//0x008D8A84 private: static int zCModel::s_drawSkeleton
+	const int zCModel__s_drawSkeleton_G2 = 9276036;
+
+	//var int s_drawSkeleton; s_drawSkeleton = MEMINT_SwitchG1G2 (zCModel__s_drawSkeleton_G1, zCModel__s_drawSkeleton_G2);
+	MEM_WriteInt (MEMINT_SwitchG1G2 (zCModel__s_drawSkeleton_G1, zCModel__s_drawSkeleton_G2), enabled);
+};
+
+func void zCVob_SetAI (var int vobPtr, var int ai) {
+	//0x005D3730 public: void __thiscall zCVob::SetAI(class zCAIBase *)
+	const int zCVob__SetAI_G1 = 6108976;
+
+	//0x005FE8F0 public: void __thiscall zCVob::SetAI(class zCAIBase *)
+	const int zCVob__SetAI_G2 = 6285552;
+
+	if (!ai) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (ai));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetAI_G1, zCVob__SetAI_G2));
+		call = CALL_End ();
+	};
 };

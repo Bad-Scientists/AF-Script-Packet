@@ -965,3 +965,74 @@ func void oCNpc_ResetPos (var int slfInstance, var int posPtr) {
 		call = CALL_End();
 	};
 };
+
+func int oCNpc_HasPerception (var int slfInstance, var int percType) {
+	//0x006B7AA0 public: int __thiscall oCNpc::HasPerception(int)
+	const int oCNpc__HasPerception_G1 = 7043744;
+
+	//0x0075E3C0 public: int __thiscall oCNpc::HasPerception(int)
+	const int oCNpc__HasPerception_G2 = 7726016;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (percType));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__HasPerception_G1, oCNpc__HasPerception_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+func int oCNpc_GetPerceptionFunc (var int slfInstance, var int percType) {
+	//0x006B7AE0 public: int __thiscall oCNpc::GetPerceptionFunc(int)
+	const int oCNpc__GetPerceptionFunc_G1 = 7043808;
+
+	//0x0075E400 public: int __thiscall oCNpc::GetPerceptionFunc(int)
+	const int oCNpc__GetPerceptionFunc_G2 = 7726080;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (percType));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetPerceptionFunc_G1, oCNpc__GetPerceptionFunc_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+func void oCNpc_EnablePerception (var int slfInstance, var int percType, var int funcID) {
+	//0x006B7900 public: void __thiscall oCNpc::EnablePerception(int,int)
+	const int oCNpc__EnablePerception_G1 = 7043328;
+
+	//0x0075E220 public: void __thiscall oCNpc::EnablePerception(int,int)
+	const int oCNpc__EnablePerception_G2 = 7725600;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (funcID));
+		CALL_IntParam (_@ (percType));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__EnablePerception_G1, oCNpc__EnablePerception_G2));
+		call = CALL_End();
+	};
+};

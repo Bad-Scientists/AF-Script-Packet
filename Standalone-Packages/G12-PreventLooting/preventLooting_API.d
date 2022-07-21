@@ -34,6 +34,6 @@ func int NPC_PreventLooting (var int slfInstance) {
 	};
 
 	//<--
-	
+
 	return FALSE;
 };

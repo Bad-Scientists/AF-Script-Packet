@@ -600,16 +600,21 @@ func int oCNpcInventory_Insert (var int ptr, var int itemPtr) {
 	return +retVal;
 };
 
-/*
-func void oCNpcInventory_Close (var int ptr) {
+func void oCNpcInventory_Close (var int npcInventoryPtr) {
 	//0x0066C1E0 public: virtual void __thiscall oCNpcInventory::Close(void)
 	const int oCNpcInventory__Close_G1 = 6734304;
 
-	if (!ptr) { return; };
+	//0x0070C2F0 public: virtual void __thiscall oCNpcInventory::Close(void)
+	const int oCNpcInventory__Close_G2 = 7389936;
 
-	CALL__thiscall (ptr, oCNpcInventory__Close_G1);
+	if (!npcInventoryPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__Close_G1, oCNpcInventory__Close_G2));
+		call = CALL_End();
+	};
 };
-*/
 
 //G1 only
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {

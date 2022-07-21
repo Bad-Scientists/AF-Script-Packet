@@ -60,6 +60,7 @@ ObjectFactory\oCAIVobMove.d
 ObjectFactory\oCAIVobMoveTorch.d
 ObjectFactory\oCAIDrop.d
 ObjectFactory\oCAIArrow.d
+ObjectFactory\oCAICamera.d
 
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
@@ -192,6 +193,7 @@ Standalone-Packages\G12-Debugging\checkRoutineValidity.d
 Standalone-Packages\G12-Debugging\create.d
 Standalone-Packages\G12-Debugging\printPos.d
 Standalone-Packages\G12-Debugging\holdTime.d
+Standalone-Packages\G12-Debugging\puppetMaster.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
@@ -204,3 +206,5 @@ Standalone-Packages\G12-FadeAway\fadeAway.d
 Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
 
 Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
+
+Standalone-Packages\G12-AddPerceptions\addPerceptions.d

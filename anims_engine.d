@@ -297,14 +297,14 @@ func void zCModelAniActive_SetDirection (var int modelAniActivePtr, var int dire
  *    @param zCModel     zCModelptr
  *	  @param aniName	 animation name
  */
-func int zCModelAniActive_GetProgressPercent (var int zCModelAniActivePtr) { // float
+func int zCModelAniActive_GetProgressPercent (var int modelAniActivePtr) { // float
 	//0x0055D4D0 public: float __thiscall zCModelAniActive::GetProgressPercent(void)const
 	const int zCModelAniActive__GetProgressPercent_G1 = 5625040;
 
 	//0x00576C60 public: float __thiscall zCModelAniActive::GetProgressPercent(void)const
 	const int zCModelAniActive__GetProgressPercent_G2 = 5729376;
 
-	if (!zCModelAniActivePtr) { return 0; };
+	if (!modelAniActivePtr) { return 0; };
 
 	var int retVal;
 
@@ -312,7 +312,7 @@ func int zCModelAniActive_GetProgressPercent (var int zCModelAniActivePtr) { // 
 	if (CALL_Begin(call)) {
 		CALL_RetValIsFloat ();
 		CALL_PutRetValTo(_@ (retVal));
-		CALL__thiscall (_@ (zCModelAniActivePtr), MEMINT_SwitchG1G2 (zCModelAniActive__GetProgressPercent_G1, zCModelAniActive__GetProgressPercent_G2));
+		CALL__thiscall (_@ (modelAniActivePtr), MEMINT_SwitchG1G2 (zCModelAniActive__GetProgressPercent_G1, zCModelAniActive__GetProgressPercent_G2));
 		call = CALL_End();
 	};
 
@@ -640,7 +640,7 @@ func void oCAniCtrl_Human_Init (var int aniCtrlPtr, var int npcPtr) {
 	const int oCAniCtrl_Human__Init_G2 = 6962528;
 
 	if (!aniCtrlPtr) { return; };
-	if (!(Hlp_Is_oCNpc (npcPtr))) { return; };
+	if (!Hlp_Is_oCNpc (npcPtr)) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -665,21 +665,17 @@ func void oCAniCtrl_Human_Init (var int aniCtrlPtr, var int npcPtr) {
 func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var int aniProgress, var int aniDir) {
 	// getting zCModel
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
-
-	// checks
 	if (!modelPtr) { return ""; };
 
 	// getting animation ID
 	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
-
-	// checks
 	if (aniID == -1) { return ""; };
 
 	// getting animation ptr
-	var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
+	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
 
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, 1);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
@@ -713,22 +709,17 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName, var int aniFrame, var int aniDir) {
 	// getting zCModel
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
-
-	// checks
 	if (!modelPtr) { return ""; };
 
 	// getting animation ID
-	var int aniID;
-	aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
-
-	// checks
+	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
 	if (aniID == -1) { return ""; };
 
 	// getting animation ptr
-	var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
+	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
 
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID(modelPtr, aniID, 1);
+	zCModel_StartAni_ByAniID(modelPtr, aniID, STARTANI_ISNEXTANI);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);

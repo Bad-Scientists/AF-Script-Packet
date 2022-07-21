@@ -22,7 +22,7 @@
  *		- You need to update B_AssessSC - check if player is in ZS_PickPocketing AI state, if yes - close player's inventory and start ZS_CatchThief on NPC
  *
 
-			FUNC VOID B_AssessSC () {
+			func void B_AssessSC () {
 
 				if (NPC_GetWalkMode (hero) != NPC_SNEAK)
 				|| (NPC_CanSeeNPC (self, hero) && (NPC_IsNpcInAngleX (self, hero, 60)))
@@ -49,11 +49,7 @@
  *
  *	C_CanPickPocket - define your own conditions
  *
- *	This feature requires 1 reserved AI variable !
  */
-const int AIV_MOD_PICKPOCKET				= 49;
-	const int PickPocketing_CanBePickPocketed	= 0;
-	const int PickPocketing_PickPocketed		= 1;
 
 //slf - thief
 //oth - victim
@@ -74,9 +70,14 @@ func int C_CanPickPocket (var C_NPC slf, var C_NPC oth) {
 
 /*
 For example here is my function, where I am checking whether NPC can be pickpocketed or not:
+
+const int AIV_MOD_PICKPOCKET				= 49;
+	const int PickPocketing_CanBePickPocketed	= 0;
+	const int PickPocketing_PickPocketed		= 1;
+
 func int C_ModCanPickPocket (var C_NPC slf, var C_NPC oth) {
 	//Player Talent PickPocketing
-	if (!vPT_PickPocketing) { return FALSE; };
+	if (!Knows_PickPocketing) { return FALSE; };
 
 	//If NPC was already pickpocketed we wont be able to steal more items
 	if (oth.aivar [AIV_MOD_PICKPOCKET] == PickPocketing_PickPocketed) { return FALSE; };
@@ -97,10 +98,16 @@ func int C_ModCanPickPocket (var C_NPC slf, var C_NPC oth) {
 };
 */
 
-func void B_PickPocketing_Successfull () {
+/*
+ *	B_PickPocketing_Successfull
+ *	 - called when pickpocketing is successful - add here your own aivar update (assuming that you will use aivar to prevent multiple pickpocketings)
+ *	 - oth - steal victim
+ */
+func void B_PickPocketing_Successfull (var C_NPC oth) {
 	//My custom mod function located outside of this package
-	MEM_CallByString ("B_PickPocketing_GiveXP");
-
-	var C_NPC npc; npc = Hlp_GetNPC (StealVictim);
-	npc.aivar [AIV_MOD_PICKPOCKET] = PickPocketing_PickPocketed;
+	var int symbID; symbID = MEM_FindParserSymbol ("B_ModPickPocketing_Successfull");
+	if (symbID != -1) {
+		MEM_PushInstParam (oth);
+		MEM_CallByID (symbID);
+	};
 };

@@ -79,7 +79,7 @@ func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
 };
 
 /*
- *	AI_TurnToVobPtr
+ *	AI_TurnToWP
  *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
  */
 func void AI_TurnToWP (var int slfinstance, var string waypoint) {
