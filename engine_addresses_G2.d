@@ -311,8 +311,7 @@ func int _getInterfaceScaling () {
 /*
  *	Changes screen color - taken from LeGo FocusNames
  */
-func void SetFontColor (var int col)
-{
+func void SetFontColor (var int col) {
 	//0x006FFD80 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
 	const int zCView__SetFontColor_G1 = 7339392;
 
@@ -320,11 +319,16 @@ func void SetFontColor (var int col)
 	const int zCView__SetFontColor_G2 = 8034576;
 
 	var int ptr; ptr = MEM_Alloc (4);
-
 	MEM_WriteInt (ptr, col);
 
-	CALL_PtrParam (ptr);
-	CALL__thiscall (MEM_ReadInt (screen_offset), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
+	var int screenPtr; screenPtr = MEM_ReadInt (screen_offset);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (ptr));
+		CALL__thiscall (_@ (screenPtr), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
+		call = CALL_End();
+	};
 
 	MEM_Free (ptr);
 };
