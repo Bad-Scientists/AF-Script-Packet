@@ -225,11 +225,12 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 func void _eventCloseInventory_PickPocketing (var int eventType) {
 	//Is player in pickpocketing dialog?
 	if (PickPocketingStatus == PickPocketingStatus_Active) {
-
+		//--> no longer required (TODO: test more thoroughly!)
 		//In certain situations we have to close inventory dead npc inventary by ourselves (otherwise it would remain opened)
-		if (eventType == evOpenScreenMap) || (eventType == evStatusScreenShow) || (eventType == evLogScreenShow) {
-			oCNPC_CloseDeadNpc (StealHelper);
-		};
+		//if (eventType == evOpenScreenMap) || (eventType == evStatusScreenShow) || (eventType == evLogScreenShow) {
+		//	oCNPC_CloseDeadNpc (StealHelper);
+		//};
+		//<--
 
 		oCNPC_SetFocusVob (hero, 0);
 		NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
