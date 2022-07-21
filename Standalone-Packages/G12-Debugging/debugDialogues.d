@@ -157,87 +157,85 @@ instance DIA_Debug_Dialogues (C_Info) {
 };
 
 func int DIA_Debug_Dialogues_Condition() {
-	if (debugDialoguesEnabled) {
-		var int choiceIndex; choiceIndex = InfoManager_GetSelectedChoiceIndex ();
+	if (!debugDialoguesEnabled) { return FALSE; };
 
-		if ((choiceIndex >= 0) && (choiceIndex < debugDialoguesChoiceCount)) {
-			var string choiceText; choiceText = InfoManager_GetChoiceDescription (choiceIndex);
-			var string spinnerID; spinnerID = Choice_GetModifierSpinnerID (choiceText);
+	var int choiceIndex; choiceIndex = InfoManager_GetSelectedChoiceIndex ();
 
-			//--
+	if ((choiceIndex >= 0) && (choiceIndex < debugDialoguesChoiceCount)) {
+		var string choiceText; choiceText = InfoManager_GetChoiceDescription (choiceIndex);
+		var string spinnerID; spinnerID = Choice_GetModifierSpinnerID (choiceText);
 
-			var string lastSpinnerID;
+		//--
 
-			var int min;
-			var int max;
-			var int value;
-			var int oldValue;
+		var string lastSpinnerID;
 
-			//Choices are sorted from last added to first added --> so we have to flip our choice index here for infos!
-			var int infoIndex;
-			infoIndex = (debugDialoguesChoiceCount - 1) - choiceIndex;
+		var int min;
+		var int max;
+		var int value;
+		var int oldValue;
 
-			value = MEM_ReadIntArray (_@ (debugDialoguesTold), infoIndex);
-			oldValue = value;
+		//Choices are sorted from last added to first added --> so we have to flip our choice index here for infos!
+		var int infoIndex;
+		infoIndex = (debugDialoguesChoiceCount - 1) - choiceIndex;
 
-			//Min/max values
-			min = 0;
-			max = 1;
+		value = MEM_ReadIntArray (_@ (debugDialoguesTold), infoIndex);
+		oldValue = value;
 
-			//Check boundaries
-			if (value < min) { value = min; };
-			if (value > max) { value = max; };
+		//Min/max values
+		min = 0;
+		max = 1;
 
-			var int isActive;
-			isActive = Hlp_StrCmp (InfoManagerSpinnerID, spinnerID);
+		//Check boundaries
+		if (value < min) { value = min; };
+		if (value > max) { value = max; };
 
-			//Setup spinner if spinner ID has changed
-			if (isActive) {
-				//What is current InfoManagerSpinnerID ?
-				if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
-					//Update value
-					InfoManagerSpinnerValue = value;
-				};
+		var int isActive;
+		isActive = Hlp_StrCmp (InfoManagerSpinnerID, spinnerID);
 
-				//Page Up/Down quantity
-				InfoManagerSpinnerPageSize = 1;
-
-				//Min/max value (Home/End keys)
-				InfoManagerSpinnerValueMin = min;
-				InfoManagerSpinnerValueMax = max;
-
-				//Update
-				value = InfoManagerSpinnerValue;
+		//Setup spinner if spinner ID has changed
+		if (isActive) {
+			//What is current InfoManagerSpinnerID ?
+			if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
+				//Update value
+				InfoManagerSpinnerValue = value;
 			};
 
-			var int spinnerValueChanged; spinnerValueChanged = (value != oldValue);
+			//Page Up/Down quantity
+			InfoManagerSpinnerPageSize = 1;
 
-			if (spinnerValueChanged) {
-				MEM_WriteIntArray (_@ (debugDialoguesTold), infoIndex, value);
-			};
+			//Min/max value (Home/End keys)
+			InfoManagerSpinnerValueMin = min;
+			InfoManagerSpinnerValueMax = max;
 
-			//Update choice description!
-			if ((isActive) && (spinnerValueChanged)) {
-				var int infoPtr; infoPtr = MEM_ReadIntArray (_@ (debugDialoguesDialogInstPtr), infoIndex);
-
-				if (infoPtr) {
-					//Update told property
-					var oCInfo dlgInstance; dlgInstance = _^ (infoPtr);
-					dlgInstance.told = value;
-
-					//Update choice text
-					choiceText = DebugDialogues_BuildChoiceTextFromInfo (infoPtr, infoIndex);
-					InfoManager_SetInfoChoiceText_BySpinnerID (choiceText, spinnerID);
-				};
-			};
-
-			lastSpinnerID = InfoManagerSpinnerID;
+			//Update
+			value = InfoManagerSpinnerValue;
 		};
 
-		return TRUE;
+		var int spinnerValueChanged; spinnerValueChanged = (value != oldValue);
+
+		if (spinnerValueChanged) {
+			MEM_WriteIntArray (_@ (debugDialoguesTold), infoIndex, value);
+		};
+
+		//Update choice description!
+		if ((isActive) && (spinnerValueChanged)) {
+			var int infoPtr; infoPtr = MEM_ReadIntArray (_@ (debugDialoguesDialogInstPtr), infoIndex);
+
+			if (infoPtr) {
+				//Update told property
+				var oCInfo dlgInstance; dlgInstance = _^ (infoPtr);
+				dlgInstance.told = value;
+
+				//Update choice text
+				choiceText = DebugDialogues_BuildChoiceTextFromInfo (infoPtr, infoIndex);
+				InfoManager_SetInfoChoiceText_BySpinnerID (choiceText, spinnerID);
+			};
+		};
+
+		lastSpinnerID = InfoManagerSpinnerID;
 	};
 
-	return FALSE;
+	return TRUE;
 };
 
 func void DIA_Debug_Dialogues_Info () {
