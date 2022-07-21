@@ -125,10 +125,21 @@ func void oCMobFire_SetFireVobtreeName (var int mobPtr, var string fireVobtreeNa
 	mob.fireVobtreeName = fireVobtreeName;
 };
 
+/*
+ *	Function locks chest with specific key or pick lock string
+ *	 - use "-" if you don't want to update keyInstance / pickLockStr
+ *	MOB_SetLock ("CHEST", "KEY_GOMEZ", ""); //locks chest with KEY_GOMEZ, pick lock string is removed if present previously
+ *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "-"); //locks chest with KEY_GOMEZ, pick lock string is not touched if present previously
+ *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "LRLR"); //locks chest with KEY_GOMEZ, updates pick lock string to LRLR
+ */
 func void MOB_SetLock (var string mobName, var string keyInstance, var string pickLockStr) {
 	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
-	oCMobLockable_SetKeyInstance (mobPtr, keyInstance);
-	oCMobLockable_SetPickLockStr (mobPtr, pickLockStr);
+	if (!Hlp_StrCmp (keyInstance, "-")) {
+		oCMobLockable_SetKeyInstance (mobPtr, keyInstance);
+	};
+	if (!Hlp_StrCmp (pickLockStr, "-")) {
+		oCMobLockable_SetPickLockStr (mobPtr, pickLockStr);
+	};
 };
 
 /*
