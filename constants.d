@@ -21,9 +21,20 @@ enum zTMdl_AniDir {
 	zMDL_ANIDIR_ENDFASTEST
 };
 */
-const int AniDir_Forward = 0;
-const int AniDir_Reverse = 1;
-const int AniDir_EndFastest = 2;
+const int ANIDIR_FORWARD = 0;
+const int ANIDIR_REVERSE = 1;
+const int ANIDIR_ENDFASTEST = 2;
+
+/*
+enum {
+	zMDL_STARTANI_DEFAULT,
+	zMDL_STARTANI_ISNEXTANI,
+	zMDL_STARTANI_FORCE
+};
+*/
+const int STARTANI_DEFAULT = 0;
+const int STARTANI_ISNEXTANI = 1;
+const int STARTANI_FORCE = 2;
 
 /*
 enum zTRnd_AlphaBlendFunc {
