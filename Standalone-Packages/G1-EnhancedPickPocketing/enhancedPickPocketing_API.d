@@ -98,8 +98,16 @@ func int C_ModCanPickPocket (var C_NPC slf, var C_NPC oth) {
 };
 */
 
-func void B_PickPocketing_Successfull () {
+/*
+ *	B_PickPocketing_Successfull
+ *	 - called when pickpocketing is successful - add here your own aivar update (assuming that you will use aivar to prevent multiple pickpocketings)
+ *	 - oth - steal victim
+ */
+func void B_PickPocketing_Successfull (var C_NPC oth) {
 	//My custom mod function located outside of this package
-	MEM_CallByString ("B_PickPocketing_GiveXP");
-
+	var int symbID; symbID = MEM_FindParserSymbol ("B_ModPickPocketing_Successfull");
+	if (symbID != -1) {
+		MEM_PushInstParam (oth);
+		MEM_CallByID (symbID);
+	};
 };

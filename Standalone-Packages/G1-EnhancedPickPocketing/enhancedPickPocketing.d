@@ -218,7 +218,7 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
 
 	//API function called (for XP, anything else you want)
-	B_PickPocketing_Successfull ();
+	B_PickPocketing_Successfull (StealVictim);
 };
 
 func void _eventCloseInventory_PickPocketing (var int eventType) {
