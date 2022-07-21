@@ -2,6 +2,22 @@
  *	Dependencies: vectors.d
  */
 
+func void zCObject_Release (var int ptr) {
+	//0x0042AC30 public: int __thiscall zCObject::Release(void)
+	const int zCObject__Release_G1 = 4369456;
+
+	//0x0040C310 public: int __thiscall zCObject::Release(void)
+	const int zCObject__Release_G2 = 4244240;
+
+	if (!Hlp_Is_zCObject (ptr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (zCObject__Release_G1, zCObject__Release_G2));
+		call = CALL_End();
+	};
+};
+
 /*
  *
  */
