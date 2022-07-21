@@ -864,7 +864,7 @@ func void zMAT4_SetRightVector (var int trafoPtr, var int vecPtr)
 /*
  *
  */
-func void zMAT4__PostRotateX (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateX (var int trafoPtr, var int degrees) {
 	//0x00507A40 public: void __thiscall zMAT4::PostRotateX(float)
 	const int zMAT4__PostRotateX_G1 = 5274176;
 
@@ -881,7 +881,7 @@ func void zMAT4__PostRotateX (var int trafoPtr, var int degrees) {
 	};
 };
 
-func void zMAT4__PostRotateY (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateY (var int trafoPtr, var int degrees) {
 	//0x00507A90 public: void __thiscall zMAT4::PostRotateY(float)
 	const int zMAT4__PostRotateY_G1 = 5274256;
 
@@ -898,7 +898,7 @@ func void zMAT4__PostRotateY (var int trafoPtr, var int degrees) {
 	};
 };
 
-func void zMAT4__PostRotateZ (var int trafoPtr, var int degrees) {
+func void zMAT4_PostRotateZ (var int trafoPtr, var int degrees) {
 	//0x00507AE0 public: void __thiscall zMAT4::PostRotateZ(float)
 	const int zMAT4__PostRotateZ_G1 = 5274336;
 

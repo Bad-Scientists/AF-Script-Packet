@@ -46,7 +46,7 @@ func void Vob_ThrowFromPosPtrToPosPtr (var int vobPtr, var int fromPosPtr, var i
 	VectorDirToTrf (_@ (dir), _@ (trafo));
 
 	//X axis rotation, in order to turn vektor up we have to use negative value for angle
-	zMAT4__PostRotateX (_@ (trafo), negf (mkf (angle)));
+	zMAT4_PostRotateX (_@ (trafo), negf (mkf (angle)));
 
 	//Velocity calculation
 
@@ -267,7 +267,7 @@ func void testOutVector () {
 	//X axis rotation, in order to turn vektor up we have to use negative value for angle
 	var int angle; angle = 45;
 	VectorDirToTrf (_@ (dir), _@ (trafoRot));
-	zMAT4__PostRotateX (_@ (trafoRot), negf (mkf (angle)));
+	zMAT4_PostRotateX (_@ (trafoRot), negf (mkf (angle)));
 	TrfDirToVector (_@ (trafoRot), _@ (dir));
 
 	var int speed; speed = mkf (1000);
