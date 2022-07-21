@@ -213,9 +213,7 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	oCNPC_SetFocusVob (hero, 0);
 
 	//Close inventory
-	//0x0066C1E0 public: virtual void __thiscall oCNpcInventory::Close(void) 
-	const int oCNpcInventory__Close = 6734304;
-	CALL__thiscall (_@ (NpcContainer), oCNpcInventory__Close);
+	oCNpcInventory_Close (_@ (NpcContainer));
 
 	//Transfer inventory back to victim
 	NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
