@@ -1,6 +1,16 @@
 /*
  *
  */
+func int Hlp_Is_zCObject (var int ptr) {
+	//0x00873E70 private: static class zCClassDef zCObject::classDef
+	const int zCObject__classDef_G1 = 8863344;
+
+	//0x008D8CD8 private: static class zCClassDef zCObject::classDef
+	const int zCObject__classDef_G2 = 9276632;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCObject__classDef_G1, zCObject__classDef_G2));
+};
+
 func int Hlp_Is_zCTrigger (var int ptr) {
 	//0x008D7B78 private: static class zCClassDef zCTrigger::classDef
 	const int zCTrigger__classDef_G1 = 9272184;
