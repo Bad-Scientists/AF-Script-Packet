@@ -22,7 +22,7 @@
  *		- You need to update B_AssessSC - check if player is in ZS_PickPocketing AI state, if yes - close player's inventory and start ZS_CatchThief on NPC
  *
 
-			FUNC VOID B_AssessSC () {
+			func void B_AssessSC () {
 
 				if (NPC_GetWalkMode (hero) != NPC_SNEAK)
 				|| (NPC_CanSeeNPC (self, hero) && (NPC_IsNpcInAngleX (self, hero, 60)))

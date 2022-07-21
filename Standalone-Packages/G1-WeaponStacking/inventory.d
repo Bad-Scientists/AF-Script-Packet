@@ -47,10 +47,10 @@ func void NPC_SplitMultipleEquippedWeapons (var int slfInstance){
 	while (ptr);
 		list = _^ (ptr);
 		var int itemPtr; itemPtr = list.data;
-		
+
 		if (itemPtr){
 			itm = _^ (itemPtr);
-			
+
 			//Check equipped weapons
 			if ((itm.mainflag & ITEM_KAT_NF) || (itm.mainflag & ITEM_KAT_FF))
 			&& ((itm.flags & ITEM_ACTIVE_LEGO) == ITEM_ACTIVE_LEGO){
@@ -59,7 +59,7 @@ func void NPC_SplitMultipleEquippedWeapons (var int slfInstance){
 					//pointers will be scrambled when oCNPC_EquipPtr and oCNPC_UnequipItemPtr are used! (because of hooked oCNPC_Equip, oCNPC_Unequip functions)
 					//That is why we have to use item instance
 					var int itemInstance; itemInstance = Hlp_GetInstanceID (itm);
-					
+
 					//Re-equip
 					oCNPC_UnequipItemPtr (slf, itemPtr);
 
@@ -97,16 +97,16 @@ func void NPC_WeaponInstanceRemoveAddFlags (var int slfInstance, var int itemIns
 
 	var int itemPtr;
 	var oCItem itm;
-	
+
 	while (ptr);
 		list = _^ (ptr);
-		
+
 		itemPtr = list.data;
 		ptr = list.next;
-		
+
 		if (itemPtr) {
 			itm = _^ (itemPtr);
-			
+
 			if (Hlp_GetInstanceID (itm) == itemInstance) {
 				if (itm.flags & removeFlags) {
 					//Replace flags

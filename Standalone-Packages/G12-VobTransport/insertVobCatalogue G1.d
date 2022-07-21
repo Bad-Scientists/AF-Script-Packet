@@ -7,7 +7,6 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	var float right[3];
 
 	var int trafo[16];
-
 	NewTrafo(_@(trafo));
 
 //--

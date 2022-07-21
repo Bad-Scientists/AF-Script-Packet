@@ -38,13 +38,13 @@ const int zCTrigger_bitfield_sendUntrigger     = ((1 << 1) - 1) << (8 + 2);		//1
 			oCTriggerScript._zCTrigger_fireDelaySec
 			oCTriggerScript._zCTrigger_retriggerWaitSec
  */
- 
+
 const int zCTrigger_bitfield_reactToOnContact	= ((1 << 1) - 1) << (8 + 4);		//4096
 
 func int zCTrigger_CanBeActivatedNow (var int trigger, var int vobPtr) {
 	//0x005E33B0 protected: virtual int __thiscall zCTrigger::CanBeActivatedNow(class zCVob *)
 	const int zCTrigger__CanBeActivatedNow_G1 = 6173616;
-	
+
 	//0x00610220 protected: virtual int __thiscall zCTrigger::CanBeActivatedNow(class zCVob *)
 	const int zCTrigger__CanBeActivatedNow_G2 = 6357536;
 
@@ -68,9 +68,9 @@ func void _hook_zCTrigger_OnTrigger () {
 	if (!ECX) { return; };
 
 	if (Hlp_Is_oCTriggerScript (ECX)) {
-		var string funcName; 
+		var string funcName;
 		var oCTriggerScript ts; ts = _^ (ECX);
-		
+
 		//reactOnContact
 		if (ts._zCTrigger_bitfield & zCTrigger_bitfield_reactToOnContact) {
 			//Default _zCTrigger_fireDelaySec (cannot be 0 for OnContact event!)
@@ -140,13 +140,13 @@ func void _hook_zCTrigger_OnTouch () {
 	const string cacheFunc = ""; const int cacheSymbID = 0;
 
 	if (!ECX) { return; };
-	
+
 	var int vobPtr; vobPtr = MEM_ReadInt (ESP + 4);
 
 	if (!vobPtr) { return; };
 
 	if (Hlp_Is_oCTriggerScript (ECX)) {
-		var string funcName; 
+		var string funcName;
 		var oCTriggerScript ts; ts = _^ (ECX);
 
 		//reactOnContact
@@ -164,7 +164,7 @@ func void _hook_zCTrigger_OnTouch () {
 			if (ts._zCTrigger_bitfield & zCTrigger_bitfield_callEventFuncs) {
 				if (STR_Len (ts.scriptFunc)) {
 					funcName = ConcatStrings (ts.scriptFunc, "_OnContact");
-				
+
 					if (Hlp_StrCmp (cacheFunc, funcName)) {
 						symbID = cacheSymbID;
 					} else {
@@ -192,7 +192,7 @@ func void _hook_zCTrigger_OnTouch () {
 			if (ts._zCTrigger_bitfield & zCTrigger_bitfield_callEventFuncs) {
 				if (STR_Len (ts.scriptFunc)) {
 					funcName = ConcatStrings (ts.scriptFunc, "_OnTouch");
-				
+
 					if (Hlp_StrCmp (cacheFunc, funcName)) {
 						symbID = cacheSymbID;
 					} else {
@@ -226,7 +226,7 @@ func void _hook_zCTrigger_OnUntouch () {
 	if (!vobPtr) { return; };
 
 	if (Hlp_Is_oCTriggerScript (ECX)) {
-		var string funcName; 
+		var string funcName;
 		var oCTriggerScript ts; ts = _^ (ECX);
 
 		if (ts._zCTrigger_bitfield & zCTrigger_bitfield_reactToOnContact)
@@ -260,17 +260,17 @@ func void _hook_zCTrigger_OnUntouch () {
 
 func void G12_EnhancedoCTriggerScript_Init () {
 	const int once = 0;
-	
+
 	if (!once) {
 		//Hooked zCTrigger::OnTrigger event
 		HookEngine (zCTrigger__OnTrigger, 7, "_hook_zCTrigger_OnTrigger");
-	
+
 		//Hooked zCTrigger::OnTouch event
 		HookEngine (zCTrigger__OnTouch, 7, "_hook_zCTrigger_OnTouch");
 
 		//Hooked zCTrigger::OnUntouch event
 		HookEngine (zCTrigger__OnUntouch, 10, "_hook_zCTrigger_OnUntouch");
-		
+
 		once = 1;
 	};
 };
