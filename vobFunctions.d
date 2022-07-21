@@ -1300,10 +1300,10 @@ func int zCModel_GetNodePositionWorld (var int modelPtr, var int nodePtr, var in
 };
 
 /*
- *	zCVob_GetTrafoModelNodeToWorld
- *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafof of object itself
+ *	zCVob_GetTrafoModelNodeToWorldByName
+ *	 - updates trafoPtr with trafo of the node, if node does not exist then with trafo of object itself
  */
-func void zCVob_GetTrafoModelNodeToWorld (var int vobPtr, var string nodeName, var int trafoPtr) {
+func void zCVob_GetTrafoModelNodeToWorldByName (var int vobPtr, var string nodeName, var int trafoPtr) {
 	//0x005D83E0 public: class zMAT4 __thiscall zCVob::GetTrafoModelNodeToWorld(class zSTRING const &)
 	const int zCVob__GetTrafoModelNodeToWorld_G1 = 6128608;
 
@@ -1331,7 +1331,7 @@ func int zCVob_GetTrafoModelNode (var int vobPtr, var string nodeName, var int t
 
 	if (!zCModel_SearchNode (visualPtr, nodeName)) { return FALSE; };
 
-	zCVob_GetTrafoModelNodeToWorld (vobPtr, nodeName, trafoPtr);
+	zCVob_GetTrafoModelNodeToWorldByName (vobPtr, nodeName, trafoPtr);
 
 	return TRUE;
 };
