@@ -45,6 +45,74 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 	if (!ptr) { return 0; };
 
+	//Quick loot
+	if (key == KEY_Q) {
+		openInvType = Hlp_GetOpenInventoryType ();
+
+		if (openInvType == OpenInvType_Chest) {
+			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
+
+			//Inventory does not have to be closed.
+			//We will close it anyway - when player calls quickloot he probably wants to pick items from chest and leave
+			oCItemContainer_Close (openInvContainerPtr);
+
+			//Close players inventory
+			oCNPC_CloseInventory (hero);
+
+			//Enable custom prints for transferred items
+			_MobTransferItemPrint_Event_Enabled = TRUE;
+
+			//Transfer all items
+			npc = Hlp_GetNPC (hero);
+			Mob_TransferItemsToNPC (npc.interactMob, hero);
+
+			//Disable custom prints for transferred items
+			_MobTransferItemPrint_Event_Enabled = FALSE;
+
+			//Send mob state change (from state S1 to S0) - hero will stop interaction with mob
+			oCMobInter_SendStateChange (npc.interactMob, 1, 0);
+
+			return TRUE;
+		} else
+		if (openInvType == OpenInvType_NPC) {
+			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
+
+			//If player is in pickpocketing mode - then transfer a **single item** and exit (pickpocketing hook will take care of the rest)
+			if (NPC_IsInStateName (hero, "ZS_PICKPOCKETING")) {
+				//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
+				//dir: -1 - left, 1 - right
+				retVal = oCItemContainer_TransferItem (openInvContainerPtr, 1, 1);
+				return TRUE;
+			};
+
+			npcContainer = _^ (openInvContainerPtr);
+			npc = _^ (npcContainer.inventory2_owner);
+
+			//Inventory has to be closed !! otherwise items would duplicate when NPC_TransferInventory is called
+
+			//... that's okay, if player calls quickloot he probably wants to pick up items and leave
+
+			//Close inventory (oCNpcContainer)
+			oCNpcInventory_Close (openInvContainerPtr);
+
+			//Close players inventory
+			oCNPC_CloseInventory (hero);
+
+			//We have to reset focus_vob
+			oCNPC_SetFocusVob (hero, 0);
+
+			//Enable custom prints for transferred items
+			_NpcTransferItemPrint_Event_Enabled = TRUE;
+
+			//Transfer all items
+			NPC_TransferInventory (npc, hero, FALSE, TRUE, TRUE);
+
+			//Disable custom prints for transferred items
+			_NpcTransferItemPrint_Event_Enabled = FALSE;
+
+			return TRUE;
+		};
+	} else
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
@@ -120,6 +188,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 				itmPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
 
 				if (itmPtr) {
+					//Left Alt move complete slot
 					itm = _^ (itmPtr);
 					amount = itm.amount;
 
