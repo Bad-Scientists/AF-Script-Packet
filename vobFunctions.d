@@ -409,15 +409,6 @@ func void Vob_RemoveCollBits (var int vobPtr, var int collBits) {
 };
 
 /*
- *	Vob_RestoreCollBits - will apply collisions based on input bitfield values in collBits
- */
-func void Vob_RestoreCollBits (var int vobPtr, var int collBits) {
-	if (!vobPtr) { return; };
-	var zCVob vob; vob = _^ (vobPtr);
-	vob.bitfield[0] = (vob.bitfield[0] | collBits);
-};
-
-/*
  *	Rotates vob on its X axis
  */
 func void zCVob_RotateLocalX (var int vobPtr, var int x) {
