@@ -58,7 +58,7 @@ func void zCSkyControler_Outdoor_SetRainFXWeight (var int weightF, var int durat
  *	Engine function that sets weather type
  */
 func void zCSkyControler_Outdoor_SetWeatherType (var int weatherType) {
-	//
+	//G1 does not have weather types
 	const int zCSkyControler_Outdoor__SetWeatherType_G1 = 0;
 
 	//0x005EB830 public: virtual void __thiscall zCSkyControler_Outdoor::SetWeatherType(enum zTWeather)
@@ -82,7 +82,7 @@ func void zCSkyControler_Outdoor_SetWeatherType (var int weatherType) {
  *	Engine function that sets weather type
  */
 func void zCOutdoorRainFX_SetWeatherType (var int weatherType) {
-	//
+	//G1 does not have weather types
 	const int zCOutdoorRainFX__SetWeatherType_G1 = 0;
 
 	//0x005E1570 public: void __thiscall zCOutdoorRainFX::SetWeatherType(enum zTWeather)
@@ -385,10 +385,10 @@ func void Wld_StopRain () {
 	//What we want is a nice transition when turning off the rain, at the same time we want stop rain fairly quickly
 
 	//Here is the idea ... when we call Wld_StopRain we will change both values:
-	//	rainFX_timeStopRain	to current time + 4 minutes (ingame)
+	//	rainFX_timeStopRain	to current time + 5 minutes (ingame)
 	//	rainFX_timeStartRain	to current time - 15 minutes (ingame)
 
-	//This gives us buffer 20% --> fade out transition is smooth
+	//This gives us buffer 25% --> fade out transition is smooth
 
 	//Problem: when it is not fully raining (rainFX_outdoorRainFXWeight <> FLOATONE) then transition is not smooth anymore
 	//1. figure out whether we are fading in or out
@@ -413,7 +413,7 @@ func void Wld_StopRain () {
 	//Are we fading-in?
 	percentage = divF (deltaFadeIn, duration);
 	if lef (percentage, castToIntF (0.2)) {
-		MEM_Info ("Wld_StopRain: rain fading in ... flipping fade-in to fade-out, shutting off rain in next 4 minutes");
+		MEM_Info ("Wld_StopRain: rain fading in ... flipping fade-in to fade-out, shutting off rain in next 5 minutes");
 
 		//Flipped ratio for actual percentage
 		offsetEnd = mulf (mkf (20), percentage);
@@ -422,17 +422,17 @@ func void Wld_StopRain () {
 		//Are we fading-out?
 		percentage = divF (deltaFadeOut, duration);
 		if lef (percentage, castToIntF (0.2)) {
-			MEM_Info ("Wld_StopRain: rain fading out ... shutting off rain in next 4 minutes");
+			MEM_Info ("Wld_StopRain: rain fading out ... shutting off rain in next 5 minutes");
 
 			//Flipped ratio for actual percentage
 			offsetEnd = mulf (mkf (20), percentage);
 			offsetStart = subf (mkf (20), offsetEnd);
 		} else {
-			MEM_Info ("Wld_StopRain: Heavy rain ... shutting off rain in next 4 minutes");
+			MEM_Info ("Wld_StopRain: Heavy rain ... shutting off rain in next 5 minutes");
 
-			//ratio exactly 20%
-			offsetStart = mkf (16);
-			offsetEnd = mkf (4);
+			//ratio exactly 25%
+			offsetStart = mkf (15);
+			offsetEnd = mkf (5);
 		};
 	};
 
