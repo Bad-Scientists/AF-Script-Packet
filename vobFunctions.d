@@ -935,7 +935,7 @@ func string zMAT4_GetDescriptionRot (var int trafoPtr) {
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionRot_G1, zMAT4__GetDescriptionRot_G2));
-	return CALL_RetValAszstring ();
+	return STR_Trim (CALL_RetValAszstring (), " ");
 };
 
 /*
@@ -952,7 +952,7 @@ func string zMAT4_GetDescriptionPos (var int trafoPtr) {
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionPos_G1, zMAT4__GetDescriptionPos_G2));
-	return CALL_RetValAszstring ();
+	return STR_Trim (CALL_RetValAszstring (), " ");
 };
 
 /*
@@ -1511,4 +1511,30 @@ func void zCVob_SetAI (var int vobPtr, var int ai) {
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetAI_G1, zCVob__SetAI_G2));
 		call = CALL_End ();
 	};
+};
+
+func string Vob_GetDescriptionRot (var int vobPtr) {
+	var int trafo[16];
+	zCVob_GetTrafo (vobPtr, _@ (trafo));
+	return zMAT4_GetDescriptionRot (_@ (trafo));
+};
+
+func string Vob_GetDescriptionPos (var int vobPtr) {
+	var int trafo[16];
+	zCVob_GetTrafo (vobPtr, _@ (trafo));
+	return zMAT4_GetDescriptionPos (_@ (trafo));
+};
+
+func void Vob_SetByDescriptionRot (var int vobPtr, var string desc) {
+	var int trafo[16];
+	zCVob_GetTrafo (vobPtr, _@ (trafo));
+	zMAT4_SetByDescriptionRot (_@ (trafo), desc);
+	zCVob_SetTrafo (vobPtr, _@ (trafo));
+};
+
+func void Vob_SetByDescriptionPos (var int vobPtr, var string desc) {
+	var int trafo[16];
+	zCVob_GetTrafo (vobPtr, _@ (trafo));
+	zMAT4_SetByDescriptionPos (_@ (trafo), desc);
+	zCVob_SetTrafo (vobPtr, _@ (trafo));
 };
