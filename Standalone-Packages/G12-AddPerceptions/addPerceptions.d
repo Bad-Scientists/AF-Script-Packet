@@ -113,9 +113,10 @@ func void Npc_PercEnableCustom (var int slfInstance, var func percFunc) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
+	var string msg;
+
 	//With this function we will allow only 32 perceptions
 	if (slf.percActive + 1 >= NPC_PERC_MAX) {
-		var string msg;
 		msg = ConcatStrings ("Npc_PercEnableCustom: Npc ", GetSymbolName (Hlp_GetInstanceID (slf)));
 		msg = ConcatStrings (msg, " has already maximum number of perceptions enabled.");
 		MEM_Info (msg);
@@ -123,6 +124,16 @@ func void Npc_PercEnableCustom (var int slfInstance, var func percFunc) {
 	};
 
 	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	if (Npc_HasPercFunc (slf, percFunc)) {
+		msg = ConcatStrings ("Npc_PercEnableCustom: Npc ", GetSymbolName (Hlp_GetInstanceID (slf)));
+		msg = ConcatStrings (msg, " perception function ");
+		msg = ConcatStrings (msg, GetSymbolName (funcID));
+		msg = ConcatStrings (msg, " already enabled.");
+		MEM_Info (msg);
+		return;
+	};
+
 	var int percType; percType = oCNpc_GetNewPercType (slfInstance);
 	oCNpc_EnablePerception (slfInstance, percType, funcID);
 
