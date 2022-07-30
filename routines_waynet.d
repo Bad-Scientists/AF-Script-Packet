@@ -230,6 +230,52 @@ func int zCWay_GetGoalWaypoint (var int wayPtr, var int wpPtr) {
 };
 
 /*
+ *	zCWay_EstimateCost
+ *	 - returns zCWay 'manhattan' distance
+ */
+func void zCWay_EstimateCost (var int wayPtr) {
+	//0x00704EB0 protected: void __thiscall zCWay::EstimateCost(void)
+	const int zCWay__EstimateCost_G1 = 7360176;
+
+	//0x007AEAA0 protected: void __thiscall zCWay::EstimateCost(void)
+	const int zCWay__EstimateCost_G2 = 8055456;
+
+	if (!wayPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (wayPtr), MEMINT_SwitchG1G2 (zCWay__EstimateCost_G1, zCWay__EstimateCost_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	zCWay_GetLength
+ *	 - returns zCWay 'air' distance
+ */
+func int zCWay_GetLength (var int wayPtr) {
+	//0x00704F20 public: float __thiscall zCWay::GetLength(void)
+	const int zCWay__GetLength_G1 = 7360288;
+
+	//0x007AEB10 public: float __thiscall zCWay::GetLength(void)
+	const int zCWay__GetLength_G2 = 8055568;
+
+	if (!wayPtr) { return FLOATNULL; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_RetValIsFloat ();
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (wayPtr), MEMINT_SwitchG1G2 (zCWay__GetLength_G1, zCWay__GetLength_G2));
+		call = CALL_End ();
+	};
+
+	return + retVal;
+};
+
+/*
  *	zCRoute_InitWayNode
  *	 - for some reason wayNode is un-initialized, so here we will initialize it
  *	 - we will also setup first target --> it should be starting waypoint
@@ -241,8 +287,6 @@ func void zCRoute_InitWayNode (var int rt) {
 		route.target = route.startWp;
 	};
 };
-
-//0x007069D0 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zSTRING const &,class zCVob const *)
 
 func int zCWayNet_FindRoute_Positions (var int fromPosPtr, var int toPosPtr, var int vobPtr) {
 	//0x007068D0 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zVEC3 const &,class zCVob const *)
@@ -331,13 +375,83 @@ func int zCWayNet_FindRoute_Waypoints (var int fromWaypointPtr, var int toWaypoi
 	return +retVal;
 };
 
+func string zCRoute_GetDesc (var int routePtr) {
+	//0x00708C80 public: class zSTRING __thiscall zCRoute::GetDesc(void)
+	const int zCRoute__GetDesc_G1 = 7376000;
+
+	//0x007B2980 public: class zSTRING __thiscall zCRoute::GetDesc(void)
+	const int zCRoute__GetDesc_G2 = 8071552;
+
+	if (!routePtr) { return ""; };
+
+	CALL_RetValIszString();
+	CALL__thiscall (routePtr, MEMINT_SwitchG1G2 (zCRoute__GetDesc_G1, zCRoute__GetDesc_G2));
+	return CALL_RetValAszstring ();
+};
+
+/*
+ *	zCRoute_GetCost // int
+ *	 - function iterates through zCWay list - and calculates total 'cost'
+ */
+func int zCRoute_GetCost (var int routePtr) {
+	if (!routePtr) { return 0; };
+	var zCRoute rt; rt = _^ (routePtr);
+
+	//Loop through wayNodes
+	var int list; list = rt.wayNode;
+	if (!list) { return 0; };
+
+	var int totalCost; totalCost = 0;
+
+	while (list);
+		var zCList l; l = _^ (list);
+
+		if (l.data) {
+			zCWay_EstimateCost (l.data);
+
+			var zCWay way; way = _^ (l.data);
+			totalCost += way.cost;
+		};
+
+		list = l.next;
+	end;
+
+	return totalCost;
+};
+
+/*
+ *	zCRoute_GetLength // float
+ *	 - function iterates through zCWay list - and calculates total length
+ */
+func int zCRoute_GetLength (var int routePtr) {
+	if (!routePtr) { return FLOATNULL; };
+	var zCRoute rt; rt = _^ (routePtr);
+
+	//Loop through wayNodes
+	var int list; list = rt.wayNode;
+	if (!list) { return FLOATNULL; };
+
+	var int totalCost; totalCost = FLOATNULL;
+
+	while (list);
+		var zCList l; l = _^ (list);
+
+		if (l.data) {
+			totalCost = addF (totalCost, zCWay_GetLength (l.data));
+		};
+
+		list = l.next;
+	end;
+
+	return totalCost;
+};
+
 /*
  *	zCRoute_GetWP
  *	 - function iterates through wayList data and finds which waypoint NPC will visit next (@ index)
  */
 func int zCRoute_GetWP (var int routePtr, var int index) {
 	if (!routePtr) { return 0; };
-
 	var zCRoute rt; rt = _^ (routePtr);
 
 	if (index <= 0) { index = 1; };
@@ -346,13 +460,11 @@ func int zCRoute_GetWP (var int routePtr, var int index) {
 	if (index == 1) { return rt.target; };
 
 	//Loop through wayNodes
+	var int list; list = rt.wayNode;
+	if (!list) { return 0; };
 
 	//Remember target
 	var int target; target = rt.target;
-
-	var int list; list = rt.wayNode;
-
-	if (!list) { return 0; };
 
 	index += 1;
 	repeat (i, index); var int i;
@@ -442,6 +554,7 @@ func string NPC_GetLastRoutineWP (var int slfInstance) {
 	// state.aiStateDriven
 
 //
+
 	if (state.rntChangeCount == 0) {
 		state.walkmode_routine = TRUE;
 	};
@@ -741,6 +854,76 @@ func void zCWayNet_InsertWaypoint_ByPtr (var int wpPtr) {
 	};
 };
 
+/*
+ *	zCWayNet_HasWaypoint
+ *	 - checks if waypoint is in waynet
+ */
+func int zCWayNet_HasWaypoint (var int wpPtr) {
+	//0x00703360 public: int __thiscall zCWayNet::HasWaypoint(class zCWaypoint *)
+	const int zCWayNet__HasWaypoint_G1 = 7353184;
+
+	//0x007ACF70 public: int __thiscall zCWayNet::HasWaypoint(class zCWaypoint *)
+	const int zCWayNet__HasWaypoint_G2 = 8048496;
+
+	if (!wpPtr) { return FALSE; };
+	if (!MEM_World.wayNet) { return FALSE; };
+
+	var int waynetPtr; waynetPtr = MEM_World.wayNet;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PtrParam (_@ (wpPtr));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (waynetPtr), MEMINT_SwitchG1G2 (zCWayNet__HasWaypoint_G1, zCWayNet__HasWaypoint_G2));
+		call = CALL_End ();
+	};
+
+	return + retVal;
+};
+
+func void zCWaypoint_Free (var int wpPtr) {
+	//0x00705E10 protected: void __thiscall zCWaypoint::Free(void)
+	const int zCWaypoint__Free_G1 = 7353184;
+
+	//0x007AFA10 protected: void __thiscall zCWaypoint::Free(void)
+	const int zCWaypoint__Free_G2 = 8048496;
+
+	if (!wpPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (wpPtr), MEMINT_SwitchG1G2 (zCWaypoint__Free_G1, zCWaypoint__Free_G2));
+		call = CALL_End ();
+	};
+};
+
+func void zCWaypoint_Destructor (var int wpPtr) {
+	//0x00705E80 protected: virtual __thiscall zCWaypoint::~zCWaypoint(void)
+	const int zCWaypoint__zCWaypoint_G1 = 7364224;
+
+	//0x007AFA80 protected: virtual __thiscall zCWaypoint::~zCWaypoint(void)
+	const int zCWaypoint__zCWaypoint_G2 = 8059520;
+
+	if (!wpPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (wpPtr), MEMINT_SwitchG1G2 (zCWaypoint__zCWaypoint_G1, zCWaypoint__zCWaypoint_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	zCWaypoint_Delete
+ *	 - function deletes waypoint
+ */
+func void zCWaypoint_Delete (var int wpPtr) {
+	zCWaypoint_Free (wpPtr);
+	zCWaypoint_Destructor (wpPtr);
+};
+
 func void zCWayNet_DeleteWaypoint_ByPtr (var int wpPtr) {
 	//0x007036A0 public: void __thiscall zCWayNet::DeleteWaypoint(class zCWaypoint *)
 	const int zCWayNet__DeleteWaypoint_G1 = 7354016;
@@ -750,6 +933,12 @@ func void zCWayNet_DeleteWaypoint_ByPtr (var int wpPtr) {
 
 	if (!wpPtr) { return; };
 	if (!MEM_World.wayNet) { return; };
+
+	//If waypoint is not in waynet - delete directly
+	if (!zCWayNet_HasWaypoint (wpPtr)) {
+		zCWaypoint_Delete (wpPtr);
+		return;
+	};
 
 	var int waynetPtr; waynetPtr = MEM_World.wayNet;
 
@@ -990,4 +1179,187 @@ func int WP_Create (var string waypointName, var int posPtr, var int connectWith
 	};
 
 	return newWpPtr;
+};
+
+/*
+ *	Wrapper / convenience functions
+ */
+
+/*
+ *	WP_GetNearestWPAtPos
+ *	 - finds nearest waypoint to specified position
+ */
+func string WP_GetNearestWPAtPos (var int posPtr) {
+	var int wpPtr; wpPtr = zCWayNet_GetNearestWaypoint (posPtr);
+
+	if (wpPtr) {
+		var zCWaypoint wp;
+		wp = _^ (wpPtr);
+		return wp.Name;
+	};
+
+	return "";
+};
+
+/*
+ *	WP_GetNearestWPAtVob
+ *	 - finds nearest waypoint to specified vob pointer
+ */
+func string WP_GetNearestWPAtVob (var int vobPtr) {
+	var int pos[3];
+	if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+		return "";
+	};
+
+	return WP_GetNearestWPAtPos (_@ (pos));
+};
+
+/*
+ *	WP_GetDistToPos // float
+ *	 - returns distance from waypoint to specified position
+ */
+func int WP_GetDistToPos (var string waypointName, var int posPtr) {
+	if (!posPtr) { return FLOATNULL; };
+
+	var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+	if (!wpPtr) { return FLOATNULL; };
+
+	var zCWaypoint wp; wp = _^ (wpPtr);
+
+	return + Pos_GetDistToPos (_@ (wp.pos), posPtr);
+};
+
+/*
+ *	WP_GetDistToVob // float
+ *	 - returns distance from waypoint to specified vob pointer
+ */
+func int WP_GetDistToVob (var string waypointName, var int vobPtr) {
+	var int pos[3];
+	if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+		return FLOATNULL;
+	};
+
+	var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+	if (!wpPtr) { return FLOATNULL; };
+
+	var zCWaypoint wp; wp = _^ (wpPtr);
+
+	return + Pos_GetDistToPos (_@ (wp.pos), _@ (pos));
+};
+
+/*
+ *	WP_CanSee
+ *	 - can we see vob from waypoint?
+ */
+func int WP_CanSee (var string waypointName, var int vobPtr) {
+	var int pos[3];
+	if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) { return 0; };
+
+	var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+	if (!wpPtr) { return 0; };
+
+	var zCWaypoint wp; wp = _^ (wpPtr);
+
+	var int ignoreListPtr; ignoreListPtr = MEM_ArrayCreate ();
+	MEM_ArrayInsert (ignoreListPtr, vobPtr);
+
+	pos[1] = addf (pos[1], mkf (100));
+
+	var int dir[3];
+	SubVectors (_@ (dir), _@ (pos), _@ (wp.pos));
+	var int f; f = divf (mkf (95), mkf (100));
+	MulVector (_@ (dir), f);
+
+	var int retVal; retVal = !zCWorld_TraceRayFirstHit (_@ (wp.pos), _@ (dir), ignoreListPtr, zTRACERAY_STAT_POLY | zTRACERAY_POLY_IGNORE_TRANSP);
+
+	MEM_ArrayFree (ignoreListPtr);
+
+	return + retVal;
+};
+
+func int oCAniCtrl_Human_DetectChasm (var int aniCtrlPtr, var int posPtr, var int dirPtr, var int distPtrF, var int cdNormalPtr) {
+	//0x0062D2F0 public: int __thiscall oCAniCtrl_Human::DetectChasm(class zVEC3 const &,class zVEC3 const &,float &,class zVEC3 &)
+	const int oCAniCtrl_Human__DetectChasm_G1 = 6476528;
+
+	//0x006B6A90 public: int __thiscall oCAniCtrl_Human::DetectChasm(class zVEC3 const &,class zVEC3 const &,float &,class zVEC3 &)
+	const int oCAniCtrl_Human__DetectChasm_G2 = 7039632;
+
+	if (!aniCtrlPtr) { return FALSE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (cdNormalPtr));
+		CALL_FloatParam (_@ (distPtrF));
+		CALL_PtrParam (_@ (dirPtr));
+		CALL_PtrParam (_@ (posPtr));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__DetectChasm_G1, oCAniCtrl_Human__DetectChasm_G2));
+		call = CALL_End();
+	};
+	return + retVal;
+};
+
+func int Npc_DetectChasm (var int slfInstance, var int posPtr, var int dirPtr, var int distF, var int cdNormalPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	if (!slf.aniCtrl) { return FALSE; };
+
+	return + oCAniCtrl_Human_DetectChasm (slf.aniCtrl, posPtr, dirPtr, distF, cdNormalPtr);
+};
+
+/*
+ *	WP_GenerateNewName
+ *	 - WP_GenerateNewName ("WP_3")); //Output "WP_004"
+	 - WP_GenerateNewName ("WP_002")); //Output "WP_003"
+	 - WP_GenerateNewName ("WP")); //Output "WP_001"
+ */
+func string WP_GenerateNewName (var string waypointName) {
+	var int i;
+	var int len; len = STR_Len (waypointName);
+
+	i = len;
+
+	while (i > 0);
+		if (Hlp_StrCmp (mySTR_SubStr (waypointName, i, 1), "_")) {
+			break;
+		};
+
+		i -= 1;
+	end;
+
+	var string s;
+	var int index; index = 1;
+
+	if (i > 0) {
+		s = mySTR_SubStr (waypointName, i + 1, STR_Len (waypointName) - i + 1);
+		if (STR_IsNumeric (s)) {
+			index = STR_ToInt (s);
+			index += 1;
+		} else {
+			i = len;
+		};
+	} else {
+		i = len;
+	};
+
+	s = IntToString (index);
+
+	if (index < 10) {
+		s = ConcatStrings ("00", s);
+	} else
+	if (index < 100) {
+		s = ConcatStrings ("0", s);
+	};
+
+	if (i < len) {
+		waypointName = mySTR_SubStr (waypointName, 0, i + 1);
+	} else {
+		waypointName = ConcatStrings (waypointName, "_");
+	};
+
+	waypointName = ConcatStrings (waypointName, s);
+	return waypointName;
 };
