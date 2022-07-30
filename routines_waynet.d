@@ -251,7 +251,6 @@ func int zCWayNet_FindRoute_Positions (var int fromPosPtr, var int toPosPtr, var
 	//0x007B04D0 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zVEC3 const &,class zCVob const *)
 	const int zCWayNet__FindRoute_G2 = 8062160;
 
-	if (!vobPtr) { return 0; };
 	if (!toPosPtr) { return 0; };
 	if (!fromPosPtr) { return 0; };
 	if (!MEM_World.wayNet) { return 0; };
