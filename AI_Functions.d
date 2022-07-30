@@ -22,11 +22,11 @@
  *	AI_TurnToPos
  *	 - same as AI_TurnToNPC, but allows us to use position
  */
-func void AI_TurnToPos (var int slfinstance, var int posPtr) {
+func void AI_TurnToPos (var int slfInstance, var int posPtr) {
 /*
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -54,8 +54,8 @@ func void AI_TurnToPos (var int slfinstance, var int posPtr) {
  *	AI_TurnAwayPos
  *	 - same as AI_TurnAway, but allows us to use position
  */
-func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnAwayPos (var int slfInstance, var int posPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	if (!posPtr) { return; };
@@ -82,8 +82,8 @@ func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
  *	AI_TurnToWP
  *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
  */
-func void AI_TurnToWP (var int slfinstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnToWP (var int slfInstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -105,8 +105,8 @@ func void AI_TurnToWP (var int slfinstance, var string waypoint) {
 		/
 	[pos]						(pos = [self] - [dir vector])
 */
-func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnAwayWP (var int slfInstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -121,10 +121,10 @@ func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
  *	AI_TurnToVobPtr
  *	 - same as AI_TurnToNPC, but allows us to use vob pointer
  */
-func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_TurnToVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -139,10 +139,10 @@ func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
  *	AI_TurnAwayVobPtr
  *	 - same as AI_TurnAway, but allows us to use vob pointer
  */
-func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_TurnAwayVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -157,11 +157,11 @@ func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
  *	AI_GotoPos
  *	 - same as AI_GotoNPC, but allows us to define position to which NPC should walk to
  */
-func void AI_GotoPos (var int slfinstance, var int posPtr) {
+func void AI_GotoPos (var int slfInstance, var int posPtr) {
 /*
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -189,7 +189,7 @@ func void AI_GotoPos (var int slfinstance, var int posPtr) {
  *	AI_GotoFpPtr
  *	 - same as AI_GotoFP, but allows us to define freePoint pointer
  */
-func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
+func void AI_GotoFpPtr (var int slfInstance, var int vobSpotPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
@@ -232,10 +232,10 @@ func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
  *	AI_GotoVobPtr
  *	 - same as AI_GotoNPC, but allows us to use any vob pointer
  */
-func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -305,8 +305,8 @@ func string _AI_GetAniName_T_HEASHOOT_2_STAND () {
  *	AI_TeleportKeepQueue
  *	 - function performs teleportation without clearing AI queue (use carefully!)
  */
-func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
@@ -318,14 +318,14 @@ func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
  *	AI_TeleportToWorld
  *	 - function allows teleportation between worlds
  */
-func void AI_TeleportToWorld (var int slfinstance, var string levelName, var string vobName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TeleportToWorld (var int slfInstance, var string levelName, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
 
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
-		AI_TeleportKeepQueue (slfinstance, vobName);
+		AI_TeleportKeepQueue (slfInstance, vobName);
 	} else {
 		AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
 		AI_Function_SS (slf, oCGame_TriggerChangeLevel, levelName, vobName);
@@ -335,7 +335,7 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
 /*
  *	An alternative that will turn to vob only when not within acceptable angle
  */
-func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int angle) {
+func void AI_TurnToVobPtrAngleX (var int slfInstance, var int vobPtr, var int angle) {
 	var int angleX; var int angleXPtr; angleXPtr = _@ (angleX);
 	var int angleY; var int angleYPtr; angleYPtr = _@ (angleY);
 
@@ -382,14 +382,14 @@ func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int an
 		return;
 	};
 
-	AI_TurnToVobPtr (slfinstance, vobPtr);
+	AI_TurnToVobPtr (slfInstance, vobPtr);
 };
 
 /*
  *	Scans for ideal positions, finds free positions and sends there NPC
  *	Function returns TRUE if successfull, FALSE if not
  */
-func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
+func int AI_GotoMobPtr (var int slfInstance, var int mobPtr) {
 //func void oCMobInter_ScanIdealPositions (var int mobPtr) {
 	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
 	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
@@ -485,7 +485,7 @@ func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
  *	Scans for ideal positions, finds position with specified nodeName and sends there NPC
  *	Function returns TRUE if successfull, FALSE if not
  */
-func int AI_GotoMobPtrNodeName (var int slfinstance, var int mobPtr, var string nodeName) {
+func int AI_GotoMobPtrNodeName (var int slfInstance, var int mobPtr, var string nodeName) {
 //func void oCMobInter_ScanIdealPositions (var int mobPtr) {
 	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
 	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
@@ -768,7 +768,7 @@ func void AI_DrawWeapon_Ext (var int slfInstance, var int targetMode, var int us
  *	AI_WhirlAroundToPos
  *	 - same as AI_WhirlAround, but allows us to use position
  */
-func void AI_WhirlAroundToPos (var int slfinstance, var int posPtr) {
+func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
