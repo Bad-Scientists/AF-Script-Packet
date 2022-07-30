@@ -87,3 +87,36 @@ func int oCWorld_AddVobAsChild (var int vobPtr, var int parentPtr) {
 
 	return vobPtr;
 };
+
+/*
+ *	zCWorld_TraceRayFirstHit
+ */
+func int zCWorld_TraceRayFirstHit (var int posPtr, var int dirPtr, var int ignoreListPtr, var int flags) {
+	//0x005F40C0 public: int __fastcall zCWorld::TraceRayFirstHit(class zVEC3 const &,class zVEC3 const &,class zCArray<class zCVob *> const *,int)
+	const int zCWorld__TraceRayFirstHit_G1 = 6242496;
+
+	//0x00621960 public: int __fastcall zCWorld::TraceRayFirstHit(class zVEC3 const &,class zVEC3 const &,class zCArray<class zCVob *> const *,int)
+	const int zCWorld__TraceRayFirstHit_G2 = 6429024;
+
+	var int worldPtr; worldPtr = MEM_Game._zCSession_world;
+
+	if (!posPtr) { return 0; };
+	if (!dirPtr) { return 0; };
+	if (!worldPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(flags));
+		CALL_PtrParam(_@(ignoreListPtr));
+		CALL_PtrParam(_@(dirPtr));
+
+		CALL_PutRetValTo (_@ (retVal));
+
+		CALL__fastcall(_@(worldPtr), _@(posPtr), MEMINT_SwitchG1G2(zCWorld__TraceRayFirstHit_G1, zCWorld__TraceRayFirstHit_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
