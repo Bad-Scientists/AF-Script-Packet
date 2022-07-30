@@ -190,3 +190,9 @@ func int zVEC3_LengthApprox (var int vecPtr) {
 
 	return +retVal;
 };
+
+func int Pos_GetDistToPos (var int posPtr1, var int posPtr2) {
+	var int dir[3];
+	SubVectors (_@ (dir), posPtr1, posPtr2);
+	return + zVEC3_LengthApprox (_@ (dir));
+};
