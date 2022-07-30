@@ -114,13 +114,17 @@ func void test_G2A_InsertItemsToChestsInOldCampCastle () {
  *
  */
 
+//Search flags
+
+const int SEARCHVOBLIST_CANSEE = 1; //Checks if Npc can see object
+const int SEARCHVOBLIST_USEWAYNET = 2; //Uses waynet to calculate nearest object / if this flag is not used then functions uses 'air' distance
+
 /*
  *	NPC_VobListDetectScemeName
  *	 - function returns pointer to *nearest* available mob with specified scemeName with specified state within specified verticalDist
- *	 - you can only search for mobs that NPC can see by using canSeeCheck == true
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int searchFlags, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -136,6 +140,14 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 
@@ -146,14 +158,14 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 		};
 
 		if (available) {
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) || (verticalDist == -1)) {
 					var oCMobInter mob;
 					mob = _^ (vobPtr);
 					//if (Hlp_StrCmp (mob.sceme, scemeName)) {
@@ -162,7 +174,16 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 						if ((mob.state == state) || (state == -1)) {
 							if (!firstPtr) { firstPtr = vobPtr; };
 
-							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+							//Find route from Npc to vob - get total distance if Npc travels by waynet
+							if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+								retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+								dist = zCRoute_GetLength (routePtr); //float
+								dist = RoundF (dist);
+							} else {
+								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+							};
+
 							if (dist < maxDist) {
 								nearestPtr = vobPtr;
 								maxDist = dist;
@@ -183,10 +204,9 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 /*
  *	NPC_VobListDetectVisual
  *	 - function returns pointer to *nearest* vob with specified searchVisualName within specified verticalDist
- *	 - you can only search for vobs that NPC can see by using canSeeCheck == true
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualName, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualName, var int searchFlags, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -203,24 +223,40 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 
-		if (canSeeCheck) {
+		if (searchFlags & SEARCHVOBLIST_CANSEE) {
 			canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 		} else {
 			canSee = TRUE;
 		};
 
 		if (canSee) {
-			if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+			if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) || (verticalDist == -1)) {
 				visualName = Vob_GetVisualName (vobPtr);
 
 				if (Hlp_StrCmp (visualName, searchVisualName)) {
 
 					if (!firstPtr) { firstPtr = vobPtr; };
 
-					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+					//Find route from Npc to vob - get total distance if Npc travels by waynet
+					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+						retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+						routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+						dist = zCRoute_GetLength (routePtr); //float
+						dist = RoundF (dist);
+					} else {
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+					};
 
 					if (dist < maxDist) {
 						nearestPtr = vobPtr;
@@ -241,10 +277,9 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 /*
  *	NPC_VobListDetectItem
  *	 - function returns pointer to *nearest* item with specified mainflag and flags within specified verticalDist
- *	 - you can only search for vobs that NPC can see by using canSeeCheck == true
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int flags, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int flags, var int searchFlags, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -261,25 +296,41 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 		if (Hlp_Is_oCItem (vobPtr)) {
 
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) || (verticalDist == -1)) {
 					itm = _^ (vobPtr);
 					if (Hlp_IsValidItem (itm)) {
 						if ((itm.mainflag == mainflag) || (!mainflag)) {
 							if ((itm.flags & flags) || (!flags)) {
 								if (!firstPtr) { firstPtr = vobPtr; };
 
-								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+								//Find route from Npc to vob - get total distance if Npc travels by waynet
+								if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+									retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+									routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+									dist = zCRoute_GetLength (routePtr); //float
+									dist = RoundF (dist);
+								} else {
+									dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+								};
 
 								if (dist < maxDist) {
 									nearestPtr = vobPtr;
@@ -299,7 +350,7 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 	return firstPtr;
 };
 
-func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int searchFlags, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -316,23 +367,39 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 		if (Hlp_Is_oCNpc (vobPtr)) {
 
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) || (verticalDist == -1)) {
 					npc = _^ (vobPtr);
 					if (NPC_IsInStateName (npc, stateName)) {
 						if (!firstPtr) { firstPtr = vobPtr; };
 
-						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist = zCRoute_GetLength (routePtr); //float
+							dist = RoundF (dist);
+						} else {
+							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						};
 
 						if (dist < maxDist) {
 							nearestPtr = vobPtr;
@@ -350,7 +417,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	return firstPtr;
 };
 
-func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int searchFlags, var int verticalDist) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -369,24 +436,40 @@ func int NPC_VobListDetectByName (var int slfInstance, var string objectName, va
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 		if (vobPtr) {
 
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) || (verticalDist == -1)) {
 					var zCVob vob; vob = _^ (vobPtr);
 
 					if (Hlp_StrCmp (STR_Upper (vob._zCObject_objectName), objectName)) {
 						if (!firstPtr) { firstPtr = vobPtr; };
 
-						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist = zCRoute_GetLength (routePtr); //float
+							dist = RoundF (dist);
+						} else {
+							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						};
 
 						if (dist < maxDist) {
 							nearestPtr = vobPtr;
