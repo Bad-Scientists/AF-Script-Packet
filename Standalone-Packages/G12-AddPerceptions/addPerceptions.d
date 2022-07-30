@@ -85,6 +85,27 @@ func int oCNpc_GetNewPercType (var int slfInstance) {
 };
 
 /*
+ *	Npc_HasPercFunc
+ *	 - checks if perception function is already in perception list
+ */
+func int Npc_HasPercFunc (var int slfInstance, var func percFunc) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	repeat (i, slf.percActive); var int i;
+		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
+
+		if (funcID == percFuncID) {
+			return TRUE;
+		};
+	end;
+
+	return FALSE;
+};
+
+/*
  *	Npc_PercEnableCustom
  *	 - function will add new perception type to perception list
  */
