@@ -420,20 +420,7 @@ func void NPC_FindRoute (var int slfInstance, var string fromWP, var string toWP
 
 	if (!routePtr) { return; };
 
-	//0x0074C7C0 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
-	const int oCNpc__SetRoute_G1 = 7653312;
-
-	//0x00681D70 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
-	const int oCNpc__SetRoute_G2 = 6823280;
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	const int call = 0;
-	if (CALL_Begin (call)) {
-		CALL_PtrParam (_@ (routePtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetRoute_G1, oCNpc__SetRoute_G2));
-		call = CALL_End ();
-	};
+	oCNpc_SetRoute (slfInstance, routePtr);
 };
 
 /*
