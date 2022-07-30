@@ -613,7 +613,9 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 
 	while (i < slf.vobList_numInArray);
 		vobSpotPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		if (Hlp_Is_zCVobSpot (vobSpotPtr)) {
+		if (Hlp_Is_zCVobSpot (vobSpotPtr))
+		&& (oCNPC_CanSee (slf, vobSpotPtr, 1))
+		{
 			//Seems like engine still returns true when NPC is standing on freepoint
 			if (zCVobSpot_IsAvailable (vobSpotPtr, vobPtr)) {
 				var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
