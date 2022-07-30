@@ -1058,3 +1058,14 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 	//Add new msg to Event Manager
 	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
+
+func void _AI_ResetStateTime () {
+	Npc_SetStateTime (self, 0);
+};
+
+func void AI_ResetStateTime (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	AI_Function (slf, _AI_ResetStateTime);
+};
