@@ -142,6 +142,25 @@ func void Npc_PercEnableCustom (var int slfInstance, var func percFunc) {
 };
 
 /*
+ *	Npc_RemovePercFunc
+ *	 - removes perception function
+ */
+func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	repeat (i, slf.percActive); var int i;
+		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
+
+		if (funcID == percFuncID) {
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, 0);
+		};
+	end;
+};
+
+/*
  *	oCNpc::PerceptionCheck hook
  *	 - main hook that handles perception execution
  */
