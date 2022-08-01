@@ -814,7 +814,7 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 };
 
 /*
- *
+ *	NPC_GetDistToPos // int
  */
 func int NPC_GetDistToPos (var int slfInstance, var int posPtr) {
 	if (!posPtr) { return -1; };
@@ -839,6 +839,9 @@ func int NPC_GetDistToPos (var int slfInstance, var int posPtr) {
 	return dist;
 };
 
+/*
+ *	NPC_GetDistToVobPtr //int
+ */
 func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return -1; };
 
@@ -1039,15 +1042,21 @@ func void NPC_ChangeRoutine (var int slfInstance, var int funcID) {
 	};
 };
 
+/*
+ *	Npc_GetHeightDiffToPos // int
+ */
 func int Npc_GetHeightDiffToPos (var int slfInstance, var int posPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return FLOATNULL; };
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	var int Y; Y = MEM_ReadIntArray (posPtr, 1);
 	return roundf (subf (Y, slf._zCVob_trafoObjToWorld[7]));
 };
 
+/*
+ *	Npc_GetHeightToVobPtr // int
+ */
 func int Npc_GetHeightToVobPtr (var int slfInstance, var int vobPtr) {
-	if (!vobPtr) { return FLOATNULL; };
+	if (!vobPtr) { return 0; };
 
 //func int zCVob_GetPositionWorld (var int vobPtr) {
 	//0x0051B3C0 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
@@ -1087,7 +1096,7 @@ func int NPC_GetNearestMobOptPosition (var int slfInstance, var int mobPtr) {
 //};
 
 	var int dist;
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
@@ -1112,8 +1121,8 @@ func int NPC_GetNearestMobOptPosition (var int slfInstance, var int mobPtr) {
 
 			if (!firstPtr) { firstPtr = ptr; };
 
-			dist = NPC_GetDistToPos (slfInstance, _@ (pos));
-			if (lf (dist, maxDist)) {
+			dist = NPC_GetDistToPos (slfInstance, _@ (pos)); //int
+			if (dist < maxDist) {
 				nearestPtr = ptr;
 				maxDist = dist;
 			};
