@@ -186,49 +186,6 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 };
 
 /*
- *	AI_GotoFpPtr
- *	 - same as AI_GotoFP, but allows us to define freePoint pointer
- */
-func void AI_GotoFpPtr (var int slfInstance, var int vobSpotPtr) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
-
-	//Flag temporarily as used - so no other NPC will try to go to the same freePoint
-	var int timeDeltaF; timeDeltaF = mkf (6000);
-	var int vobPtr; vobPtr = _@ (slf);
-
-//func void zCVobSpot_MarkAsUsed (var int vobSpotPtr, var int timeDeltaF, var int vobPtr) {
-	//0x007094A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
-	const int zCVobSpot__MarkAsUsed_G1 = 7378080;
-
-	//0x007B31A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
-	const int zCVobSpot__MarkAsUsed_G2 = 8073632;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (vobPtr));
-		CALL_FloatParam (_@ (timeDeltaF));
-		CALL__thiscall (_@ (vobSpotPtr), MEMINT_SwitchG1G2 (zCVobSpot__MarkAsUsed_G1, zCVobSpot__MarkAsUsed_G2));
-		call = CALL_End();
-	};
-//};
-
-	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
-
-	//Create new message
-	//EV_GOTOFP does not save targetVob into savefile! we have to use targetName
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOFP, vobSpot._zCObject_objectName, vobSpotPtr, 0, mkf (0), 0);
-
-	//Get Event Manager
-	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
-	//Add new msg to Event Manager
-	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
-};
-
-/*
  *	AI_GotoVobPtr_EvalWaynetUse
  *	 - function evaluates whether to use or not waynet system to navigate to vob (this way Npc should be behaving slightly more inteligent)
  *
@@ -498,6 +455,49 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	AI_GotoWp (slf, toWp);
 
 	zSpy_Info ("<--");
+};
+
+/*
+ *	AI_GotoFpPtr
+ *	 - same as AI_GotoFP, but allows us to define freePoint pointer
+ */
+func void AI_GotoFpPtr (var int slfInstance, var int vobSpotPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
+
+	//Flag temporarily as used - so no other NPC will try to go to the same freePoint
+	var int timeDeltaF; timeDeltaF = mkf (6000);
+	var int vobPtr; vobPtr = _@ (slf);
+
+//func void zCVobSpot_MarkAsUsed (var int vobSpotPtr, var int timeDeltaF, var int vobPtr) {
+	//0x007094A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G1 = 7378080;
+
+	//0x007B31A0 public: void __thiscall zCVobSpot::MarkAsUsed(float,class zCVob *)
+	const int zCVobSpot__MarkAsUsed_G2 = 8073632;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_FloatParam (_@ (timeDeltaF));
+		CALL__thiscall (_@ (vobSpotPtr), MEMINT_SwitchG1G2 (zCVobSpot__MarkAsUsed_G1, zCVobSpot__MarkAsUsed_G2));
+		call = CALL_End();
+	};
+//};
+
+	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+
+	//Create new message
+	//EV_GOTOFP does not save targetVob into savefile! we have to use targetName
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOFP, vobSpot._zCObject_objectName, vobSpotPtr, 0, mkf (0), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
 
 /*
