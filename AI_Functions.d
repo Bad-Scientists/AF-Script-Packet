@@ -200,8 +200,6 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
-	if (!Npc_IsInState (slf, ZS_FirePlaceLighter)) { return; };
-
 	zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
 
 	//-- Get nearest waypoint to vob
