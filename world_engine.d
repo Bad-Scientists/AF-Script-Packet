@@ -120,3 +120,53 @@ func int zCWorld_TraceRayFirstHit (var int posPtr, var int dirPtr, var int ignor
 
 	return + retVal;
 };
+
+//0x0051EBE0 protected: void __fastcall zCBspBase::CollectVobsInBBox3D_I(class zCArray<class zCVob *> &,struct zTBBox3D const &)const
+
+/*
+ *	Wld_CollectVobsInBBox3D
+ */
+func int Wld_CollectVobsInBBox3D (var int posPtr, var int bboxPtr) {
+	//0x0051E7C0 public: void __fastcall zCBspBase::CollectVobsInBBox3D(class zCArray<class zCVob *> &,struct zTBBox3D const &)const
+	const int zCBspBase__CollectVobsInBBox3D_G1 = 5367744;
+
+	//0x00531110 public: void __fastcall zCBspBase::CollectVobsInBBox3D(class zCArray<class zCVob *> &,struct zTBBox3D const &)const
+	const int zCBspBase__CollectVobsInBBox3D_G2 = 5443856;
+
+	var int bspRoot; bspRoot = MEM_World.bspTree_bspRoot;
+	if (!bspRoot) { return 0; };
+
+	//Create array
+	var int arrPtr; arrPtr = MEM_ArrayCreate ();
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PtrParam (_@ (bboxPtr));
+		CALL__fastcall (_@ (bspRoot), _@ (arrPtr), MEMINT_SwitchG1G2 (zCBspBase__CollectVobsInBBox3D_G1, zCBspBase__CollectVobsInBBox3D_G2));
+		call = CALL_End();
+	};
+
+	return + arrPtr;
+};
+
+/*
+ *	Wld_CollectVobsInRange
+ */
+func int Wld_CollectVobsInRange (var int posPtr, var int rangeF) {
+	var int bbox[6]; //zTBBox3D
+
+	if (!posPtr) { return 0; };
+
+	MEM_CopyBytes (posPtr, _@ (bbox), 12);
+	MEM_CopyBytes (_@ (bbox), _@ (bbox) + 12, 12);
+
+	bbox[0] = subf (bbox[0], rangeF);
+	bbox[1] = subf (bbox[1], rangeF);
+	bbox[2] = subf (bbox[2], rangeF);
+
+	bbox[3] = addf (bbox[3], rangeF);
+	bbox[4] = addf (bbox[4], rangeF);
+	bbox[5] = addf (bbox[5], rangeF);
+
+	return + Wld_CollectVobsInBBox3D (posPtr, _@ (bbox));
+};
