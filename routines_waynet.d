@@ -583,72 +583,115 @@ func string NPC_GetLastRoutineWP (var int slfInstance) {
 
 /*
  *	Custom function for searching freepoints
- *	 - allows us to search for freepoints in specified rangeF
+ *	 - allows us to search for freepoints
  *	 - parameter deprioritizeFreePoint will basically put freepoints with certain strings to the 'end of the list'
  *	   for example we can search for freepoints SMALLTALK and we can deprioritize those freepoints that also contain string _RAIN:
  *		vobSpotPtr = NPC_GetFreepoint (self, freePoint, "_RAIN", mkf (1200));
  *		function will prefer freePoint FP_SMALLTALK_XYZ before FP_SMALLTALK_RAIN_XYZ, however if freePoint FP_SMALLTALK_XYZ is marked as used ... function returns FP_SMALLTALK_RAIN_XYZ
  */
-func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string deprioritizeFreePoint, var int rangeF) {
+func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string deprioritizeFreePoint, var int searchFlags, var int range, var int distLimit, var int verticalLimit) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	oCNpc_ClearVobList (slf);
-	oCNpc_CreateVobList (slf, rangeF);
+	var int i;
+	var int vobPtr;
 
-	var int vobPtr; vobPtr = _@ (slf);
-	var int vobSpotPtr;
+	var int slfPtr; slfPtr = _@ (slf);
 
 	var int dist;
 	var int dist2;
 
-	var int maxDist; maxDist = mkf (999999);
-	var int maxDist2; maxDist2 = mkf (999999);
+	var int maxDist; maxDist = 999999;
+	var int maxDist2; maxDist2 = 999999;
 
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
 	var int nearestPtr2; nearestPtr2 = 0;
 
-	var int i; i = 0;
+	var int canSee;
 
-	while (i < slf.vobList_numInArray);
-		vobSpotPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		if (Hlp_Is_zCVobSpot (vobSpotPtr))
-		&& (oCNPC_CanSee (slf, vobSpotPtr, 1))
-		{
-			//Seems like engine still returns true when NPC is standing on freepoint
-			if (zCVobSpot_IsAvailable (vobSpotPtr, vobPtr)) {
-				var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
+	//Get Npc position
+	var int fromPos[3];
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos))) { return 0; };
 
-				var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
-				var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
+	//Target position
+	var int toPos[3];
+	var int routePtr;
 
-				//Matching freePoint name
-				if (index1 > -1) {
-					if (!firstPtr) { firstPtr = vobSpotPtr; };
+	//Collect all vobs in range
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (_@ (fromPos), mkf (range));
+	if (!arrPtr) { return 0; };
 
-					dist = NPC_GetDistToVobPtr (slfInstance, vobSpotPtr);
+	var zCArray vobList; vobList = _^ (arrPtr);
+	repeat (i, vobList.numInArray);
+		vobPtr = MEM_ReadIntArray (vobList.array, i);
 
-					if (lf (dist, maxDist)) {
-						nearestPtr = vobSpotPtr;
-						maxDist = dist;
+		//Seems like engine still returns true when NPC is standing on freepoint
+		//(this function also checks if object is zCVobSpot)
+		if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (canSee) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
+					var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+
+					var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
+					var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
+
+					//Matching freePoint name
+					if (index1 > -1) {
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+								dist = zCRoute_GetLength (routePtr); //float
+								dist = RoundF (dist);
+							};
+						} else {
+							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+						};
+
+						if ((dist <= distLimit) || (distLimit == -1)) {
+							if (!firstPtr) { firstPtr = vobPtr; };
+
+							if (dist < maxDist) {
+								nearestPtr = vobPtr;
+								maxDist = dist;
+							};
+						};
 					};
-				};
 
-				//Matching freePoint name (not matching deprioritizeFreePoint)
-				if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
+					//Matching freePoint name (not matching deprioritizeFreePoint)
+					if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
 
-					dist2 = NPC_GetDistToVobPtr (slfInstance, vobSpotPtr);
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+								dist2 = zCRoute_GetLength (routePtr); //float
+								dist2 = RoundF (dist2);
+							};
+						} else {
+							dist2 = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+						};
 
-					if (lf (dist2, maxDist2)) {
-						nearestPtr2 = vobSpotPtr;
-						maxDist2 = dist2;
+						if ((dist2 <= distLimit) || (distLimit == -1)) {
+							if (dist2 < maxDist2) {
+								nearestPtr2 = vobPtr;
+								maxDist2 = dist2;
+							};
+						};
 					};
 				};
 			};
 		};
-		i += 1;
 	end;
+
+	MEM_Free (arrPtr);
 
 	if (nearestPtr2) { return nearestPtr2; };
 	if (nearestPtr) { return nearestPtr; };
@@ -663,27 +706,36 @@ func int NPC_GetCurrentFreepoint (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	oCNpc_ClearVobList (slf);
-	oCNpc_CreateVobList (slf, mkf (300)); //Is this far enough ?
+	var int i;
+	var int vobPtr;
 
-	var int vobPtr; vobPtr = _@ (slf);
-	var int vobSpotPtr;
-	var int i; i = 0;
+	var int slfPtr; slfPtr = _@ (slf);
 
-	while (i < slf.vobList_numInArray);
-		vobSpotPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		if (Hlp_Is_zCVobSpot (vobSpotPtr)) {
+	//Get Npc position
+	var int fromPos[3];
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos))) { return 0; };
+
+	//Collect all vobs in range
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (_@ (fromPos), mkf (300));
+	if (!arrPtr) { return 0; };
+
+	var zCArray vobList; vobList = _^ (arrPtr);
+	repeat (i, vobList.numInArray);
+		vobPtr = MEM_ReadIntArray (vobList.array, i);
+
+		if (Hlp_Is_zCVobSpot (vobPtr)) {
 			//Seems like engine still returns true when NPC is standing on freepoint
-			if (zCVobSpot_IsAvailable (vobSpotPtr, vobPtr)) {
-				var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
-				if (vobSpot.inUseVob == vobPtr) {
-					return vobSpotPtr;
+			if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
+				var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+				if (vobSpot.inUseVob == slfPtr) {
+					MEM_Free (arrPtr);
+					return vobPtr;
 				};
 			};
 		};
-		i += 1;
 	end;
 
+	MEM_Free (arrPtr);
 	return 0;
 };
 
