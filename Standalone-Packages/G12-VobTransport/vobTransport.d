@@ -168,7 +168,7 @@ func int VobCanBeCloned__VobTransport (var int vobPtr) {
 
 //---
 
-func int Npc_GetFP (var int slfInstance, var string freepointName, var int distF, var int posPtr) {
+func int Npc_GetSlotFP__VobTransport (var int slfInstance, var string freepointName, var int distF, var int fromPosPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	oCNpc_ClearVobList (slf);
 	oCNpc_CreateVobList (slf, distF);
@@ -477,7 +477,7 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 	//Vob-spot-slotting
 	if (vobTransportMode == vobTransportMode_Movement) {
 		var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
-		var int vobSpotPtr; vobSpotPtr = Npc_GetFP (slf, "FP_SLOT", mkf (vobTransportCollectVobSlotRange), _@ (pos));
+		var int vobSpotPtr; vobSpotPtr = Npc_GetSlotFP__VobTransport (slf, "FP_SLOT", vobTransportCollectVobSlotRange, _@ (pos));
 		if (vobSpotPtr) {
 			if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
 				var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
