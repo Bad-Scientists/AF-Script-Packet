@@ -90,6 +90,15 @@ const int ITM_COND_MAX = 3;
 
 const int ITM_FLAG_NFOCUS = 1 << 23;
 
+//Search flags for voblist functions [AFSP specific constants]
+
+const int SEARCHVOBLIST_NOFILTERS = 0; //No special checks
+const int SEARCHVOBLIST_CANSEE = 1; //Checks if Npc can see object
+const int SEARCHVOBLIST_USEWAYNET = 2; //Uses waynet to calculate nearest object / if this flag is not used then functions uses 'air' distance
+
+/*
+ *	Color values [G1 & G2A constants]
+ */
 var int GFX_RED;
 var int GFX_PALEGREEN;
 var int GFX_SKY;
