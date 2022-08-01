@@ -467,6 +467,8 @@ func void AI_GotoFpPtr (var int slfInstance, var int vobSpotPtr) {
 
 	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
 
+	AI_GotoVobPtr_EvalWaynetUse (slfInstance, vobSpotPtr);
+
 	//Flag temporarily as used - so no other NPC will try to go to the same freePoint
 	var int timeDeltaF; timeDeltaF = mkf (6000);
 	var int vobPtr; vobPtr = _@ (slf);
