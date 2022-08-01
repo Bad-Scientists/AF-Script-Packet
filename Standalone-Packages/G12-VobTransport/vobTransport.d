@@ -170,45 +170,47 @@ func int VobCanBeCloned__VobTransport (var int vobPtr) {
 
 func int Npc_GetSlotFP__VobTransport (var int slfInstance, var string freepointName, var int distF, var int fromPosPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	oCNpc_ClearVobList (slf);
-	oCNpc_CreateVobList (slf, distF);
 
 	var int vobPtr;
 
 	var int i; i = 0;
 	var int loop;
 
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 	var int dist;
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
 
-	loop = slf.vobList_numInArray;
+	//Collect all vobs in range
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (fromPosPtr, mkf (distF));
+	if (!arrPtr) { return 0; };
 
-	while (i < loop);
-		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+	var zCArray vobList; vobList = _^ (arrPtr);
+	repeat (i, vobList.numInArray);
+		vobPtr = MEM_ReadIntArray (vobList.array, i);
+
 		if (Hlp_Is_zCVobSpot (vobPtr)) {
 			var zCVob vobSpot; vobSpot = _^ (vobPtr);
 			if (STR_StartsWith (vobSpot._zCObject_objectName, freepointName)) {
 				if (!firstPtr) { firstPtr = vobPtr; };
 
-				if (posPtr) {
-					var int pos[3];
-					MEM_CopyBytes (posPtr, _@ (pos), 12);
+				var int pos[3];
 
-					dist = TRF_GetDistXYZ (pos[0], pos[1], pos[2], vobSpot.trafoObjToWorld[03], vobSpot.trafoObjToWorld[07], vobSpot.trafoObjToWorld[11]);
-				} else {
-					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-				};
+				if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+					dist = Pos_GetDistToPos (fromPosPtr, _@ (pos)); //float
+					dist = RoundF (dist);
 
-				if (lf (dist, maxDist)) {
-					nearestPtr = vobPtr;
-					maxDist = dist;
+					if (dist < maxDist) {
+						nearestPtr = vobPtr;
+						maxDist = dist;
+					};
 				};
 			};
 		};
 		i += 1;
 	end;
+
+	MEM_Free (arrPtr);
 
 	if (nearestPtr) {
 		return nearestPtr;
@@ -479,12 +481,10 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 		var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
 		var int vobSpotPtr; vobSpotPtr = Npc_GetSlotFP__VobTransport (slf, "FP_SLOT", vobTransportCollectVobSlotRange, _@ (pos));
 		if (vobSpotPtr) {
-			if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
-				var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
+			var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
 
-				// Update position
-				AlignVobAt (vobPtr, _@ (vobSpot.trafoObjToWorld));
-			};
+			// Update position
+			AlignVobAt (vobPtr, _@ (vobSpot.trafoObjToWorld));
 		};
 	};
 
