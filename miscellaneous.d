@@ -159,6 +159,19 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
@@ -232,6 +245,19 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
 			canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 		} else {
 			canSee = TRUE;
+		};
+
+		//Check for portal room owner
+		if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+			var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+			//If portal room is owned by Npc
+			if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+				//If this portal is not owned by me - ignore - pretend we don't see it :)
+				if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+					canSee = FALSE;
+				};
+			};
 		};
 
 		if (canSee) {
@@ -309,6 +335,19 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					itm = _^ (vobPtr);
@@ -382,6 +421,19 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					npc = _^ (vobPtr);
@@ -451,6 +503,19 @@ func int NPC_VobListDetectByName (var int slfInstance, var string objectName, va
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
+			};
+
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
 			};
 
 			if (canSee) {
