@@ -202,33 +202,46 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
 
-	//-- Get nearest waypoint to vob
-	var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
 
-	var int wpDistToVob;
-	wpDistToVob = WP_GetDistToVob (toWp, vobPtr); //float
-	wpDistToVob = RoundF (wpDistToVob);
+	var int posNpc[3];
+	var int posVob[3];
+
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (posNpc)))
+	|| (!zCVob_GetPositionWorldToPos (vobPtr, _@ (posVob)))
+	{
+		return;
+	};
+
+	//-- Get nearest waypoint to vob
+	//var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
+
+	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
-	if (!WP_CanSee (toWp, vobPtr)) {
+	if (!STR_Len (toWp)) {
 		zSpy_Info ("... target waypoint - can't see vob. Waynet might not be reliable.");
 		zSpy_Info ("<--");
 		return;
 	};
 
-	//-- Get nearest waypoint to Npc
-	var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
+	var int wpDistToVob;
+	wpDistToVob = WP_GetDistToVob (toWp, vobPtr); //float
+	wpDistToVob = RoundF (wpDistToVob);
 
-	var int wpDistToNpc;
-	wpDistToNpc = WP_GetDistToVob (fromWp, _@ (slf)); //float
-	wpDistToNpc = RoundF (wpDistToNpc);
+	//-- Get nearest waypoint to Npc
+	//var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
+	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
-	if (!WP_CanSee (fromWp, _@ (slf))) {
+	if (!STR_Len (fromWp)) {
 		zSpy_Info ("... npc waypoint - can't see npc. Waynet might not be reliable.");
 		zSpy_Info ("<--");
 		return;
 	};
+
+	var int wpDistToNpc;
+	wpDistToNpc = WP_GetDistToVob (fromWp, _@ (slf)); //float
+	wpDistToNpc = RoundF (wpDistToNpc);
 
 	//-- Get 'air' distance to vob
 	var int distToVob;
@@ -271,146 +284,141 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	 *	Here we will create waypoint - move it towards vob and detect possible issues with ground. (chasm detection)
 	 *	It is more convenient to use waypoint, because we can move it around and use zCWaypoint_CorrectHeight to easily align it to ground.
 	 */
-	var int posNpc[3];
-	var int posVob[3];
+
 	var int dir[3];
 
 	var int chasmDetected; chasmDetected = FALSE;
 
-	if (zCVob_GetPositionWorldToPos (_@ (slf), _@ (posNpc)))
-	&& (zCVob_GetPositionWorldToPos (vobPtr, _@ (posVob)))
-	{
-		//Get direction vector (total distance)
-		SubVectors (_@ (dir), _@ (posVob), _@ (posNpc));
+	//Get direction vector (total distance)
+	SubVectors (_@ (dir), _@ (posVob), _@ (posNpc));
 
-		//Copy vector - we will use vec to move waypoint towards vob
-		var int vec[3];
-		CopyVector (_@ (dir), _@ (vec));
+	//Copy vector - we will use vec to move waypoint towards vob
+	var int vec[3];
+	CopyVector (_@ (dir), _@ (vec));
 
-		//Normalize vector
-		zVEC3_NormalizeSafe (_@ (vec));
+	//Normalize vector
+	zVEC3_NormalizeSafe (_@ (vec));
 
-		//Multiply by 50 (to get 0.5 m length)
-		MulVector (_@ (vec), mkf (50));
+	//Multiply by 50 (to get 0.5 m length)
+	MulVector (_@ (vec), mkf (50));
 
-		//Waypoint pointer
-		var int wpPtr; wpPtr = 0;
+	//Waypoint pointer
+	var int wpPtr; wpPtr = 0;
 
-		var int lastPos[3];
-		var int newPos[3];
+	var int lastPos[3];
+	var int newPos[3];
 
-		var int i; i = 0;
+	var int i; i = 0;
 
-		var int newDistToVob;
+	var int newDistToVob;
 
-		CopyVector (_@ (posNpc), _@ (newPos));
+	CopyVector (_@ (posNpc), _@ (newPos));
 
-		//Debugging - generate and leave waypoints for investigation :)
-		const int Debug_GenerateWaypoints = FALSE;
+	//Debugging - generate and leave waypoints for investigation :)
+	const int Debug_GenerateWaypoints = FALSE;
 
-		var string wpName;
-		if (!STR_Len (wpName)) {
-			wpName = "WP_TEMP_DETECTCHASM_001";
+	var string wpName;
+	if (!STR_Len (wpName)) {
+		wpName = "WP_TEMP_DETECTCHASM_001";
+	};
+
+	while (true);
+		var zCWaypoint wp;
+
+		if (Debug_GenerateWaypoints) {
+			//Create new waypoint
+			if (i == 0) {
+				//First waypoint
+				wpPtr = zCWayNet_GetNearestWaypoint (_@ (posNpc));
+			} else {
+				//Generate new name
+				wpName = WP_GenerateNewName (wpName);
+			};
+
+			wpPtr = WP_Create (wpName, _@ (newPos), wpPtr);
+			wp = _^ (wpPtr);
+
+			//Get last position of waypoint
+			CopyVector (_@ (wp.pos), _@ (lastPos));
+		} else {
+			//Create single waypoint
+			if (!wpPtr) {
+				wpPtr = WP_Create (wpName, _@ (newPos), 0);
+				wp = _^ (wpPtr);
+			};
 		};
 
-		while (true);
-			var zCWaypoint wp;
+		//Move waypoint towards vob
+		AddVectors (_@ (wp.pos), _@ (wp.pos), _@ (vec));
 
-			if (Debug_GenerateWaypoints) {
-				//Create new waypoint
-				if (i == 0) {
-					//First waypoint
-					wpPtr = zCWayNet_GetNearestWaypoint (_@ (posNpc));
-				} else {
-					//Generate new name
-					wpName = WP_GenerateNewName (wpName);
-				};
+		//Correct waypoint height - align to ground properly
+		zCWaypoint_CorrectHeight (wpPtr);
 
-				wpPtr = WP_Create (wpName, _@ (newPos), wpPtr);
-				wp = _^ (wpPtr);
+		//Get new position of waypoint
+		CopyVector (_@ (wp.pos), _@ (newPos));
 
-				//Get last position of waypoint
-				CopyVector (_@ (wp.pos), _@ (lastPos));
-			} else {
-				//Create single waypoint
-				if (!wpPtr) {
-					wpPtr = WP_Create (wpName, _@ (newPos), 0);
-					wp = _^ (wpPtr);
+		//Get vector from Npc to new position of waypoint (to get length)
+		SubVectors (_@ (dir), _@ (newPos), _@ (posNpc));
+
+		//Get length
+		var int distNew; distNew = zVEC3_LengthApprox (_@ (dir));
+
+		//If we are behind vob position - we can exit loop - no chasms detected so far
+		if (gef (distNew, distToVob)) {
+			break;
+		};
+
+		//Detect chasms underneath waypoint
+		dir[0] = FLOATNULL;
+		dir[1] = mkf (100);
+		dir[2] = FLOATNULL;
+
+		var int distF; distF = mkf (100);
+		var int cdNormal[3];
+
+		//oCAniCtrl_Human_DetectChasm (var int aniCtrlPtr, var int posPtr, var int dirPtr, var int distPtrF, var int cdNormalPtr) {
+		chasmDetected = oCAniCtrl_Human_DetectChasm (slf.aniCtrl, _@ (newPos), _@ (dir), _@ (distF), _@ (cdNormal));
+
+		//Chasm detected - exit loop
+		if (chasmDetected) {
+			break;
+		};
+
+		if (Debug_GenerateWaypoints) {
+			zSpy_Info (ConcatStrings ("... chasmDetected", IntToString (chasmDetected)));
+			zSpy_Info (ConcatStrings ("... distF", toStringF (distF)));
+
+			if (i > 0) {
+				var int heightDelta;
+				var int lastHeightDelta;
+
+				heightDelta = roundf (subf (lastPos[1], newPos[1]));
+
+				//heightDelta = heightDelta - lastHeightDelta;
+
+				zSpy_Info (ConcatStrings ("... height check ", IntToString (heightDelta)));
+
+				if (abs (heightDelta) > 50) {
+					chasmDetected = TRUE;
+					//break;
 				};
 			};
 
-			//Move waypoint towards vob
-			AddVectors (_@ (wp.pos), _@ (wp.pos), _@ (vec));
+			lastHeightDelta = heightDelta;
 
-			//Correct waypoint height - align to ground properly
-			zCWaypoint_CorrectHeight (wpPtr);
-
-			//Get new position of waypoint
 			CopyVector (_@ (wp.pos), _@ (newPos));
+		};
 
-			//Get vector from Npc to new position of waypoint (to get length)
-			SubVectors (_@ (dir), _@ (newPos), _@ (posNpc));
+		i += 1;
+	end;
 
-			//Get length
-			var int distNew; distNew = zVEC3_LengthApprox (_@ (dir));
-
-			//If we are behind vob position - we can exit loop - no chasms detected so far
-			if (gef (distNew, distToVob)) {
-				break;
-			};
-
-			//Detect chasms underneath waypoint
-			dir[0] = FLOATNULL;
-			dir[1] = mkf (100);
-			dir[2] = FLOATNULL;
-
-			var int distF; distF = mkf (100);
-			var int cdNormal[3];
-
-			//oCAniCtrl_Human_DetectChasm (var int aniCtrlPtr, var int posPtr, var int dirPtr, var int distPtrF, var int cdNormalPtr) {
-			chasmDetected = oCAniCtrl_Human_DetectChasm (slf.aniCtrl, _@ (newPos), _@ (dir), _@ (distF), _@ (cdNormal));
-
-			//Chasm detected - exit loop
-			if (chasmDetected) {
-				break;
-			};
-
-			if (Debug_GenerateWaypoints) {
-				zSpy_Info (ConcatStrings ("... chasmDetected", IntToString (chasmDetected)));
-				zSpy_Info (ConcatStrings ("... distF", toStringF (distF)));
-
-				if (i > 0) {
-					var int heightDelta;
-					var int lastHeightDelta;
-
-					heightDelta = roundf (subf (lastPos[1], newPos[1]));
-
-					//heightDelta = heightDelta - lastHeightDelta;
-
-					zSpy_Info (ConcatStrings ("... height check ", IntToString (heightDelta)));
-
-					if (abs (heightDelta) > 50) {
-						chasmDetected = TRUE;
-						//break;
-					};
-				};
-
-				lastHeightDelta = heightDelta;
-
-				CopyVector (_@ (wp.pos), _@ (newPos));
-			};
-
-			i += 1;
-		end;
-
-		if (!Debug_GenerateWaypoints) {
-			//Delete waypoint
-			zCWayNet_DeleteWaypoint_ByPtr (wpPtr);
-		} else {
-			//Connect last waypoint to vob waypoint
-			if (!chasmDetected) {
-				zCWayNet_CreateWay (wpPtr, SearchWaypointByName (toWp));
-			};
+	if (!Debug_GenerateWaypoints) {
+		//Delete waypoint
+		zCWayNet_DeleteWaypoint_ByPtr (wpPtr);
+	} else {
+		//Connect last waypoint to vob waypoint
+		if (!chasmDetected) {
+			zCWayNet_CreateWay (wpPtr, SearchWaypointByName (toWp));
 		};
 	};
 
