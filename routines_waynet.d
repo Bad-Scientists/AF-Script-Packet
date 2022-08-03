@@ -666,6 +666,19 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
