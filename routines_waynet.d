@@ -1354,6 +1354,15 @@ func int zCWaypoint_CanSee (var int wpPtr, var int vobPtr) {
 	return + retVal;
 };
 
+/*
+ *	WP_CanSee
+ *	 - can we see vob from waypoint?
+ */
+func int WP_CanSee (var string waypointName, var int vobPtr) {
+	var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
+	return + zCWaypoint_CanSee (wpPtr, vobPtr);
+};
+
 func int oCAniCtrl_Human_DetectChasm (var int aniCtrlPtr, var int posPtr, var int dirPtr, var int distPtrF, var int cdNormalPtr) {
 	//0x0062D2F0 public: int __thiscall oCAniCtrl_Human::DetectChasm(class zVEC3 const &,class zVEC3 const &,float &,class zVEC3 &)
 	const int oCAniCtrl_Human__DetectChasm_G1 = 6476528;
