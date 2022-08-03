@@ -887,6 +887,7 @@ func int zCWayNet_GetNearestWaypoint (var int posPtr) {
 	//0x007AD660 public: class zCWaypoint * __fastcall zCWayNet::GetNearestWaypoint(class zVEC3 const &)
 	const int zCWayNet__GetNearestWaypoint_G2 = 8050272;
 
+	if (!posPtr) { return 0; };
 	if (!MEM_World.wayNet) { return 0; };
 
 	var int waynetPtr; waynetPtr = MEM_World.wayNet;
