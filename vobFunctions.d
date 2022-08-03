@@ -339,6 +339,16 @@ func string Vob_GetVisualName (var int vobPtr){
 };
 
 /*
+ *	zCVob_GetName
+ *	 - returns vob name
+ */
+func string zCVob_GetName (var int vobPtr) {
+	if (!Hlp_Is_zCVob (vobPtr)) { return ""; };
+	var zCVob vob; vob = _^ (vobPtr);
+	return vob._zCObject_objectName;
+};
+
+/*
  *	Will draw BBox3D on Vob
  */
 func void zCVob_SetDrawBBox3D (var int vobPtr, var int enabled) {
