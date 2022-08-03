@@ -534,9 +534,7 @@ func string NPC_Route_GetWPName (var int slfInstance, var int index) {
 	nextWPPtr = NPC_Route_GetWP (slfInstance, index);
 
 	if (nextWPPtr) {
-		var zCWaypoint nextWP;
-		nextWP = _^ (nextWPPtr);
-		return nextWP.name;
+		return zCWaypoint_GetName (nextWPPtr);
 	};
 
 	return "";
@@ -1278,14 +1276,7 @@ func int WP_Create (var string waypointName, var int posPtr, var int connectWith
  */
 func string WP_GetNearestWPAtPos (var int posPtr) {
 	var int wpPtr; wpPtr = zCWayNet_GetNearestWaypoint (posPtr);
-
-	if (wpPtr) {
-		var zCWaypoint wp;
-		wp = _^ (wpPtr);
-		return wp.Name;
-	};
-
-	return "";
+	return zCWaypoint_GetName (wpPtr);
 };
 
 /*
