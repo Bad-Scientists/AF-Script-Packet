@@ -62,6 +62,28 @@ func void MEM_RtnMan_Init () {
 	MEM_RtnMan = _^ (MEMINT_SwitchG1G2 (MEMINT_RtnMan_Address_G1, MEMINT_RtnMan_Address_G2));
 };
 
+
+/*
+ *	zCWaypoint_GetName
+ *	 - returns waypoints name
+ */
+func string zCWaypoint_GetName (var int wpPtr) {
+	if (!Hlp_Is_zCWaypoint (wpPtr)) { return ""; };
+
+	var zCWaypoint wp; wp = _^ (wpPtr);
+	return wp.Name;
+
+	//0x00706110 public: class zSTRING const & __thiscall zCWaypoint::GetName(void)
+	//const int zCWaypoint__GetName_G1 = 7364880;
+
+	//0x007AFD10 public: class zSTRING const & __thiscall zCWaypoint::GetName(void)
+	//const int zCWaypoint__GetName_G2 = 8060176;
+
+	//var int strPtr;
+	//CALL__thiscall (wpPtr, MEMINT_SwitchG1G2 (zCWaypoint__GetName_G1, zCWaypoint__GetName_G2));
+	//strPtr = CALL_RetValAsPtr ();
+	//return MEM_ReadString (strPtr);
+};
 /*
  *
  */
