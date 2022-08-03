@@ -760,7 +760,7 @@ func int NPC_GetCurrentFreepoint (var int slfInstance) {
 	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos))) { return 0; };
 
 	//Collect all vobs in range
-	var int arrPtr; arrPtr = Wld_CollectVobsInRange (_@ (fromPos), mkf (300));
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (_@ (fromPos), mkf (100));
 	if (!arrPtr) { return 0; };
 
 	var zCArray vobList; vobList = _^ (arrPtr);
