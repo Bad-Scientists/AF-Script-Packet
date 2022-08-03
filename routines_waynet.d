@@ -84,6 +84,17 @@ func string zCWaypoint_GetName (var int wpPtr) {
 	//strPtr = CALL_RetValAsPtr ();
 	//return MEM_ReadString (strPtr);
 };
+
+/*
+ *	zCVobWaypoint_GetWaypoint
+ *	 - returns pointer to waypoint
+ */
+func int zCVobWaypoint_GetWaypoint (var int vobPtr) {
+	if (!Hlp_Is_zCVobWaypoint (vobPtr)) { return 0; };
+	var string vobWaypointName; vobWaypointName = zCVob_GetName (vobPtr);
+	return + SearchWaypointByName (vobWaypointName);
+};
+
 /*
  *
  */
