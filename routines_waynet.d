@@ -1326,15 +1326,14 @@ func int WP_GetDistToVob (var string waypointName, var int vobPtr) {
 };
 
 /*
- *	WP_CanSee
+ *	zCWaypoint_CanSee
  *	 - can we see vob from waypoint?
  */
-func int WP_CanSee (var string waypointName, var int vobPtr) {
+func int zCWaypoint_CanSee (var int wpPtr, var int vobPtr) {
+	if (!Hlp_Is_zCWaypoint (wpPtr)) { return 0; };
+
 	var int pos[3];
 	if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) { return 0; };
-
-	var int wpPtr; wpPtr = SearchWaypointByName (waypointName);
-	if (!wpPtr) { return 0; };
 
 	var zCWaypoint wp; wp = _^ (wpPtr);
 
