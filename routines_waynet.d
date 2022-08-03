@@ -768,7 +768,7 @@ func int NPC_GetCurrentFreepoint (var int slfInstance) {
 		vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (Hlp_Is_zCVobSpot (vobPtr)) {
-			//Seems like engine still returns true when NPC is standing on freepoint
+			//Seems like engine still returns true when NPC is standing on freepoint (also it updates freepoint if Npc is standing on it)
 			if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
 				var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
 				if (vobSpot.inUseVob == slfPtr) {
@@ -1462,4 +1462,139 @@ func string WP_GenerateNewName (var string waypointName) {
 
 	waypointName = ConcatStrings (waypointName, s);
 	return waypointName;
+};
+
+/*
+ *	zCVobWaypoint_GetByPortalRoom
+ *	 - *requires* initialization of G12_VobWaypoints_Init () from Init_Global () !
+ *
+ *	 - search vobWaypoint from position
+ *	 - allows more precise waypoint search - by using VobWaypoints - we can search fairly quickly
+ *
+ *	Parameters:
+ *	 - fromPosPtr - position from which vobs will be collected
+ *	 - searchByPortalName - portal in which vobWaypoint has to be located
+ *	 - searchFlags - supported flags: SEARCHVOBLIST_CANSEE (checks if canSeeVobPtr is visible from waypoint)
+ *	 - canSeeVobPtr - not required - only in combination with searchFlags: SEARCHVOBLIST_CANSEE
+ *	 - range - in which vobs will be collected
+ *	 - distLimit - max air distance to the vob
+ *	 - verticalLimit - max vertical distance to the vob
+ */
+func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+	var int i;
+	var int vobPtr;
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var int canSee;
+
+	if (!fromPosPtr) { return 0; };
+
+	var int fromPos[3];
+	MEM_CopyBytes (fromPosPtr, _@ (fromPos), 12);
+
+	//Target position
+	var int toPos[3];
+
+	searchByPortalName = STR_Trim (searchByPortalName, " ");
+	searchByPortalName = STR_Upper (searchByPortalName);
+
+	var int checkPortalName; checkPortalName = STR_Len (searchByPortalName);
+
+	//Collect all vobs in range
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (fromPosPtr, mkf (range));
+	if (!arrPtr) { return 0; };
+
+	var zCArray vobList; vobList = _^ (arrPtr);
+	repeat (i, vobList.numInArray);
+		vobPtr = MEM_ReadIntArray (vobList.array, i);
+
+		if (Hlp_Is_zCVobWaypoint (vobPtr)) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
+				var int wpPtr; wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
+				canSee = zCWaypoint_CanSee (wpPtr, canSeeVobPtr);
+			} else {
+				canSee = TRUE;
+			};
+
+			if (checkPortalName) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				if (!Hlp_StrCmp (portalName, searchByPortalName)) {
+					canSee = FALSE;
+				};
+			};
+
+			if (canSee) {
+				if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+					var int verticalDist; verticalDist = RoundF (SubF (toPos[1], fromPos[1]));
+
+					if ((abs (verticalDist) < verticalLimit) || (verticalLimit == -1)) {
+						var int dir[3];
+						SubVectors (_@ (dir), _@ (fromPos), _@ (toPos));
+						dist = zVEC3_LengthApprox (_@ (dir));
+						dist = RoundF (dist);
+
+						if ((dist <= distLimit) || (distLimit == -1)) {
+							if (!firstPtr) { firstPtr = vobPtr; };
+
+							if (dist < maxDist) {
+								nearestPtr = vobPtr;
+								maxDist = dist;
+							};
+						};
+					};
+				};
+			};
+		};
+	end;
+
+	MEM_Free (arrPtr);
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func int zCWaypoint_GetByPosAndPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+	var int vobPtr; vobPtr = zCVobWaypoint_GetByPortalRoom (fromPosPtr, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
+	return + zCVobWaypoint_GetWaypoint (vobPtr);
+};
+
+/*
+ *	WP_GetByPortalRoom
+ *	 - wrapper function to get nearest waypoint from certain position + possibility to filter by portal room
+ */
+func string WP_GetByPosAndPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+	var int wpPtr; wpPtr = zCWaypoint_GetByPosAndPortalRoom (fromPosPtr, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
+	return zCWaypoint_GetName (wpPtr);
+};
+
+/*
+ *	Npc_GetNearestWP_ByPortalRoom
+ *	 - wrapper function to get nearest waypoint from Npc in a portal room
+ */
+func string Npc_GetNearestWP_ByPortalRoom (var int slfInstance, var string searchByPortalName, var int searchFlags, var int range, var int distLimit, var int verticalLimit) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	var int pos[3];
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) { return ""; };
+
+	return WP_GetByPosAndPortalRoom (_@ (pos), searchByPortalName, searchFlags, _@ (slf), range, distLimit, verticalLimit);
+};
+
+/*
+ *	G12_VobWaypoints_Init
+ *	 - this will create vob waypoints
+ *	 - we can use vobWaypoints to detect waypoints by using Wld_CollectVobsInRange - without looping through waynet
+ *	 - also we can use vobWaypoints to detect portal room in which waypoints are available
+ */
+func void G12_VobWaypoints_Init () {
+	zCWayNet_ClearVobDependencies ();
+	zCWayNet_CreateVobDependencies (_@ (MEM_World));
 };
