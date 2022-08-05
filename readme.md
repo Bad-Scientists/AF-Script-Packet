@@ -11,7 +11,7 @@ In this Script Packet we would like to consolidate as many useful functions as p
 Main goal is to put together several useful features that any modder can simply enable by calling single init function.
 In a future we will add wiki with examples explaining how to use each feature.
 
-## Requirements: script-packets Ikarus (1.2.2) and LeGo (2.8.1)
+## Requirements: script-packets Ikarus (1.2.2 from master branch) and LeGo (2.8.1)
 <details><summary>AFSP Initialization</summary>
 
 1. Make sure both **Ikarus** and **LeGo** are parsed from your `Gothic.src` file.
