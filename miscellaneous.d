@@ -116,11 +116,10 @@ func void test_G2A_InsertItemsToChestsInOldCampCastle () {
 
 /*
  *	NPC_VobListDetectScemeName
- *	 - function returns pointer to *nearest* available mob with specified scemeName with specified state within specified verticalDist
- *	 - you can only search for mobs that NPC can see by using canSeeCheck == true
+ *	 - function returns pointer to *nearest* available mob with specified scemeName with specified state within specified verticalLimit
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, var int state, var int availabilityCheck, var int searchFlags, var int distLimit, var int verticalLimit) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -136,6 +135,14 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 
@@ -146,140 +153,42 @@ func int NPC_VobListDetectScemeName (var int slfInstance, var string scemeName, 
 		};
 
 		if (available) {
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
-			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
-					var oCMobInter mob;
-					mob = _^ (vobPtr);
-					//if (Hlp_StrCmp (mob.sceme, scemeName)) {
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
 
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
+			if (canSee) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
+						var oCMobInter mob; mob = _^ (vobPtr);
 						if ((mob.state == state) || (state == -1)) {
-							if (!firstPtr) { firstPtr = vobPtr; };
-
-							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-							if (dist < maxDist) {
-								nearestPtr = vobPtr;
-								maxDist = dist;
+							//Find route from Npc to vob - get total distance if Npc travels by waynet
+							if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+								retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+								dist = zCRoute_GetLength (routePtr); //float
+								dist = RoundF (dist);
+							} else {
+								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
 							};
-						};
-					};
-				};
-			};
-		};
-		i += 1;
-	end;
 
-	if (nearestPtr) { return nearestPtr; };
-
-	return firstPtr;
-};
-
-/*
- *	NPC_VobListDetectVisual
- *	 - function returns pointer to *nearest* vob with specified searchVisualName within specified verticalDist
- *	 - you can only search for vobs that NPC can see by using canSeeCheck == true
- *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
- */
-func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualName, var int canSeeCheck, var int verticalDist) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int dist;
-	var int maxDist; maxDist = 999999;
-
-	var int firstPtr; firstPtr = 0;
-	var int nearestPtr; nearestPtr = 0;
-
-	var string visualName;
-
-	var int canSee;
-
-	var int vobPtr;
-	var int i; i = 0;
-
-	while (i < slf.vobList_numInArray);
-		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
-
-		if (canSeeCheck) {
-			canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
-		} else {
-			canSee = TRUE;
-		};
-
-		if (canSee) {
-			if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
-				visualName = Vob_GetVisualName (vobPtr);
-
-				if (Hlp_StrCmp (visualName, searchVisualName)) {
-
-					if (!firstPtr) { firstPtr = vobPtr; };
-
-					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-
-					if (dist < maxDist) {
-						nearestPtr = vobPtr;
-						maxDist = dist;
-					};
-				};
-			};
-		};
-
-		i += 1;
-	end;
-
-	if (nearestPtr) { return nearestPtr; };
-
-	return firstPtr;
-};
-
-/*
- *	NPC_VobListDetectItem
- *	 - function returns pointer to *nearest* item with specified mainflag and flags within specified verticalDist
- *	 - you can only search for vobs that NPC can see by using canSeeCheck == true
- *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
- */
-func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int flags, var int canSeeCheck, var int verticalDist) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int dist;
-	var int maxDist; maxDist = 999999;
-
-	var int firstPtr; firstPtr = 0;
-	var int nearestPtr; nearestPtr = 0;
-
-	var oCItem itm;
-
-	var int canSee;
-
-	var int vobPtr;
-	var int i; i = 0;
-
-	while (i < slf.vobList_numInArray);
-		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
-		if (Hlp_Is_oCItem (vobPtr)) {
-
-			if (canSeeCheck) {
-				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
-			} else {
-				canSee = TRUE;
-			};
-
-			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
-					itm = _^ (vobPtr);
-					if (Hlp_IsValidItem (itm)) {
-						if ((itm.mainflag == mainflag) || (!mainflag)) {
-							if ((itm.flags & flags) || (!flags)) {
+							if ((dist <= distLimit) || (distLimit == -1)) {
 								if (!firstPtr) { firstPtr = vobPtr; };
-
-								dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
 
 								if (dist < maxDist) {
 									nearestPtr = vobPtr;
@@ -299,7 +208,185 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 	return firstPtr;
 };
 
-func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int canSeeCheck, var int verticalDist) {
+/*
+ *	NPC_VobListDetectVisual
+ *	 - function returns pointer to *nearest* vob with specified searchVisualName within specified verticalLimit
+ *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
+ */
+func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualName, var int searchFlags, var int distLimit, var int verticalLimit) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var string visualName;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+
+		if (searchFlags & SEARCHVOBLIST_CANSEE) {
+			canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+		} else {
+			canSee = TRUE;
+		};
+
+		//Check for portal room owner
+		if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+			var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+			//If portal room is owned by Npc
+			if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+				//If this portal is not owned by me - ignore - pretend we don't see it :)
+				if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+					canSee = FALSE;
+				};
+			};
+		};
+
+		if (canSee) {
+			if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
+				visualName = Vob_GetVisualName (vobPtr);
+
+				if (Hlp_StrCmp (visualName, searchVisualName)) {
+					//Find route from Npc to vob - get total distance if Npc travels by waynet
+					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+						retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+						routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+						dist = zCRoute_GetLength (routePtr); //float
+						dist = RoundF (dist);
+					} else {
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+					};
+
+					if ((dist <= distLimit) || (distLimit == -1)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
+					};
+				};
+			};
+		};
+
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+/*
+ *	NPC_VobListDetectItem
+ *	 - function returns pointer to *nearest* item with specified mainflag and flags within specified verticalLimit
+ *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
+ */
+func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int flags, var int searchFlags, var int distLimit, var int verticalLimit) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int dist;
+	var int maxDist; maxDist = 999999;
+
+	var int firstPtr; firstPtr = 0;
+	var int nearestPtr; nearestPtr = 0;
+
+	var oCItem itm;
+
+	var int canSee;
+
+	var int vobPtr;
+	var int i; i = 0;
+
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
+	while (i < slf.vobList_numInArray);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+		if (Hlp_Is_oCItem (vobPtr)) {
+
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
+				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
+			} else {
+				canSee = TRUE;
+			};
+
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
+			if (canSee) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
+					itm = _^ (vobPtr);
+					if (Hlp_IsValidItem (itm)) {
+						if ((itm.mainflag == mainflag) || (!mainflag)) {
+							if ((itm.flags & flags) || (!flags)) {
+								//Find route from Npc to vob - get total distance if Npc travels by waynet
+								if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+									retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+									routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+									dist = zCRoute_GetLength (routePtr); //float
+									dist = RoundF (dist);
+								} else {
+									dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+								};
+
+								if ((dist <= distLimit) || (distLimit == -1)) {
+									if (!firstPtr) { firstPtr = vobPtr; };
+
+									if (dist < maxDist) {
+										nearestPtr = vobPtr;
+										maxDist = dist;
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+		i += 1;
+	end;
+
+	if (nearestPtr) { return nearestPtr; };
+
+	return firstPtr;
+};
+
+func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var int searchFlags, var int distLimit, var int verticalLimit) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -316,27 +403,58 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 		if (Hlp_Is_oCNpc (vobPtr)) {
 
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					npc = _^ (vobPtr);
 					if (NPC_IsInStateName (npc, stateName)) {
-						if (!firstPtr) { firstPtr = vobPtr; };
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist = zCRoute_GetLength (routePtr); //float
+							dist = RoundF (dist);
+						} else {
+							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+						};
 
-						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						if ((dist <= distLimit) || (distLimit == -1)) {
+							if (!firstPtr) { firstPtr = vobPtr; };
 
-						if (dist < maxDist) {
-							nearestPtr = vobPtr;
-							maxDist = dist;
+							if (dist < maxDist) {
+								nearestPtr = vobPtr;
+								maxDist = dist;
+							};
 						};
 					};
 				};
@@ -350,7 +468,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 	return firstPtr;
 };
 
-func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int canSeeCheck, var int verticalDist) {
+func int NPC_VobListDetectByName (var int slfInstance, var string objectName, var int searchFlags, var int distLimit, var int verticalLimit) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -369,28 +487,59 @@ func int NPC_VobListDetectByName (var int slfInstance, var string objectName, va
 	var int vobPtr;
 	var int i; i = 0;
 
+	//Get Npc position
+	var int fromPos[3];
+	var int retVal; retVal = zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos));
+
+	//Target position
+	var int toPos[3];
+	var int routePtr;
+
 	while (i < slf.vobList_numInArray);
 		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
 		if (vobPtr) {
 
-			if (canSeeCheck) {
+			if (searchFlags & SEARCHVOBLIST_CANSEE) {
 				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
 			} else {
 				canSee = TRUE;
 			};
 
+			//Check for portal room owner
+			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+				//If portal room is owned by Npc
+				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+					//If this portal is not owned by me - ignore - pretend we don't see it :)
+					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+						canSee = FALSE;
+					};
+				};
+			};
+
 			if (canSee) {
-				if (abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalDist) {
+				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					var zCVob vob; vob = _^ (vobPtr);
 
 					if (Hlp_StrCmp (STR_Upper (vob._zCObject_objectName), objectName)) {
-						if (!firstPtr) { firstPtr = vobPtr; };
+						//Find route from Npc to vob - get total distance if Npc travels by waynet
+						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+							retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist = zCRoute_GetLength (routePtr); //float
+							dist = RoundF (dist);
+						} else {
+							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+						};
 
-						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
+						if ((dist <= distLimit) || (distLimit == -1)) {
+							if (!firstPtr) { firstPtr = vobPtr; };
 
-						if (dist < maxDist) {
-							nearestPtr = vobPtr;
-							maxDist = dist;
+							if (dist < maxDist) {
+								nearestPtr = vobPtr;
+								maxDist = dist;
+							};
 						};
 					};
 				};

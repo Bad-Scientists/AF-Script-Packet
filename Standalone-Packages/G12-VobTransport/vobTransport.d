@@ -29,6 +29,7 @@ func int VobCanBeDeleted__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
 
 	|| (Hlp_Is_zCVobSpot (vobPtr))
+	|| (Hlp_Is_zCVobWaypoint (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob (supported by this feature)
 	{
@@ -97,6 +98,7 @@ func int VobCanBeSelected__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
 
 	|| (Hlp_Is_zCVobSpot (vobPtr))
+	|| (Hlp_Is_zCVobWaypoint (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
 	{
@@ -133,6 +135,7 @@ func int VobCanBeMovedAround__VobTransport (var int vobPtr) {
 	|| (Hlp_Is_oCTriggerScript (vobPtr))
 
 	|| (Hlp_Is_zCVobSpot (vobPtr))
+	|| (Hlp_Is_zCVobWaypoint (vobPtr))
 
 	|| (Hlp_Is_zCVob__VobTransport (vobPtr)) //zCVob
 	{
@@ -168,47 +171,49 @@ func int VobCanBeCloned__VobTransport (var int vobPtr) {
 
 //---
 
-func int Npc_GetFP (var int slfInstance, var string freepointName, var int distF, var int posPtr) {
+func int Npc_GetSlotFP__VobTransport (var int slfInstance, var string freepointName, var int distF, var int fromPosPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	oCNpc_ClearVobList (slf);
-	oCNpc_CreateVobList (slf, distF);
 
 	var int vobPtr;
 
 	var int i; i = 0;
 	var int loop;
 
-	var int maxDist; maxDist = mkf (999999);
+	var int maxDist; maxDist = 999999;
 	var int dist;
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
 
-	loop = slf.vobList_numInArray;
+	//Collect all vobs in range
+	var int arrPtr; arrPtr = Wld_CollectVobsInRange (fromPosPtr, mkf (distF));
+	if (!arrPtr) { return 0; };
 
-	while (i < loop);
-		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+	var zCArray vobList; vobList = _^ (arrPtr);
+	repeat (i, vobList.numInArray);
+		vobPtr = MEM_ReadIntArray (vobList.array, i);
+
 		if (Hlp_Is_zCVobSpot (vobPtr)) {
 			var zCVob vobSpot; vobSpot = _^ (vobPtr);
 			if (STR_StartsWith (vobSpot._zCObject_objectName, freepointName)) {
 				if (!firstPtr) { firstPtr = vobPtr; };
 
-				if (posPtr) {
-					var int pos[3];
-					MEM_CopyBytes (posPtr, _@ (pos), 12);
+				var int pos[3];
 
-					dist = TRF_GetDistXYZ (pos[0], pos[1], pos[2], vobSpot.trafoObjToWorld[03], vobSpot.trafoObjToWorld[07], vobSpot.trafoObjToWorld[11]);
-				} else {
-					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr);
-				};
+				if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+					dist = Pos_GetDistToPos (fromPosPtr, _@ (pos)); //float
+					dist = RoundF (dist);
 
-				if (lf (dist, maxDist)) {
-					nearestPtr = vobPtr;
-					maxDist = dist;
+					if (dist < maxDist) {
+						nearestPtr = vobPtr;
+						maxDist = dist;
+					};
 				};
 			};
 		};
 		i += 1;
 	end;
+
+	MEM_Free (arrPtr);
 
 	if (nearestPtr) {
 		return nearestPtr;
@@ -395,6 +400,24 @@ func void UpdateWaypoints__VobTransport (var int vobPtr) {
 		//Remember last position
 		MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (trafo), 64);
 	};
+
+	//zCVobWaypoint (this does not have any effect on waypoints created from vobPtr bones! (above code will delete those and will re-create new ones)
+	//TODO: check if we can use vobWaypoints as child objects of other objects
+
+	// - for this piece to work, we have to use G12_VobWaypoints_Init
+	if (Hlp_Is_zCVobWaypoint (vobPtr)) {
+		//if we are moving vob waypoint - then we need to update waypoint position
+		var int wpPtr; wpPtr = SearchWaypointByName (vob._zCObject_objectName);
+		if (wpPtr) {
+			var zCWaypoint wp; wp = _^ (wpPtr);
+			var int pos[3];
+			var int dir[3];
+			TrfPosToVector (_@ (vob.trafoObjToWorld), _@ (pos));
+			TrfDirToVector (_@ (vob.trafoObjToWorld), _@ (dir));
+			MEM_CopyBytes (_@ (pos), _@ (wp.pos), 12);
+			MEM_CopyBytes (_@ (dir), _@ (wp.dir), 12);
+		};
+	};
 };
 
 func void WaypointsCorrectHeight__VobTransport (var int vobPtr) {
@@ -447,7 +470,8 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 	var zCVob vob; vob = _^ (vobPtr);
 
 	//Save BBox
-	var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
+	var int bboxPtr; bboxPtr = zCVob_GetBBox3DLocal (vobPtr);
+	//var zTBBox3D bbox; bbox = _^ (zCVob_GetBBox3DLocal (vobPtr));
 
 	//Move vob to NPC X Y Z coordinates
 	var int dir[3]; MEM_CopyBytes (_@ (vobTransportOffset), _@ (dir), 12);
@@ -477,14 +501,12 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 	//Vob-spot-slotting
 	if (vobTransportMode == vobTransportMode_Movement) {
 		var int pos[3]; TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
-		var int vobSpotPtr; vobSpotPtr = Npc_GetFP (slf, "FP_SLOT", mkf (vobTransportCollectVobSlotRange), _@ (pos));
+		var int vobSpotPtr; vobSpotPtr = Npc_GetSlotFP__VobTransport (slf, "FP_SLOT", vobTransportCollectVobSlotRange, _@ (pos));
 		if (vobSpotPtr) {
-			if (lef (zCVob_GetDistanceToVob (vobPtr, vobSpotPtr), mkf (vobTransportAlignVobSlotRange))) {
-				var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
+			var zCVob vobSpot; vobSpot = _^ (vobSpotPtr);
 
-				// Update position
-				AlignVobAt (vobPtr, _@ (vobSpot.trafoObjToWorld));
-			};
+			// Update position
+			AlignVobAt (vobPtr, _@ (vobSpot.trafoObjToWorld));
 		};
 	};
 
@@ -493,7 +515,8 @@ func void MoveVobInFront__VobTransport (var int vobPtr) {
 	};
 
 	//Restore BBox
-	zCVob_SetBBox3DLocal (vobPtr, _@ (bbox));
+	//zCVob_SetBBox3DLocal (vobPtr, _@ (bbox));
+	zCVob_SetBBox3DLocal (vobPtr, bboxPtr);
 	vobTransportBBoxPtr = zCVob_GetBBox3DWorld (vobPtr);
 };
 
@@ -1602,6 +1625,10 @@ func void _hook_BBox3D_Draw () {
 };
 
 func void G12_VobTransport_Init () {
+	//Init Vob waypoints
+	G12_VobWaypoints_Init ();
+
+	//Init color constants
 	G12_ColorConstants_Init ();
 
 	//Init Game key events

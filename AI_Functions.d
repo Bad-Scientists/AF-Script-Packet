@@ -22,11 +22,11 @@
  *	AI_TurnToPos
  *	 - same as AI_TurnToNPC, but allows us to use position
  */
-func void AI_TurnToPos (var int slfinstance, var int posPtr) {
+func void AI_TurnToPos (var int slfInstance, var int posPtr) {
 /*
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -54,8 +54,8 @@ func void AI_TurnToPos (var int slfinstance, var int posPtr) {
  *	AI_TurnAwayPos
  *	 - same as AI_TurnAway, but allows us to use position
  */
-func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnAwayPos (var int slfInstance, var int posPtr) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	if (!posPtr) { return; };
@@ -82,8 +82,8 @@ func void AI_TurnAwayPos (var int slfinstance, var int posPtr) {
  *	AI_TurnToWP
  *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
  */
-func void AI_TurnToWP (var int slfinstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnToWP (var int slfInstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -105,8 +105,8 @@ func void AI_TurnToWP (var int slfinstance, var string waypoint) {
 		/
 	[pos]						(pos = [self] - [dir vector])
 */
-func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TurnAwayWP (var int slfInstance, var string waypoint) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
@@ -121,10 +121,10 @@ func void AI_TurnAwayWP (var int slfinstance, var string waypoint) {
  *	AI_TurnToVobPtr
  *	 - same as AI_TurnToNPC, but allows us to use vob pointer
  */
-func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_TurnToVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -139,10 +139,10 @@ func void AI_TurnToVobPtr (var int slfinstance, var int vobPtr) {
  *	AI_TurnAwayVobPtr
  *	 - same as AI_TurnAway, but allows us to use vob pointer
  */
-func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_TurnAwayVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -157,11 +157,11 @@ func void AI_TurnAwayVobPtr (var int slfinstance, var int vobPtr) {
  *	AI_GotoPos
  *	 - same as AI_GotoNPC, but allows us to define position to which NPC should walk to
  */
-func void AI_GotoPos (var int slfinstance, var int posPtr) {
+func void AI_GotoPos (var int slfInstance, var int posPtr) {
 /*
 	if (!posPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	slf.soundPosition[0] = MEM_ReadIntArray(posPtr, 0);
@@ -186,14 +186,294 @@ func void AI_GotoPos (var int slfinstance, var int posPtr) {
 };
 
 /*
+ *	AI_GotoVobPtr_EvalWaynetUse
+ *	 - function evaluates whether to use or not waynet system to navigate to vob (this way Npc should be behaving slightly more inteligent)
+ *
+ *	Rules:
+ *	 - Npc has to be standing close to waypoint (x meters), waypoint has to be visible to Npc
+ *	 - vob has to be close to waypoint (x meters), waypoint has to be visible to vob
+ *	 - if vob is visible to Npc - then waynet distance cannot be longer than 120% of 'air' distance to vob
+ *	 - if any chasm is detected - then waynet will be used by default
+ *	 - if vob is not visible to Npc - then waynet will be used by default
+ */
+
+func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
+
+
+	var int posNpc[3];
+	var int posVob[3];
+
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (posNpc)))
+	|| (!zCVob_GetPositionWorldToPos (vobPtr, _@ (posVob)))
+	{
+		return;
+	};
+
+	//-- Get nearest waypoint to vob
+	//var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
+
+	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
+
+	//if vob is not visible from waypoint ... ignore
+	if (!STR_Len (toWp)) {
+		zSpy_Info ("... target waypoint - can't see vob. Waynet might not be reliable.");
+		zSpy_Info ("<--");
+		return;
+	};
+
+	var int wpDistToVob;
+	wpDistToVob = WP_GetDistToVob (toWp, vobPtr); //float
+	wpDistToVob = RoundF (wpDistToVob);
+
+	//-- Get nearest waypoint to Npc
+	//var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
+	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
+
+	//if vob is not visible from waypoint ... ignore
+	if (!STR_Len (fromWp)) {
+		zSpy_Info ("... npc waypoint - can't see npc. Waynet might not be reliable.");
+		zSpy_Info ("<--");
+		return;
+	};
+
+	var int wpDistToNpc;
+	wpDistToNpc = WP_GetDistToVob (fromWp, _@ (slf)); //float
+	wpDistToNpc = RoundF (wpDistToNpc);
+
+	//-- Get 'air' distance to vob
+	var int distToVob;
+	distToVob = zCVob_GetDistanceToVob (_@ (slf), vobPtr); //float
+
+	var int npcDistToVobWp;
+	npcDistToVobWp = Npc_GetDistToWP (slf, toWp); //int
+
+	var int vobDistToFromWp;
+	vobDistToFromWp = WP_GetDistToVob (fromWp, vobPtr); //float
+
+//-- Evaluate waynet route
+
+	//multiply by 120%
+	var int distToVobTolerance; distToVobTolerance = distToVob;
+	distToVobTolerance = mulf (distToVobTolerance, mkf (120));
+	distToVobTolerance = divf (distToVobTolerance, mkf (100));
+	distToVobTolerance = RoundF (distToVobTolerance);
+
+	var int fromWpPtr; fromWpPtr = SearchWaypointByName (fromWp);
+	var int toWpPtr; toWpPtr = SearchWaypointByName (toWp);
+
+	var int routePtr;
+	routePtr = zCWayNet_FindRoute_Waypoints (fromWpPtr, toWpPtr, 0);
+
+	var int distWaynet;
+	distWaynet = zCRoute_GetLength (routePtr); //float
+	distWaynet = RoundF (distWaynet);
+
+	var int isTooFar; isTooFar = (distWaynet > distToVobTolerance);
+
+	zSpy_Info (ConcatStrings ("... dist air: ", IntToString (RoundF (distToVob))));
+	zSpy_Info (ConcatStrings ("... dist tolerance (120% air dist): ", IntToString (distToVobTolerance)));
+	zSpy_Info (ConcatStrings ("... dist waynet: ", IntToString (distWaynet)));
+	zSpy_Info (ConcatStrings ("... ", zCRoute_GetDesc (routePtr)));
+
+//-- Detect chasms
+
+	/*
+	 *	Here we will create waypoint - move it towards vob and detect possible issues with ground. (chasm detection)
+	 *	It is more convenient to use waypoint, because we can move it around and use zCWaypoint_CorrectHeight to easily align it to ground.
+	 */
+
+	var int dir[3];
+
+	var int chasmDetected; chasmDetected = FALSE;
+
+	//Get direction vector (total distance)
+	SubVectors (_@ (dir), _@ (posVob), _@ (posNpc));
+
+	//Copy vector - we will use vec to move waypoint towards vob
+	var int vec[3];
+	CopyVector (_@ (dir), _@ (vec));
+
+	//Normalize vector
+	zVEC3_NormalizeSafe (_@ (vec));
+
+	//Multiply by 50 (to get 0.5 m length)
+	MulVector (_@ (vec), mkf (50));
+
+	//Waypoint pointer
+	var int wpPtr; wpPtr = 0;
+
+	var int lastPos[3];
+	var int newPos[3];
+
+	var int i; i = 0;
+
+	var int newDistToVob;
+
+	CopyVector (_@ (posNpc), _@ (newPos));
+
+	//Debugging - generate and leave waypoints for investigation :)
+	const int Debug_GenerateWaypoints = FALSE;
+
+	var string wpName;
+	if (!STR_Len (wpName)) {
+		wpName = "WP_TEMP_DETECTCHASM_001";
+	};
+
+	while (true);
+		var zCWaypoint wp;
+
+		if (Debug_GenerateWaypoints) {
+			//Create new waypoint
+			if (i == 0) {
+				//First waypoint
+				wpPtr = zCWayNet_GetNearestWaypoint (_@ (posNpc));
+			} else {
+				//Generate new name
+				wpName = WP_GenerateNewName (wpName);
+			};
+
+			wpPtr = WP_Create (wpName, _@ (newPos), wpPtr);
+			wp = _^ (wpPtr);
+
+			//Get last position of waypoint
+			CopyVector (_@ (wp.pos), _@ (lastPos));
+		} else {
+			//Create single waypoint
+			if (!wpPtr) {
+				wpPtr = WP_Create (wpName, _@ (newPos), 0);
+				wp = _^ (wpPtr);
+			};
+		};
+
+		//Move waypoint towards vob
+		AddVectors (_@ (wp.pos), _@ (wp.pos), _@ (vec));
+
+		//Correct waypoint height - align to ground properly
+		zCWaypoint_CorrectHeight (wpPtr);
+
+		//Get new position of waypoint
+		CopyVector (_@ (wp.pos), _@ (newPos));
+
+		//Get vector from Npc to new position of waypoint (to get length)
+		SubVectors (_@ (dir), _@ (newPos), _@ (posNpc));
+
+		//Get length
+		var int distNew; distNew = zVEC3_LengthApprox (_@ (dir));
+
+		//If we are behind vob position - we can exit loop - no chasms detected so far
+		if (gef (distNew, distToVob)) {
+			break;
+		};
+
+		//Detect chasms underneath waypoint
+		dir[0] = FLOATNULL;
+		dir[1] = mkf (100);
+		dir[2] = FLOATNULL;
+
+		var int distF; distF = mkf (100);
+		var int cdNormal[3];
+
+		//oCAniCtrl_Human_DetectChasm (var int aniCtrlPtr, var int posPtr, var int dirPtr, var int distPtrF, var int cdNormalPtr) {
+		chasmDetected = oCAniCtrl_Human_DetectChasm (slf.aniCtrl, _@ (newPos), _@ (dir), _@ (distF), _@ (cdNormal));
+
+		//Chasm detected - exit loop
+		if (chasmDetected) {
+			break;
+		};
+
+		if (Debug_GenerateWaypoints) {
+			zSpy_Info (ConcatStrings ("... chasmDetected", IntToString (chasmDetected)));
+			zSpy_Info (ConcatStrings ("... distF", toStringF (distF)));
+
+			if (i > 0) {
+				var int heightDelta;
+				var int lastHeightDelta;
+
+				heightDelta = roundf (subf (lastPos[1], newPos[1]));
+
+				//heightDelta = heightDelta - lastHeightDelta;
+
+				zSpy_Info (ConcatStrings ("... height check ", IntToString (heightDelta)));
+
+				if (abs (heightDelta) > 50) {
+					chasmDetected = TRUE;
+					//break;
+				};
+			};
+
+			lastHeightDelta = heightDelta;
+
+			CopyVector (_@ (wp.pos), _@ (newPos));
+		};
+
+		i += 1;
+	end;
+
+	if (!Debug_GenerateWaypoints) {
+		//Delete waypoint
+		zCWayNet_DeleteWaypoint_ByPtr (wpPtr);
+	} else {
+		//Connect last waypoint to vob waypoint
+		if (!chasmDetected) {
+			zCWayNet_CreateWay (wpPtr, SearchWaypointByName (toWp));
+		};
+	};
+
+//--
+	if (!chasmDetected) {
+		//if waypoint is too far from vob & it is not on the way to vob ... ignore
+		if ((wpDistToVob > 300) && (npcDistToVobWp > RoundF (distToVob))) {
+			zSpy_Info ("... target waypoint too far");
+			zSpy_Info ("<--");
+			return;
+		};
+
+		//if waypoint is too far from Npc & it is not on the way to vob ... ignore
+		if ((wpDistToNpc > 300) && (RoundF (vobDistToFromWp) > RoundF (distToVob))) {
+			zSpy_Info ("... npc waypoint too far");
+			zSpy_Info ("<--");
+			return;
+		};
+
+		//If Npc can see vob - and if waynet navigation is longer then air distance - ignore ...
+		if (oCNpc_CanSee (slfInstance, vobPtr, 1) && isTooFar) {
+			zSpy_Info ("... npc can see vob + distance through waynet navigation > air distance");
+			zSpy_Info ("<--");
+			return;
+		};
+
+		if (isTooFar) {
+			zSpy_Info ("... distance through waynet navigation > air distance ... but npc can't see vob - using waynet");
+		};
+	} else {
+		zSpy_Info ("... chasm detected!");
+	};
+
+	var string s; s = "... navigating using waynet, from: ";
+	s = ConcatStrings (s, fromWp);
+	s = ConcatStrings (s, " to: ");
+	s = ConcatStrings (s, toWp);
+	zSpy_Info (s);
+
+	AI_GotoWp (slf, toWp);
+
+	zSpy_Info ("<--");
+};
+
+/*
  *	AI_GotoFpPtr
  *	 - same as AI_GotoFP, but allows us to define freePoint pointer
  */
-func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
+func void AI_GotoFpPtr (var int slfInstance, var int vobSpotPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return; };
+
+	AI_GotoVobPtr_EvalWaynetUse (slfInstance, vobSpotPtr);
 
 	//Flag temporarily as used - so no other NPC will try to go to the same freePoint
 	var int timeDeltaF; timeDeltaF = mkf (6000);
@@ -232,10 +512,10 @@ func void AI_GotoFpPtr (var int slfinstance, var int vobSpotPtr) {
  *	AI_GotoVobPtr
  *	 - same as AI_GotoNPC, but allows us to use any vob pointer
  */
-func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
+func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var zCVob vob; vob = _^(vobPtr);
@@ -243,6 +523,7 @@ func void AI_GotoVobPtr (var int slfinstance, var int vobPtr) {
 	var int pos[3];
 	TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
 
+	AI_GotoVobPtr_EvalWaynetUse (slfInstance, vobPtr);
 	AI_GotoPos (slf, _@ (pos));
 };
 
@@ -305,8 +586,8 @@ func string _AI_GetAniName_T_HEASHOOT_2_STAND () {
  *	AI_TeleportKeepQueue
  *	 - function performs teleportation without clearing AI queue (use carefully!)
  */
-func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
@@ -318,14 +599,14 @@ func void AI_TeleportKeepQueue (var int slfinstance, var string vobName) {
  *	AI_TeleportToWorld
  *	 - function allows teleportation between worlds
  */
-func void AI_TeleportToWorld (var int slfinstance, var string levelName, var string vobName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfinstance);
+func void AI_TeleportToWorld (var int slfInstance, var string levelName, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
 
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
-		AI_TeleportKeepQueue (slfinstance, vobName);
+		AI_TeleportKeepQueue (slfInstance, vobName);
 	} else {
 		AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
 		AI_Function_SS (slf, oCGame_TriggerChangeLevel, levelName, vobName);
@@ -335,7 +616,7 @@ func void AI_TeleportToWorld (var int slfinstance, var string levelName, var str
 /*
  *	An alternative that will turn to vob only when not within acceptable angle
  */
-func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int angle) {
+func void AI_TurnToVobPtrAngleX (var int slfInstance, var int vobPtr, var int angle) {
 	var int angleX; var int angleXPtr; angleXPtr = _@ (angleX);
 	var int angleY; var int angleYPtr; angleYPtr = _@ (angleY);
 
@@ -382,14 +663,14 @@ func void AI_TurnToVobPtrAngleX (var int slfinstance, var int vobPtr, var int an
 		return;
 	};
 
-	AI_TurnToVobPtr (slfinstance, vobPtr);
+	AI_TurnToVobPtr (slfInstance, vobPtr);
 };
 
 /*
  *	Scans for ideal positions, finds free positions and sends there NPC
  *	Function returns TRUE if successfull, FALSE if not
  */
-func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
+func int AI_GotoMobPtr (var int slfInstance, var int mobPtr) {
 //func void oCMobInter_ScanIdealPositions (var int mobPtr) {
 	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
 	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
@@ -476,7 +757,8 @@ func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
 
 	if (!retVal) { return FALSE; };
 
-	AI_GotoPos (slf, _@ (pos));
+	AI_GotoVobPtr_EvalWaynetUse (slfInstance, mobPtr);
+	AI_GotoPos (slfInstance, _@ (pos));
 
 	return TRUE;
 };
@@ -485,7 +767,7 @@ func int AI_GotoMobPtr (var int slfinstance, var int mobPtr) {
  *	Scans for ideal positions, finds position with specified nodeName and sends there NPC
  *	Function returns TRUE if successfull, FALSE if not
  */
-func int AI_GotoMobPtrNodeName (var int slfinstance, var int mobPtr, var string nodeName) {
+func int AI_GotoMobPtrNodeName (var int slfInstance, var int mobPtr, var string nodeName) {
 //func void oCMobInter_ScanIdealPositions (var int mobPtr) {
 	//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
 	const int oCMobInter__ScanIdealPositions_G1 = 6801856;
@@ -541,7 +823,8 @@ func int AI_GotoMobPtrNodeName (var int slfinstance, var int mobPtr, var string 
 
 	if (!nodeNameFound) { return FALSE; };
 
-	AI_GotoPos (slf, _@ (pos));
+	AI_GotoVobPtr_EvalWaynetUse (slfInstance, mobPtr);
+	AI_GotoPos (slfInstance, _@ (pos));
 
 	return TRUE;
 };
@@ -768,7 +1051,7 @@ func void AI_DrawWeapon_Ext (var int slfInstance, var int targetMode, var int us
  *	AI_WhirlAroundToPos
  *	 - same as AI_WhirlAround, but allows us to use position
  */
-func void AI_WhirlAroundToPos (var int slfinstance, var int posPtr) {
+func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
@@ -782,4 +1065,15 @@ func void AI_WhirlAroundToPos (var int slfinstance, var int posPtr) {
 
 	//Add new msg to Event Manager
 	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+func void _AI_ResetStateTime () {
+	Npc_SetStateTime (self, 0);
+};
+
+func void AI_ResetStateTime (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	AI_Function (slf, _AI_ResetStateTime);
 };

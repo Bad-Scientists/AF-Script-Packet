@@ -85,6 +85,27 @@ func int oCNpc_GetNewPercType (var int slfInstance) {
 };
 
 /*
+ *	Npc_HasPercFunc
+ *	 - checks if perception function is already in perception list
+ */
+func int Npc_HasPercFunc (var int slfInstance, var func percFunc) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	repeat (i, slf.percActive); var int i;
+		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
+
+		if (funcID == percFuncID) {
+			return TRUE;
+		};
+	end;
+
+	return FALSE;
+};
+
+/*
  *	Npc_PercEnableCustom
  *	 - function will add new perception type to perception list
  */
@@ -92,9 +113,10 @@ func void Npc_PercEnableCustom (var int slfInstance, var func percFunc) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
+	var string msg;
+
 	//With this function we will allow only 32 perceptions
 	if (slf.percActive + 1 >= NPC_PERC_MAX) {
-		var string msg;
 		msg = ConcatStrings ("Npc_PercEnableCustom: Npc ", GetSymbolName (Hlp_GetInstanceID (slf)));
 		msg = ConcatStrings (msg, " has already maximum number of perceptions enabled.");
 		MEM_Info (msg);
@@ -102,11 +124,40 @@ func void Npc_PercEnableCustom (var int slfInstance, var func percFunc) {
 	};
 
 	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	if (Npc_HasPercFunc (slf, percFunc)) {
+		msg = ConcatStrings ("Npc_PercEnableCustom: Npc ", GetSymbolName (Hlp_GetInstanceID (slf)));
+		msg = ConcatStrings (msg, " perception function ");
+		msg = ConcatStrings (msg, GetSymbolName (funcID));
+		msg = ConcatStrings (msg, " already enabled.");
+		MEM_Info (msg);
+		return;
+	};
+
 	var int percType; percType = oCNpc_GetNewPercType (slfInstance);
 	oCNpc_EnablePerception (slfInstance, percType, funcID);
 
 	//Identification for additional perceptions (further below explanation)
 	slf.percList[64] = 1;
+};
+
+/*
+ *	Npc_RemovePercFunc
+ *	 - removes perception function
+ */
+func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int funcID; funcID = MEM_GetFuncID (percFunc);
+
+	repeat (i, slf.percActive); var int i;
+		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
+
+		if (funcID == percFuncID) {
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, 0);
+		};
+	end;
 };
 
 /*

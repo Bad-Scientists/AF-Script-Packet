@@ -2,6 +2,26 @@
  *	Constants - same values for both G1 & G2A
  */
 
+//enum zTTraceRayFlags {
+	const int zTRACERAY_VOB_IGNORE_NO_CD_DYN = 1 << 0;
+	const int zTRACERAY_VOB_IGNORE = 1 << 1;
+	const int zTRACERAY_VOB_BBOX = 1 << 2;
+	const int zTRACERAY_VOB_OBB = 1 << 3;
+	const int zTRACERAY_STAT_IGNORE = 1 << 4;
+	const int zTRACERAY_STAT_POLY = 1 << 5;
+	const int zTRACERAY_STAT_PORTALS = 1 << 6;
+	const int zTRACERAY_POLY_NORMAL = 1 << 7;
+	const int zTRACERAY_POLY_IGNORE_TRANSP = 1 << 8;
+	const int zTRACERAY_POLY_TEST_WATER = 1 << 9;
+	const int zTRACERAY_POLY_2SIDED = 1 << 10;
+	const int zTRACERAY_VOB_IGNORE_CHARACTER = 1 << 11;
+	const int zTRACERAY_FIRSTHIT = 1 << 12;
+	const int zTRACERAY_VOB_TEST_HELPER_VISUALS = 1 << 13;
+
+	//G2A only!
+	const int zTRACERAY_VOB_IGNORE_PROJECTILES = 1 << 14;
+//};
+
 const int NPC_PERC_MAX = 33;
 
 //const float zMDL_ANI_BLEND_IN_ZERO = float_MAX;
@@ -70,6 +90,16 @@ const int ITM_COND_MAX = 3;
 
 const int ITM_FLAG_NFOCUS = 1 << 23;
 
+//Search flags for voblist functions [AFSP specific constants]
+
+const int SEARCHVOBLIST_NOFILTERS = 0; //No special checks
+const int SEARCHVOBLIST_CANSEE = 1; //Checks if Npc can see object
+const int SEARCHVOBLIST_USEWAYNET = 2; //Uses waynet to calculate nearest object / if this flag is not used then functions uses 'air' distance
+const int SEARCHVOBLIST_CHECKPORTALROOMOWNER = 4; //Ignore objects that are in portal room owned by another Npc
+
+/*
+ *	Color values [G1 & G2A constants]
+ */
 var int GFX_RED;
 var int GFX_PALEGREEN;
 var int GFX_SKY;

@@ -21,28 +21,115 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
 
 	//In G1 item is no longer physically in the room, when called from B_AssessTheft ?! because of that function does not return portal room pointer
 	//Sooo here I am using dirty solution, which szapp did not recommend as it might cause issues ... but so far I didn't recognize any
-	//I am a simple man ... give me working a workaround and I wont get to proper solution :)
+	//I am a simple man ... give me a working workaround and I wont get to proper solution :)
 
 	if (!vobPtr) { return 0; };
 
 	//--> Dirty workaround: Insert temporarily Vob at last position of vobPtr
 	var zCVob vob; vob = _^ (vobPtr);
 	var string visualName; visualName = Vob_GetVisualName (vobPtr);
-	vobPtr = InsertObject ("zCVob", "", visualName, _@ (vob.trafoObjToWorld), 0);
-	//<--
+	var int trafo[16];
 
 	var int sectorNamePtr; sectorNamePtr = 0;
 
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(sectorNamePtr));
-		CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__GetSectorNameVobIsIn_G1, zCVob__GetSectorNameVobIsIn_G2));
-		call = CALL_End();
+	//Special logic for freepoints (TODO: shall we use same for all vobs?)
+	if (Hlp_Is_zCVobSpot (vobPtr)) {
+
+		//Get BBox
+		var int bboxPtr; bboxPtr = zCVob_GetBBox3DLocal (vobPtr);
+		var int bbox[6]; MEM_CopyBytes (bboxPtr, _@ (bbox), 24);
+
+		repeat (i, 8); var int i;
+			//Copy trafo
+			MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (trafo), 64);
+
+			//BBox corners
+			//Mins
+			if (i == 1) {
+				trafo[03] = subf (trafo[03], bbox[0]);
+				trafo[07] = subf (trafo[07], bbox[1]);
+				trafo[11] = subf (trafo[11], bbox[2]);
+			} else
+			if (i == 2) {
+				trafo[03] = addf (trafo[03], bbox[0]);
+				trafo[07] = subf (trafo[07], bbox[1]);
+				trafo[11] = subf (trafo[11], bbox[2]);
+			} else
+			if (i == 3) {
+				trafo[03] = subf (trafo[03], bbox[0]);
+				trafo[07] = addf (trafo[07], bbox[1]);
+				trafo[11] = subf (trafo[11], bbox[2]);
+			} else
+			if (i == 4) {
+				trafo[03] = subf (trafo[03], bbox[0]);
+				trafo[07] = subf (trafo[07], bbox[1]);
+				trafo[11] = addf (trafo[11], bbox[2]);
+			} else
+			//Maxs
+			if (i == 5) {
+				trafo[03] = addf (trafo[03], bbox[3]);
+				trafo[07] = addf (trafo[07], bbox[4]);
+				trafo[11] = addf (trafo[11], bbox[5]);
+			} else
+			if (i == 6) {
+				trafo[03] = subf (trafo[03], bbox[3]);
+				trafo[07] = addf (trafo[07], bbox[4]);
+				trafo[11] = addf (trafo[11], bbox[5]);
+			} else
+			if (i == 7) {
+				trafo[03] = addf (trafo[03], bbox[3]);
+				trafo[07] = subf (trafo[07], bbox[4]);
+				trafo[11] = addf (trafo[11], bbox[5]);
+			} else
+			if (i == 8) {
+				trafo[03] = addf (trafo[03], bbox[3]);
+				trafo[07] = addf (trafo[07], bbox[4]);
+				trafo[11] = subf (trafo[11], bbox[5]);
+			};
+
+			if (i == 0) {
+				//Re-insert object
+				vobPtr = InsertObject ("zCVob", "", visualName, _@ (trafo), 0);
+				zCVob_SetBBox3DLocal (vobPtr, bboxPtr);
+			} else {
+				//Insert empty vob
+				vobPtr = InsertObject ("zCVob", "", "", _@ (trafo), 0);
+			};
+
+			const int call = 0;
+			if (CALL_Begin(call)) {
+				CALL_PutRetValTo(_@(sectorNamePtr));
+				CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__GetSectorNameVobIsIn_G1, zCVob__GetSectorNameVobIsIn_G2));
+				call = CALL_End();
+			};
+
+			//--> remove our temporary vob
+			RemoveoCVobSafe (vobPtr, 0);
+			//<--
+
+			if (sectorNamePtr) { break; };
+		end;
+
+		MEM_Free (bboxPtr);
+	} else {
+		//Copy trafo
+		MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (trafo), 64);
+
+		//Create vob
+		vobPtr = InsertObject ("zCVob", "", visualName, _@ (trafo), 0);
+
+		const int call2 = 0;
+		if (CALL_Begin(call2)) {
+			CALL_PutRetValTo(_@(sectorNamePtr));
+			CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__GetSectorNameVobIsIn_G1, zCVob__GetSectorNameVobIsIn_G2));
+			call2 = CALL_End();
+		};
+
+		//--> remove our temporary vob
+		RemoveoCVobSafe (vobPtr, 0);
+		//<--
 	};
 
-	//--> remove our temporary vob
-	RemoveoCVobSafe (vobPtr, 0);
-	//<--
 	return +sectorNamePtr;
 };
 
@@ -139,7 +226,6 @@ func int Wld_PortalGetGuild (var string portalName) {
 
 /*
  *	Returns 1st NPC instance owner of portal room
- *	 - takes into consideration also guild of NPC if there is an NPC owner (lower prio than guild owner)
  */
 func int Wld_PortalGetOwnerInstanceID (var string portalName) {
 	if (!MEM_Game.portalMan) { return -1; };
