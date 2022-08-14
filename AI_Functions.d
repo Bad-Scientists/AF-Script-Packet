@@ -287,7 +287,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	var int dir[3];
 
-	var int chasmDetected; chasmDetected = FALSE;
+	var int chasmDetected; chasmDetected = 0;
 
 	//Get direction vector (total distance)
 	SubVectors (_@ (dir), _@ (posVob), _@ (posNpc));
@@ -315,7 +315,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	CopyVector (_@ (posNpc), _@ (newPos));
 
 	//Debugging - generate and leave waypoints for investigation :)
-	const int Debug_GenerateWaypoints = FALSE;
+	const int Debug_GenerateWaypoints = 0;
 
 	var string wpName;
 	if (!STR_Len (wpName)) {
