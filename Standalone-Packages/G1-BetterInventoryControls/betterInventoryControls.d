@@ -20,6 +20,8 @@
  *	 - allows moving items to dead NPCs inventories
  */
 
+const int invCategory_VobTaken = -1;
+
 /*
  *	Wrapper function for all inventory 'types' (oCItemContainer, oCStealContainer, oCNpcContainer, oCNpcInventory)
  */
@@ -630,6 +632,28 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	};
 };
 
+func void _eventDoTakeVob_SwitchCategory () {
+	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
+	if ((!Hlp_Is_oCNpc (ECX)) || (!Hlp_Is_oCItem (itemPtr))) { return; };
+
+	var oCNPC slf; slf = _^ (ECX);
+	var oCItem itm; itm = _^ (itemPtr);
+
+	if (Hlp_IsValidItem (itm)) {
+		if (NPC_IsPlayer (slf)) {
+			var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+			invCategory_VobTaken = oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
+		};
+	};
+};
+
+func void _eventOpenInventory_SwitchToCategory () {
+	if (invCategory_VobTaken != -1) {
+		oCNpcInventory_SwitchToCategory (ECX, invCategory_VobTaken);
+		invCategory_VobTaken = -1;
+	};
+};
+
 func void G1_BetterInventoryControls_Init(){
 	G1_TradeEvents_Init ();
 
@@ -646,6 +670,11 @@ func void G1_BetterInventoryControls_Init(){
 	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__BetterInvControls);
 
 	G12_DoDropVobEvent_Init ();
-
 	DoDropVobEvent_AddListener (_eventDoDropVob__BetterInvControls);
+
+	G12_DoTakeVobEvent_Init ();
+	DoTakeVobEvent_AddListener (_eventDoTakeVob_SwitchCategory);
+
+	G12_OpenInventoryEvent_Init ();
+	OpenInventoryEvent_AddListener (_eventOpenInventory_SwitchToCategory);
 };
