@@ -88,7 +88,7 @@ func void oCNpc_DoDie (var int slfInstance, var int attackerInstance) {
 /*
  *
  */
-func int oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
+func int oCNpc_DoTakeVob (var int slfInstance, var int vobPtr) {
 	//0x006A0D10 public: virtual int __thiscall oCNpc::DoTakeVob(class zCVob *)
 	const int oCNpc__DoTakeVob_G1 = 6950160;
 
@@ -97,13 +97,14 @@ func int oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	if (!vobPtr) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (itemPtr));
+		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DoTakeVob_G1, oCNpc__DoTakeVob_G2));
 		call = CALL_End();
 	};
