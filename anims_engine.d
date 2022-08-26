@@ -821,17 +821,17 @@ func void NPC_StartAnimation_ByAniName (var int slfInstance, var string aniName)
  *	Author: OrcWarrior
  *	Original post: https://github.com/orcwarrior/Czas_Zaplaty/blob/master/Content/AI/AI_Intern/Sprint_Func.d
  */
-func string oCAniCtrl__GetCurrentAniName (var int oCAniCtrl_Ptr) {
+func string oCAniCtrl_GetCurrentAniName (var int oCAniCtrl_Ptr) {
 	if (oCAniCtrl_Ptr) {
 		var int ptr;
-		ptr = MEM_ReadInt (oCAniCtrl_Ptr + 104);			//zCModel 	oCAniCtrl_Human._zCAIPlayer_model
+		ptr = MEM_ReadInt (oCAniCtrl_Ptr + 104);			//zCModel		oCAniCtrl_Human.model
 		if (ptr) {
-			ptr = MEM_ReadInt (ptr + 56);				//*ActiveAniLayer1
+			ptr = MEM_ReadInt (ptr + 56);				//zCModelAniActive*	zCModel.aniChannels[zMDL_MAX_ANIS_PARALLEL] //zMDL_MAX_ANIS_PARALLEL = 6
 			if (ptr) {
-				ptr = MEM_ReadInt (ptr);			//*oCAni
+				ptr = MEM_ReadInt (ptr);			//zCModelAni* 		zCModelAniActive.protoAni
 				if (ptr) {
-					return MEM_ReadString (ptr + 36);	// This will read active ani name(?)
-				};	//aniname(zstring)
+					return MEM_ReadString (ptr + 36);	//zSTRING		zCModelAni.aniName
+				};
 			};
 		};
 	};
@@ -842,7 +842,7 @@ func string oCAniCtrl__GetCurrentAniName (var int oCAniCtrl_Ptr) {
 func string NPC_GetAniName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return "ERROR"; };
-	var string aniName; aniName = oCAniCtrl__GetCurrentAniName (slf.AniCtrl);
+	var string aniName; aniName = oCAniCtrl_GetCurrentAniName (slf.AniCtrl);
 	return aniName;
 };
 
