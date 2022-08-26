@@ -1057,3 +1057,26 @@ func void oCNpc_SetRoute (var int slfInstance, var int routePtr) {
 		call = CALL_End ();
 	};
 };
+
+func void oCNpc_PutInSlot_Fixed (var int slfInstance, var string slotName, var int vobPtr, var int inInv) {
+	//0x006A5940 public: void __thiscall oCNpc::PutInSlot(class zSTRING const &,class oCVob *,int)
+	const int oCNpc__PutInSlot_G1 = 6969664;
+
+	//0x00749CB0 public: void __thiscall oCNpc::PutInSlot(class zSTRING const &,class oCVob *,int)
+	const int oCNpc__PutInSlot_G2 = 7642288;
+
+	if (!vobPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	slotName = STR_Upper (slotName);
+
+	CALL_IntParam(inInv);
+	CALL_PtrParam(vobPtr);
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (slfPtr, MEMINT_SwitchG1G2 (oCNpc__PutInSlot_G1, oCNpc__PutInSlot_G2));
+};
+
