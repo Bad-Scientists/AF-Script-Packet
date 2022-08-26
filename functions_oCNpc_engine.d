@@ -1080,3 +1080,11 @@ func void oCNpc_PutInSlot_Fixed (var int slfInstance, var string slotName, var i
 	CALL__thiscall (slfPtr, MEMINT_SwitchG1G2 (oCNpc__PutInSlot_G1, oCNpc__PutInSlot_G2));
 };
 
+func void oCNpc_PutItemInSlot (var int slfInstance, var string slotName, var int itemInstanceID) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (Npc_HasItems (slf, itemInstanceID)) {
+		oCNpc_PutInSlot_Fixed (slf, slotName, _@ (item), 1);
+	};
+};
