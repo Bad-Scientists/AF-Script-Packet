@@ -1067,6 +1067,10 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
 
+/*
+ *	AI_ResetStateTime
+ *	 - resets state time - using AI queue
+ */
 func void _AI_ResetStateTime () {
 	Npc_SetStateTime (self, 0);
 };
@@ -1076,4 +1080,92 @@ func void AI_ResetStateTime (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	AI_Function (slf, _AI_ResetStateTime);
+};
+
+/*
+ *	AI_DiaSync
+ *	 - synchronizes AI queues for Npcs within dialogue
+ */
+func void AI_DiaSync () {
+	if (!MEM_Game.infoman) { return; };
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
+	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
+
+	var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
+	var C_NPC oth; oth = _^ (MEM_InformationMan.player);
+
+	AI_WaitTillEnd (slf, oth);
+	AI_WaitTillEnd (oth, slf);
+};
+
+/*
+ *	AI_PutInSlot
+ *	 - puts item into slot from inventory
+ */
+func void _AI_PutInSlot (var string slotName, var int itemInstanceID) {
+	if (Npc_GetInvItem (self, itemInstanceID)) {
+		oCNpc_PutInSlot_Fixed (self, slotName, _@ (item), 1);
+	};
+};
+
+func void AI_PutInSlot (var int slfInstance, var string slotName, var int itemInstanceID) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function_SI (slf, _AI_PutInSlot, slotName, itemInstanceID);
+};
+
+/*
+ *	AI_CreateItemInSlot
+ *	 - creates item and inserts it into slot
+ */
+func void _AI_CreateItemInSlot (var string slotName, var int itemInstanceID) {
+	//CreateInvItem (self, itemInstanceID);
+	//if (Npc_GetInvItem (self, itemInstanceID)) {
+	//	var int itemPtr; itemPtr = _@ (item);
+	//	itemPtr = oCNpc_RemoveFromInvByPtr (self, itemPtr, 1);
+	//	oCNpc_PutInSlot_Fixed (self, slotName, itemPtr, 0);
+	//};
+	var string itemName; itemName = GetSymbolName (itemInstanceID);
+	var int trafo[16];
+	NewTrafo(_@(trafo));
+	var int itemPtr; itemPtr = InsertItem (itemName, 1, _@ (trafo));
+	oCNpc_PutInSlot_Fixed (self, slotName, itemPtr, 0);
+};
+
+func void AI_CreateItemInSlot (var int slfInstance, var string slotName, var int itemInstanceID) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function_SI (slf, _AI_CreateItemInSlot, slotName, itemInstanceID);
+};
+
+/*
+ *	AI_PutInInvFromSlot
+ *	 - puts item from slot back to inventory
+ */
+func void _AI_PutInInvFromSlot (var string slotName) {
+	var int itemPtr; itemPtr = oCNpc_RemoveFromSlot_Fixed (self, slotName, 0, 1);
+	itemPtr = oCNpc_PutInInvPtr (self, itemPtr);
+};
+
+func void AI_PutInInvFromSlot (var int slfInstance, var string slotName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function_S (slf, _AI_PutInInvFromSlot, slotName);
+};
+
+/*
+ *	AI_RemoveItemFromSlot
+ *	 - removes item from slot
+ */
+func void _AI_RemoveItemFromSlot (var string slotName) {
+	var int itemPtr; itemPtr = oCNpc_RemoveFromSlot_Fixed (self, slotName, 1, 1);
+	//var C_Item itm; itm = _^ (itemPtr);
+	//Wld_RemoveItem (itm);
+	RemoveoCVobSafe (itemPtr, 1);
+};
+
+func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function_S (slf, _AI_RemoveItemFromSlot, slotName);
 };
