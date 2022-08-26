@@ -7,7 +7,6 @@
  *	 - renames chest from MOBNAME_CHEST to MOBNAME_CHEST_EMPTY and crates from MOBNAME_CRATE to MOBNAME_CRATE_EMPTY when they are empty and vice versa
  */
 
-var int PC_FocusVob;
 var int PC_FocusVobStatus;
 	//Constant values are important here - do not change (Mob_LockableGetLockStatus__Focus adds 1, 2, 3, 4 to PC_FocusVob_DoorOpened/PC_FocusVob_ChestOpened when locked)
 	const int PC_FocusVob_Unknown = 0;
@@ -37,8 +36,8 @@ func int Mob_LockableGetLockStatus__Focus (var int vobPtr) {
 	var oCMobLockable lock; lock = _^ (vobPtr);
 
 	var int status; status = 0;
-	if (Hlp_Is_oCMobDoor (PC_FocusVob)) { status = PC_FocusVob_DoorOpened; };
-	if (Hlp_Is_oCMobContainer (PC_FocusVob)) { status = PC_FocusVob_ChestOpened; };
+	if (Hlp_Is_oCMobDoor (vobPtr)) { status = PC_FocusVob_DoorOpened; };
+	if (Hlp_Is_oCMobContainer (vobPtr)) { status = PC_FocusVob_ChestOpened; };
 
 	if (lock.bitfield & oCMobLockable_bitfield_locked) {
 		//No pickLockStr ... can it be opened by key only?
@@ -78,17 +77,10 @@ func int Mob_LockableGetLockStatus__Focus (var int vobPtr) {
 };
 
 //This one is being called whenever there is anything in focus - constantly
-func void _hook_oCGame_UpdateStatus () {
+func void _hook_oCGame_UpdateStatus__Focus () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
 
 	var oCNpc her; her = Hlp_GetNPC (hero);
-
-	//Focus changed
-	if (PC_FocusVob != her.focus_vob) {
-
-	};
-
-	PC_FocusVob = her.focus_vob;
 
 	var oCMob mob;
 	var string mobName;
@@ -100,7 +92,7 @@ func void _hook_oCGame_UpdateStatus () {
 	//-- Change focus color
 	if (PC_ChangeFocus_Flags & PC_ChangeFocus_Lockable) {
 		//Door/Chest
-		PC_FocusVobStatus = Mob_LockableGetLockStatus__Focus (PC_FocusVob);
+		PC_FocusVobStatus = Mob_LockableGetLockStatus__Focus (her.focus_vob);
 
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorRequiresKey) || (PC_FocusVobStatus == PC_FocusVob_ChestRequiresKey)) {
 			focusColor = ColorLockedKey__Focus ();
@@ -142,14 +134,14 @@ func void _hook_oCGame_UpdateStatus () {
 
 	if (PC_ChangeFocus_Flags & PC_ChangeFocus_RenameEmptyChests) {
 		//Door
-		if (Hlp_Is_oCMobDoor (PC_FocusVob)) {
+		if (Hlp_Is_oCMobDoor (her.focus_vob)) {
 			//...
 		} else
 		//Chest
-		if (Hlp_Is_oCMobContainer (PC_FocusVob)) {
+		if (Hlp_Is_oCMobContainer (her.focus_vob)) {
 			//If empty ... update mob name
-			if (Mob_IsEmpty (PC_FocusVob)) {
-				mob = _^ (PC_FocusVob);
+			if (Mob_IsEmpty (her.focus_vob)) {
+				mob = _^ (her.focus_vob);
 				mobName = mob.name;
 
 				//can be either MOBNAME_CHEST or CHEST! but we have to search for MOBNAME_CHEST
@@ -166,7 +158,7 @@ func void _hook_oCGame_UpdateStatus () {
 				};
 			} else {
 				//Update mob name in case it was previously empty and now it is not
-				mob = _^ (PC_FocusVob);
+				mob = _^ (her.focus_vob);
 				mobName = mob.name;
 
 				//MOBNAME_CHEST
@@ -199,7 +191,7 @@ func void _hook_oCGame_UpdateStatus () {
 func void G12_Focus_Init () {
 	const int once = 0;
 	if (!once) {
-		HookEngineF(oCGame__UpdateStatus, 8, _hook_oCGame_UpdateStatus);
+		HookEngine(oCGame__UpdateStatus, 8, "_hook_oCGame_UpdateStatus__Focus");
 		once = 1;
 	};
 };
