@@ -1240,6 +1240,60 @@ func int oCNpc_RemoveFromSlot_Fixed (var int slfInstance, var string slotName, v
 	return CALL_RetValAsPtr ();
 };
 
+func int oCNpc_GetInvSlot (var int slfInstance, var string slotName) {
+	//0x006A5770 public: struct TNpcSlot * __thiscall oCNpc::GetInvSlot(class zSTRING const &)
+	const int oCNpc__GetInvSlot_G1 = 6969200;
+
+	//0x00749AE0 public: struct TNpcSlot * __thiscall oCNpc::GetInvSlot(class zSTRING const &)
+	const int oCNpc__GetInvSlot_G2 = 7641824;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__GetInvSlot_G1, oCNpc__GetInvSlot_G2));
+
+	return CALL_RetValAsPtr ();
+};
+
+func void oCNpc_CreateInvSlot (var int slfInstance, var string slotName) {
+	//0x006A5480 public: void __thiscall oCNpc::CreateInvSlot(class zSTRING const &)
+	const int oCNpc__CreateInvSlot_G1 = 6968448;
+
+	//0x00749800 public: void __thiscall oCNpc::CreateInvSlot(class zSTRING const &)
+	const int oCNpc__CreateInvSlot_G2 = 7641088;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__CreateInvSlot_G1, oCNpc__CreateInvSlot_G2));
+};
+
+func void oCNpc_DeleteInvSlot (var int slfInstance, var string slotName) {
+	//0x007499E0 public: void __thiscall oCNpc::DeleteInvSlot(class zSTRING const &)
+	const int oCNpc__DeleteInvSlot_G1 = 7641568;
+
+	//0x006A5670 public: void __thiscall oCNpc::DeleteInvSlot(class zSTRING const &)
+	const int oCNpc__DeleteInvSlot_G2 = 6968944;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__DeleteInvSlot_G1, oCNpc__DeleteInvSlot_G2));
+};
+
+/*
+ *	NPC_CreateInvSlot
+ *	 - wrapper function that will create inventory slot (if it does not exist already, oCNpc_CreateInvSlot would not check if it exitst)
+ */
+func void NPC_CreateInvSlot (var int slfInstance, var string slotName) {
+	if (!oCNpc_GetInvSlot (slfInstance, slotName)) {
+		oCNpc_CreateInvSlot (slfInstance, slotName);
+	};
+};
+
 /*
  *	Returns pointer to specific item instance in NPC's inventory
  *		slfInstance		NPC instance
