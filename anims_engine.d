@@ -119,6 +119,7 @@ func void zCModel_StartAni (var int modelPtr, var string aniName, var int startM
 	//0x0057AF70 public: void __thiscall zCModel::StartAni(class zSTRING const &,int)
 	const int zCModel__StartAni_G2 = 5746544;
 
+	if (!modelPtr) { return; };
 	CALL_IntParam (startMode);
 	CALL_zStringPtrParam (STR_Upper (aniName));
 	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__StartAni_G1, zCModel__StartAni_G2));
