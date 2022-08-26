@@ -323,31 +323,13 @@ func int zCModelAniActive_GetProgressPercent (var int modelAniActivePtr) { // fl
  *    Get the progress of active animation (zCModel)
  *
  *    @param zCModel     zCModelptr
- *	  @param aniName	 animation name
- */
-func int zCModel_GetProgressPercent_ByAniName (var int modelPtr, var string aniName) {
-	//0x00565210 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const
-	const int zCModel__GetProgressPercent_ByAniName_G1 = 5657104;
-
-	//0x0057F290 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const
-	const int zCModel__GetProgressPercent_ByAniName_G2 = 5763728;
-
-	if (!modelPtr) { return FLOATNULL; };
-
-	CALL_RetValIsFloat (); // method returns float
-	//CALL_zstringPtrParam cannot be used in recyclable call
-	CALL_zStringPtrParam (Str_Upper (aniName));
-	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_ByAniName_G1, zCModel__GetProgressPercent_ByAniName_G2));
-	return CALL_RetValAsFloat ();
-};
-
-/*
- *    Get the progress of active animation (zCModel)
- *
- *    @param zCModel     zCModelptr
  *	  @param aniID	 	animation ID
  */
 func int zCModel_GetProgressPercent_ByAniID (var int modelPtr, var int aniID) {
+	// ! Seems like engine function zCModel::GetProgressPercent is unstable and might crash !
+	//So instead using here zCModelAniActive::GetProgressPercent which so far was working properly
+
+	/*
 	//0x005652C0 public: float __thiscall zCModel::GetProgressPercent(int)const
 	const int zCModel__GetProgressPercent_ByAniID_G1 = 5657280;
 
@@ -361,14 +343,50 @@ func int zCModel_GetProgressPercent_ByAniID (var int modelPtr, var int aniID) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_IntParam (_@ (aniID));
 		CALL_RetValIsFloat ();
 		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (aniID));
 		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_ByAniID_G1, zCModel__GetProgressPercent_ByAniID_G2));
 		call = CALL_End();
 	};
 
 	return + retVal;
+	*/
+
+	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
+	return + zCModelAniActive_GetProgressPercent (aniActivePtr);
+};
+
+/*
+ *    Get the progress of active animation (zCModel)
+ *
+ *    @param zCModel     zCModelptr
+ *	  @param aniName	 animation name
+ */
+func int zCModel_GetProgressPercent_ByAniName (var int modelPtr, var string aniName) {
+	// ! Seems like engine function zCModel::GetProgressPercent is unstable and might crash !
+	//So instead using here zCModelAniActive::GetProgressPercent which so far was working properly
+
+	/*
+	//0x00565210 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const
+	const int zCModel__GetProgressPercent_ByAniName_G1 = 5657104;
+
+	//0x0057F290 public: float __thiscall zCModel::GetProgressPercent(class zSTRING const &)const
+	const int zCModel__GetProgressPercent_ByAniName_G2 = 5763728;
+
+	if (!modelPtr) { return FLOATNULL; };
+	aniName = STR_Upper (aniName);
+
+	CALL_RetValIsFloat (); // method returns float
+	//CALL_zstringPtrParam cannot be used in recyclable call
+	CALL_zStringPtrParam (aniName);
+	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetProgressPercent_ByAniName_G1, zCModel__GetProgressPercent_ByAniName_G2));
+	return CALL_RetValAsFloat ();
+	*/
+
+	if (!modelPtr) { return FLOATNULL; };
+	var int aniID; aniID = zCModel_GetAniIdFromAniName (modelPtr, aniName);
+	return + zCModel_GetProgressPercent_ByAniID (modelPtr, aniID);
 };
 
 /*
