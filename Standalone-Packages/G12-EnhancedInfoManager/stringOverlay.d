@@ -319,3 +319,18 @@ func string StringOverlay_Generate(var string str) {
 
     return overlayStr;
 };
+
+/*
+ *	StringOverlay_UseColorPreset
+ */
+func string StringOverlay_UseColorPreset (var int colorPreset, var string str) {
+	var int backupSetting; backupSetting = StringOverlay_Settings;
+
+	StringOverlay_Reset ();
+	StringOverlay_Set_ColorPreset (colorPreset);
+	var string s; s = StringOverlay_Generate (str);
+
+	StringOverlay_Settings = backupSetting;
+
+	return s;
+};
