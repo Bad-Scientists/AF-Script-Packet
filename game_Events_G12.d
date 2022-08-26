@@ -21,6 +21,7 @@ var int _MobStartStateChange_Event;
 var int _GameHandleEvent_Event;
 var int _PlayerPortalRoomChange_Event;
 var int _MobStartInteraction_Event;
+var int _FocusChange_Event;
 
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
@@ -132,6 +133,14 @@ func void MobStartInteraction_AddListener (var func f) {
 
 func void MobStartInteraction_RemoveListener (var func f) {
 	Event_Remove (_MobStartInteraction_Event, f);
+};
+
+func void FocusChange_Event_AddListener (var func f) {
+	Event_AddOnce (_FocusChange_Event, f);
+};
+
+func void FocusChange_EventRemoveListener (var func f) {
+	Event_Remove (_FocusChange_Event, f);
 };
 
 /*
@@ -623,6 +632,41 @@ func void G12_oCMobInterStartInterationEvent_Init () {
 	};
 };
 
+/*
+ *	Focus change event
+ */
+
+var int PC_FocusVob;
+
+func void _hook_oCGame_UpdateStatus () {
+	if (!Hlp_IsValidNPC (hero)) { return; };
+
+	var oCNpc her; her = Hlp_GetNPC (hero);
+
+	//Focus changed
+	if (PC_FocusVob != her.focus_vob) {
+		PC_FocusVob = her.focus_vob;
+
+		if (_FocusChange_Event) {
+			Event_Execute (_FocusChange_Event, 0);
+		};
+	};
+};
+
+func void G12_FocusChangeEvent_Init () {
+	if (!_FocusChange_Event) {
+		_FocusChange_Event = Event_Create ();
+	};
+
+	PC_FocusVob = 0;
+
+	const int once = 0;
+	if (!once) {
+		HookEngine(oCGame__UpdateStatus, 8, "_hook_oCGame_UpdateStatus");
+		once = 1;
+	};
+};
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -637,4 +681,5 @@ func void G12_GameEvents_Init () {
 	G12_MobStartStateChangeEvent_Init ();
 	G12_PlayerPortalRoomChangeEvent_Init ();
 	G12_oCMobInterStartInterationEvent_Init ();
+	G12_FocusChangeEvent_Init ();
 };
