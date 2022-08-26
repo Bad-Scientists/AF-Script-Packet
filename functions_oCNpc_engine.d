@@ -1024,7 +1024,6 @@ func void oCNpc_EnablePerception (var int slfInstance, var int percType, var int
 	const int oCNpc__EnablePerception_G2 = 7725600;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -1039,14 +1038,14 @@ func void oCNpc_EnablePerception (var int slfInstance, var int percType, var int
 };
 
 func void oCNpc_SetRoute (var int slfInstance, var int routePtr) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
 	//0x0074C7C0 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
 	const int oCNpc__SetRoute_G1 = 7653312;
 
 	//0x00681D70 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
 	const int oCNpc__SetRoute_G2 = 6823280;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
