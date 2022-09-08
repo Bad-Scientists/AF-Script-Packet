@@ -176,7 +176,7 @@ func void DoThrowVob__VobThrowing () {
 	PosDirToTrf (_@ (pos), 0, _@ (trafo));
 
 	//Remove item from hand
-	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 0);
+	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 1, 0);
 
 	//Safety check
 	if (!vobPtr) { return; };
@@ -196,12 +196,15 @@ func void DoThrowVob__VobThrowing () {
 	vobPtr = InsertItem (itemInstanceName, amount, _@ (trafo));
 */
 
+	//vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 1, 0);
+
 	//We will use oCNpc_DoThrowVob:
 	// - it removes an item from hand, inserts it back to the world
 	// - most likely attaches correct 'AI' (oCAIVobMove) to thrown item (seems like without AI PERC_ASSESSQUIETSOUND would not fire - NPCs would not 'recognize' that item dropped somewhere)
 	//var int retVal; retVal = oCNpc_DoThrowVob (hero, vobPtr, FLOATNULL);
 
-	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
+	//Drop from slot
+	vobPtr = oCNpc_DropFromSlot (hero, "ZS_RIGHTHAND");
 
 	//Get camera
 	var zCVob camVob; camVob = _^ (MEM_Game._zCSession_camVob);

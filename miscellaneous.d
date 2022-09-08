@@ -300,7 +300,7 @@ func int NPC_VobListDetectVisual (var int slfInstance, var string searchVisualNa
  *	 - function returns pointer to *nearest* item with specified mainflag and flags within specified verticalLimit
  *	 - vob list has to be generated prior calling this function (oCNpc_ClearVobList (self); oCNpc_CreateVobList (self, rangeF);)
  */
-func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int flags, var int searchFlags, var int distLimit, var int verticalLimit) {
+func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int excludeMainFlag, var int flags, var int excludeFlags, var int searchFlags, var int distLimit, var int verticalLimit) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -352,8 +352,12 @@ func int NPC_VobListDetectItem (var int slfInstance, var int mainflag, var int f
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					itm = _^ (vobPtr);
 					if (Hlp_IsValidItem (itm)) {
-						if ((itm.mainflag == mainflag) || (!mainflag)) {
-							if ((itm.flags & flags) || (!flags)) {
+						if (((!mainflag) || (itm.mainflag == mainflag))
+						&& ((!excludeMainFlag) || (itm.mainflag != excludeMainFlag)))
+						{
+							if (((!flags) || (itm.flags & flags))
+							&& ((!excludeFlags) || (!(itm.flags & excludeFlags))))
+							{
 								//Find route from Npc to vob - get total distance if Npc travels by waynet
 								if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
 									retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));

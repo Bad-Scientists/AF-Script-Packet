@@ -88,7 +88,7 @@ func void oCNpc_DoDie (var int slfInstance, var int attackerInstance) {
 /*
  *
  */
-func int oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
+func int oCNpc_DoTakeVob (var int slfInstance, var int vobPtr) {
 	//0x006A0D10 public: virtual int __thiscall oCNpc::DoTakeVob(class zCVob *)
 	const int oCNpc__DoTakeVob_G1 = 6950160;
 
@@ -97,13 +97,14 @@ func int oCNpc_DoTakeVob (var int slfInstance, var int itemPtr) {
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
-	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	if (!vobPtr) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (itemPtr));
+		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DoTakeVob_G1, oCNpc__DoTakeVob_G2));
 		call = CALL_End();
 	};
@@ -1023,7 +1024,6 @@ func void oCNpc_EnablePerception (var int slfInstance, var int percType, var int
 	const int oCNpc__EnablePerception_G2 = 7725600;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -1038,14 +1038,14 @@ func void oCNpc_EnablePerception (var int slfInstance, var int percType, var int
 };
 
 func void oCNpc_SetRoute (var int slfInstance, var int routePtr) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
 	//0x0074C7C0 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
 	const int oCNpc__SetRoute_G1 = 7653312;
 
 	//0x00681D70 public: void __thiscall oCNpc::SetRoute(class zCRoute *)
 	const int oCNpc__SetRoute_G2 = 6823280;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -1054,5 +1054,36 @@ func void oCNpc_SetRoute (var int slfInstance, var int routePtr) {
 		CALL_PtrParam (_@ (routePtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetRoute_G1, oCNpc__SetRoute_G2));
 		call = CALL_End ();
+	};
+};
+
+func void oCNpc_PutInSlot_Fixed (var int slfInstance, var string slotName, var int vobPtr, var int inInv) {
+	//0x006A5940 public: void __thiscall oCNpc::PutInSlot(class zSTRING const &,class oCVob *,int)
+	const int oCNpc__PutInSlot_G1 = 6969664;
+
+	//0x00749CB0 public: void __thiscall oCNpc::PutInSlot(class zSTRING const &,class oCVob *,int)
+	const int oCNpc__PutInSlot_G2 = 7642288;
+
+	if (!vobPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	slotName = STR_Upper (slotName);
+
+	CALL_IntParam(inInv);
+	CALL_PtrParam(vobPtr);
+	CALL_zStringPtrParam (slotName);
+	CALL__thiscall (slfPtr, MEMINT_SwitchG1G2 (oCNpc__PutInSlot_G1, oCNpc__PutInSlot_G2));
+};
+
+func void oCNpc_PutItemInSlot (var int slfInstance, var string slotName, var int itemInstanceID) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (Npc_HasItems (slf, itemInstanceID)) {
+		oCNpc_PutInSlot_Fixed (slf, slotName, _@ (item), 1);
 	};
 };
