@@ -553,6 +553,29 @@ func void oCNpcContainer_CreateList (var int ptr) {
 
 //-- oCNpcInventory functions
 
+func int oCNpcInventory_GetCategory (var int ptr, var int itemPtr) {
+	//0x0066C430 public: int __thiscall oCNpcInventory::GetCategory(class oCItem *)
+	const int oCNpcInventory__GetCategory_G1 = 6734896;
+
+	//0x0070C690 public: int __thiscall oCNpcInventory::GetCategory(class oCItem *)
+	const int oCNpcInventory__GetCategory_G2 = 7390864;
+
+	if (!itemPtr) { return 0; };
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_PtrParam (_@ (itemPtr));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcInventory__GetCategory_G1, oCNpcInventory__GetCategory_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
 func int oCNpcInventory_RemoveByPtr (var int ptr, var int itemPtr, var int amount) {
 	//0x0066CF10 public: virtual class oCItem * __thiscall oCNpcInventory::RemoveByPtr(class oCItem *,int)
 	const int oCNpcInventory__RemoveByPtr_G1 = 6737680;
