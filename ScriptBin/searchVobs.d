@@ -52,7 +52,7 @@ func int SearchVobsByClass(var string className, var int vobListPtr) {
         var int i; i = 0;
         while(i < vobList.numInArray);
             var int vobPtr; vobPtr = MEM_ArrayRead(vobListPtr, i);
-            if (objCheckInheritance(vobPtr, classDef)) {
+            if (MEM_CheckInheritance(vobPtr, classDef)) {
                 // Keep vob
                 i += 1;
             } else {
@@ -96,7 +96,7 @@ func int SearchVobsByVisual(var string visual, var int vobListPtr) {
                 };
             };
 	    */
-	    
+
 	    if (Hlp_StrCmp (Vob_GetVisualName (vobPtr), visual)) {
                     // Keep vob
                     i += 1;
