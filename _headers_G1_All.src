@@ -208,3 +208,6 @@ Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
 Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
 
 Standalone-Packages\G12-AddPerceptions\addPerceptions.d
+
+Standalone-Packages\G12-MoonPhases\moonPhases_API.d
+Standalone-Packages\G12-MoonPhases\moonPhases.d
