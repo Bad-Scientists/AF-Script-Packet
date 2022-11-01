@@ -2,24 +2,29 @@
  *	Constants - same values for both G1 & G2A
  */
 
-//enum zTTraceRayFlags {
-	const int zTRACERAY_VOB_IGNORE_NO_CD_DYN = 1 << 0;
-	const int zTRACERAY_VOB_IGNORE = 1 << 1;
-	const int zTRACERAY_VOB_BBOX = 1 << 2;
-	const int zTRACERAY_VOB_OBB = 1 << 3;
-	const int zTRACERAY_STAT_IGNORE = 1 << 4;
-	const int zTRACERAY_STAT_POLY = 1 << 5;
-	const int zTRACERAY_STAT_PORTALS = 1 << 6;
-	const int zTRACERAY_POLY_NORMAL = 1 << 7;
-	const int zTRACERAY_POLY_IGNORE_TRANSP = 1 << 8;
-	const int zTRACERAY_POLY_TEST_WATER = 1 << 9;
-	const int zTRACERAY_POLY_2SIDED = 1 << 10;
-	const int zTRACERAY_VOB_IGNORE_CHARACTER = 1 << 11;
-	const int zTRACERAY_FIRSTHIT = 1 << 12;
-	const int zTRACERAY_VOB_TEST_HELPER_VISUALS = 1 << 13;
 
-	//G2A only!
-	const int zTRACERAY_VOB_IGNORE_PROJECTILES = 1 << 14;
+/*
+ *	GFA has these constants defined globally - so in order to be compatible - we will not have them defined globally - only use them locally where we need them.
+ */
+
+//enum zTTraceRayFlags {
+//	const int zTRACERAY_VOB_IGNORE_NO_CD_DYN = 1 << 0;
+//	const int zTRACERAY_VOB_IGNORE = 1 << 1;
+//	const int zTRACERAY_VOB_BBOX = 1 << 2;
+//	const int zTRACERAY_VOB_OBB = 1 << 3;
+//	const int zTRACERAY_STAT_IGNORE = 1 << 4;
+//	const int zTRACERAY_STAT_POLY = 1 << 5;
+//	const int zTRACERAY_STAT_PORTALS = 1 << 6;
+//	const int zTRACERAY_POLY_NORMAL = 1 << 7;
+//	const int zTRACERAY_POLY_IGNORE_TRANSP = 1 << 8;
+//	const int zTRACERAY_POLY_TEST_WATER = 1 << 9;
+//	const int zTRACERAY_POLY_2SIDED = 1 << 10;
+//	const int zTRACERAY_VOB_IGNORE_CHARACTER = 1 << 11;
+//	const int zTRACERAY_FIRSTHIT = 1 << 12;
+//	const int zTRACERAY_VOB_TEST_HELPER_VISUALS = 1 << 13;
+
+//G2A only!
+//	const int zTRACERAY_VOB_IGNORE_PROJECTILES = 1 << 14;
 //};
 
 const int NPC_PERC_MAX = 33;

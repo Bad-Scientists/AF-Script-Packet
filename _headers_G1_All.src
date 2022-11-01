@@ -48,7 +48,6 @@ vectors.d
 vobFunctions.d
 
 ScriptBin\insertAnything.d
-ScriptBin\objCheckInheritance.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d

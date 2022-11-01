@@ -1361,6 +1361,26 @@ func int zCWaypoint_CanSee (var int wpPtr, var int vobPtr) {
 	var int f; f = divf (mkf (95), mkf (100));
 	MulVector (_@ (dir), f);
 
+//enum zTTraceRayFlags {
+	const int zTRACERAY_VOB_IGNORE_NO_CD_DYN = 1 << 0;
+	const int zTRACERAY_VOB_IGNORE = 1 << 1;
+	const int zTRACERAY_VOB_BBOX = 1 << 2;
+	const int zTRACERAY_VOB_OBB = 1 << 3;
+	const int zTRACERAY_STAT_IGNORE = 1 << 4;
+	const int zTRACERAY_STAT_POLY = 1 << 5;
+	const int zTRACERAY_STAT_PORTALS = 1 << 6;
+	const int zTRACERAY_POLY_NORMAL = 1 << 7;
+	const int zTRACERAY_POLY_IGNORE_TRANSP = 1 << 8;
+	const int zTRACERAY_POLY_TEST_WATER = 1 << 9;
+	const int zTRACERAY_POLY_2SIDED = 1 << 10;
+	const int zTRACERAY_VOB_IGNORE_CHARACTER = 1 << 11;
+	const int zTRACERAY_FIRSTHIT = 1 << 12;
+	const int zTRACERAY_VOB_TEST_HELPER_VISUALS = 1 << 13;
+
+	//G2A only!
+	const int zTRACERAY_VOB_IGNORE_PROJECTILES = 1 << 14;
+//};
+
 	var int retVal; retVal = !zCWorld_TraceRayFirstHit (_@ (wp.pos), _@ (dir), ignoreListPtr, zTRACERAY_STAT_POLY | zTRACERAY_POLY_IGNORE_TRANSP);
 
 	MEM_ArrayFree (ignoreListPtr);
