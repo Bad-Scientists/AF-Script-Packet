@@ -860,7 +860,9 @@ func int Npc_KnowsInfoByString (var int slfInstance, var string instanceName) {
 		return 0;
 	};
 
-	var zCPar_Symbol symb; symb = _^ (MEM_GetSymbolByIndex(symbID));
+	var int ptr; ptr = MEM_GetSymbolByIndex(symbID);
+	if (!ptr) { return 0; };
+	var zCPar_Symbol symb; symb = _^ (ptr);
 
 	// Verify that it is an instance
 	if ((symb.bitfield & zCPar_Symbol_bitfield_type) != zPAR_TYPE_INSTANCE)
