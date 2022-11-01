@@ -1548,3 +1548,22 @@ func void Vob_SetByDescriptionPos (var int vobPtr, var string desc) {
 	zMAT4_SetByDescriptionPos (_@ (trafo), desc);
 	zCVob_SetTrafo (vobPtr, _@ (trafo));
 };
+
+func int zCMesh_SharePoly (var int ptr, var int index) {
+	//0x00551F10 public: class zCPolygon * __thiscall zCMesh::SharePoly(int)const
+	const int zCMesh__SharePoly_G1 = 5578512;
+
+	//0x00569760 public: class zCPolygon * __thiscall zCMesh::SharePoly(int)const
+	const int zCMesh__SharePoly_G2 = 5674848;
+
+	if (!ptr) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (index));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (zCMesh__SharePoly_G1, zCMesh__SharePoly_G2));
+		call = CALL_End();
+	};
+
+	return Call_RetValAsPtr ();
+};
