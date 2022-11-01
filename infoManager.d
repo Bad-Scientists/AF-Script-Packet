@@ -763,6 +763,25 @@ func void InfoManager_SetInfoChoiceText (var int index, var string text) {
 	};
 };
 
+func int InfoManager_IsInChoiceMode () {
+	if (InfoManager_HasFinished ()) { return FALSE; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return FALSE; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 func int InfoManager_GetSelectedChoiceIndex () {
 	if (InfoManager_HasFinished ()) { return -1; };
 
@@ -860,7 +879,9 @@ func int Npc_KnowsInfoByString (var int slfInstance, var string instanceName) {
 		return 0;
 	};
 
-	var zCPar_Symbol symb; symb = _^ (MEM_GetSymbolByIndex(symbID));
+	var int ptr; ptr = MEM_GetSymbolByIndex(symbID);
+	if (!ptr) { return 0; };
+	var zCPar_Symbol symb; symb = _^ (ptr);
 
 	// Verify that it is an instance
 	if ((symb.bitfield & zCPar_Symbol_bitfield_type) != zPAR_TYPE_INSTANCE)

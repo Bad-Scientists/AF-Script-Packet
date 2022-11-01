@@ -89,129 +89,28 @@ func void DrawBBox__PuppetMaster () {
 
 //---
 
-instance DIA_PuppetMaster_Exit (C_Info) {
-	npc = PC_Hero;
-	nr = 999;
-	condition = DIA_PuppetMaster_Exit_Condition;
-	information = DIA_PuppetMaster_Exit_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = DIALOG_ENDE;
-};
-
-func int DIA_PuppetMaster_Exit_Condition () {
-	return TRUE;
-};
-
-func void DIA_PuppetMaster_Exit_Info () {
-	//Remove vob for bbox
-	RemoveoCVobSafe (puppetNodeVobPtr, 1);
-
-	puppetNodeVobPtr = 0;
-
-	AI_StopProcessInfos (self);
-};
-
-//---
-
-instance DIA_PuppetMaster_SelectNode (C_Info) {
-	npc = PC_Hero;
+instance DIA_PuppetMaster_Main (C_Info) {
 	nr = 1;
-	condition = DIA_PuppetMaster_SelectNode_Condition;
-	information = DIA_PuppetMaster_SelectNode_Info;
-	important = FALSE;
+	condition = DIA_PuppetMaster_Main_Condition;
+	information = DIA_PuppetMaster_Main_Info;
+	important = TRUE;
 	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_SelectNode_Condition () {
-	if (!puppetMasterEnabled) { return FALSE; };
-
-	//These are in fact Global variables - we can exploit that for this feature - they will retain their value ;-)
-	var string lastSpinnerID;
-
-	var int value; value = puppetNodeIndex;
-	var int lastValue;
-
-	var int min;
-	var int max;
-
-	//Min/max values
-	min = 0;
-	max = HUMAN_NODENAMES_MAX - 1;
-
-	//Check boundaries
-	if (value < min) { value = min; };
-	if (value > max) { value = max; };
-
-	var int isActive; isActive = Hlp_StrCmp (InfoManagerSpinnerID, "SelectNode");
-
-	//Setup spinner if spinner ID has changed
-	if (isActive) {
-		//Setup spinner if spinner ID has changed
-		if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
-			//Restore value
-			InfoManagerSpinnerValue = value;
-		};
-
-		//Page Up/Down quantity
-		InfoManagerSpinnerPageSize = 5;
-
-		//Min/Max value (Home/End keys)
-		InfoManagerSpinnerValueMin = 0;
-		InfoManagerSpinnerValueMax = HUMAN_NODENAMES_MAX - 1;
-
-		//Update
-		value = InfoManagerSpinnerValue;
-	};
-
-	lastSpinnerID = InfoManagerSpinnerID;
-
-	var string prevNodeName;
-	var string nextNodeName;
-
-	if (value != lastValue) {
-		prevNodeName = GetNodeName__PuppetMaster (value - 1);
-		puppetNode = GetNodeName__PuppetMaster (value);
-		nextNodeName = GetNodeName__PuppetMaster (value + 1);
-
-		DrawBBox__PuppetMaster ();
-	};
-
-	var string newDescription; newDescription = "";
-
-	//newDescription = ConcatStrings (newDescription, "h@");
-	newDescription = ConcatStrings (newDescription, "s@SelectNode Select node: ");
-
-	//if (STR_Len (prevNodeName)) {
-	//	newDescription = ConcatStrings (newDescription, prevNodeName);
-	//	newDescription = ConcatStrings (newDescription, ", ");
-	//};
-
-	newDescription = ConcatStrings (newDescription, "o@h@00CC66 hs@66FFB2:");
-	newDescription = ConcatStrings (newDescription, puppetNode);
-	newDescription = ConcatStrings (newDescription, "~");
-
-	//if (STR_Len (nextNodeName)) {
-	//	newDescription = ConcatStrings (newDescription, ", ");
-	//	newDescription = ConcatStrings (newDescription, nextNodeName);
-	//};
-
-	lastValue = value;
-	puppetNodeIndex = value;
-
-	//Update description
-	DIA_PuppetMaster_SelectNode.description = newDescription;
-
-	return TRUE;
-};
-
-func void DIA_PuppetMaster_SelectNode_Info () {
 };
 
 //---
-func int DIA_PuppetMaster_RotateNode_Condition (var C_Info inst, var string spinnerID) {
-	if (!puppetMasterEnabled) { return FALSE; };
+func void DIA_PuppetMaster_UpdateNodePos_Hanlder (var string spinnerID) {
+	var string oldDescription;
+	var string oldDescription1;
+	var string oldDescription2;
+	var string oldDescription3;
+
+	if (!InfoManager_IsInChoiceMode ()) {
+		oldDescription = "";
+		oldDescription1 = "";
+		oldDescription2 = "";
+		oldDescription3 = "";
+		return;
+	};
 
 	//These are in fact Global variables - we can exploit that for this feature - they will retain their value ;-)
 	var string lastSpinnerID;
@@ -258,169 +157,6 @@ func int DIA_PuppetMaster_RotateNode_Condition (var C_Info inst, var string spin
 	newDescription = ConcatStrings (newDescription, "s@");
 	newDescription = ConcatStrings (newDescription, spinnerID);
 	newDescription = ConcatStrings (newDescription, " ");
-	if (Hlp_StrCmp (spinnerID, "RotateNodeX")) {
-		newDescription = ConcatStrings (newDescription, "Rotate around X axis.");
-	} else
-	if (Hlp_StrCmp (spinnerID, "RotateNodeY")) {
-		newDescription = ConcatStrings (newDescription, "Rotate around Y axis.");
-	} else
-	if (Hlp_StrCmp (spinnerID, "RotateNodeZ")) {
-		newDescription = ConcatStrings (newDescription, "Rotate around Z axis.");
-	};
-
-	if (value) {
-		var int vobPtr; vobPtr = _@ (Puppet);
-
-		if (Hlp_VobVisual_Is_zCModel (vobPtr)) {
-
-			var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
-
-			//zCModelNodeInst *
-			var int modelNodeInstPtr; modelNodeInstPtr = zCModel_SearchNode (visualPtr, puppetNode);
-
-			if (modelNodeInstPtr) {
-				var int trafoPtr; trafoPtr = modelNodeInstPtr + 12;
-
-				if (Hlp_StrCmp (spinnerID, "RotateNodeX")) {
-					zMAT4_PostRotateX (trafoPtr, mkf (value));
-				} else
-				if (Hlp_StrCmp (spinnerID, "RotateNodeY")) {
-					zMAT4_PostRotateY (trafoPtr, mkf (value));
-				} else
-				if (Hlp_StrCmp (spinnerID, "RotateNodeZ")) {
-					zMAT4_PostRotateZ (trafoPtr, mkf (value));
-				};
-
-				//Update
-				DrawBBox__PuppetMaster ();
-			};
-		};
-
-		value = 0;
-		InfoManagerSpinnerValue = 0;
-	};
-
-	//Update description
-	inst.description = newDescription;
-
-	return TRUE;
-};
-
-instance DIA_PuppetMaster_RotateNodeX (C_Info) {
-	npc = PC_Hero;
-	nr = 2;
-	condition = DIA_PuppetMaster_RotateNodeX_Condition;
-	information = DIA_PuppetMaster_RotateNodeX_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_RotateNodeX_Condition () {
-	return + DIA_PuppetMaster_RotateNode_Condition (DIA_PuppetMaster_RotateNodeX, "RotateNodeX");
-};
-
-func void DIA_PuppetMaster_RotateNodeX_Info () {
-};
-
-//---
-
-instance DIA_PuppetMaster_RotateNodeY (C_Info) {
-	npc = PC_Hero;
-	nr = 3;
-	condition = DIA_PuppetMaster_RotateNodeY_Condition;
-	information = DIA_PuppetMaster_RotateNodeY_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_RotateNodeY_Condition () {
-	return + DIA_PuppetMaster_RotateNode_Condition (DIA_PuppetMaster_RotateNodeY, "RotateNodeY");
-};
-
-func void DIA_PuppetMaster_RotateNodeY_Info () {
-};
-
-//---
-
-instance DIA_PuppetMaster_RotateNodeZ (C_Info) {
-	npc = PC_Hero;
-	nr = 4;
-	condition = DIA_PuppetMaster_RotateNodeZ_Condition;
-	information = DIA_PuppetMaster_RotateNodeZ_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_RotateNodeZ_Condition () {
-	return + DIA_PuppetMaster_RotateNode_Condition (DIA_PuppetMaster_RotateNodeZ, "RotateNodeZ");
-};
-
-func void DIA_PuppetMaster_RotateNodeZ_Info () {
-};
-
-//---
-
-func int DIA_PuppetMaster_UpdatePos_Condition (var C_Info inst, var string spinnerID) {
-	if (!puppetMasterEnabled) { return FALSE; };
-
-	//These are in fact Global variables - we can exploit that for this feature - they will retain their value ;-)
-	var string lastSpinnerID;
-
-	var int value;
-
-	var int min;
-	var int max;
-
-	//Min/max values
-	min = -1;
-	max = 1;
-
-	//Check boundaries
-	if (value < min) { value = min; };
-	if (value > max) { value = max; };
-
-	var int isActive; isActive = Hlp_StrCmp (InfoManagerSpinnerID, spinnerID);
-
-	//Setup spinner if spinner ID has changed
-	if (isActive) {
-		//Setup spinner if spinner ID has changed
-		if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
-			//Restore value
-			InfoManagerSpinnerValue = value;
-		};
-
-		//Page Up/Down quantity
-		InfoManagerSpinnerPageSize = 30;
-
-		//Min/Max value (Home/End keys)
-		InfoManagerSpinnerValueMin = -360;
-		InfoManagerSpinnerValueMax = 360;
-
-		//Update
-		value = InfoManagerSpinnerValue;
-	};
-
-	lastSpinnerID = InfoManagerSpinnerID;
-
-	var string newDescription; newDescription = "";
-
-	//newDescription = ConcatStrings (newDescription, "h@");
-	newDescription = ConcatStrings (newDescription, "s@");
-	newDescription = ConcatStrings (newDescription, spinnerID);
-	newDescription = ConcatStrings (newDescription, " ");
-
-	if (Hlp_StrCmp (spinnerID, "UpdatePosX")) {
-		newDescription = ConcatStrings (newDescription, "Move on X axis.");
-	} else
-	if (Hlp_StrCmp (spinnerID, "UpdatePosY")) {
-		newDescription = ConcatStrings (newDescription, "Move on Y axis.");
-	} else
-	if (Hlp_StrCmp (spinnerID, "UpdatePosZ")) {
-		newDescription = ConcatStrings (newDescription, "Move on Z axis.");
-	};
 
 	if (value) {
 		var int vobPtr; vobPtr = _@ (Puppet);
@@ -460,68 +196,390 @@ func int DIA_PuppetMaster_UpdatePos_Condition (var C_Info inst, var string spinn
 		InfoManagerSpinnerValue = 0;
 	};
 
-	//Update description
-	inst.description = newDescription;
+	if (Hlp_StrCmp (spinnerID, "UpdatePosX")) {
+		newDescription = ConcatStrings (newDescription, "Move on X axis.");
+		oldDescription = oldDescription1;
+	} else
+	if (Hlp_StrCmp (spinnerID, "UpdatePosY")) {
+		newDescription = ConcatStrings (newDescription, "Move on Y axis.");
+		oldDescription = oldDescription2;
+	} else
+	if (Hlp_StrCmp (spinnerID, "UpdatePosZ")) {
+		newDescription = ConcatStrings (newDescription, "Move on Z axis.");
+		oldDescription = oldDescription3;
+	};
 
-	return TRUE;
-};
+	//Update choice description!
+	if (!Hlp_StrCmp (oldDescription, newDescription)) {
+		InfoManager_SetInfoChoiceText_BySpinnerID (newDescription, spinnerID);
+	};
 
-instance DIA_PuppetMaster_UpdatePosX (C_Info) {
-	npc = PC_Hero;
-	nr = 5;
-	condition = DIA_PuppetMaster_UpdatePosX_Condition;
-	information = DIA_PuppetMaster_UpdatePosX_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_UpdatePosX_Condition () {
-	return + DIA_PuppetMaster_UpdatePos_Condition (DIA_PuppetMaster_UpdatePosX, "UpdatePosX");
-};
-
-func void DIA_PuppetMaster_UpdatePosX_Info () {
-};
-
-//---
-
-instance DIA_PuppetMaster_UpdatePosY (C_Info) {
-	npc = PC_Hero;
-	nr = 6;
-	condition = DIA_PuppetMaster_UpdatePosY_Condition;
-	information = DIA_PuppetMaster_UpdatePosY_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
-};
-
-func int DIA_PuppetMaster_UpdatePosY_Condition () {
-	return + DIA_PuppetMaster_UpdatePos_Condition (DIA_PuppetMaster_UpdatePosY, "UpdatePosY");
-};
-
-func void DIA_PuppetMaster_UpdatePosY_Info () {
+	if (Hlp_StrCmp (spinnerID, "UpdatePosX")) {
+		oldDescription1 = newDescription;
+	};
+	if (Hlp_StrCmp (spinnerID, "UpdatePosY")) {
+		oldDescription2 = newDescription;
+	};
+	if (Hlp_StrCmp (spinnerID, "UpdatePosZ")) {
+		oldDescription3 = newDescription;
+	};
 };
 
 //---
 
-instance DIA_PuppetMaster_UpdatePosZ (C_Info) {
-	npc = PC_Hero;
-	nr = 7;
-	condition = DIA_PuppetMaster_UpdatePosZ_Condition;
-	information = DIA_PuppetMaster_UpdatePosZ_Info;
-	important = FALSE;
-	permanent = TRUE;
-	description = "dummy";
+func void DIA_PuppetMaster_RotateNode_Handler (var string spinnerID) {
+	var string oldDescription;
+	var string oldDescription1;
+	var string oldDescription2;
+	var string oldDescription3;
+
+	if (!InfoManager_IsInChoiceMode ()) {
+		oldDescription = "";
+		oldDescription1 = "";
+		oldDescription2 = "";
+		oldDescription3 = "";
+		return;
+	};
+
+	//These are in fact Global variables - we can exploit that for this feature - they will retain their value ;-)
+	var string lastSpinnerID;
+
+	var int value;
+
+	var int min;
+	var int max;
+
+	//Min/max values
+	min = -1;
+	max = 1;
+
+	//Check boundaries
+	if (value < min) { value = min; };
+	if (value > max) { value = max; };
+
+	var int isActive; isActive = Hlp_StrCmp (InfoManagerSpinnerID, spinnerID);
+
+	//Setup spinner if spinner ID has changed
+	if (isActive) {
+		//Setup spinner if spinner ID has changed
+		if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
+			//Restore value
+			InfoManagerSpinnerValue = value;
+		};
+
+		//Page Up/Down quantity
+		InfoManagerSpinnerPageSize = 30;
+
+		//Min/Max value (Home/End keys)
+		InfoManagerSpinnerValueMin = -360;
+		InfoManagerSpinnerValueMax = 360;
+
+		//Update
+		value = InfoManagerSpinnerValue;
+	};
+
+	lastSpinnerID = InfoManagerSpinnerID;
+
+	var string newDescription; newDescription = "";
+
+	//newDescription = ConcatStrings (newDescription, "h@");
+	newDescription = ConcatStrings (newDescription, "s@");
+	newDescription = ConcatStrings (newDescription, spinnerID);
+	newDescription = ConcatStrings (newDescription, " ");
+
+	if (value) {
+		var int vobPtr; vobPtr = _@ (Puppet);
+
+		if (Hlp_VobVisual_Is_zCModel (vobPtr)) {
+
+			var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
+
+			//zCModelNodeInst *
+			var int modelNodeInstPtr; modelNodeInstPtr = zCModel_SearchNode (visualPtr, puppetNode);
+
+			if (modelNodeInstPtr) {
+				var int trafoPtr; trafoPtr = modelNodeInstPtr + 12;
+
+				if (Hlp_StrCmp (spinnerID, "RotateNodeX")) {
+					zMAT4_PostRotateX (trafoPtr, mkf (value));
+				} else
+				if (Hlp_StrCmp (spinnerID, "RotateNodeY")) {
+					zMAT4_PostRotateY (trafoPtr, mkf (value));
+				} else
+				if (Hlp_StrCmp (spinnerID, "RotateNodeZ")) {
+					zMAT4_PostRotateZ (trafoPtr, mkf (value));
+				};
+
+				//Update
+				DrawBBox__PuppetMaster ();
+			};
+		};
+
+		value = 0;
+		InfoManagerSpinnerValue = 0;
+	};
+
+	if (Hlp_StrCmp (spinnerID, "RotateNodeX")) {
+		newDescription = ConcatStrings (newDescription, "Rotate around X axis.");
+		oldDescription = oldDescription1;
+	} else
+	if (Hlp_StrCmp (spinnerID, "RotateNodeY")) {
+		newDescription = ConcatStrings (newDescription, "Rotate around Y axis.");
+		oldDescription = oldDescription2;
+	} else
+	if (Hlp_StrCmp (spinnerID, "RotateNodeZ")) {
+		newDescription = ConcatStrings (newDescription, "Rotate around Z axis.");
+		oldDescription = oldDescription3;
+	};
+
+	//Update choice description!
+	if (!Hlp_StrCmp (oldDescription, newDescription)) {
+		InfoManager_SetInfoChoiceText_BySpinnerID (newDescription, spinnerID);
+	};
+
+	if (Hlp_StrCmp (spinnerID, "RotateNodeX")) {
+		oldDescription1 = newDescription;
+	};
+	if (Hlp_StrCmp (spinnerID, "RotateNodeY")) {
+		oldDescription2 = newDescription;
+	};
+	if (Hlp_StrCmp (spinnerID, "RotateNodeZ")) {
+		oldDescription3 = newDescription;
+	};
 };
 
-func int DIA_PuppetMaster_UpdatePosZ_Condition () {
-	return + DIA_PuppetMaster_UpdatePos_Condition (DIA_PuppetMaster_UpdatePosZ, "UpdatePosZ");
+func int DIA_PuppetMaster_Main_Condition () {
+	if (!puppetMasterEnabled) { return FALSE; };
+
+	//Execute here - to reset oldDescription, oldDescription2, oldDescription3 if we are not in choice mode!
+	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosX");
+	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosY");
+	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosZ");
+
+	DIA_PuppetMaster_RotateNode_Handler ("RotateNodeX");
+	DIA_PuppetMaster_RotateNode_Handler ("RotateNodeY");
+	DIA_PuppetMaster_RotateNode_Handler ("RotateNodeZ");
+
+	var string oldDescription1;
+
+	//Do not execute code below, if choices are not yet displayed :)
+	if (!InfoManager_IsInChoiceMode ()) {
+		oldDescription1 = "";
+		return TRUE;
+	};
+
+	//These are in fact Global variables - we can exploit that for this feature - they will retain their value ;-)
+	var string lastSpinnerID;
+
+	var int min;
+	var int max;
+
+	var int isActive;
+	var string editedNumber;
+
+//-- Spinner Choice #1
+
+	var int value1; //Spinner #1 value
+
+	//Min/max values
+	min = 0;
+	max = HUMAN_NODENAMES_MAX - 1;
+
+	//Check boundaries
+	if (value1 < min) { value1 = min; };
+	if (value1 > max) { value1 = max; };
+
+	isActive = Hlp_StrCmp (InfoManagerSpinnerID, "SelectNode");
+
+	//Setup spinner if spinner ID has changed
+	if (isActive) {
+		//What is current InfoManagerSpinnerID ?
+		if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
+
+			//Update value
+			InfoManagerSpinnerValue = value1;
+		};
+
+		//Page Up/Down quantity
+		InfoManagerSpinnerPageSize = 5;
+
+		//Min/max value (Home/End keys)
+		InfoManagerSpinnerValueMin = 0;
+		InfoManagerSpinnerValueMax = HUMAN_NODENAMES_MAX - 1;
+
+		//Update
+		value1 = InfoManagerSpinnerValue;
+	};
+
+	//Remember, remember!
+	var string newDescription1;
+
+	if (max == 0) {
+		//newDescription1 = "d@ "; //disabled
+	};
+
+	var string prevNodeName;
+	var string nextNodeName;
+
+	var int lastValue1;
+
+	if (value1 != lastValue1) {
+		prevNodeName = GetNodeName__PuppetMaster (value1 - 1);
+		puppetNode = GetNodeName__PuppetMaster (value1);
+		nextNodeName = GetNodeName__PuppetMaster (value1 + 1);
+
+		DrawBBox__PuppetMaster ();
+		lastValue1 = value1;
+	};
+
+	//Spinner ID
+	newDescription1 = "";
+	newDescription1 = ConcatStrings (newDescription1, "s@SelectNode Select node: ");
+
+	//Manually typed in number:
+	/*
+	if (InfoManagerSpinnerNumberEditMode)
+	&& (TRUE) //change to FALSE if you don't want to allow manual typing
+	&& (isActive)
+	{
+		editedNumber = InfoManagerSpinnerNumber;
+		editedNumber = ConcatStrings (editedNumber, "_");
+
+		//Check boundaries - if value is out, add red color overlay
+		if ((STR_ToInt (InfoManagerSpinnerNumber) < min) || (STR_ToInt (InfoManagerSpinnerNumber) > max)) {
+			editedNumber = ConcatStrings ("o@h@FF3030 hs@FF4646 :", editedNumber);
+			editedNumber = ConcatStrings (editedNumber, "~");
+		};
+
+		newDescription1 = ConcatStrings (newDescription1, editedNumber);
+	} else {
+		newDescription1 = ConcatStrings (newDescription1, IntToString (value1));
+	};
+	*/
+
+	newDescription1 = ConcatStrings (newDescription1, "o@h@00CC66 hs@66FFB2:");
+	newDescription1 = ConcatStrings (newDescription1, puppetNode);
+	newDescription1 = ConcatStrings (newDescription1, "~");
+
+	//Update choice description!
+	if (!Hlp_StrCmp (oldDescription1, newDescription1)) {
+		InfoManager_SetInfoChoiceText_BySpinnerID (newDescription1, "SelectNode");
+	};
+	oldDescription1 = newDescription1;
+
+	puppetNodeIndex = value1;
+
+//-- Spinner Choice #2
+
+/*
+
+		var int value2; //Spinner #2 value
+
+		//Min/max values
+		min = 1;
+		max = NPC_HasItems (self, ItFoMutton);
+
+		//Check boundaries
+		if (value2 < min) { value2 = min; };
+		if (value2 > max) { value2 = max; };
+
+		isActive = Hlp_StrCmp (InfoManagerSpinnerID, "CookFish");
+
+		//Setup spinner if spinner ID has changed
+		if (isActive) {
+			//What is current InfoManagerSpinnerID ?
+			if (!Hlp_StrCmp (InfoManagerSpinnerID, lastSpinnerID)) {
+				//Update value
+				InfoManagerSpinnerValue = value2;
+			};
+
+			//Page Up/Down quantity
+			InfoManagerSpinnerPageSize = 5;
+
+			//Min/max value (Home/End keys)
+			InfoManagerSpinnerValueMin = min;
+			InfoManagerSpinnerValueMax = max;
+
+			//Update
+			value2 = InfoManagerSpinnerValue;
+		};
+
+		//Remember, remember!
+		var string newDescription2;
+		var string oldDescription2;
+
+		oldDescription2 = newDescription2;
+		newDescription2 = "";
+
+		if (max == 0) {
+			//newDescription2 = "d@ "; //disabled
+		};
+
+		//Spinner ID CookMeat
+		newDescription2 = ConcatStrings (newDescription2, "s@CookFish Cook some Fish: ");
+
+		//Manually typed in number:
+		if (InfoManagerSpinnerNumberEditMode)
+		&& (TRUE) //change to FALSE if you don't want to allow manual typing
+		&& (isActive)
+		{
+			editedNumber = InfoManagerSpinnerNumber;
+			editedNumber = ConcatStrings (editedNumber, "_");
+
+			//Check boundaries - if value is out, add red color overlay
+			if ((STR_ToInt (InfoManagerSpinnerNumber) < min) || (STR_ToInt (InfoManagerSpinnerNumber) > max)) {
+				editedNumber = ConcatStrings ("o@h@FF3030 hs@FF4646 :", editedNumber);
+				editedNumber = ConcatStrings (editedNumber, "~");
+			};
+
+			newDescription2 = ConcatStrings (newDescription2, editedNumber);
+		} else {
+			newDescription2 = ConcatStrings (newDescription2, IntToString (value2));
+		};
+
+		newDescription2 = ConcatStrings (newDescription2, " / ");
+		newDescription2 = ConcatStrings (newDescription2, IntToString (max));
+
+		//Update choice description!
+		if (!Hlp_StrCmp (oldDescription2, newDescription2)) {
+			InfoManager_SetInfoChoiceText_BySpinnerID (newDescription2, "CookFish");
+		};
+*/
+
+//--
+
+		lastSpinnerID = InfoManagerSpinnerID;
+
+		return TRUE;
 };
 
-func void DIA_PuppetMaster_UpdatePosZ_Info () {
+func void DIA_PuppetMaster_Main_Info () {
+	Info_ClearChoices (DIA_PuppetMaster_Main);
+
+	Info_AddChoice (DIA_PuppetMaster_Main, DIALOG_ENDE, DIA_PuppetMaster_Main_Exit);
+
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@UpdatePosZ", DIA_PuppetMaster_Main_Info);
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@UpdatePosY", DIA_PuppetMaster_Main_Info);
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@UpdatePosX", DIA_PuppetMaster_Main_Info);
+
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@RotateNodeZ", DIA_PuppetMaster_Main_Info);
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@RotateNodeY", DIA_PuppetMaster_Main_Info);
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@RotateNodeX", DIA_PuppetMaster_Main_Info);
+
+	Info_AddChoice (DIA_PuppetMaster_Main, "s@SelectNode", DIA_PuppetMaster_Main_Info);
 };
 
-//---
+func void DIA_PuppetMaster_Main_Exit () {
+	Info_ClearChoices (DIA_PuppetMaster_Main);
+
+	//Remove vob for bbox
+	RemoveoCVobSafe (puppetNodeVobPtr, 1);
+
+	puppetNodeVobPtr = 0;
+
+	puppetMasterEnabled = FALSE;
+	AI_StopProcessInfos (self);
+};
 
 func string CC_PuppetMaster (var string param) {
 	var oCNPC her; her = Hlp_GetNPC (hero);
@@ -542,12 +600,17 @@ func string CC_PuppetMaster (var string param) {
 
 	//Default node
 	if (!STR_Len (puppetNode)) {
-		puppetNode = "BIP01";
 		puppetNodeIndex = 0;
 	};
 
+	puppetNode = GetNodeName__PuppetMaster (puppetNodeIndex);
+
 	//Initial draw
 	DrawBBox__PuppetMaster ();
+
+	var int npcInstance; npcInstance =  Hlp_GetInstanceID (hero);
+
+	DIA_PuppetMaster_Main.npc = npcInstance;
 
 	AI_ProcessInfos (hero);
 	return "ok";
