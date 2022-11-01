@@ -763,6 +763,25 @@ func void InfoManager_SetInfoChoiceText (var int index, var string text) {
 	};
 };
 
+func int InfoManager_IsInChoiceMode () {
+	if (InfoManager_HasFinished ()) { return FALSE; };
+
+	var int choiceView; choiceView = MEM_InformationMan.DlgChoice;
+
+	if (!choiceView) { return FALSE; };
+
+	const int cINFO_MGR_MODE_IMPORTANT	= 0;
+	const int cINFO_MGR_MODE_INFO		= 1;
+	const int cINFO_MGR_MODE_CHOICE		= 2;
+	const int cINFO_MGR_MODE_TRADE		= 3;
+
+	if (MEM_InformationMan.Mode == cINFO_MGR_MODE_CHOICE) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 func int InfoManager_GetSelectedChoiceIndex () {
 	if (InfoManager_HasFinished ()) { return -1; };
 
