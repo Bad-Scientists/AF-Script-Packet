@@ -1,30 +1,26 @@
+/*
+//Copy these constants outside of the script packet - define your own values.
+//If script-packet is updated in the future - your definition will be unaffected.
+
 const string MOBNAME_CRATE_EMPTY = "Empty box";
 const string MOBNAME_CHEST_EMPTY = "Empty chest";
 
-//--
-const int PC_ChangeFocus_Lockable		= 1;
-const int PC_ChangeFocus_NpcAttitude		= 2;
-const int PC_ChangeFocus_RenameEmptyChests	= 4;
+//Possible options:
+//PC_CHANGEFOCUS_LOCKABLE - locks
+//PC_CHANGEFOCUS_NPCATTITUDE - attitude
+//PC_CHANGEFOCUS_RENAMEEMPTYCHESTS - renames empty chests
+const int PC_CHANGEFOCUS_FLAGS = PC_CHANGEFOCUS_LOCKABLE | PC_CHANGEFOCUS_RENAMEEMPTYCHESTS;
 
-const int PC_ChangeFocus_Flags			= PC_ChangeFocus_Lockable | PC_ChangeFocus_RenameEmptyChests;
-//--
-
-func int ColorDefault__Focus () { return + RGBA (255, 255, 255, 255); };		//White
-
-func int ColorLockedKey__Focus () { return + RGBA (255, 128, 0, 255); };		//Orange
-
-func int ColorLockedPickLocks__Focus () { return + RGBA (255, 255, 0, 255); };		//Yellow
-
-func int ColorLockedKeyPickLocks__Focus () { return + RGBA (255, 255, 0, 255); };	//Yellow
-
-func int ColorLockedHasKey__Focus () { return + RGBA (255, 255, 0, 255); };		//Yellow
+const string PC_CHANGEFOCUS_COLOR_DEFAULT = "FFFFFF"; //White
+const string PC_CHANGEFOCUS_COLOR_LOCKEDKEY = "FF8000"; //Orange
+const string PC_CHANGEFOCUS_COLOR_LOCKEDPICKLOCKS = "FFFF00"; //Yellow
+const string PC_CHANGEFOCUS_COLOR_LOCKEDKEYPICKLOCKS = "FFFF00"; //Yellow
+const string PC_CHANGEFOCUS_COLOR_LOCKEDHASKEY = "FFFF00"; //Yellow
 
 //--
 
-func int ColorFriendly__Focus () { return + RGBA (102, 255, 178, 255); };		//Green
-
-func int ColorNeutral__Focus () { return + RGBA (255, 255, 255, 255); };		//White
-
-func int ColorAngry__Focus () { return + RGBA (255, 128, 000, 255); };			//Orange
-
-func int ColorHostile__Focus () { return + RGBA (255, 070, 070, 255); };		//Red
+const string PC_CHANGEFOCUS_COLOR_FRIENDLY = "66FFB2"; //Green
+const string PC_CHANGEFOCUS_COLOR_NEUTRAL = "FFFFFF"; //White
+const string PC_CHANGEFOCUS_COLOR_ANGRY = "FF8000"; //Orange
+const string PC_CHANGEFOCUS_COLOR_HOSTILE = "FF4646"; //Red
+*/
