@@ -1,4 +1,4 @@
-//int __thiscall oCNpc::IsMunitionAvailable(class oCItem *) 
+//int __thiscall oCNpc::IsMunitionAvailable(class oCItem *)
 func void _hook_oCNpc_IsMunitionAvailable () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
@@ -26,28 +26,20 @@ func void _hook_oCNpc_IsMunitionAvailable () {
 				};
 			};
 		};
-		
+
 		//No ammo
 		if (!count) {
 			var string instName; instName = GetSymbolName (weapon.munition);
 
-			if (Hlp_StrCmp (instName, "ITAMARROW") || Hlp_StrCmp (instName, "ITRW_ARROW")) {
-				PrintS ("Došli mi šípy !");
-			} else
-			if (Hlp_StrCmp (instName, "ITRW_ADDON_MAGICARROW")) {
-				PrintS ("Došli mi magické šípy !");
-			} else
-			if (Hlp_StrCmp (instName, "ITRW_ADDON_FIREARROW")) {
-				PrintS ("Došli mi ohnivé šípy !");
-			} else 
-			if (Hlp_StrCmp (instName, "ITAMBOLT") || Hlp_StrCmp (instName, "ITRW_BOLT")) {
-				PrintS ("Došli mi šipky !");
-			} else 
-			if (Hlp_StrCmp (instName, "ITRW_ADDON_MAGICBOLT")) {
-				PrintS ("Došli mi magické šipky !");
-			} else
-			{
-				PrintS ("Došla mi munice !");
+			const int symbID = 0;
+
+			if (!symbID) {
+				symbID = MEM_FindParserSymbol ("NOAMMOPRINT_AMMOMISSING");
+			};
+
+			if (symbID != -1) {
+				MEM_PushStringParam (instName);
+				MEM_CallByID (symbID);
 			};
 		};
 	};
