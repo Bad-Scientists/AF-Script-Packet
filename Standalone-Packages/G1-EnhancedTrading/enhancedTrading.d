@@ -473,7 +473,7 @@ func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 /*
  *	Hook updates buy/sell multipliers for moved items
  */
-func void _hook_oCViewDialogTrade_OnTransfer__EnhancedTrading () {
+func void _hook_OnTransfer__EnhancedTrading () {
 	var oCItemContainer container;
 
 	var int ptr;
@@ -685,8 +685,8 @@ func void G1_EnhancedTrading_Init(){
 
 	if (!once) {
 		//Hooked functions checks whether NPC wants to buy an item or not. Also it cahnges selling/buying multiplier values
-		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_oCViewDialogTrade_OnTransfer__EnhancedTrading");
-		HookEngine (oCViewDialogTrade__OnTransferRight, 10, "_hook_oCViewDialogTrade_OnTransfer__EnhancedTrading");
+		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_OnTransfer__EnhancedTrading");
+		HookEngine (oCViewDialogTrade__OnTransferRight, 10, "_hook_OnTransfer__EnhancedTrading");
 
 		//Called when exiting trading
 		//HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit__EnhancedTrading");
