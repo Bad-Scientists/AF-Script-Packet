@@ -33,61 +33,42 @@
  *	First take care of 'hs@', 'fs@' then 's@' !!!
  */
 
-/*
- *	Variables which you can adjust as you need ...
- */
+//-- Internal variables
+var string _InfoManagerDefaultDialogColorSelected;
+var string _InfoManagerDefaultColorDialogGrey;
 
-//Default dialog colors
-const string InfoManagerDefaultDialogColorSelected = "FFFFFF";		//G1 standard dialog - white color FFFFFF
-const string InfoManagerDefaultColorDialogGrey = "C8C8C8";		//G1 standard dialog - grey color C8C8C8
+var string _InfoManagerDefaultFontDialogSelected;
+var string _InfoManagerDefaultFontDialogGrey;
 
-const string InfoManagerDefaultFontDialogSelected = "";			//Default font for selected dialog choice (if blank default Gothic version will be used)
-const string InfoManagerDefaultFontDialogGrey = "";			//Default font for greyed (if blank default Gothic version will be used)
+var string _InfoManagerDisabledDialogColorSelected;
+var string _InfoManagerDisabledColorDialogGrey;
 
-const string InfoManagerDisabledDialogColorSelected = "808080";		//Disabled color - selected
-const string InfoManagerDisabledColorDialogGrey = "666666";		//Disabled color - grey
+var int _InfoManagerDefaultDialogAlignment;
 
-//Default text alignment
-const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;		//ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT defined in LeGo
+var string _InfoManagerIndicatorColorDefault;
+var int _InfoManagerIndicatorAlpha;
 
-const int InfoManagerSpinnerPageSize = 5;				//Page Up/Page Down
+var string _InfoManagerSpinnerIndicatorString;
+var string _InfoManagerAnswerIndicatorString;
 
-const string InfoManagerIndicatorColorDefault = "C8C8C8";		//Default color for 'answer' and 'spinner' indicator - if empty it will be same as underlying dialog
-const int InfoManagerIndicatorAlpha = 255;				//Default alpha value for 'answer' and 'spinner' indicator
+var int _InfoManagerSpinnerIndicatorAnimation;
 
-const string InfoManagerSpinnerIndicatorString = "<-- -->";		//Default spinner indicator (non animated)
-const string InfoManagerAnswerIndicatorString = "...";			//Default answer indicator
+var int _InfoManagerNumKeysControls;
+var int _InfoManagerNumKeysNumbers;
 
-const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want animated spinner.
+var int _InfoManagerAlphaBlendFunc;
 
-//Dialog 'NumKey' controls [WIP]
-const int InfoManagerNumKeysControls = 1;				//Set to TRUE if you want to enable num key support for dialogs
-const int InfoManagerNumKeysNumbers = 0;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
+const int cIM_RememberSelectedChoice_None = 0;			//Does nothing (default vanilla behaviour)
+const int cIM_RememberSelectedChoice_All = 1;			//Moves cursor to last selected choice
+const int cIM_RememberSelectedChoice_Spinners = 2;		//Moves cursor to last selected choice only when used with spinners
 
-/*
-const int ALPHA_FUNC_MAT_DEFAULT	= 0;
-const int ALPHA_FUNC_NONE		= 1;
-const int ALPHA_FUNC_BLEND		= 2;
-const int ALPHA_FUNC_ADD		= 3;
-const int ALPHA_FUNC_SUB		= 4;
-const int ALPHA_FUNC_MUL		= 5;
-const int ALPHA_FUNC_MUL2		= 6;
-const int ALPHA_FUNC_TEST		= 7;
-*/
-const int InfoManagerAlphaBlendFunc = 3;				//ALPHA_FUNC_NONE (is Gothic default), ALPHA_FUNC_ADD (is kinda nicer :) )
+var int _InfoManagerRememberSelectedChoice;
 
-const int cIM_RememberSelectedChoice_None	= 0;			//Does nothing (default vanilla behaviour)
-const int cIM_RememberSelectedChoice_All	= 1;			//Moves cursor to last selected choice
-const int cIM_RememberSelectedChoice_Spinners	= 2;			//Moves cursor to last selected choice only when used with spinners
-
-const int InfoManagerRememberSelectedChoice = cIM_RememberSelectedChoice_Spinners;
-
-/*
- *	Internal variables
- */
+//--
 
 var int InfoManagerSpinnerValueMin;	//Home
 var int InfoManagerSpinnerValueMax;	//End
+var int InfoManagerSpinnerPageSize; //Page Up/Down
 
 //Dialog 'Answering system'
 var int InfoManagerAnswerPossible;
@@ -166,43 +147,43 @@ func void InfoManagerSpinnerAnimate (var int animate) {
 	if (aniStep > 11) { aniStep = 0; };
 
 	if (aniStep == 0) {
-		InfoManagerSpinnerIndicatorString = "   <- ->   ";
+		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
 	} else
 	if (aniStep == 1) {
-		InfoManagerSpinnerIndicatorString = "  <-  ->   ";
+		_InfoManagerSpinnerIndicatorString = "  <-  ->   ";
 	} else
 	if (aniStep == 2) {
-		InfoManagerSpinnerIndicatorString = " <-   ->   ";
+		_InfoManagerSpinnerIndicatorString = " <-   ->   ";
 	} else
 	if (aniStep == 3) {
-		InfoManagerSpinnerIndicatorString = "<-    ->   ";
+		_InfoManagerSpinnerIndicatorString = "<-    ->   ";
 	} else
 	if (aniStep == 4) {
-		InfoManagerSpinnerIndicatorString = " <-   ->   ";
+		_InfoManagerSpinnerIndicatorString = " <-   ->   ";
 	} else
 	if (aniStep == 5) {
-		InfoManagerSpinnerIndicatorString = "  <-  ->   ";
+		_InfoManagerSpinnerIndicatorString = "  <-  ->   ";
 	} else
 	if (aniStep == 6) {
-		InfoManagerSpinnerIndicatorString = "   <- ->   ";
+		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
 	} else
 	if (aniStep == 7) {
-		InfoManagerSpinnerIndicatorString = "   <-  ->  ";
+		_InfoManagerSpinnerIndicatorString = "   <-  ->  ";
 	} else
 	if (aniStep == 8) {
-		InfoManagerSpinnerIndicatorString = "   <-   -> ";
+		_InfoManagerSpinnerIndicatorString = "   <-   -> ";
 	} else
 	if (aniStep == 9) {
-		InfoManagerSpinnerIndicatorString = "   <-    ->";
+		_InfoManagerSpinnerIndicatorString = "   <-    ->";
 	} else
 	if (aniStep == 10) {
-		InfoManagerSpinnerIndicatorString = "   <-   -> ";
+		_InfoManagerSpinnerIndicatorString = "   <-   -> ";
 	} else
 	if (aniStep == 11) {
-		InfoManagerSpinnerIndicatorString = "   <-  ->  ";
+		_InfoManagerSpinnerIndicatorString = "   <-  ->  ";
 	} else
 	if (aniStep == 12) {
-		InfoManagerSpinnerIndicatorString = "   <- ->   ";
+		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
 	};
 
 	if (animate) { aniStep += 1; };
@@ -228,7 +209,7 @@ func void InfoManagerSpinnerAniFunction () {
 			//if (STR_Len (InfoManagerSpinnerNumber)) {
 			//	txtIndicator.text = InfoManagerSpinnerNumber;
 			//} else {
-				txtIndicator.text = InfoManagerSpinnerIndicatorString;
+				txtIndicator.text = _InfoManagerSpinnerIndicatorString;
 			//};
 
 			//Adjust alignment of spinner indicator
@@ -1391,7 +1372,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 			var int lastSpinnerValue; lastSpinnerValue = InfoManagerSpinnerValue;
 
 			//Default value if not set
-			if (InfoManagerSpinnerPageSize == 0) { InfoManagerSpinnerPageSize = 1; };
+			if (InfoManagerSpinnerPageSize == 0) { InfoManagerSpinnerPageSize = 5; };
 
 			//Get Left Shift key status
 			var int lShift;
@@ -1570,7 +1551,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 		if (!InfoManagerAnswerMode) {
 			//var int numKeyPressed; numKeyPressed = FALSE;
 
-			if (InfoManagerNumKeysControls) {
+			if (_InfoManagerNumKeysControls) {
 				//Override Num Keys
 
 				//2021-04-24
@@ -1813,10 +1794,10 @@ MEM_InformationMan.LastMethod:
 	//Default colors
 	var string spinnerID;
 
-	var string dlgColor; dlgColor = InfoManagerDefaultColorDialogGrey;
-	var string dlgColorSelected; dlgColorSelected = InfoManagerDefaultDialogColorSelected;
+	var string dlgColor; dlgColor = _InfoManagerDefaultColorDialogGrey;
+	var string dlgColorSelected; dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
 
-	var int alignment; //alignment = InfoManagerDefaultDialogAlignment;
+	var int alignment; //alignment = _InfoManagerDefaultDialogAlignment;
 
 //---
 
@@ -1961,8 +1942,8 @@ MEM_InformationMan.LastMethod:
 		if (InfoManagerCollectInfos)
 		|| (InfoManagerCollectChoices)
 		{
-			if (InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_All)
-			|| ((InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (InfoManagerSpinnerPossible))
+			if (_InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_All)
+			|| ((_InfoManagerRememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (InfoManagerSpinnerPossible))
 			{
 				if (InfoManagerModeInfoLastChoiceSelected != dlg.ChoiceSelected) {
 					if (InfoManagerModeInfoLastChoiceSelected < dlg.choices) {
@@ -2066,14 +2047,14 @@ MEM_InformationMan.LastMethod:
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
 
 			//Get current fontame
-			if (STR_Len (InfoManagerDefaultFontDialogGrey)) {
-				dlgFont = InfoManagerDefaultFontDialogGrey;
+			if (STR_Len (_InfoManagerDefaultFontDialogGrey)) {
+				dlgFont = _InfoManagerDefaultFontDialogGrey;
 			} else {
 				dlgFont = Print_GetFontName (txt.font);
 			};
 
-			if (STR_Len (InfoManagerDefaultFontDialogSelected)) {
-				dlgFontSelected = InfoManagerDefaultFontDialogSelected;
+			if (STR_Len (_InfoManagerDefaultFontDialogSelected)) {
+				dlgFontSelected = _InfoManagerDefaultFontDialogSelected;
 			} else {
 				dlgFontSelected = dlgFont;
 			};
@@ -2222,13 +2203,13 @@ MEM_InformationMan.LastMethod:
 				//<-- remove old overlays
 
 				//Default values
-				dlgColor = InfoManagerDefaultColorDialogGrey;
+				dlgColor = _InfoManagerDefaultColorDialogGrey;
 				color = HEX2RGBA (dlgColor);
 
-				dlgColorSelected = InfoManagerDefaultDialogColorSelected;
+				dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
 				colorSelected = HEX2RGBA (dlgColorSelected);
 
-				alignment = InfoManagerDefaultDialogAlignment;
+				alignment = _InfoManagerDefaultDialogAlignment;
 
 				if (descriptionAvailable)
 				{
@@ -2246,7 +2227,7 @@ MEM_InformationMan.LastMethod:
 					overlayIndex = 0;
 					overlayDialog = "";
 
-					if (InfoManagerNumKeysNumbers) {
+					if (_InfoManagerNumKeysNumbers) {
 						dlgDescription = ConcatStrings (InfoManagerNumKeyString (i + 1), dlgDescription);
 					};
 
@@ -2392,14 +2373,14 @@ MEM_InformationMan.LastMethod:
 
 						//Default color
 						if (properties & dialogChoiceType_Disabled) {
-							dlgColor = InfoManagerDisabledColorDialogGrey;
-							dlgColorSelected = InfoManagerDisabledDialogColorSelected;
+							dlgColor = _InfoManagerDisabledColorDialogGrey;
+							dlgColorSelected = _InfoManagerDisabledDialogColorSelected;
 
-							overlayColor = HEX2RGBA (InfoManagerDisabledDialogColorSelected);
-							overlayColorSelected = HEX2RGBA (InfoManagerDisabledColorDialogGrey);
+							overlayColor = HEX2RGBA (_InfoManagerDisabledDialogColorSelected);
+							overlayColorSelected = HEX2RGBA (_InfoManagerDisabledColorDialogGrey);
 						} else {
-							overlayColor = HEX2RGBA (InfoManagerDefaultColorDialogGrey);
-							overlayColorSelected = HEX2RGBA (InfoManagerDefaultDialogColorSelected);
+							overlayColor = HEX2RGBA (_InfoManagerDefaultColorDialogGrey);
+							overlayColorSelected = HEX2RGBA (_InfoManagerDefaultDialogColorSelected);
 						};
 
 						//--> Extract overlay format modifiers
@@ -2628,7 +2609,7 @@ MEM_InformationMan.LastMethod:
 						end;
 
 						txt.enabledBlend = TRUE;
-						txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+						txt.funcAlphaBlend = _InfoManagerAlphaBlendFunc;
 
 						if (InfoManagerAnswerMode)
 						&& (dlg.ChoiceSelected == i)
@@ -2794,8 +2775,8 @@ MEM_InformationMan.LastMethod:
 
 					//<-- Overlays
 					if (properties & dialogChoiceType_Disabled) {
-						dlgColor = InfoManagerDisabledColorDialogGrey;
-						dlgColorSelected = InfoManagerDisabledDialogColorSelected;
+						dlgColor = _InfoManagerDisabledColorDialogGrey;
+						dlgColorSelected = _InfoManagerDisabledDialogColorSelected;
 					};
 
 					//Extract font name
@@ -3049,7 +3030,7 @@ MEM_InformationMan.LastMethod:
 
 				//Apply alpha function
 				txt.enabledBlend = TRUE;
-				txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+				txt.funcAlphaBlend = _InfoManagerAlphaBlendFunc;
 
 				i += 1;
 			end;
@@ -3095,7 +3076,7 @@ MEM_InformationMan.LastMethod:
 		&& (dlg.ChoiceSelected < DIALOG_MAX) {
 			properties = (MEM_ReadIntArray (_@ (dialogProperties), dlg.ChoiceSelected));
 
-			alignment = InfoManagerDefaultDialogAlignment;
+			alignment = _InfoManagerDefaultDialogAlignment;
 
 			if (properties & dialogChoiceType_AlignLeft) {
 				alignment = ALIGN_LEFT;
@@ -3130,7 +3111,7 @@ MEM_InformationMan.LastMethod:
 					if (!InfoManagerSpinnerIndicator) {
 
 						txt.enabledBlend = TRUE;
-						txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+						txt.funcAlphaBlend = _InfoManagerAlphaBlendFunc;
 
 						//Create new zCViewText2 instance for our indicator
 						InfoManagerSpinnerIndicator = create (zCViewText2@);
@@ -3142,12 +3123,12 @@ MEM_InformationMan.LastMethod:
 
 						txtIndicator.enabledBlend = txt.enabledBlend;
 						txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-						txtIndicator.alpha = InfoManagerIndicatorAlpha;
+						txtIndicator.alpha = _InfoManagerIndicatorAlpha;
 
 						//Insert indicator to dialog choices
 						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicator);
 
-						//if (InfoManagerSpinnerIndicatorAnimation) {
+						//if (_InfoManagerSpinnerIndicatorAnimation) {
 						//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
 						//	InfoManagerSpinnerAnimate (FALSE);
 						//};
@@ -3156,11 +3137,11 @@ MEM_InformationMan.LastMethod:
 					//
 					txtIndicator = _^ (InfoManagerSpinnerIndicator);
 
-					txtIndicator.text = InfoManagerSpinnerIndicatorString;
+					txtIndicator.text = _InfoManagerSpinnerIndicatorString;
 					txtIndicator.font = txt.font;
 
-					if (STR_Len (InfoManagerIndicatorColorDefault)) {
-						color = HEX2RGBA (InfoManagerIndicatorColorDefault);
+					if (STR_Len (_InfoManagerIndicatorColorDefault)) {
+						color = HEX2RGBA (_InfoManagerIndicatorColorDefault);
 						txtIndicator.color = color;
 						txtIndicator.alpha = GetAlpha (color);
 					} else {
@@ -3201,7 +3182,7 @@ MEM_InformationMan.LastMethod:
 					if (!(properties & dialogChoiceType_IndicatorsOff)) {
 						if (!InfoManagerAnswerIndicator) {
 							txt.enabledBlend = TRUE;
-							txt.funcAlphaBlend = InfoManagerAlphaBlendFunc;
+							txt.funcAlphaBlend = _InfoManagerAlphaBlendFunc;
 
 							//Create new zCViewText2 instance for our indicator
 							InfoManagerAnswerIndicator = create (zCViewText2@);
@@ -3213,9 +3194,9 @@ MEM_InformationMan.LastMethod:
 
 							txtIndicator.enabledBlend = txt.enabledBlend;
 							txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-							txtIndicator.alpha = InfoManagerIndicatorAlpha;
+							txtIndicator.alpha = _InfoManagerIndicatorAlpha;
 
-							txtIndicator.text = InfoManagerAnswerIndicatorString;
+							txtIndicator.text = _InfoManagerAnswerIndicatorString;
 
 							//Insert indicator to dialog choices
 							MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerAnswerIndicator);
@@ -3224,8 +3205,8 @@ MEM_InformationMan.LastMethod:
 						txtIndicator = _^ (InfoManagerAnswerIndicator);
 						txtIndicator.font = txt.font;
 
-						if (STR_Len (InfoManagerIndicatorColorDefault)) {
-							color = HEX2RGBA (InfoManagerIndicatorColorDefault);
+						if (STR_Len (_InfoManagerIndicatorColorDefault)) {
+							color = HEX2RGBA (_InfoManagerIndicatorColorDefault);
 							txtIndicator.color = color;
 							txtIndicator.alpha = GetAlpha (color);
 						} else {
@@ -3384,14 +3365,14 @@ MEM_InformationMan.LastMethod:
 		//--
 
 		if (InfoManagerSpinnerPossible) {
-			if (!InfoManagerSpinnerIndicatorAnimation) {
+			if (!_InfoManagerSpinnerIndicatorAnimation) {
 				if (InfoManagerSpinnerIndicator) {
 					txtIndicator = _^ (InfoManagerSpinnerIndicator);
 
 					//if (STR_Len (InfoManagerSpinnerNumber)) {
 					//	txtIndicator.text = InfoManagerSpinnerNumber;
 					//} else {
-						txtIndicator.text = InfoManagerSpinnerIndicatorString;
+						txtIndicator.text = _InfoManagerSpinnerIndicatorString;
 					//};
 
 					//Adjust alignment of spinner indicator
@@ -3669,6 +3650,27 @@ func void G12_EnhancedInfoManager_Init () {
 	//Reset pointers
 	InfoManagerSpinnerIndicator = 0;
 	InfoManagerAnswerIndicator = 0;
+
+	//-- Load API values / init default values
+	_InfoManagerDefaultDialogColorSelected = API_GetSymbolStringValue ("INFOMANAGERDEFAULTDIALOGCOLORSELECTED", "FFFFFF");
+	_InfoManagerDefaultColorDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDEFAULTCOLORDIALOGGREY", "C8C8C8");
+
+	_InfoManagerDefaultFontDialogSelected = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGSELECTED", "");
+	_InfoManagerDefaultFontDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGGREY", "");
+
+	_InfoManagerDisabledDialogColorSelected = API_GetSymbolStringValue ("INFOMANAGERDISABLEDDIALOGCOLORSELECTED", "808080");
+	_InfoManagerDisabledColorDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDISABLEDCOLORDIALOGGREY", "666666");
+
+	_InfoManagerDefaultDialogAlignment = API_GetSymbolIntValue ("INFOMANAGERDEFAULTDIALOGALIGNMENT", ALIGN_LEFT);
+
+	_InfoManagerIndicatorColorDefault = API_GetSymbolStringValue ("INFOMANAGERINDICATORCOLORDEFAULT", "C8C8C8");
+	_InfoManagerIndicatorAlpha = API_GetSymbolIntValue ("INFOMANAGERINDICATORALPHA", 255);
+
+	_InfoManagerSpinnerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERSPINNERINDICATORSTRING", "<-- -->");
+	_InfoManagerAnswerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERANSWERINDICATORSTRING", "...");
+
+	_InfoManagerSpinnerIndicatorAnimation = API_GetSymbolIntValue ("INFOMANAGERSPINNERINDICATORANIMATION", 1);
+	//--
 
 	const int once = 0;
 	if (!once) {
