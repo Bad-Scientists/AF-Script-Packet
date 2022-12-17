@@ -19,14 +19,27 @@ func void _hook_oCNPC_OpenScreen_Map () {
 
 	if (NPC_IsPlayer (slf)) {
 		//Is there any specific map that player should open ?
-		var int mapInstanceName; mapInstanceName = GetPlayerMapInstance ();
+		var int mapInstanceName; mapInstanceName = -1;
 
-		//Get item
-		if (NPC_GetInvItem (slf, mapInstanceName)) {
-			//t_MAP_Stand_2_S0
-			AI_UseItemToState (slf, item, -1);
-			AI_UseItemToState (slf, item, 0);
-			return;
+		const int symbID = 0;
+
+		if (!symbID) {
+			symbID = MEM_FindParserSymbol ("PLAYERMAP_GETMAPINSTANCE");
+		};
+
+		if (symbID != -1) {
+			MEM_CallByID (symbID);
+			mapInstanceName = MEM_PopIntResult ();
+		};
+
+		if (mapInstanceName != -1) {
+			//Get item
+			if (NPC_GetInvItem (slf, mapInstanceName)) {
+				//t_MAP_Stand_2_S0
+				AI_UseItemToState (slf, item, -1);
+				AI_UseItemToState (slf, item, 0);
+				return;
+			};
 		};
 
 		//Reopen last map
