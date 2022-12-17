@@ -243,7 +243,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 };
 
 /*
- *	Function calculate total value of an item
+ *	Function calculates total value of an item
  */
 func int Trade_CalculateTotalValue (var int itemValue, var int amount, var int multiplier) {
 	var int itemValueF;
@@ -254,13 +254,15 @@ func int Trade_CalculateTotalValue (var int itemValue, var int amount, var int m
 		while (amount > 0);
 			itemValueF = mulf (multiplier, mkf (itemValue));
 
+			var int newValue;
+
 			if ((itemValue > 0) && (RoundF (itemValueF) == 0)) {
-				itemValue = 1;
+				newValue = 1;
 			} else {
-				itemValue = RoundF (itemValueF);
+				newValue = RoundF (itemValueF);
 			};
 
-			totalValue += itemValue;
+			totalValue += newValue;
 			amount -= 1;
 		end;
 
