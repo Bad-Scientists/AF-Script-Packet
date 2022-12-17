@@ -14,6 +14,7 @@
  */
 
 var int moonPhase;
+var int forceMoonPhaseUpdate;
 
 func void Moon_SetTexture (var string textureName) {
 	//Check mesh pointer
@@ -56,7 +57,9 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__MoonPhases () {
 	//06:00 - 18:00 - allow texture update
 	if (gf (MEM_SkyController.masterTime, divf (mkf (75), mkf (100))))
 	|| (lf (MEM_SkyController.masterTime, divf (mkf (25), mkf (100))))
+	|| (forceMoonPhaseUpdate) //or force it
 	{
+		forceMoonPhaseUpdate = FALSE;
 	} else {
 		return;
 	};
