@@ -1,3 +1,8 @@
+//-- Internal variables
+var int PC_PickLockOutputVariation;
+
+var int _PC_PickLockSkillRequired;
+
 func void _hook_oCMobLockable_CanOpen () {
 	//Initial value
 	EAX = FALSE;
@@ -70,20 +75,56 @@ func void _hook_oCMobLockable_CanOpen () {
 	//We need a lockpick
 	if (lockType == requiresPickLock) {
 		//If player does not have skill - and if skill is **required**
-		if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (PC_PickLockSkillRequired)) {
-			G1_EnhancedPickLocking_MissingSkill (slf);
+		if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (_PC_PickLockSkillRequired)) {
+			const int symbID = 0;
+
+			if (!symbID) {
+				symbID = MEM_FindParserSymbol ("ENHANCEDPICKLOCKING_MISSINGSKILL");
+			};
+
+			if (symbID != -1) {
+				MEM_PushInstParam (slf);
+				MEM_CallByID (symbID);
+			};
+
+			oCNpc_SetFocusVob (slf, 0);
+			AI_PlayAni (slf, "T_DONTKNOW");
 			return;
 		};
 
 		if (!playerHasPickLock) {
-			G1_EnhancedPickLocking_MissingLockPick (slf);
+			const int symbID2 = 0;
+
+			if (!symbID2) {
+				symbID2 = MEM_FindParserSymbol ("ENHANCEDPICKLOCKING_MISSINGLOCKPICK");
+			};
+
+			if (symbID2 != -1) {
+				MEM_PushInstParam (slf);
+				MEM_CallByID (symbID2);
+			};
+
+			oCNpc_SetFocusVob (slf, 0);
+			AI_PlayAni (slf, "T_DONTKNOW");
 			return;
 		};
 	} else
 	//We need a key
 	if (lockType == requiresSpecialKey) {
 		if (!playerHasKey) {
-			G1_EnhancedPickLocking_MissingKey (slf);
+			const int symbID3 = 0;
+
+			if (!symbID3) {
+				symbID3 = MEM_FindParserSymbol ("ENHANCEDPICKLOCKING_MISSINGKEY");
+			};
+
+			if (symbID3 != -1) {
+				MEM_PushInstParam (slf);
+				MEM_CallByID (symbID3);
+			};
+
+			oCNpc_SetFocusVob (slf, 0);
+			AI_PlayAni (slf, "T_DONTKNOW");
 			return;
 		};
 	} else
@@ -91,12 +132,32 @@ func void _hook_oCMobLockable_CanOpen () {
 	if ((lockType & requiresPickLock) || (lockType & requiresSpecialKey)) {
 		if ((!playerHasPickLock) && (!playerHasKey)) {
 			//Do we need to learn anything ?
-			if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (PC_PickLockSkillRequired)) {
-				G1_EnhancedPickLocking_MissingSkill (slf);
+			if ((NPC_GetTalentSkill (npc, NPC_TALENT_PICKLOCK) == 0) && (_PC_PickLockSkillRequired)) {
+				const int symbID4 = 0;
+
+				if (!symbID4) {
+					symbID4 = MEM_FindParserSymbol ("ENHANCEDPICKLOCKING_MISSINGSKILL");
+				};
+
+				if (symbID4 != -1) {
+					MEM_PushInstParam (slf);
+					MEM_CallByID (symbID4);
+				};
 			} else {
-				G1_EnhancedPickLocking_MissingLockPickOrKey (slf);
+				const int symbID5 = 0;
+
+				if (!symbID5) {
+					symbID5 = MEM_FindParserSymbol ("ENHANCEDPICKLOCKING_MISSINGLOCKPICKORKEY");
+				};
+
+				if (symbID5 != -1) {
+					MEM_PushInstParam (slf);
+					MEM_CallByID (symbID5);
+				};
 			};
 
+			oCNpc_SetFocusVob (slf, 0);
+			AI_PlayAni (slf, "T_DONTKNOW");
 			return;
 		};
 	};
@@ -106,6 +167,8 @@ func void _hook_oCMobLockable_CanOpen () {
 
 func void G1_EnhancedPickLocking_Init () {
 	G12_GetActionKey_Init ();
+
+	_PC_PickLockSkillRequired = API_GetSymbolIntValue ("PC_PICKLOCKSKILLREQUIRED", FALSE);
 
 	const int once = 0;
 	if (!once) {
