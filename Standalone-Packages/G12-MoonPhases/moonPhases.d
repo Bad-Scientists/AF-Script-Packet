@@ -33,15 +33,20 @@ func void Moon_SetTexture (var string textureName) {
 func void _hook_zSkyCtrlOtdr_RenderSkyPre__MoonPhases () {
 	const int updated = 0;
 
-	var int currentPhase; currentPhase = Wld_GetDay ();
-	if (currentPhase > 24) { currentPhase = currentPhase % 24; };
+	//Call 'API' function
+	const int symbID = 0;
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("MOON_CALCMOONPHASE");
+	};
 
-	currentPhase = currentPhase / 3;
-	if (currentPhase < 1) { currentPhase = 1; };
-	if (currentPhase > 8) { currentPhase = 1; };
+	if (symbID != -1) {
+		MEM_CallByID (symbID);
+	};
 
-	if (moonPhase != currentPhase) {
-		moonPhase = currentPhase;
+	var int lastMoonPhase;
+
+	if (lastMoonPhase != moonPhase) {
+		lastMoonPhase = moonPhase;
 		updated = 0;
 	};
 
@@ -65,9 +70,14 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__MoonPhases () {
 	};
 
 	//Call 'API' function
-	var int symbID; symbID = MEM_FindParserSymbol ("Moon_UpdateTexture");
-	if (symbID != -1) {
-		MEM_CallByID (symbID);
+	const int symbID2 = 0;
+
+	if (!symbID2) {
+		symbID2 = MEM_FindParserSymbol ("MOON_UPDATETEXTURE");
+	};
+
+	if (symbID2 != -1) {
+		MEM_CallByID (symbID2);
 	};
 
 	updated = 1;
