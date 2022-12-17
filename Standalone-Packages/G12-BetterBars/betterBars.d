@@ -13,6 +13,12 @@
  *	In combination with G12-InvItemPreview it also adds health & mana bar preview - additional texture which indicates how much health/mana item in inventory will recover
  */
 
+//-- Internal variables
+var string _tex_BarPreview_HealthBar;
+var string _tex_BarPreview_ManaBar;
+
+var int _healthBar_DisplayWhenHurt_Percentage;
+
 /*
  *	Function that will update texture of health bar (using original Gothic health bar texture!)
  */
@@ -267,7 +273,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vHealthPreview)) {
-		vHealthPreview = Bar_CreatePreview (hHealthBar, TEXTURE_BARPREVIEW_HEALTBAR);
+		vHealthPreview = Bar_CreatePreview (hHealthBar, _tex_BarPreview_HealthBar);
 		View_SetAlpha (vHealthPreview, 255);
 	};
 
@@ -287,7 +293,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 //-- Auto hiding/display for health bar (when updated)
 
 	var int hurtPercentage;
-	if (HealthBar_DisplayWhenHurt_Percentage > 0) {
+	if (_healthBar_DisplayWhenHurt_Percentage > 0) {
 		hurtPercentage = divf (mkf (hero.attribute [ATR_HITPOINTS]), mkf (hero.attribute [ATR_HITPOINTS_MAX]));
 		hurtPercentage = mulf (hurtPercentage, mkf (100));
 		hurtPercentage = roundf (hurtPercentage);
@@ -297,7 +303,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	if ((healthBarDisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk) && (!healthBarForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((healthBarForceOnDesk) || (healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= HealthBar_DisplayWhenHurt_Percentage) && (HealthBar_DisplayWhenHurt_Percentage > 0)))
+	if ((healthBarForceOnDesk) || (healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
 	{
 		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
 
@@ -382,7 +388,7 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	if (!Hlp_IsValidHandle (vManaPreview)) {
-		vManaPreview = Bar_CreatePreview (hManaBar, TEXTURE_BARPREVIEW_MANABAR);
+		vManaPreview = Bar_CreatePreview (hManaBar, _tex_BarPreview_ManaBar);
 		View_SetAlpha (vManaPreview, 255);
 	};
 
@@ -470,6 +476,15 @@ func void G12_BetterBars_Init () {
 	G12_InvItemPreview_Init ();
 
 	G12_InitDefaultBarFunctions ();
+
+	//-- Load API values / init default values
+
+	_tex_BarPreview_HealthBar = API_GetSymbolStringValue ("TEXTURE_BARPREVIEW_HEALTBAR", "BAR_HEALTH_PREVIEW.TGA");
+	_tex_BarPreview_ManaBar = API_GetSymbolStringValue ("TEXTURE_BARPREVIEW_MANABAR", "BAR_MANA_PREVIEW.TGA");
+
+	_healthBar_DisplayWhenHurt_Percentage = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYWHENHURT_PERCENTAGE", 50);
+
+	//--
 
 	FF_ApplyOnceExtGT (FrameFunction_EachFrame__BetterBars, 0, -1);
 };
