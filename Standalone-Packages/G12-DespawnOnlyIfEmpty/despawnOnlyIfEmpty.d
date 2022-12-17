@@ -26,7 +26,7 @@ func void _hook_oCNpc_HasMissionItem () {
 	EAX = 0;
 };
 
-func void G1_DespawnOnlyIfEmpty_Init () {
+func void G12_DespawnOnlyIfEmpty_Init () {
 	const int once = 0;
 	if (!once) {
 		//0x006A4D90 public: int __thiscall oCNpc::HasMissionItem(void)
