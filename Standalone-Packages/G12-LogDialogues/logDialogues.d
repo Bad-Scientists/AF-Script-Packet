@@ -2,6 +2,9 @@
  *	Super simple feature that allows you to log all dialogues into diary.
  */
 
+//-- Internal variables
+var int _log_SectionForDialogues;
+
 //oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
 func void _hook_oCNpc_OnMessage__LogDialogs () {
 	var int eMsg; eMsg = MEM_ReadInt (ESP + 4);
@@ -100,7 +103,7 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 
 	if (writeLog) {
 		if (STR_Len (log) > 0) {
-			Log_CreateTopic (logName, LOG_NOTE);
+			Log_CreateTopic (logName, _log_SectionForDialogues);
 			Log_AddEntry (logName, log);
 			log = "";
 		};
@@ -108,6 +111,11 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 };
 
 func void G12_LogDialogues_Init () {
+
+	//-- Load API values / init default values
+	_log_SectionForDialogues = API_GetSymbolIntValue ("LOG_SECTIONFORDIALOGUES", LOG_NOTE);
+	//--
+
 	const int once = 0;
 	if (!once) {
 		//Hooking zCEventManager__OnMessage would be ideal,
