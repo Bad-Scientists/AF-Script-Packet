@@ -3,8 +3,8 @@
  *
  *	How does it work:
  *		- with LeGo HookDaedalusFunc function we hook vanilla G1 function G_CanSteal and call instead _daedalusHook_G_CanSteal, G_CanSteal is called by engine when player attempts to steal items from NPC:
- *			- our hooked _daedalusHook_G_CanSteal function will call C_CanPickPocket (self, other) [self = thief, other = victim] and will check distance to NPC.
- *			- if NPC is close enough and C_CanPickPocket returns true then _daedalusHook_G_CanSteal will insert to world new NPC StealHelper onto waypoint TOT. NPC is inserted dead.
+ *			- our hooked _daedalusHook_G_CanSteal function will call C_Npc_CanBePickPocketed (self, other) [self = thief, other = victim] and will check distance to NPC.
+ *			- if NPC is close enough and C_Npc_CanBePickPocketed returns true then _daedalusHook_G_CanSteal will insert to world new NPC StealHelper onto waypoint TOT. NPC is inserted dead.
  *			- inventory of NPC will be temporarily transferred from NPC to StealHelper.
  *			- hero.focus_vob is changed to dead StealHelper and by calling oCNPC_OpenDeadNpc (StealHelper) script opens StealHelper's inventory.
  *		- script starts ZS_PickPocketing ai state for hero:
@@ -46,68 +46,23 @@
 
 				...
 			};
- *
- *	C_CanPickPocket - define your own conditions
- *
  */
 
+/*
+//Minimal required distance
+const int PICKPOCKETINGDIST = 250;
+
+//C_Npc_CanBePickPocketed
+// - check if Npc can be pickpocketed. Return true if yes.
 //slf - thief
 //oth - victim
-func int C_CanPickPocket (var C_NPC slf, var C_NPC oth) {
-	//My custom mod function located outside of this package
-	var int retVal; retVal = 0;
-
-	var int symbID; symbID = MEM_FindParserSymbol ("C_ModCanPickPocket");
-	if (symbID != -1) {
-		MEM_PushInstParam (slf);
-		MEM_PushInstParam (oth);
-		MEM_CallByID (symbID);
-		retVal = MEM_PopIntResult ();
-	};
-
-	return retVal;
-};
-
-/*
-For example here is my function, where I am checking whether NPC can be pickpocketed or not:
-
-const int AIV_MOD_PICKPOCKET				= 49;
-	const int PickPocketing_CanBePickPocketed	= 0;
-	const int PickPocketing_PickPocketed		= 1;
-
-func int C_ModCanPickPocket (var C_NPC slf, var C_NPC oth) {
-	//Player Talent PickPocketing
-	if (!Knows_PickPocketing) { return FALSE; };
-
-	//If NPC was already pickpocketed we wont be able to steal more items
-	if (oth.aivar [AIV_MOD_PICKPOCKET] == PickPocketing_PickPocketed) { return FALSE; };
-
-	//We can't steal anything from traders
-	if (C_NPCIsTrader (oth)) { return FALSE; };
-
-	//We can't steal anything from monsters
-	if (C_NPCIsMonster (oth)) { return FALSE; };
-
-	//We can't steal anything with low dexterity
-	if (oth.attribute [ATR_DEXTERITY] >= slf.attribute [ATR_DEXTERITY]) { return FALSE; };
-
-	//Additional conditions (quests/NPCs/items)
-	if (!C_NpcCanBePickPocketed (slf, oth)) { return FALSE; };
-
+func int C_Npc_CanBePickPocketed (var C_NPC slf, var C_NPC oth) {
 	return TRUE;
 };
-*/
 
-/*
- *	B_PickPocketing_Successfull
- *	 - called when pickpocketing is successful - add here your own aivar update (assuming that you will use aivar to prevent multiple pickpocketings)
- *	 - oth - steal victim
- */
-func void B_PickPocketing_Successfull (var C_NPC oth) {
-	//My custom mod function located outside of this package
-	var int symbID; symbID = MEM_FindParserSymbol ("B_ModPickPocketing_Successfull");
-	if (symbID != -1) {
-		MEM_PushInstParam (oth);
-		MEM_CallByID (symbID);
-	};
+//B_WasPickPocketed
+// - called when pickpocketing is successful - add here your own aivar update (assuming that you will use aivar to prevent multiple pickpocketings)
+// - oth - steal victim
+func void B_WasPickPocketed (var C_NPC oth) {
 };
+*/
