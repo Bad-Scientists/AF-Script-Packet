@@ -91,10 +91,9 @@ func int ZS_PickPocketing_Loop () {
 		//Close inventory
 		oCNPC_CloseInventory (self);
 
-		NPC_SetTarget (StealVictim, self);
-		NPC_GetTarget (StealVictim);
-		AI_StartState (StealVictim, ZS_AssessEnemy, 0, "");
-		
+		//Send perception to Npc
+		Npc_SendPassivePerc (StealVictim, PERC_CATCHTHIEF, StealVictim, self);
+
 		PickPocketingStatus = PickPocketingStatus_InActive;
 		return LOOP_END;
 	};
@@ -106,10 +105,8 @@ func int ZS_PickPocketing_Loop () {
 		//Close inventory
 		oCNPC_CloseInventory (self);
 
-		//Attack
-		NPC_SetTarget (StealVictim, self);
-		NPC_GetTarget (StealVictim);
-		AI_StartState (StealVictim, ZS_AssessEnemy, 0, "");
+		//Send perception to Npc
+		Npc_SendPassivePerc (StealVictim, PERC_CATCHTHIEF, StealVictim, self);
 
 		PickPocketingStatus = PickPocketingStatus_InActive;
 		return LOOP_END;
@@ -177,6 +174,9 @@ func int _daedalusHook_G_CanSteal () {
 		//Start state on thief (player)
 		AI_StartState (self, ZS_PickPocketing, 1, "");
 	};
+
+	//Send perception to Npc
+	Npc_SendPassivePerc (other, PERC_CATCHTHIEF, other, self);
 
 	return FALSE;
 };
