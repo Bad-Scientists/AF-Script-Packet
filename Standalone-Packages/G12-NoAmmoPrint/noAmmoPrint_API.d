@@ -1,3 +1,4 @@
+/*
 func void NoAmmoPrint_AmmoMissing (var string instName) {
 	if (Hlp_StrCmp (instName, "ITAMARROW") || Hlp_StrCmp (instName, "ITRW_ARROW")) {
 		PrintS ("You're out of arrows !");
@@ -18,3 +19,4 @@ func void NoAmmoPrint_AmmoMissing (var string instName) {
 		PrintS ("You're out of ammo !");
 	};
 };
+*/

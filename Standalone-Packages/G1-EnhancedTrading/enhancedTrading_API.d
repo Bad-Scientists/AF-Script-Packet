@@ -1,13 +1,10 @@
 /*
- *	Enhanced Trading system
- *
- *	This package improves trading system in G1. It takes care of ore exchange - you don't have care about ore anymore.
- *
- *	It also allows you to:
- *		control what items will trader buy from you
- *		selling price / buying prace
- *
- */
+//Enhanced Trading system
+//This package improves trading system in G1. It takes care of ore exchange - you don't have care about ore anymore.
+//It also allows you to:
+// - control what items will trader buy from you
+// - selling price / buying prace
+
 const string ENHANCEDTRADING_FONT = "FONT_OLD_20_WHITE.TGA";
 
 func void EnhancedTrading_NotEnoughOre () {
@@ -136,3 +133,4 @@ func int C_Npc_GetBuyMultiplierF (var C_NPC slf, var int itemPtr) {
 
 	return multiplier;
 };
+*/

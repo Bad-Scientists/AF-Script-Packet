@@ -1,3 +1,4 @@
+/*
 //Default dialog colors
 const string InfoManagerDefaultDialogColorSelected = "FFFFFF";		//G1 standard dialog - white color FFFFFF
 const string InfoManagerDefaultColorDialogGrey = "C8C8C8";		//G1 standard dialog - grey color C8C8C8
@@ -23,16 +24,15 @@ const int InfoManagerSpinnerIndicatorAnimation = 1;			//Set to TRUE if you want 
 const int InfoManagerNumKeysControls = 1;				//Set to TRUE if you want to enable num key support for dialogs
 const int InfoManagerNumKeysNumbers = 0;				//Set to TRUE if you want to add dialog numbers next to each dialog (formatted in function InfoManagerNumKeyString)
 
-/*
-const int ALPHA_FUNC_MAT_DEFAULT	= 0;
-const int ALPHA_FUNC_NONE		= 1;
-const int ALPHA_FUNC_BLEND		= 2;
-const int ALPHA_FUNC_ADD		= 3;
-const int ALPHA_FUNC_SUB		= 4;
-const int ALPHA_FUNC_MUL		= 5;
-const int ALPHA_FUNC_MUL2		= 6;
-const int ALPHA_FUNC_TEST		= 7;
-*/
+//const int ALPHA_FUNC_MAT_DEFAULT	= 0;
+//const int ALPHA_FUNC_NONE		= 1;
+//const int ALPHA_FUNC_BLEND		= 2;
+//const int ALPHA_FUNC_ADD		= 3;
+//const int ALPHA_FUNC_SUB		= 4;
+//const int ALPHA_FUNC_MUL		= 5;
+//const int ALPHA_FUNC_MUL2		= 6;
+//const int ALPHA_FUNC_TEST		= 7;
+
 const int InfoManagerAlphaBlendFunc = 3;				//ALPHA_FUNC_NONE (is Gothic default), ALPHA_FUNC_ADD (is kinda nicer :) )
 
 //const int cIM_RememberSelectedChoice_None = 0;		//Does nothing (default vanilla behaviour)
@@ -40,3 +40,4 @@ const int InfoManagerAlphaBlendFunc = 3;				//ALPHA_FUNC_NONE (is Gothic default
 //const int cIM_RememberSelectedChoice_Spinners = 2;	//Moves cursor to last selected choice only when used with spinners
 
 const int InfoManagerRememberSelectedChoice = cIM_RememberSelectedChoice_Spinners;
+*/
