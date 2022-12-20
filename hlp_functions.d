@@ -51,6 +51,16 @@ func int Hlp_Is_zCCSCutsceneContext (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCCSCutsceneContext__classDef_G1, zCCSCutsceneContext__classDef_G2));
 };
 
+func int Hlp_Is_zCEvMsgCutscene (var int ptr) {
+	//0x0085E2F8 private: static class zCClassDef zCEvMsgCutscene::classDef
+	const int zCEvMsgCutscene__classDef_G1 = 8774392;
+
+	//0x008C2190 private: static class zCClassDef zCEvMsgCutscene::classDef
+	const int zCEvMsgCutscene__classDef_G2 = 9183632;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEvMsgCutscene__classDef_G1, zCEvMsgCutscene__classDef_G2));
+};
+
 func int Hlp_Is_oCNpcMessage (var int ptr) {
 	//0x008DBEF8 private: static class zCClassDef oCNpcMessage::classDef
 	const int oCNpcMessage__classDef_G1 = 9289464;
@@ -71,6 +81,16 @@ func int Hlp_Is_oCMsgAttack (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgAttack__classDef_G1, oCMsgAttack__classDef_G2));
 };
 
+func int Hlp_Is_oCMsgState (var int ptr) {
+	//0x008DBE88 private: static class zCClassDef oCMsgState::classDef
+	const int oCMsgState__classDef_G1 = 9289352;
+
+	//0x00AB2AE0 private: static class zCClassDef oCMsgState::classDef
+	const int oCMsgState__classDef_G2 = 11217632;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgState__classDef_G1, oCMsgState__classDef_G2));
+};
+
 func int Hlp_Is_oCMsgManipulate (var int ptr) {
 	//0x008DBC58 private: static class zCClassDef oCMsgManipulate::classDef
 	const int oCMsgManipulate__classDef_G1 = 9288792;
@@ -79,6 +99,26 @@ func int Hlp_Is_oCMsgManipulate (var int ptr) {
 	const int oCMsgManipulate__classDef_G2 = 11216992;
 
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgManipulate__classDef_G1, oCMsgManipulate__classDef_G2));
+};
+
+func int Hlp_Is_oCMsgUseItem (var int ptr) {
+	//0x008DBCC8 private: static class zCClassDef oCMsgUseItem::classDef
+	const int oCMsgUseItem__classDef_G1 = 9288904;
+
+	//0x00AB28E8 private: static class zCClassDef oCMsgUseItem::classDef
+	const int oCMsgUseItem__classDef_G2 = 11217128;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgUseItem__classDef_G1, oCMsgUseItem__classDef_G2));
+};
+
+func int Hlp_Is_oCMsgDamage (var int ptr) {
+	//0x008DBDA8 private: static class zCClassDef oCMsgDamage::classDef
+	const int oCMsgDamage__classDef_G1 = 9289128;
+
+	//0x00AB29F0 private: static class zCClassDef oCMsgDamage::classDef
+	const int oCMsgDamage__classDef_G2 = 11217392;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgDamage__classDef_G1, oCMsgDamage__classDef_G2));
 };
 
 func int Hlp_Is_oCMsgConversation (var int ptr) {
@@ -91,6 +131,16 @@ func int Hlp_Is_oCMsgConversation (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgConversation__classDef_G1, oCMsgConversation__classDef_G2));
 };
 
+func int Hlp_Is_zCEventCore (var int ptr) {
+	//0x008D7348 private: static class zCClassDef zCEventCore::classDef
+	const int zCEventCore__classDef_G1 = 9270088;
+
+	//0x009A3548 private: static class zCClassDef zCEventCore::classDef
+	const int zCEventCore__classDef_G2 = 10106184;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventCore__classDef_G1, zCEventCore__classDef_G2));
+};
+
 func int Hlp_Is_oCMsgMovement (var int ptr) {
 	//0x008DBFD8 private: static class zCClassDef oCMsgMovement::classDef
 	const int oCMsgMovement__classDef_G1 = 9289688;
@@ -99,6 +149,16 @@ func int Hlp_Is_oCMsgMovement (var int ptr) {
 	const int oCMsgMovement__classDef_G2 = 11218000;
 
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgMovement__classDef_G1, oCMsgMovement__classDef_G2));
+};
+
+func int Hlp_Is_oCMsgWeapon (var int ptr) {
+	//0x008DC048 private: static class zCClassDef oCMsgWeapon::classDef
+	const int oCMsgWeapon__classDef_G1 = 9289800;
+
+	//0x00AB2CC0 private: static class zCClassDef oCMsgWeapon::classDef
+	const int oCMsgWeapon__classDef_G2 = 11218112;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMsgWeapon__classDef_G1, oCMsgWeapon__classDef_G2));
 };
 
 func int Hlp_Is_oCMsgMagic (var int ptr) {
@@ -119,6 +179,76 @@ func int Hlp_Is_oCMobMsg (var int ptr) {
 	const int oCMobMsg__classDef_G2 = 11212312;
 
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCMobMsg__classDef_G1, oCMobMsg__classDef_G2));
+};
+
+func int Hlp_Is_zCEventMusicControler (var int ptr) {
+	//0x008DE520 private: static class zCClassDef zCEventMusicControler::classDef
+	const int zCEventMusicControler__classDef_G1 = 9299232;
+
+	//0x009A4A38 private: static class zCClassDef zCEventMusicControler::classDef
+	const int zCEventMusicControler__classDef_G2 = 10111544;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventMusicControler__classDef_G1, zCEventMusicControler__classDef_G2));
+};
+
+func int Hlp_Is_zCEventScreenFX (var int ptr) {
+	//0x008D7A28 private: static class zCClassDef zCEventScreenFX::classDef
+	const int zCEventScreenFX__classDef_G1 = 9271848;
+
+	//0x009A3C20 private: static class zCClassDef zCEventScreenFX::classDef
+	const int zCEventScreenFX__classDef_G2 = 10107936;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventScreenFX__classDef_G1, zCEventScreenFX__classDef_G2));
+};
+
+func int Hlp_Is_zCEventMover (var int ptr) {
+	//0x008D7690 private: static class zCClassDef zCEventMover::classDef
+	const int zCEventMover__classDef_G1 = 9270928;
+
+	//0x009A3890 private: static class zCClassDef zCEventMover::classDef
+	const int zCEventMover__classDef_G2 = 10107024;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventMover__classDef_G1, zCEventMover__classDef_G2));
+};
+
+func int Hlp_Is_zCEventCommon (var int ptr) {
+	//0x008D7DA8 private: static class zCClassDef zCEventCommon::classDef
+	const int zCEventCommon__classDef_G1 = 9272744;
+
+	//0x009A3FA0 private: static class zCClassDef zCEventCommon::classDef
+	const int zCEventCommon__classDef_G2 = 10108832;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventCommon__classDef_G1, zCEventCommon__classDef_G2));
+};
+
+func int Hlp_Is_zCCSCamera_EventMsg (var int ptr) {
+	//0x0086C5F8 private: static class zCClassDef zCCSCamera_EventMsg::classDef
+	const int zCCSCamera_EventMsg__classDef_G1 = 8832504;
+
+	//0x008D0F38 private: static class zCClassDef zCCSCamera_EventMsg::classDef
+	const int zCCSCamera_EventMsg__classDef_G2 = 9244472;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCCSCamera_EventMsg__classDef_G1, zCCSCamera_EventMsg__classDef_G2));
+};
+
+func int Hlp_Is_zCCSCamera_EventMsgActivate (var int ptr) {
+	//0x0086C748 private: static class zCClassDef zCCSCamera_EventMsgActivate::classDef
+	const int zCCSCamera_EventMsgActivate__classDef_G1 = 8832840;
+
+	//0x008D1098 private: static class zCClassDef zCCSCamera_EventMsgActivate::classDef
+	const int zCCSCamera_EventMsgActivate__classDef_G2 = 9244824;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCCSCamera_EventMsgActivate__classDef_G1, zCCSCamera_EventMsgActivate__classDef_G2));
+};
+
+func int Hlp_Is_zCEventMessage (var int ptr) {
+	//0x008D7498 private: static class zCClassDef zCEventMessage::classDef
+	const int zCEventMessage__classDef_G1 = 9270424;
+
+	//0x009A3698 private: static class zCClassDef zCEventMessage::classDef
+	const int zCEventMessage__classDef_G2 = 10106520;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCEventMessage__classDef_G1, zCEventMessage__classDef_G2));
 };
 
 /*
