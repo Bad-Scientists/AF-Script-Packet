@@ -14,6 +14,7 @@
  */
 
 var int moonPhase;
+var int forceMoonPhaseUpdate;
 
 func void Moon_SetTexture (var string textureName) {
 	//Check mesh pointer
@@ -32,15 +33,20 @@ func void Moon_SetTexture (var string textureName) {
 func void _hook_zSkyCtrlOtdr_RenderSkyPre__MoonPhases () {
 	const int updated = 0;
 
-	var int currentPhase; currentPhase = Wld_GetDay ();
-	if (currentPhase > 24) { currentPhase = currentPhase % 24; };
+	//Call 'API' function
+	const int symbID = 0;
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("MOON_CALCMOONPHASE");
+	};
 
-	currentPhase = currentPhase / 3;
-	if (currentPhase < 1) { currentPhase = 1; };
-	if (currentPhase > 8) { currentPhase = 1; };
+	if (symbID != -1) {
+		MEM_CallByID (symbID);
+	};
 
-	if (moonPhase != currentPhase) {
-		moonPhase = currentPhase;
+	var int lastMoonPhase;
+
+	if (lastMoonPhase != moonPhase) {
+		lastMoonPhase = moonPhase;
 		updated = 0;
 	};
 
@@ -56,15 +62,22 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__MoonPhases () {
 	//06:00 - 18:00 - allow texture update
 	if (gf (MEM_SkyController.masterTime, divf (mkf (75), mkf (100))))
 	|| (lf (MEM_SkyController.masterTime, divf (mkf (25), mkf (100))))
+	|| (forceMoonPhaseUpdate) //or force it
 	{
+		forceMoonPhaseUpdate = FALSE;
 	} else {
 		return;
 	};
 
 	//Call 'API' function
-	var int symbID; symbID = MEM_FindParserSymbol ("Moon_UpdateTexture");
-	if (symbID != -1) {
-		MEM_CallByID (symbID);
+	const int symbID2 = 0;
+
+	if (!symbID2) {
+		symbID2 = MEM_FindParserSymbol ("MOON_UPDATETEXTURE");
+	};
+
+	if (symbID2 != -1) {
+		MEM_CallByID (symbID2);
 	};
 
 	updated = 1;

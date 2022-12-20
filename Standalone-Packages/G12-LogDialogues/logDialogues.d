@@ -2,6 +2,9 @@
  *	Super simple feature that allows you to log all dialogues into diary.
  */
 
+//-- Internal variables
+var int _log_SectionForDialogues;
+
 //oCNpc::OnMessage(class zCEventMessage *,class zCVob *)
 func void _hook_oCNpc_OnMessage__LogDialogs () {
 	var int eMsg; eMsg = MEM_ReadInt (ESP + 4);
@@ -14,35 +17,59 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 
 	if ((ECX != MEM_InformationMan.npc) && (ECX != MEM_InformationMan.player)) { return; };
 
-/*
-	EV_PLAYANISOUND
-	ani --> aniID, seems like this event is active as long as animation is active
-	when it is executed at first its ani ID == -1 --> this is where we can extract dialogue text
-*/
-
 	var string log;
-	var string logName;
+	var string logName; logName = "";
 	var int writeLog; writeLog = FALSE;
 
 	// 0 EV_PLAYANISOUND
-	if (eMsg_MD_GetSubType (eMsg) == 0) {
-
-		var oCNpc her;
-		var oCNpc npc;
-
-		var int playerTalking; playerTalking = FALSE;
-
-		if (ECX == MEM_InformationMan.player) { playerTalking = TRUE; };
-
-		her = _^ (MEM_InformationMan.player);
-		npc = _^ (MEM_InformationMan.npc);
-
-		logName = GetLogTopicName__LogDialogs (npc, her);
-		if (STR_Len (logName) == 0) { return; };
+	if (eMsg_MD_GetSubType (eMsg) == EV_PLAYANISOUND) {
 
 		var oCMsgConversation msg; msg = _^ (eMsg);
+		/*
+		I will use oCMsgConversation.bitfield_oCNpcMessage to identify events, that have been already logged.
 
-		if (msg.ani == -1) {
+		These are bitfields that are used by engine:
+
+		int highPriority : 1;	1
+		int deleted      : 1;	2
+		int inUse        : 1;	4
+
+		So I will use dirty bitfield with value 256 - hopefully no one uses same constant for anything else :)
+		*/
+
+		const int bitfield_oCNpcMessage_DialogueLogged = 256;
+
+		if ((msg.bitfield_oCNpcMessage & bitfield_oCNpcMessage_DialogueLogged) == 0) {
+
+			//Flag as logged already
+			msg.bitfield_oCNpcMessage = msg.bitfield_oCNpcMessage | bitfield_oCNpcMessage_DialogueLogged;
+
+			var oCNpc her;
+			var oCNpc npc;
+
+			var int playerTalking; playerTalking = FALSE;
+
+			if (ECX == MEM_InformationMan.player) { playerTalking = TRUE; };
+
+			her = _^ (MEM_InformationMan.player);
+			npc = _^ (MEM_InformationMan.npc);
+
+			const int symbID = 0;
+
+			if (!symbID) {
+				symbID = MEM_FindParserSymbol ("GetLogTopicName__LogDialogs");
+			};
+
+			if (symbID != -1) {
+				MEM_PushInstParam (npc);
+				MEM_PushInstParam (her);
+
+				MEM_CallByID (symbID);
+				logName = MEM_PopStringResult ();
+			};
+
+			if (STR_Len (logName) == 0) { return; };
+
 			//new line
 			if (STR_Len (log) > 0) {
 				log = ConcatStrings (log, BtoC (10));
@@ -76,7 +103,7 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 
 	if (writeLog) {
 		if (STR_Len (log) > 0) {
-			Log_CreateTopic (logName, LOG_NOTE);
+			Log_CreateTopic (logName, _log_SectionForDialogues);
 			Log_AddEntry (logName, log);
 			log = "";
 		};
@@ -84,6 +111,11 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 };
 
 func void G12_LogDialogues_Init () {
+
+	//-- Load API values / init default values
+	_log_SectionForDialogues = API_GetSymbolIntValue ("LOG_SECTIONFORDIALOGUES", LOG_NOTE);
+	//--
+
 	const int once = 0;
 	if (!once) {
 		//Hooking zCEventManager__OnMessage would be ideal,

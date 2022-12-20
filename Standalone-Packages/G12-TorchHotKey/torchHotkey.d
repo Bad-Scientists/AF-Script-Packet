@@ -15,18 +15,27 @@
 var int PC_CarriesTorch;
 var int PC_NumberOfTorches;
 
+//-- Internal variables
+var int _TorchHotkey_RelitMobs;
+
+var int _TorchHotkey_RelitMobs_ASCModels_Count;
+const int _TorchHotkey_RelitMobs_ascModels_Max = 255; //We probably don't need 255
+var string _TorchHotkey_RelitMobs_ascModels[_TorchHotkey_RelitMobs_ascModels_Max];
+
+var int _TorchHotkey_ReapplyOverlays_Count;
+const int _TorchHotkey_ReapplyOverlays_Max = 255; //We probably don't need 255
+var string _TorchHotkey_ReapplyOverlays[_TorchHotkey_ReapplyOverlays_Max];
+
 func int MobIsTorch__TorchHotKey (var int mobPtr) {
 	//0x007DD9E4 const oCMobFire::`vftable'
 	if (!Hlp_Is_oCMobFire (mobPtr)) { return FALSE; };
-
-	if (!TORCH_ASC_MODELS_MAX) { return FALSE; };
 
 	//Get visual name
 	var string mobVisualName; mobVisualName = Vob_GetVisualName (mobPtr);
 
 	//Check if this is indeed torch/mob for which we want to restore it's state
-	repeat (i, TORCH_ASC_MODELS_MAX); var int i;
-		var string testVisual; testVisual = MEM_ReadStatStringArr (TORCH_ASC_MODELS, i);
+	repeat (i, _TorchHotkey_RelitMobs_ascModels_Count); var int i;
+		var string testVisual; testVisual = MEM_ReadStringArray (_@s (_TorchHotkey_RelitMobs_ascModels), i);
 		if (Hlp_StrCmp (mobVisualName, testVisual)) {
 			return TRUE;
 		};
@@ -166,8 +175,8 @@ func void _eventMobStartStateChange__TorchHotKey (var int dummyVariable) {
 };
 
 func void PlayerReApplyOverlays__TorchHotKey () {
-	repeat (i, PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX); var int i;
-		var string testOverlay; testOverlay = MEM_ReadStatStringArr (PC_TORCHHOTKEY_REAPPLYOVERLAYS, i);
+	repeat (i, _TorchHotkey_ReapplyOverlays_Count); var int i;
+		var string testOverlay; testOverlay = MEM_ReadStringArray (_@s (_TorchHotkey_ReapplyOverlays), i);
 
 		//Don't remove overlay if timed overlay is active
 		if (!NPC_HasTimedOverlay (hero, testOverlay)) {
@@ -278,9 +287,13 @@ func void _eventGameState__TorchHotKey (var int state) {
 		};
 
 		//Resends triggers to all lit mobs
-		//TorchesReSendTrigger__TorchHotKey ();
-		//Function has to be called with frame function in game - if script was called immediately then mob status would be changed by object routines (Wld_SetObjectRoutine)
-		FF_ApplyOnceExtGT (TorchesReSendTrigger__TorchHotKey, 0, 1);
+		if (_TorchHotkey_RelitMobs) {
+			if (_TorchHotkey_RelitMobs_ascModels_Count) {
+				//TorchesReSendTrigger__TorchHotKey ();
+				//Function has to be called with frame function in game - if script was called immediately then mob status would be changed by object routines (Wld_SetObjectRoutine)
+				FF_ApplyOnceExtGT (TorchesReSendTrigger__TorchHotKey, 0, 1);
+			};
+		};
 	} else
 	//Level change event
 	if (state == Gamestate_ChangeLevel) {
@@ -311,6 +324,47 @@ func void G12_TorchHotKey_Init () {
 	if (_LeGo_Flags & LeGo_Gamestate) {
 		Gamestate_AddListener (_eventGameState__TorchHotKey);
 	};
+
+	//-- Load API values / init default values
+
+	var int i;
+	var string symbName;
+	var string ascModel;
+
+	_TorchHotkey_RelitMobs = API_GetSymbolIntValue ("TORCHHOTKEY_RELITMOBS", -1);
+
+	_TorchHotkey_RelitMobs_ascModels_Count = API_GetSymbolIntValue ("TORCHHOTKEY_RELITMOBS_ASCMODELS_COUNT", 0);
+
+	if (_TorchHotkey_RelitMobs_ascModels_Count > _TorchHotkey_RelitMobs_ascModels_Max) {
+		_TorchHotkey_RelitMobs_ascModels_Count = _TorchHotkey_RelitMobs_ascModels_Max;
+	};
+
+	if (_TorchHotkey_RelitMobs_ascModels_Count > 0) {
+		repeat (i, _TorchHotkey_RelitMobs_ascModels_Count);
+			symbName = ConcatStrings ("TORCHHOTKEY_RELITMOBS_ASCMODELS", IntToString (i));
+			ascModel = API_GetSymbolStringValue (symbName, "");
+			MEM_WriteStringArray (_@s (_TorchHotkey_RelitMobs_ascModels), i, ascModel);
+		end;
+	};
+
+	_TorchHotkey_ReapplyOverlays_Count = API_GetSymbolIntValue ("TORCHHOTKEY_REAPPLYOVERLAYS_COUNT", 0);
+
+	if (_TorchHotkey_ReapplyOverlays_Count > _TorchHotkey_ReapplyOverlays_Max) {
+		_TorchHotkey_ReapplyOverlays_Count = _TorchHotkey_ReapplyOverlays_Max;
+	};
+
+	if (_TorchHotkey_ReapplyOverlays_Count == 0) {
+		//Default
+		_TorchHotkey_ReapplyOverlays_Count = 1;
+		MEM_WriteStringArray (_@s (_TorchHotkey_ReapplyOverlays), 0, "HUMANS_SPRINT.MDS");
+	} else {
+		repeat (i, _TorchHotkey_ReapplyOverlays_Count);
+			symbName = ConcatStrings ("TORCHHOTKEY_REAPPLYOVERLAYS", IntToString (i));
+			ascModel = API_GetSymbolStringValue (symbName, "");
+			MEM_WriteStringArray (_@s (_TorchHotkey_ReapplyOverlays), i, ascModel);
+		end;
+	};
+	//--
 
 	//Load controls from .ini files Gothic.ini is master, mod.ini is secondary
 

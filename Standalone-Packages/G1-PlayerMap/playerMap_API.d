@@ -1,8 +1,10 @@
-func int GetPlayerMapInstance () {
-	//--> Here you can define which map will be opened in what case (e. g. in Old Camp open map displaying old camp)
-	
-	
-	//<--
-	
-	return 0;
+/*
+//Copy this function outside of the script packet - define your own states.
+//If script-packet is updated in the future - your definition will be unaffected.
+
+func int PlayerMap_GetMapInstance () {
+
+	return -1;
 };
+
+*/

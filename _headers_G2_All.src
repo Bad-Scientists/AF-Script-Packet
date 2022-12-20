@@ -111,10 +111,8 @@ sound.d
 
 miscellaneous.d
 
-Standalone-Packages\G12-PreventLooting\preventLooting_API.d
 Standalone-Packages\G12-PreventLooting\preventLooting.d
 
-Standalone-Packages\G12-PickLockHelper\pickLockHelper_API.d
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
 
 Standalone-Packages\G12-EnhancedoCTriggerScript\enhancedoCTriggerScript.d
@@ -125,13 +123,10 @@ Standalone-Packages\G12-EnhancedoCTriggerScript\example_FirePlaceSavingPolicy.d
 Standalone-Packages\G12-EnhancedInfoManager\enhancedInfoManager.d
 Standalone-Packages\G12-EnhancedInfoManager\stringOverlay.d
 
-Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates_API.d
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
 
-Standalone-Packages\G12-SprintMode\sprintMode_API.d
 Standalone-Packages\G12-SprintMode\sprintMode.d
 
-Standalone-Packages\G12-TorchHotKey\torchHotkey_API.d
 Standalone-Packages\G12-TorchHotKey\torchHotkey.d
 
 Standalone-Packages\G12-NoAmmoPrint\noAmmoPrint.d
@@ -144,10 +139,11 @@ Standalone-Packages\G12-VobTransport\propertiesView.d
 Standalone-Packages\G12-VobTransport\printCodeTozSpy.d
 Standalone-Packages\G12-VobTransport\cloneFactory.d
 Standalone-Packages\G12-VobTransport\vobTransport.d
-Standalone-Packages\G12-Focus\focus_API.d
+
 Standalone-Packages\G12-Focus\focus.d
+
 Standalone-Packages\G12-InvItemPreview\invItemPreview.d
-Standalone-Packages\G12-BetterBars\betterBars_API.d
+
 Standalone-Packages\G12-BetterBars\betterBars.d
 
 Standalone-Packages\G12-Debugging\focusPlay.d
@@ -165,14 +161,13 @@ Standalone-Packages\G12-Debugging\printPos.d
 Standalone-Packages\G12-Debugging\holdTime.d
 Standalone-Packages\G12-Debugging\puppetMaster.d
 
-Standalone-Packages\G12-LogDialogues\logDialogues_API.d
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
 Standalone-Packages\G12-VobThrowing\vobFunctions.d
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 
 Standalone-Packages\G12-RainControl\rainControl.d
-Standalone-Packages\G12-RainControl\rainControl_API.d
+
 Standalone-Packages\G12-FadeAway\fadeAway.d
 Standalone-Packages\G12-SpacerSpawn\spacerSpawn.d
 
@@ -180,5 +175,4 @@ Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
 
 Standalone-Packages\G12-AddPerceptions\addPerceptions.d
 
-Standalone-Packages\G12-MoonPhases\moonPhases_API.d
 Standalone-Packages\G12-MoonPhases\moonPhases.d

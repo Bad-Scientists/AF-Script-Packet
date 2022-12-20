@@ -1,23 +1,25 @@
-const int TORCH_ASC_MODELS_MAX		= 11;
+/*
+//Copy these constants outside of the script packet - define your own values.
+//If script-packet is updated in the future - your definition will be unaffected.
 
-const string TORCH_ASC_MODELS [TORCH_ASC_MODELS_MAX] = {
-	"FIREPLACE_GROUND.ASC",		//Ohniste
-	"FIREPLACE_GROUND2.ASC",	//Ohniste s kotlikom
-	"FIREPLACE_GROUND_USE.ASC",	//?
-	"FIREPLACE_HIGH.ASC",		//Louc kovova
-	"FIREPLACE_HIGH2.ASC",		//Louc drevena
-	"FIREPLACE_NCSTONE.ASC",	//Louc v Novom tabore
-	"FIREPLACE_NCSTONE2.ASC",	//Louc v Novom tabore (?)
-	"FIREPLACE_PCHIGH.ASC",		//?
-	"FIREPLACE_PCHIGH2.ASC",	//Louc v Tabore v bazinach - kovova
-	"FIREPLACE_MIDDLE.ASC",		//Louc na stene
-	"FIREPLACE_ORCSTAND.ASC"	//
-};
+const int TORCHHOTKEY_RELITMOBS = 1;
 
-//We need to make sure these overlays are re-applied when removing torch
-const int PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX = 2;
+const int TORCHHOTKEY_RELITMOBS_ASCMODELS_COUNT = 11;
 
-const string PC_TORCHHOTKEY_REAPPLYOVERLAYS [PC_TORCHHOTKEY_REAPPLYOVERLAYS_MAX] = {
-	"HUMANS_SPRINT.MDS",
-	"DUMMY"
-};
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS0 = "FIREPLACE_GROUND.ASC";		//Ohniste
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS1 = "FIREPLACE_GROUND2.ASC";	//Ohniste s kotlikom
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS2 = "FIREPLACE_GROUND_USE.ASC";	//?
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS3 = "FIREPLACE_HIGH.ASC";		//Louc kovova
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS4 = "FIREPLACE_HIGH2.ASC";		//Louc drevena
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS5 = "FIREPLACE_NCSTONE.ASC";	//Louc v Novom tabore
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS6 = "FIREPLACE_NCSTONE2.ASC";	//Louc v Novom tabore (?)
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS7 = "FIREPLACE_PCHIGH.ASC";		//?
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS8 = "FIREPLACE_PCHIGH2.ASC";	//Louc v Tabore v bazinach - kovova
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS9 = "FIREPLACE_MIDDLE.ASC";		//Louc na stene
+const string TORCHHOTKEY_RELITMOBS_ASCMODELS10 = "FIREPLACE_ORCSTAND.ASC";	//
+
+//We need to make sure these overlays are re-applied when removing / drawing torch
+const int TORCHHOTKEY_REAPPLYOVERLAYS_COUNT = 1;
+
+const string TORCHHOTKEY_REAPPLYOVERLAYS0 = "HUMANS_SPRINT.MDS";
+*/

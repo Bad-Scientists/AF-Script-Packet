@@ -1,7 +1,6 @@
-//Minimal required distance
-const int PickPocketingDist = 250;
-
 //Internal variables
+
+var int _PickPocketingDist;
 
 //Pickpocketing status
 var int PickPocketingStatus;
@@ -92,25 +91,22 @@ func int ZS_PickPocketing_Loop () {
 		//Close inventory
 		oCNPC_CloseInventory (self);
 
-		NPC_SetTarget (StealVictim, self);
-		NPC_GetTarget (StealVictim);
-		AI_StartState (StealVictim, ZS_AssessEnemy, 0, "");
-		
+		//Send perception to Npc
+		Npc_SendPassivePerc (StealVictim, PERC_CATCHTHIEF, StealVictim, self);
+
 		PickPocketingStatus = PickPocketingStatus_InActive;
 		return LOOP_END;
 	};
 
 	//NPC is too far away
-	if (NPC_GetDistToNPC (StealVictim, self) > PickPocketingDist + 50)
+	if (NPC_GetDistToNPC (StealVictim, self) > _PickPocketingDist + 50)
 	&& (!npcIsDown)
 	{
 		//Close inventory
 		oCNPC_CloseInventory (self);
 
-		//Attack
-		NPC_SetTarget (StealVictim, self);
-		NPC_GetTarget (StealVictim);
-		AI_StartState (StealVictim, ZS_AssessEnemy, 0, "");
+		//Send perception to Npc
+		Npc_SendPassivePerc (StealVictim, PERC_CATCHTHIEF, StealVictim, self);
 
 		PickPocketingStatus = PickPocketingStatus_InActive;
 		return LOOP_END;
@@ -129,9 +125,24 @@ func int _daedalusHook_G_CanSteal () {
 
 	if (!Hlp_IsValidNPC (self)) || (!Hlp_IsValidNPC (other)) { return FALSE; };
 
-	//You have to define your own rules in new function C_CanPickPocket
-	if (C_CanPickPocket (self, other))
-	&& (NPC_GetDistToNPC (self, other) <= PickPocketingDist)
+	//You have to define your own rules in new function C_Npc_CanBePickPocketed
+	var int retVal; retVal = FALSE;
+	const int symbID = 0;
+
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("C_Npc_CanBePickPocketed");
+	};
+
+	if (symbID != -1) {
+		MEM_PushInstParam (self);
+		MEM_PushInstParam (other);
+
+		MEM_CallByID (symbID);
+		retVal = MEM_PopIntResult ();
+	};
+
+	if (retVal)
+	&& (NPC_GetDistToNPC (self, other) <= _PickPocketingDist)
 	{
 		var oCNPC npc; npc = Hlp_GetNPC (StealHelper);
 		if (!Hlp_IsValidNPC (npc)) {
@@ -163,6 +174,9 @@ func int _daedalusHook_G_CanSteal () {
 		//Start state on thief (player)
 		AI_StartState (self, ZS_PickPocketing, 1, "");
 	};
+
+	//Send perception to Npc
+	Npc_SendPassivePerc (other, PERC_CATCHTHIEF, other, self);
 
 	return FALSE;
 };
@@ -219,7 +233,16 @@ func void _eventTransferItem_PickPocketing (var int dummyVariable) {
 	NPC_TransferInventory (StealHelper, StealVictim, FALSE, FALSE, TRUE);
 
 	//API function called (for XP, anything else you want)
-	B_PickPocketing_Successfull (StealVictim);
+	const int symbID = 0;
+
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("B_WasPickPocketed");
+	};
+
+	if (symbID != -1) {
+		MEM_PushInstParam (StealVictim);
+		MEM_CallByID (symbID);
+	};
 };
 
 func void _eventCloseInventory_PickPocketing (var int eventType) {
@@ -253,6 +276,10 @@ func void G1_EnhancedPickPocketing_Init () {
 
 	//Add listener for item transfer event
 	TransferItemEvent_AddListener (_eventTransferItem_PickPocketing);
+
+	//-- Load API values / init default values
+	_PickPocketingDist = API_GetSymbolIntValue ("PICKPOCKETINGDIST", 250);
+	//--
 
 	const int once = 0;
 	if (!once) {

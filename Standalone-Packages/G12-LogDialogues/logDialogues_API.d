@@ -1,19 +1,16 @@
 /*
- *	Define conditions for log name here
- *	For example: we don't need dialogues with ambient NPCs ...
- *	return "" blank string if you don't want to log dialogue, otherwise return log name (by default, we return NPC name)
- */
+//Copy this function outside of the script packet - define your own rules and textures :)
 
-func string GetLogTopicName__LogDialogs (var int npcInstance, var int playerInstance) {
-	var C_NPC npc;
-	var C_NPC her;
+//const int LOG_MISSION = 0;
+//const int LOG_NOTE = 1;
 
-	npc = Hlp_GetNPC (npcInstance);
-	if (!Hlp_IsValidNPC (npc)) { return ""; };
+const int LOG_SECTIONFORDIALOGUES = 1; //log to notes by default
 
-	her = Hlp_GetNPC (playerInstance);
-	if (!Hlp_IsValidNPC (her)) { return ""; };
+//Define conditions for log name here
+//For example: we don't need dialogues with ambient NPCs ...
+//return "" blank string if you don't want to log dialogue, otherwise return log name (by default, we return NPC name)
 
+func string GetLogTopicName__LogDialogs (var C_NPC npc, var C_NPC her) {
 	if (MEMINT_SwitchG1G2 (1, 0)) {
 		//G1
 		//const int npctype_ambient = 0;
@@ -35,3 +32,4 @@ func string GetLogTopicName__LogDialogs (var int npcInstance, var int playerInst
 
 	return npc.Name;
 };
+*/

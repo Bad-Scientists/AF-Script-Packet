@@ -7,6 +7,23 @@
  *	 - renames chest from MOBNAME_CHEST to MOBNAME_CHEST_EMPTY and crates from MOBNAME_CRATE to MOBNAME_CRATE_EMPTY when they are empty and vice versa
  */
 
+const int PC_CHANGEFOCUS_LOCKABLE = 1;
+const int PC_CHANGEFOCUS_NPCATTITUDE = 2;
+const int PC_CHANGEFOCUS_RENAMEEMPTYCHESTS = 4;
+
+//-- Internal variables
+var int _PC_ChangeFocus_Flags;
+var int _PC_ChangeFocus_Color_Default;
+var int _PC_ChangeFocus_Color_LockedKey;
+var int _PC_ChangeFocus_Color_LockedPickLocks;
+var int _PC_ChangeFocus_Color_LockedKeyPickLocks;
+var int _PC_ChangeFocus_Color_LockedHasKey;
+
+var int _PC_ChangeFocus_Color_Friendly;
+var int _PC_ChangeFocus_Color_Neutral;
+var int _PC_ChangeFocus_Color_Angry;
+var int _PC_ChangeFocus_Color_Hostile;
+
 var int PC_FocusVobStatus;
 	//Constant values are important here - do not change (Mob_LockableGetLockStatus__Focus adds 1, 2, 3, 4 to PC_FocusVob_DoorOpened/PC_FocusVob_ChestOpened when locked)
 	const int PC_FocusVob_Unknown = 0;
@@ -87,43 +104,43 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 	var int nameSymbIndex;
 
 	//-- Default color
-	var int focusColor; focusColor = ColorDefault__Focus ();
+	var int focusColor; focusColor = _PC_ChangeFocus_Color_Default;
 
 	//-- Change focus color
-	if (PC_ChangeFocus_Flags & PC_ChangeFocus_Lockable) {
+	if (_PC_ChangeFocus_Flags & PC_CHANGEFOCUS_LOCKABLE) {
 		//Door/Chest
 		PC_FocusVobStatus = Mob_LockableGetLockStatus__Focus (her.focus_vob);
 
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorRequiresKey) || (PC_FocusVobStatus == PC_FocusVob_ChestRequiresKey)) {
-			focusColor = ColorLockedKey__Focus ();
+			focusColor = _PC_ChangeFocus_Color_LockedKey;
 		} else
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorRequiresPickLocks) || (PC_FocusVobStatus == PC_FocusVob_ChestRequiresPickLocks)) {
-			focusColor = ColorLockedPickLocks__Focus ();
+			focusColor = _PC_ChangeFocus_Color_LockedPickLocks;
 		} else
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorRequiresKeyOrPickLocks) || (PC_FocusVobStatus == PC_FocusVob_ChestRequiresKeyOrPickLocks)) {
-			focusColor = ColorLockedKeyPickLocks__Focus ();
+			focusColor = _PC_ChangeFocus_Color_LockedKeyPickLocks;
 		} else
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorHasRequiredKey) || (PC_FocusVobStatus == PC_FocusVob_ChestHasRequiredKey)) {
-			focusColor = ColorLockedHasKey__Focus ();
+			focusColor = _PC_ChangeFocus_Color_LockedHasKey;
 		};
 	};
 
-	if (PC_ChangeFocus_Flags & PC_ChangeFocus_NpcAttitude) {
+	if (_PC_ChangeFocus_Flags & PC_CHANGEFOCUS_NPCATTITUDE) {
 		//NPC attitude (we could use LeGo color functions, but wanted to have all color functions in 1 file :))
 		if (Hlp_Is_oCNpc (her.focus_vob)) {
 			var c_npc oth; oth = MEM_PtrToInst(her.focus_vob);
 			var int att; att = Npc_GetPermAttitude(hero, oth);
 			if (att == ATT_FRIENDLY) {
-				focusColor = ColorFriendly__Focus ();
+				focusColor = _PC_ChangeFocus_Color_Friendly;
 			} else
 			if (att == ATT_NEUTRAL) {
-				focusColor = ColorNeutral__Focus ();
+				focusColor = _PC_ChangeFocus_Color_Neutral;
 			} else
 			if(att == ATT_ANGRY) {
-				focusColor = ColorAngry__Focus ();
+				focusColor = _PC_ChangeFocus_Color_Angry;
 			} else
 			if(att == ATT_HOSTILE) {
-				focusColor = ColorHostile__Focus ();
+				focusColor = _PC_ChangeFocus_Color_Hostile;
 			};
 		};
 	};
@@ -132,7 +149,7 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 
 	//-- Rename mobs
 
-	if (PC_ChangeFocus_Flags & PC_ChangeFocus_RenameEmptyChests) {
+	if (_PC_ChangeFocus_Flags & PC_CHANGEFOCUS_RENAMEEMPTYCHESTS) {
 		//Door
 		if (Hlp_Is_oCMobDoor (her.focus_vob)) {
 			//...
@@ -153,7 +170,7 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 
 				nameSymbIndex = MEM_FindParserSymbol (mobName);
 
-				if (NameSymbIndex > -1) {
+				if (nameSymbIndex > -1) {
 					mob.focusNameIndex = nameSymbIndex;
 				};
 			} else {
@@ -178,7 +195,7 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 
 						nameSymbIndex = MEM_FindParserSymbol (mobName);
 
-						if (NameSymbIndex > -1) {
+						if (nameSymbIndex > -1) {
 							mob.focusNameIndex = nameSymbIndex;
 						};
 					};
@@ -189,6 +206,24 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 };
 
 func void G12_Focus_Init () {
+
+	//-- Load API values / init default values
+
+	_PC_ChangeFocus_Flags = API_GetSymbolIntValue ("PC_CHANGEFOCUS_FLAGS", PC_CHANGEFOCUS_LOCKABLE | PC_CHANGEFOCUS_RENAMEEMPTYCHESTS);
+
+	_PC_ChangeFocus_Color_Default = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_DEFAULT", "FFFFFF");
+	_PC_ChangeFocus_Color_LockedKey = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEY", "FF8000");
+	_PC_ChangeFocus_Color_LockedPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEY", "FFFF00");
+	_PC_ChangeFocus_Color_LockedKeyPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEYPICKLOCKS", "FFFF00");
+	_PC_ChangeFocus_Color_LockedHasKey = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDHASKEY", "FFFF00");
+
+	_PC_ChangeFocus_Color_Friendly = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_FRIENDLY", "66FFB2");
+	_PC_ChangeFocus_Color_Neutral = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_NEUTRAL", "FFFFFF");
+	_PC_ChangeFocus_Color_Angry = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_ANGRY", "FF8000");
+	_PC_ChangeFocus_Color_Hostile = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_HOSTILE", "FF4646");
+
+	//--
+
 	const int once = 0;
 	if (!once) {
 		HookEngine(oCGame__UpdateStatus, 8, "_hook_oCGame_UpdateStatus__Focus");

@@ -550,7 +550,12 @@ func void _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl () {
 	/*
 	 *	API rain setup
 	 */
-	var int symbID; symbID = MEM_FindParserSymbol ("RainControl_API");
+	const int symbID = 0;
+
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("RainControl_SetupRain");
+	};
+
 	if (symbID != -1) {
 		MEM_CallByID (symbID);
 	};

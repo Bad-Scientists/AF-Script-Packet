@@ -81,6 +81,24 @@ func void EnablePlayerState (var int index) {
 	MEM_WriteInt (MEMINT_SwitchG1G2 (playerStatesEnabled_G1, playerStatesEnabled_G2), index);
 };
 
+func int CanPlayerUseAIState (var string AIStateName) {
+	const int symbID = 0;
+
+	if (!symbID) {
+		symbID = MEM_FindParserSymbol ("C_CanPlayerUseAIState");
+	};
+
+	var int retVal; retVal = 0;
+
+	if (symbID != -1) {
+		MEM_PushStringParam (AIStateName);
+		MEM_CallByID (symbID);
+		retVal = MEM_PopIntResult ();
+	};
+
+	return + retVal;
+};
+
 //
 func void _hook_oCNPC_States_DoAIState () {
 	if (!ECX) { return; };

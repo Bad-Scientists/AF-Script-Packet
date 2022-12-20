@@ -698,3 +698,92 @@ func void FM_SetToRanged (var int slfInstance, var int itemInstanceID) {
 
 	AI_DrawWeapon_Ext (slf, FMODE_FAR, 0); //Ranged
 };
+
+//--
+
+func int GetSymbolIntValue (var int symbolIndex) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+
+		if ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_INT)
+		|| ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_FLOAT) {
+			return symb.content;
+		};
+	};
+
+	return 0;
+};
+
+func string GetSymbolStringValue (var int symbolIndex) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+
+		if ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_STRING) {
+			var string s; s = MEM_ReadString(symb.content);
+			return s;
+		};
+	};
+
+	return "";
+};
+
+func string API_GetSymbolStringValue (var string symbolName, var string defaultValue) {
+	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
+
+	if (symbID == -1) {
+		return defaultValue;
+	};
+
+	var string s; s = GetSymbolStringValue (symbID);
+	return s;
+};
+
+func int API_GetSymbolIntValue (var string symbolName, var int defaultValue) {
+	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
+
+	if (symbID == -1) {
+		return defaultValue;
+	};
+
+	return + GetSymbolIntValue (symbID);
+};
+
+/*
+ *	 - wrapper function that converts value from hex to RGBA
+ */
+func int API_GetSymbolHEX2RGBAValue (var string symbolName, var string defaultValue) {
+	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
+
+	if (symbID == -1) {
+		return + HEX2RGBA (defaultValue);
+	};
+
+	var string s; s = GetSymbolStringValue (symbID);
+	return + HEX2RGBA (s);
+};
+
+/*
+ *	Basically copy of MEM_CallByString - without any error messaging
+ */
+func void API_CallByString (var string fnc) {
+    var int symbID;
+    const string cacheFunc = ""; const int cacheSymbID = 0;
+
+    if (Hlp_StrCmp (cacheFunc, fnc)) {
+        symbID = cacheSymbID;
+    } else {
+        symbID = MEM_FindParserSymbol (fnc);
+
+        if (symbID == -1) {
+           return;
+        };
+
+        cacheFunc = fnc; cacheSymbID = symbID;
+    };
+
+    MEM_CallByID (symbID);
+};
