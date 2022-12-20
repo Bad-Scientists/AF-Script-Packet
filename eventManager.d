@@ -1121,113 +1121,13 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 	if (!eMsg) { return -1; };
 
 	var int subType; subType = zCEventMessage_GetSubType (eMsg);
+	if (subType == -1) { return -1; };
 
-	/*
-	0		0
-	1		1 << 0
-	2		1 << 1
-	4		1 << 2
-	8		1 << 3
-	16		1 << 4
-	32		1 << 5
-	64		1 << 6
-	128		1 << 7
-	256		1 << 8
-	512		1 << 9
-	1024		1 << 10
-	2048		1 << 11
-	4096		1 << 12
-	8192		1 << 13
-	16384		1 << 14
-	32768		1 << 15
-	65536		1 << 16
-	131072		1 << 17
-	262144		1 << 18
-	524288		1 << 19
-	1048576		1 << 20
-	2097152		1 << 21
-	4194304		1 << 22
-	8388608		1 << 23
-	16777216	1 << 24
-	33554432	1 << 25
-	67108864	1 << 26
-	134217728	1 << 27
-	268435456	1 << 28
-	536870912	1 << 29
-	1073741824	1 << 30
-	*/
+	//Convert to Unsigned short
+	subType = subType << 16;
+	subType = subType >> 16;
 
-	//564133898
-	//564133895
-	//1073741841
-
-	//1073741824;
-	//-2147483648;
-
-	//var zCEventMessage eventMessage;
-	//eventMessage = _^ (eMsg);
-	//return eventMessage.subType;
-
-	//eventMessage.subType sometimes has huge values - idk why.
-	//Are these some 'bitwise flags' that we can remove?
-	//If I deduct these constants then function seems to return correct values.
-
-/*
-	const int bit6 = 1 << 6;	//64
-	const int bit7 = 1 << 7;	//128
-	const int bit8 = 1 << 8;	//256
-	const int bit9 = 1 << 9;	//512
-	const int bit10 = 1 << 10;	//1024
-	const int bit11 = 1 << 11;	//2048
-	const int bit12 = 1 << 12;
-	const int bit13 = 1 << 13;
-	const int bit14 = 1 << 14;
-	const int bit15 = 1 << 15;
-	const int bit16 = 1 << 16;
-	const int bit17 = 1 << 17;
-	const int bit18 = 1 << 18;
-	const int bit19 = 1 << 19;
-	const int bit20 = 1 << 20;
-	const int bit21 = 1 << 21;
-	const int bit22 = 1 << 22;
-	const int bit23 = 1 << 23;
-	const int bit24 = 1 << 24;
-	const int bit25 = 1 << 25;
-	const int bit26 = 1 << 26;
-	const int bit27 = 1 << 27;
-	const int bit28 = 1 << 28;
-	const int bit29 = 1 << 29;
-	const int bit30 = 1 << 30;	//1073741824
-
-	if (subType & bit30) { subType = (subType & ~ bit30); };
-	if (subType & bit29) { subType = (subType & ~ bit29); };
-	if (subType & bit28) { subType = (subType & ~ bit28); };
-	if (subType & bit27) { subType = (subType & ~ bit27); };
-	if (subType & bit26) { subType = (subType & ~ bit26); };
-	if (subType & bit25) { subType = (subType & ~ bit25); };
-	if (subType & bit24) { subType = (subType & ~ bit24); };
-	if (subType & bit23) { subType = (subType & ~ bit23); };
-	if (subType & bit22) { subType = (subType & ~ bit22); };
-	if (subType & bit21) { subType = (subType & ~ bit21); };
-	if (subType & bit20) { subType = (subType & ~ bit20); };
-	if (subType & bit19) { subType = (subType & ~ bit19); };
-	if (subType & bit18) { subType = (subType & ~ bit18); };
-	if (subType & bit17) { subType = (subType & ~ bit17); };
-	if (subType & bit16) { subType = (subType & ~ bit16); };
-	if (subType & bit15) { subType = (subType & ~ bit15); };
-	if (subType & bit14) { subType = (subType & ~ bit14); };
-	if (subType & bit13) { subType = (subType & ~ bit13); };
-	if (subType & bit12) { subType = (subType & ~ bit12); };
-	if (subType & bit11) { subType = (subType & ~ bit11); };
-	if (subType & bit10) { subType = (subType & ~ bit10); };
-	if (subType & bit9) { subType = (subType & ~ bit9); };
-	if (subType & bit8) { subType = (subType & ~ bit8); };
-	if (subType & bit7) { subType = (subType & ~ bit7); };
-	if (subType & bit6) { subType = (subType & ~ bit6); };
-*/
-
-	const int bitMask = (1 << 6) - 1;
-	return (subType & bitMask);
+	return subType;
 };
 
 func string eMsg_MD_GetMsgTypeString (var int eMsg) {
