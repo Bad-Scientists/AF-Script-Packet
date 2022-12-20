@@ -1115,6 +1115,55 @@ func void zCEventManager_SetActive (var int eMgr, var int on) {
 };
 
 /*
+So this is class tree for all zCEventMessage sub-classes - I think that all functions that are figuring out event message type have to take this hierarchy into consideration.
+Thus rewriting all functions to check event message type from the bottom of the list to the top.
+
+class tree G1
+ - zCEventMessage .... <zObject.cpp,#244>
+	 - oCMobMsg .... <zObject.cpp,#244>
+	 - oCNpcMessage .... <zObject.cpp,#244>
+		 - oCMsgAttack .... <zObject.cpp,#244>
+		 - oCMsgConversation [objs 13185] [ctor 13221] .... <zObject.cpp,#244>
+		 - oCMsgDamage .... <zObject.cpp,#244>
+		 - oCMsgMagic .... <zObject.cpp,#244>
+		 - oCMsgManipulate [ctor 1] .... <zObject.cpp,#244>
+		 - oCMsgMovement [objs 2] [ctor 17] .... <zObject.cpp,#244>
+		 - oCMsgState [objs 1] [ctor 3] .... <zObject.cpp,#244>
+		 - oCMsgUseItem .... <zObject.cpp,#244>
+		 - oCMsgWeapon .... <zObject.cpp,#244>
+	 - zCCSCamera_EventMsg [ctor 6] .... <zObject.cpp,#244>
+	 - zCCSCamera_EventMsgActivate [ctor 81] .... <zObject.cpp,#244>
+	 - zCEvMsgCutscene [ctor 12] .... <zObject.cpp,#244>
+	 - zCEventCommon .... <zObject.cpp,#244>
+	 - zCEventCore [ctor 1] .... <zObject.cpp,#244>
+	 - zCEventMover .... <zObject.cpp,#244>
+	 - zCEventMusicControler .... <zObject.cpp,#244>
+	 - zCEventScreenFX [ctor 1] .... <zObject.cpp,#244>
+
+class tree G2A
+ - zCEventMessage .... <zObject.cpp,#242>
+	 - oCMobMsg [ctor 2] .... <zObject.cpp,#242>
+	 - oCNpcMessage .... <zObject.cpp,#242>
+		 - oCMsgAttack .... <zObject.cpp,#242>
+		 - oCMsgConversation [objs 20829] [ctor 20833] .... <zObject.cpp,#242>
+		 - oCMsgDamage .... <zObject.cpp,#242>
+		 - oCMsgMagic .... <zObject.cpp,#242>
+		 - oCMsgManipulate [objs 1] [ctor 3] .... <zObject.cpp,#242>
+		 - oCMsgMovement [objs 1] [ctor 14] .... <zObject.cpp,#242>
+		 - oCMsgState [ctor 6] .... <zObject.cpp,#242>
+		 - oCMsgUseItem .... <zObject.cpp,#242>
+		 - oCMsgWeapon [ctor 1] .... <zObject.cpp,#242>
+	 - zCCSCamera_EventMsg [ctor 1] .... <zObject.cpp,#242>
+	 - zCCSCamera_EventMsgActivate [ctor 1] .... <zObject.cpp,#242>
+	 - zCEvMsgCutscene .... <zObject.cpp,#242>
+	 - zCEventCommon .... <zObject.cpp,#242>
+	 - zCEventCore [ctor 1] .... <zObject.cpp,#242>
+	 - zCEventMover .... <zObject.cpp,#242>
+	 - zCEventMusicControler .... <zObject.cpp,#242>
+	 - zCEventScreenFX [ctor 1] .... <zObject.cpp,#242>
+*/
+
+/*
  *	Wrapper for *MD_GetSubType functions
  */
 func int eMsg_MD_GetSubType (var int eMsg) {
@@ -1133,27 +1182,30 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 func string eMsg_MD_GetMsgTypeString (var int eMsg) {
 	if (!eMsg) { return ""; };
 
-	var int vtbl; vtbl = MEM_ReadInt (eMsg);
-
-	if (vtbl == oCMsgConversation_vtbl) { return "oCMsgConversation"; };
-	if (vtbl == zCEventCore_vtbl) { return "zCEventCore"; };
-	if (vtbl == oCNpcMessage_vtbl) { return "oCNpcMessage"; };
-	if (vtbl == oCMsgDamage_vtbl) { return "oCMsgDamage"; };
-	if (vtbl == oCMsgWeapon_vtbl) { return "oCMsgWeapon"; };
-	if (vtbl == oCMsgMovement_vtbl) { return "oCMsgMovement"; };
-	if (vtbl == oCMsgAttack_vtbl) { return "oCMsgAttack"; };
-	if (vtbl == oCMsgUseItem_vtbl) { return "oCMsgUseItem"; };
-	if (vtbl == oCMsgState_vtbl) { return "oCMsgState"; };
-	if (vtbl == oCMsgManipulate_vtbl) { return "oCMsgManipulate"; };
-	if (vtbl == oCMsgMagic_vtbl) { return "oCMsgMagic"; };
-	if (vtbl == zCEvMsgCutscene_vtbl) { return "zCEvMsgCutscene"; };
-
-	//Is this NPC related?
-	if (vtbl == zCEventMusicControler_vtbl) { return "zCEventMusicControler"; };
-	if (vtbl == oCMobMsg_vtbl) { return "oCMobMsg"; };
+	if (Hlp_Is_zCEventScreenFX (eMsg)) { return "zCEventScreenFX"; };
+	if (Hlp_Is_zCEventMusicControler (eMsg)) { return "zCEventMusicControler"; };
+	if (Hlp_Is_zCEventMover (eMsg)) { return "zCEventMover"; };
+	if (Hlp_Is_zCEventCore (eMsg)) { return "zCEventCore"; };
+	if (Hlp_Is_zCEventCommon (eMsg)) { return "zCEventCommon"; };
+	if (Hlp_Is_zCEvMsgCutscene (eMsg)) { return "zCEvMsgCutscene"; };
+	if (Hlp_Is_zCCSCamera_EventMsgActivate (eMsg)) { return "zCCSCamera_EventMsgActivate"; };
+	if (Hlp_Is_zCCSCamera_EventMsg (eMsg)) { return "zCCSCamera_EventMsg"; };
+	if (Hlp_Is_oCMsgWeapon (eMsg)) { return "oCMsgWeapon"; };
+	if (Hlp_Is_oCMsgUseItem (eMsg)) { return "oCMsgUseItem"; };
+	if (Hlp_Is_oCMsgState (eMsg)) { return "oCMsgState"; };
+	if (Hlp_Is_oCMsgMovement (eMsg)) { return "oCMsgMovement"; };
+	if (Hlp_Is_oCMsgManipulate (eMsg)) { return "oCMsgManipulate"; };
+	if (Hlp_Is_oCMsgMagic (eMsg)) { return "oCMsgMagic"; };
+	if (Hlp_Is_oCMsgDamage (eMsg)) { return "oCMsgDamage"; };
+	if (Hlp_Is_oCMsgConversation (eMsg)) { return "oCMsgConversation"; };
+	if (Hlp_Is_oCMsgAttack (eMsg)) { return "oCMsgAttack"; };
+	if (Hlp_Is_oCNpcMessage (eMsg)) { return "oCNpcMessage"; };
+	if (Hlp_Is_oCMobMsg (eMsg)) { return "oCMobMsg"; };
+	if (Hlp_Is_zCEventMessage (eMsg)) { return "zCEventMessage"; };
 
 	//unknown vtbl
-	MEM_Info (ConcatStrings ("eMsg_MD_GetMsgTypeString - Unknown vtbl: ", IntToString (vtbl)));
+	var int vtbl; vtbl = MEM_ReadInt (eMsg);
+	MEM_Info (ConcatStrings ("eMsg_MD_GetMsgTypeString - unknown vtbl: ", IntToString (vtbl)));
 	return "";
 };
 
@@ -1161,78 +1213,102 @@ func string eMsg_MD_GetMsgTypeString (var int eMsg) {
  *	Wrapper for *MD_GetSubTypeString functions
  */
 func string eMsg_MD_GetSubTypeString (var int eMsg) {
-	if (!eMsg) { return ""; };
-
-	var int vtbl; vtbl = MEM_ReadInt (eMsg);
-
 	var int subType; subType = eMsg_MD_GetSubType (eMsg);
+	if (subType == -1) { return ""; };
 
 	/*
 		Seems like not all event-like classes have their MD_GetSubTypeString function ...
 		Do we need to emulate them ?
 	*/
 
-	if (vtbl == oCMsgConversation_vtbl) {
-		return oCMsgConversation_MD_GetSubTypeString (eMsg, subType);
+	if (Hlp_Is_zCEventScreenFX (eMsg)) {
+		return zCEventScreenFX_MD_GetSubTypeString (eMsg, subType);
 	};
 
-	if (vtbl == zCEventCore_vtbl) {
-		return zCEventCore_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCNpcMessage_vtbl) {
-		MEM_Info ("oCNpcMessage_vtbl");
-		return "";
-	};
-
-	if (vtbl == oCMsgDamage_vtbl) {
-		return oCMsgDamage_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgWeapon_vtbl) {
-		return oCMsgWeapon_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgMovement_vtbl) {
-		return oCMsgMovement_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgAttack_vtbl) {
-		return oCMsgAttack_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgUseItem_vtbl) {
-		MEM_Info ("oCMsgUseItem_vtbl");
-		return "";
-	};
-
-	if (vtbl == oCMsgState_vtbl) {
-		return oCMsgState_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgManipulate_vtbl) {
-		return oCMsgManipulate_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == oCMsgMagic_vtbl) {
-		return oCMsgMagic_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	if (vtbl == zCEvMsgCutscene_vtbl) {
-		return zCEvMsgCutscene_MD_GetSubTypeString (eMsg, subType);
-	};
-
-	//Is this NPC related?
-	if (vtbl == zCEventMusicControler_vtbl) {
+	if (Hlp_Is_zCEventMusicControler (eMsg)) {
 		return zCEventMusicControler_MD_GetSubTypeString (eMsg, subType);
 	};
 
-	if (vtbl == oCMobMsg_vtbl) {
+	if (Hlp_Is_zCEventMover (eMsg)) {
+		return zCEventMover_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_zCEventCore (eMsg)) {
+		return zCEventCore_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_zCEventCommon (eMsg)) {
+		return zCEventCommon_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_zCEvMsgCutscene (eMsg)) {
+		return zCEvMsgCutscene_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_zCCSCamera_EventMsgActivate (eMsg)) {
+		return zCCSCamera_EventMsgActivate_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_zCCSCamera_EventMsg (eMsg)) {
+		return zCCSCamera_EventMsg_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgWeapon (eMsg)) {
+		return oCMsgWeapon_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgUseItem (eMsg)) {
+		MEM_Info ("eMsg_MD_GetSubTypeString: oCMsgUseItem does not have MD_GetSubTypeString function.");
+		return "";
+	};
+
+	if (Hlp_Is_oCMsgState (eMsg)) {
+		return oCMsgState_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgMovement (eMsg)) {
+		return oCMsgMovement_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgManipulate (eMsg)) {
+		return oCMsgManipulate_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgMagic (eMsg)) {
+		return oCMsgMagic_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgDamage (eMsg)) {
+		return oCMsgDamage_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgConversation (eMsg)) {
+		return oCMsgConversation_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCMsgAttack (eMsg)) {
+		return oCMsgAttack_MD_GetSubTypeString (eMsg, subType);
+	};
+
+	if (Hlp_Is_oCNpcMessage (eMsg)) {
+		MEM_Info ("eMsg_MD_GetSubTypeString: oCNpcMessage does not have MD_GetSubTypeString function.");
+		return "";
+	};
+
+	if (Hlp_Is_oCMobMsg (eMsg)) {
 		return oCMobMsg_MD_GetSubTypeString (eMsg, subType);
 	};
 
+	if (Hlp_Is_zCEventMessage (eMsg)) {
+		return zCEventMessage_MD_GetSubTypeString (eMsg, subType);
+		return "";
+	};
+
+	//---
+
 	//unknown vtbl
-	MEM_Info (ConcatStrings ("eMsg_MD_GetSubTypeString - Unknown vtbl: ", IntToString (vtbl)));
+	var int vtbl; vtbl = MEM_ReadInt (eMsg);
+	MEM_Info (ConcatStrings ("eMsg_MD_GetSubTypeString - unknown vtbl: ", IntToString (vtbl)));
 	return "";
 };
 
