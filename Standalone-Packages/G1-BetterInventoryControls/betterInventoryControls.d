@@ -641,8 +641,7 @@ func void _eventDoTakeVob_SwitchCategory () {
 
 	if (Hlp_IsValidItem (itm)) {
 		if (NPC_IsPlayer (slf)) {
-			var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
-			invCategory_VobTaken = oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
+			invCategory_VobTaken = Npc_ItemGetCategory (slf, itemPtr);
 		};
 	};
 };
