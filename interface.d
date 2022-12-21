@@ -270,13 +270,13 @@ func void _hook_oCNpc_OnMessage () {
 	} else {
 		//Additional logic for NPCs
 		if (Hlp_Is_oCMsgManipulate (eMsg)) {
-			//EV_USEMOB
+
 			if (eMsg_MD_GetSubType (eMsg) == EV_USEMOB) {
 				msgManipulate = _^ (eMsg);
 
 				//NPC will be able to unlock & lock oCMobLockable objects
 				if (Hlp_Is_oCMobLockable (msgManipulate.targetVob)) {
-					if (msgManipulate.targetVob == npc.interactMob) {
+					if ((msgManipulate.targetVob == npc.interactMob) || (msgManipulate.targetState == -1)) {
 						var oCMobLockable lock; lock = _^ (msgManipulate.targetVob);
 
 						if (Hlp_StrCmp (msgManipulate.name, "LOCK")) {
