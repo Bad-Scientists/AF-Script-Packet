@@ -753,6 +753,9 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 	// change ani progress to specified value
 	zCModelAniActive_SetProgressPercent (aniActivePtr, progressF);
 
+	// advance anis
+	zCModel_AdvanceAnis (modelPtr);
+
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
 	mes = "Playing ani: ";
@@ -796,6 +799,9 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 
 	// change ani frame to specified value
 	zCModelAniActive_SetActFrame (aniActivePtr, aniFrame);
+
+	// advance anis
+	zCModel_AdvanceAnis (modelPtr);
 
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
