@@ -9,6 +9,18 @@
  *	 - 4 trading inventory
  */
 
+/*
+enum {
+NPC_GAME_NORMAL,
+NPC_GAME_PLUNDER,
+NPC_GAME_STEAL
+};
+*/
+
+//0x008DBC24 public: static int oCNpc::game_mode
+//0x008DBC28 class oCNpc * stealnpc
+//0x008DBC2C float stealcheck_timer
+
 const int OpenInvType_None = 0;
 const int OpenInvType_Player = 1;
 const int OpenInvType_NPC = 2;
@@ -1734,4 +1746,33 @@ func void Npc_UnequipRangedWeapon (var int slfInstance) {
 func void Npc_UnequipWeapons (var int slfInstance) {
 	Npc_UnequipMeleeWeapon (slfInstance);
 	Npc_UnequipRangedWeapon (slfInstance);
+};
+
+func void oCNpc_UnpackInventory (var int slfInstance)
+{
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_WEAPON);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_ARMOR);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_RUNE);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_MAGIC);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_FOOD);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_POTION);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_DOC);
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_MISC);
+	} else {
+		oCNpcInventory_UnpackCategory (npcInventoryPtr, 0);
+	};
+};
+
+func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return -1; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+    return + oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
 };
