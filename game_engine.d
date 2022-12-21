@@ -48,3 +48,48 @@ func int oCGame_GetHeroStatus () {
 
 	return CALL_RetValAsInt ();
 };
+
+/*
+ *	Function updates attitudes of all Npcs
+ */
+func void oCGame_InitNpcAttitudes () {
+	//0x0063BD00 public: void __thiscall oCGame::InitNpcAttitudes(void)
+	const int oCGame__InitNpcAttitudes_G1 = 6536448;
+
+	//0x006C61D0 public: void __thiscall oCGame::InitNpcAttitudes(void)
+	const int oCGame__InitNpcAttitudes_G2 = 7102928;
+
+	var int ptr; ptr = _@ (MEM_Game);
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCGame__InitNpcAttitudes_G1, oCGame__InitNpcAttitudes_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	Function returns game_mode
+ */
+func int oCNpc_Get_Game_Mode () {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	return + MEM_ReadInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2));
+};
+
+/*
+ *	Function updates game_mode
+ */
+func void oCNpc_Set_Game_Mode (var int newMode) {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	MEM_WriteInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2), newMode);
+};
