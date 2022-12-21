@@ -1450,15 +1450,21 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCategory,
 	end;
 };
 
-func void NPC_RemoveInventory (var C_NPC slf, var int flagsKeepItems, var int mainFlagsKeepItems) {
-	NPC_RemoveInventoryCategory (slf, INV_WEAPON, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_ARMOR, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_RUNE, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_MAGIC, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_FOOD, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_POTION, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_DOC, flagsKeepItems, mainFlagsKeepItems);
-	NPC_RemoveInventoryCategory (slf, INV_MISC, flagsKeepItems, mainFlagsKeepItems);
+func void NPC_RemoveInventory (var int slfInstance, var int flagsKeepItems, var int mainFlagsKeepItems) {
+	//G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		NPC_RemoveInventoryCategory (slfInstance, INV_WEAPON, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_ARMOR, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_RUNE, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_MAGIC, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_FOOD, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_POTION, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_DOC, flagsKeepItems, mainFlagsKeepItems);
+		NPC_RemoveInventoryCategory (slfInstance, INV_MISC, flagsKeepItems, mainFlagsKeepItems);
+	} else {
+	//G2A
+		NPC_RemoveInventoryCategory (slfInstance, 0, flagsKeepItems, mainFlagsKeepItems);
+	};
 };
 
 var int _NpcTransferItemPrint_Event;
@@ -1544,14 +1550,20 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 };
 
 func void NPC_TransferInventory (var int slfInstance, var int othInstance, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_WEAPON, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_ARMOR, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_RUNE, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MAGIC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_FOOD, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_POTION, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_DOC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
-	NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MISC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	//G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_WEAPON, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_ARMOR, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_RUNE, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MAGIC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_FOOD, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_POTION, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_DOC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+		NPC_TransferInventoryCategory (slfInstance, othInstance, INV_MISC, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	} else {
+	//G2A
+		NPC_TransferInventoryCategory (slfInstance, othInstance, 0, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	};
 };
 
 func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCategory) {
@@ -1574,14 +1586,20 @@ func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCategory
 };
 
 func void NPC_UnEquipInventory (var int slfinstance) {
-	NPC_UnEquipInventoryCategory (slfinstance, INV_WEAPON);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_ARMOR);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_RUNE);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_MAGIC);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_FOOD);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_POTION);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_DOC);
-	NPC_UnEquipInventoryCategory (slfinstance, INV_MISC);
+	//G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		NPC_UnEquipInventoryCategory (slfinstance, INV_WEAPON);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_ARMOR);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_RUNE);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_MAGIC);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_FOOD);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_POTION);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_DOC);
+		NPC_UnEquipInventoryCategory (slfinstance, INV_MISC);
+	} else {
+	//G2A
+		NPC_UnEquipInventoryCategory (slfinstance, 0);
+	};
 };
 
 /*
