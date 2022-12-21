@@ -562,6 +562,8 @@ func void _AI_TeleportKeepQueue (var string vobName) {
 	Vob.trafoObjToWorld[3] = pos[0];
 	Vob.trafoObjToWorld[7] = pos[1];
 	Vob.trafoObjToWorld[11] = pos[2];
+
+	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", hero, hero, 0, 0, 0, FALSE);
 };
 
 func string _AI_GetAniName_T_MAGRUN_2_HEASHOOT () {
