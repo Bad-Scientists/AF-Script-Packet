@@ -452,13 +452,15 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 		zSpy_Info ("... chasm detected!");
 	};
 
-	var string s; s = "... navigating using waynet, from: ";
-	s = ConcatStrings (s, fromWp);
-	s = ConcatStrings (s, " to: ");
-	s = ConcatStrings (s, toWp);
-	zSpy_Info (s);
+	if ((!Hlp_StrCmp (fromWp, toWp)) || isTooFar || chasmDetected) {
+		var string s; s = "... navigating using waynet, from: ";
+		s = ConcatStrings (s, fromWp);
+		s = ConcatStrings (s, " to: ");
+		s = ConcatStrings (s, toWp);
+		zSpy_Info (s);
 
-	AI_GotoWp (slf, toWp);
+		AI_GotoWp (slf, toWp);
+	};
 
 	zSpy_Info ("<--");
 };
