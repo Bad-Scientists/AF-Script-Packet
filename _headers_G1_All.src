@@ -119,6 +119,8 @@ sound.d
 
 miscellaneous.d
 
+G2 NoTR emulation.d
+
 Standalone-Packages\G1-EverloomingBarrier\barrier.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
