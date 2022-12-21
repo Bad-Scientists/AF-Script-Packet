@@ -1087,6 +1087,18 @@ func void AI_ResetStateTime (var int slfInstance) {
 };
 
 /*
+ *	AI_SyncNpc
+ *	 - function syncs AI queues
+ */
+func void AI_SyncNpc (var int slfInstance, var int othInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+
+	AI_WaitTillEnd (slf, oth);
+	AI_WaitTillEnd (oth, slf);
+};
+
+/*
  *	AI_DiaSync
  *	 - synchronizes AI queues for Npcs within dialogue
  */
@@ -1098,8 +1110,7 @@ func void AI_DiaSync () {
 	var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
 	var C_NPC oth; oth = _^ (MEM_InformationMan.player);
 
-	AI_WaitTillEnd (slf, oth);
-	AI_WaitTillEnd (oth, slf);
+	AI_SyncNpc (slf, oth);
 };
 
 /*
