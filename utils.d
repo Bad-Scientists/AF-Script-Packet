@@ -88,11 +88,3 @@ func string GetLocalDate_MMDD () {
 	timeStr = mySTR_SubStr (timeStr, 5, 5);
 	return timeStr;
 };
-
-/*
- *	Function returns TRUE if it is raining
- */
-func int Wld_IsRaining_G1 () {
-	//this should work :) (for both G1 & G2A)
-	return (gf (MEM_SkyController.rainFX_outdoorRainFXWeight, FLOATNULL));
-};
