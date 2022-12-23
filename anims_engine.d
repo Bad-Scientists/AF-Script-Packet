@@ -674,6 +674,48 @@ func void oCAniCtrl_Human_Init (var int aniCtrlPtr, var int npcPtr) {
 	};
 };
 
+/*
+ *	zCModel_AdvanceAnis
+ */
+func void zCModel_AdvanceAnis (var int modelPtr) {
+	//0x00562CD0 public: void __thiscall zCModel::AdvanceAnis(void)
+	const int oCNPC__AdvanceAnis_G1 = 5647568;
+
+	//0x0057CA90 public: void __thiscall zCModel::AdvanceAnis(void)
+	const int oCNPC__AdvanceAnis_G2 = 5753488;
+
+	//Safety check
+	if (!modelPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (oCNPC__AdvanceAnis_G1, oCNPC__AdvanceAnis_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	zCModel_DoAniEvents
+ */
+func void zCModel_DoAniEvents (var int modelPtr, var int modelAniActivePtr) {
+	//0x00561AF0 private: void __thiscall zCModel::DoAniEvents(class zCModelAniActive *)
+	const int zCModel__DoAniEvents_G1 = 5642992;
+
+	//0x0057B890 private: void __thiscall zCModel::DoAniEvents(class zCModelAniActive *)
+	const int zCModel__DoAniEvents_G2 = 5748880;
+
+	// Safety checks
+	if (!modelAniActivePtr) { return; };
+	if (!modelPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (modelAniActivePtr));
+		CALL__thiscall (_@ (modelPtr), MEMINT_SwitchG1G2 (zCModel__DoAniEvents_G1, zCModel__DoAniEvents_G2));
+		call = CALL_End();
+	};
+};
+
 ////////////////////////////////
 // Useful "wrapper" functions //
 ////////////////////////////////
@@ -710,6 +752,9 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 
 	// change ani progress to specified value
 	zCModelAniActive_SetProgressPercent (aniActivePtr, progressF);
+
+	// advance anis
+	zCModel_AdvanceAnis (modelPtr);
 
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
@@ -755,6 +800,9 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 	// change ani frame to specified value
 	zCModelAniActive_SetActFrame (aniActivePtr, aniFrame);
 
+	// advance anis
+	zCModel_AdvanceAnis (modelPtr);
+
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
 	mes = "Playing ani: ";
@@ -765,6 +813,14 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 	if (!aniDir) { mes = ConcatStrings (mes, " and direction: F"); };
 	//MEM_Info(mes); // uncomment for zSpy input
 	return mes;
+};
+
+/*
+ *	NPC_AdvanceAnis
+ */
+func void NPC_AdvanceAnis (var int slfInstance) {
+	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	zCModel_AdvanceAnis (modelPtr);
 };
 
 //TODO: Add checks
@@ -873,4 +929,20 @@ func int NPC_GetAniProgress (var int slfInstance) {
 	};
 
 	return FLOATNULL;
+};
+
+func void Npc_StartAni (var int slfInstance, var string aniName) {
+	// getting zCModel
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return; };
+
+	// getting animation ID
+	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
+	if (aniID == -1) { return; };
+
+	// getting animation ptr
+	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
+
+	// start animation to make it AniActive
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
 };

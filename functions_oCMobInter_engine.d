@@ -267,9 +267,57 @@ func void oCMobInter_SetInteractWith (var int mobPtr, var int npcPtr) {
 };
 
 /*
-	//0x0067FC70 public: virtual int __thiscall oCMobInter::IsInteractingWith(class oCNpc *)
+
 	const int oCMobInter__IsInteractingWith_G1 = 6814832;
 	CALL_PtrParam (_@ (hero));
 	CALL__thiscall (spell.spellTarget, oCMobInter__IsInteractingWith_G1);
 	var int retVal; retVal = CALL_RetValAsInt ();
 */
+
+func int oCMobInter_IsInteractingWith (var int mobPtr, var int slfInstance) {
+	//0x0067FC70 public: virtual int __thiscall oCMobInter::IsInteractingWith(class oCNpc *)
+	const int oCMobInter__IsInteractingWith_G1 = 6814832;
+
+	//0x00721550 public: virtual int __thiscall oCMobInter::IsInteractingWith(class oCNpc *)
+	const int oCMobInter__IsInteractingWith_G2 = 7476560;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__IsInteractingWith_G1, oCMobInter__IsInteractingWith_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
+func int oCMobInter_CanInteractWith (var int mobPtr, var int slfInstance) {
+	//0x0067F5F0 public: virtual int __thiscall oCMobInter::CanInteractWith(class oCNpc *)
+	const int oCMobInter__CanInteractWith_G1 = 6813168;
+
+	//0x00720F40 public: virtual int __thiscall oCMobInter::CanInteractWith(class oCNpc *)
+	const int oCMobInter__CanInteractWith_G2 = 7475008;
+
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (slfPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMobInter__CanInteractWith_G1, oCMobInter__CanInteractWith_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};

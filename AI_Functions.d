@@ -452,13 +452,15 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 		zSpy_Info ("... chasm detected!");
 	};
 
-	var string s; s = "... navigating using waynet, from: ";
-	s = ConcatStrings (s, fromWp);
-	s = ConcatStrings (s, " to: ");
-	s = ConcatStrings (s, toWp);
-	zSpy_Info (s);
+	if ((!Hlp_StrCmp (fromWp, toWp)) || isTooFar || chasmDetected) {
+		var string s; s = "... navigating using waynet, from: ";
+		s = ConcatStrings (s, fromWp);
+		s = ConcatStrings (s, " to: ");
+		s = ConcatStrings (s, toWp);
+		zSpy_Info (s);
 
-	AI_GotoWp (slf, toWp);
+		AI_GotoWp (slf, toWp);
+	};
 
 	zSpy_Info ("<--");
 };
@@ -560,6 +562,8 @@ func void _AI_TeleportKeepQueue (var string vobName) {
 	Vob.trafoObjToWorld[3] = pos[0];
 	Vob.trafoObjToWorld[7] = pos[1];
 	Vob.trafoObjToWorld[11] = pos[2];
+
+	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", hero, hero, 0, 0, 0, FALSE);
 };
 
 func string _AI_GetAniName_T_MAGRUN_2_HEASHOOT () {
@@ -1083,6 +1087,18 @@ func void AI_ResetStateTime (var int slfInstance) {
 };
 
 /*
+ *	AI_SyncNpc
+ *	 - function syncs AI queues
+ */
+func void AI_SyncNpc (var int slfInstance, var int othInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+
+	AI_WaitTillEnd (slf, oth);
+	AI_WaitTillEnd (oth, slf);
+};
+
+/*
  *	AI_DiaSync
  *	 - synchronizes AI queues for Npcs within dialogue
  */
@@ -1094,8 +1110,7 @@ func void AI_DiaSync () {
 	var C_NPC slf; slf = _^ (MEM_InformationMan.npc);
 	var C_NPC oth; oth = _^ (MEM_InformationMan.player);
 
-	AI_WaitTillEnd (slf, oth);
-	AI_WaitTillEnd (oth, slf);
+	AI_SyncNpc (slf, oth);
 };
 
 /*

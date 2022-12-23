@@ -2,6 +2,15 @@
  *	Constants - same values for both G1 & G2A
  */
 
+/*
+ *	Script packet version - to better track potential issues
+ */
+//-- Engine constants
+
+const int NPC_GAME_NORMAL = 0; //When player is taking item
+const int NPC_GAME_PLUNDER = 1; //When player is looting Npc
+const int NPC_GAME_STEAL = 2; //When player is stealing from Npc (in RM we won't have this situation)
+
 
 /*
  *	GFA has these constants defined globally - so in order to be compatible - we will not have them defined globally - only use them locally where we need them.

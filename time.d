@@ -154,10 +154,15 @@ func int Wld_GetMinute () {
 };
 
 func int Wld_GetTime () {
-	var int h;
-	h = Wld_GetHour ();
-	h = h * 60 + Wld_GetMinute ();
-	h = h + Wld_GetDay () * 24 * 60;
+	//var int h;
+	//h = Wld_GetHour ();
+	//h = h * 60 + Wld_GetMinute ();
+	//h = h + Wld_GetDay () * 24 * 60;
+	//return h;
 
-	return h;
+	var int hour; var int min;
+	oCWorldTimer_GetTime (_@ (hour), _@ (min));
+
+	var int t; t = hour * 60 + min + (Wld_GetDay () * 24 * 60);
+	return +t;
 };

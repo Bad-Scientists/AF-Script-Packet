@@ -725,6 +725,48 @@ func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int c
 	MEM_ArrayFree (arr);
 };
 
+/*
+ *
+ */
+func void Vob_MoveToVob (var string moveVobName, var string toVobName) {
+	var zcVob toVob;
+
+	var int moveVobPtr; moveVobPtr = MEM_SearchVobByName (moveVobName);
+	if (!moveVobPtr) { return; };
+
+	var int toVobPtr; toVobPtr = MEM_SearchVobByName (toVobName);
+	if (!toVobPtr) { return; };
+
+	toVob = _^ (toVobPtr);
+
+	//AlignVobAt (moveVobPtr, _@(toVob.trafoObjToWorld));
+	MEM_PushIntParam (moveVobPtr);
+	MEM_PushIntParam (_@(toVob.trafoObjToWorld));
+	MEM_Call (AlignVobAt);
+};
+
+/*
+ *
+ */
+func void Vob_PlayEffect (var string vobName, var string effectName)
+{
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+	var zCArray zarr; zarr = MEM_PtrToInst(arr);
+
+	var int vobPtr;
+	var zCVob vob;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray (zarr.array, i);
+		vob = _^ (vobPtr);
+
+		Wld_PlayEffect (effectName, vob, vob, 0, 0, 0, FALSE);
+
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
 //0x005EF090 public: void __thiscall zCVob::SetHeadingLocal(class zVEC3 const &)
 //0x005EF150 public: void __thiscall zCVob::SetHeadingWorld(class zVEC3 const &)
 
@@ -1505,6 +1547,23 @@ func void zCModel_SetDrawSkeleton (var int enabled) {
 	MEM_WriteInt (MEMINT_SwitchG1G2 (zCModel__s_drawSkeleton_G1, zCModel__s_drawSkeleton_G2), enabled);
 };
 
+func void zCVob_SetCollDet (var int vobPtr, var int enabled) {
+	//0x00645050 public: void __thiscall zCVob::SetCollDet(int)
+	const int zCVob__SetCollDet_G1 = 6574160;
+
+	//0x006D0000 public: void __thiscall zCVob::SetCollDet(int)
+	const int zCVob__SetCollDet_G2 = 7143424;
+
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (enabled));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetCollDet_G1, zCVob__SetCollDet_G2));
+		call = CALL_End ();
+	};
+};
+
 func void zCVob_SetAI (var int vobPtr, var int ai) {
 	//0x005D3730 public: void __thiscall zCVob::SetAI(class zCAIBase *)
 	const int zCVob__SetAI_G1 = 6108976;
@@ -1521,6 +1580,21 @@ func void zCVob_SetAI (var int vobPtr, var int ai) {
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetAI_G1, zCVob__SetAI_G2));
 		call = CALL_End ();
 	};
+};
+
+func int zCVob_GetAI (var int vobPtr) {
+	if (!vobPtr) { return 0; };
+
+	var zCVob vob; vob = _^ (vobPtr);
+	return vob.callback_ai;
+};
+
+func void zCVob_SetAICallback (var int vobPtr, var int cbai) {
+	zCVob_SetAI (vobPtr, cbai);
+};
+
+func int zCVob_GetAICallback (var int vobPtr) {
+	return + zCVob_GetAI (vobPtr);
 };
 
 func string Vob_GetDescriptionRot (var int vobPtr) {

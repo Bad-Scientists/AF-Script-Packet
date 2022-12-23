@@ -111,6 +111,8 @@ sound.d
 
 miscellaneous.d
 
+G2 NoTR emulation.d
+
 Standalone-Packages\G12-PreventLooting\preventLooting.d
 
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
