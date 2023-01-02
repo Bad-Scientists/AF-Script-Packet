@@ -127,6 +127,10 @@ func void View_SetTextAndFontColor (var int hndl, var string texts, var int colo
 	ViewPtr_SetTextAndFontColor (viewPtr, texts, color, margin);
 };
 
+func void View_SetText (var int hndl, var string texts, var int margin) {
+	View_SetTextAndFontColor (hndl, texts, -1, margin);
+};
+
 func void zcView_SetFontColor (var int hndl, var int color) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 
