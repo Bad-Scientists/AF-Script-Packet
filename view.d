@@ -121,6 +121,12 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 	ViewPtr_AlignText_Fixed (viewPtr, margin);
 };
 
+func void View_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetTextAndFontColor (viewPtr, texts, color, margin);
+};
+
 func void zcView_SetFontColor (var int hndl, var int color) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 
