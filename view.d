@@ -42,71 +42,85 @@ func void zCViewPtr_AlignText (var int ptr, var int margin) {
 	};
 };
 
-func void zcView_SetTextAndFontColor (var int hndl, var string text, var int color, var int margin) {
+func void zcView_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 
 	var int viewPtr; viewPtr = getPtr (hndl);
-	if (!viewPtr) { return; };
-	var zCView v; v = _^ (viewPtr);
 
-	var int i; i = 0;
-	var int cnt; cnt = STR_SplitCount (text, Print_LineSeperator);
+	var zCView v; v = _^ (viewPtr);
+	var string fontName; fontName = Print_GetFontName (v.font);
+	var int fontHeight; fontHeight = Print_ToVirtual (Print_GetFontHeight (fontName), v.psizey);
+
+	var int cnt; cnt = STR_SplitCount (texts, Print_LineSeperator);
+	var string text;
 
 	var zCList l;
 	var zCViewText vt;
 
-	var string fontName;
+	var int vposX;
+	var int vposY;
 
-	var int posX;
-	var int posY;
-
-	posX = v.pposX;
-	posY = v.pposY;
+	vposX = v.vposX;
+	vposY = v.vposY;
 
 	//Update existing zCViewText objects
 	var int list; list = v.textLines_next;
+
+	var int i; i = 0;
+	var int flagListExtended; flagListExtended = FALSE;
+
 	if (list) {
+		l = _^ (list);
+
 		while (i < cnt);
+			text = STR_Split(texts, Print_LineSeperator, i);
+
 			if (list) {
+				//Update existing text view
 				l = _^ (list);
 				if (l.data) {
 					vt = _^ (l.data);
 
-					vt.text = STR_Split(text, Print_LineSeperator, i);
+					vt.text = text;
 					vt.color = color;
 					vt.colored = (color != -1);
 
-					posY += vt.posY;
+					var string vtFontName; vtFontName = Print_GetFontName (vt.font);
+					var int vtFontHeight; vtFontHeight = Print_ToVirtual (Print_GetFontHeight (vtFontName), v.psizey);
+
+					vposY = vt.posY + vtFontHeight;
 				};
 
 				list = l.next;
 			} else {
-				//Add text first
-				fontName = Print_GetFontName (v.font);
-				View_AddTextColored (hndl, posX, posY, STR_Split(text, Print_LineSeperator, i), fontName, color);
+				//Add new text view
+				ViewPtr_AddText (viewPtr, vposX, vposY, text, fontName, color);
+				vposY += fontHeight;
+
+				flagListExtended = TRUE;
 			};
 
 			i += 1;
 		end;
 
-		//Remove zCViewText objects that are not required anymore
-		while (l.next);
-			var zCList del; del = _^ (l.next);
-			l.next = del.next;
-			MEM_Free (_@ (del));
+		//Remove extra text views
+		if (!flagListExtended) {
+			while (l.next);
+				var zCList del; del = _^ (l.next);
+				l.next = del.next;
+				MEM_Free (_@ (del));
 
-			if (l.next) {
-				l = _^ (l.next);
-			};
-		end;
-
+				if (l.next) {
+					l = _^ (l.next);
+				};
+			end;
+		};
 	} else {
-		//Add text first
-		fontName = Print_GetFontName (v.font);
-		View_AddTextColored (hndl, posX, posY, text, fontName, color);
+		//Or add texts - if they were not added yet
+		ViewPtr_AddText (viewPtr, vposX, vposY, texts, fontName, color);
 	};
 
-	zCViewPtr_AlignText (viewPtr, margin);
+	ViewPtr_AlignText_Fixed (viewPtr, margin);
 };
 
 func void zcView_SetFontColor (var int hndl, var int color) {
