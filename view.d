@@ -169,6 +169,11 @@ func int ViewPtr_IsOpen (var int viewPtr) {
 	return view.IsOpen;
 };
 
+func int View_IsOpen (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	return + ViewPtr_IsOpen (viewPtr);
+};
 func int zCView_Noise_IsActive () {
 	const int cGAME_VIEW_NOISE = 5;
 	var int zCView_NoisePtr; zCView_NoisePtr = MEM_Game.array_view [cGAME_VIEW_NOISE];
