@@ -1,5 +1,10 @@
 /*
- *	Some useful functions for Views
+ *	Some useful functions for LeGo Views & engine zCView
+ *
+ *	Naming convention updated to match LeGo logic
+ *
+ *	 ViewPtr* functions - working with view pointers
+ *	 View* functions - working with handles
  */
 
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
@@ -174,6 +179,9 @@ func int View_IsOpen (var int hndl) {
 	var int viewPtr; viewPtr = getPtr (hndl);
 	return + ViewPtr_IsOpen (viewPtr);
 };
+
+//-- engine stuff
+
 func int zCView_Noise_IsActive () {
 	const int cGAME_VIEW_NOISE = 5;
 	var int zCView_NoisePtr; zCView_NoisePtr = MEM_Game.array_view [cGAME_VIEW_NOISE];
