@@ -42,10 +42,8 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	};
 };
 
-func void zcView_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
-	if (!Hlp_IsValidHandle (hndl)) { return; };
-
-	var int viewPtr; viewPtr = getPtr (hndl);
+func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
+	if (!viewPtr) { return; };
 
 	var zCView v; v = _^ (viewPtr);
 	var string fontName; fontName = Print_GetFontName (v.font);
