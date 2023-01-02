@@ -131,10 +131,7 @@ func void View_SetText (var int hndl, var string texts, var int margin) {
 	View_SetTextAndFontColor (hndl, texts, -1, margin);
 };
 
-func void zcView_SetFontColor (var int hndl, var int color) {
-	if (!Hlp_IsValidHandle (hndl)) { return; };
-
-	var int viewPtr; viewPtr = getPtr (hndl);
+func void ViewPtr_SetFontColor (var int viewPtr, var int color) {
 	if (!viewPtr) { return; };
 	var zCView view; view = _^ (viewPtr);
 
