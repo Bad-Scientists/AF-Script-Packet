@@ -144,8 +144,11 @@ func void ViewPtr_SetFontColor (var int viewPtr, var int color) {
 	};
 };
 
-func void zcView_SetText (var int hndl, var string text, var int margin) {
-	zcView_SetTextAndFontColor (hndl, text, -1, margin);
+func void View_SetFontColor (var int hndl, var int color) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+
+	ViewPtr_SetFontColor (viewPtr, color);
 };
 
 func int zcView_OnDesk (var int hndl) {
