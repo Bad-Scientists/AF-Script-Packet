@@ -157,6 +157,12 @@ func int ViewPtr_OnDesk (var int viewPtr) {
 	return view.onDesk;
 };
 
+func int View_OnDesk (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	return + ViewPtr_OnDesk (viewPtr);
+};
+
 func int zcView_IsOpen (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
 
