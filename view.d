@@ -2,11 +2,11 @@
  *	Some useful functions for Views
  */
 
-//TODO: remove and replace with ViewPtr_AlignText once ViewPtr_AlignText is fixed in LeGo
-func void zCViewPtr_AlignText (var int ptr, var int margin) {
-	if (!ptr) { return; };
+//TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
+func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
+	if (!viewPtr) { return; };
 
-	var zCView v;  v = _^ (ptr);
+	var zCView v;  v = _^ (viewPtr);
 	var int lp; lp = v.textLines_next;
 	var zCList l;
 	var zCViewText vt;
