@@ -151,13 +151,9 @@ func void View_SetFontColor (var int hndl, var int color) {
 	ViewPtr_SetFontColor (viewPtr, color);
 };
 
-func int zcView_OnDesk (var int hndl) {
-	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
-
-	var int viewPtr; viewPtr = getPtr (hndl);
+func int ViewPtr_OnDesk (var int viewPtr) {
 	if (!viewPtr) { return FALSE; };
 	var zCView view; view = _^ (viewPtr);
-
 	return view.onDesk;
 };
 
