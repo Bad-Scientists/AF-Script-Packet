@@ -100,7 +100,6 @@ func void zVEC3_Sub_zVEC3 (var int ptrzVEC3_1, var int ptrzVEC3_2, var int targe
  */
 func int Pos_GetDistToPos (var int posPtr1, var int posPtr2) {
 	var int dir[3];
-	SubVectors (_@ (dir), posPtr1, posPtr2);
+	zVEC3_Sub_zVEC3 (posPtr1, posPtr2, _@ (dir));
 	return + zVEC3_LengthApprox (_@ (dir));
-};
 };
