@@ -163,13 +163,9 @@ func int View_OnDesk (var int hndl) {
 	return + ViewPtr_OnDesk (viewPtr);
 };
 
-func int zcView_IsOpen (var int hndl) {
-	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
-
-	var int viewPtr; viewPtr = getPtr (hndl);
+func int ViewPtr_IsOpen (var int viewPtr) {
 	if (!viewPtr) { return FALSE; };
 	var zCView view; view = _^ (viewPtr);
-
 	return view.IsOpen;
 };
 
