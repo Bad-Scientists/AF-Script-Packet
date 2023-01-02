@@ -151,11 +151,3 @@ func void trfPosToVector (var int trafoPtr, var int v1)
         MEM_WriteIntArray(v1, 1, MEM_ReadIntArray(trafoPtr, 7));
         MEM_WriteIntArray(v1, 2, MEM_ReadIntArray(trafoPtr, 11));
 };
-/*
- *	Pos_GetDistToPos // float
- */
-func int Pos_GetDistToPos (var int posPtr1, var int posPtr2) {
-	var int dir[3];
-	SubVectors (_@ (dir), posPtr1, posPtr2);
-	return + zVEC3_LengthApprox (_@ (dir));
-};

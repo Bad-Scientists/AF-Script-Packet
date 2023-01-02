@@ -71,3 +71,12 @@ func void zMAT4_Mul_zVEC3 (var int ptrzMAT4, var int ptrzVEC3, var int targetPtr
 	MEM_Free (posPtr);
 };
 
+/*
+ *	Pos_GetDistToPos // float
+ */
+func int Pos_GetDistToPos (var int posPtr1, var int posPtr2) {
+	var int dir[3];
+	SubVectors (_@ (dir), posPtr1, posPtr2);
+	return + zVEC3_LengthApprox (_@ (dir));
+};
+};
