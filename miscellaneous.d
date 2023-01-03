@@ -822,3 +822,24 @@ func string AlphaBlendFuncTypeToString (var int rndAlphaBlendFunc) {
 	return "NONE";
 };
 
+func int zCRenderer_GetAlphaBlendFunc (var int ptr) {
+	//0x00713A90 public: virtual enum zTRnd_AlphaBlendFunc __thiscall zCRenderer::GetAlphaBlendFunc(void)const
+	const int zCRenderer__GetAlphaBlendFunc_G1 = 7420560;
+
+	//0x0064A1E0 public: virtual enum zTRnd_AlphaBlendFunc __thiscall zCRenderer::GetAlphaBlendFunc(void)const
+	const int zCRenderer__GetAlphaBlendFunc_G2 = 6595040;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall(_@(ptr), MEMINT_SwitchG1G2 (zCRenderer__GetAlphaBlendFunc_G1, zCRenderer__GetAlphaBlendFunc_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
