@@ -471,8 +471,8 @@ func void DisplayProperties__VobTransport () {
 		};
 
 		//Header
-		//zcView_SetFontColor (hVobTransportPropertiesViewHeader, titleColor);
-		zcView_SetTextAndFontColor (hVobTransportPropertiesViewHeader, s_Title, titleColor, spaceWidth * 2);
+		//View_SetFontColor (hVobTransportPropertiesViewHeader, titleColor);
+		View_SetTextAndFontColor (hVobTransportPropertiesViewHeader, s_Title, titleColor, spaceWidth * 2);
 
 		SB (Print_LineSeperator);
 		SB (Print_LineSeperator);
@@ -537,7 +537,7 @@ func void DisplayProperties__VobTransport () {
 			SB (Print_LineSeperator);
 		};
 
-		zcView_SetText (hVobTransportPropertiesView, SB_ToString (), spaceWidth * 2);
+		View_SetText (hVobTransportPropertiesView, SB_ToString (), spaceWidth * 2);
 
 		SB_Destroy();
 
@@ -721,23 +721,23 @@ func void DisplayProperties__VobTransport () {
 		};
 
 		//Description
-		zcView_SetText (hVobTransportBuyVobView_Description, sVobTransportBuyVobView_Description, 0);		//0 - align center
+		View_SetText (hVobTransportBuyVobView_Description, sVobTransportBuyVobView_Description, 0);		//0 - align center
 
 		//Item-like view
-		zcView_SetText (hVobTransportBuyVobView_Line1, sVobTransportBuyVobView_Line1, spaceWidth * 2);		//positive value - align left with margin
-		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count1, sVobTransportBuyVobView_Count1, colorVobTransportBuyVobView_Count1, - spaceWidth * 2);	//negative value - align right with margin
+		View_SetText (hVobTransportBuyVobView_Line1, sVobTransportBuyVobView_Line1, spaceWidth * 2);		//positive value - align left with margin
+		View_SetTextAndFontColor (hVobTransportBuyVobView_Count1, sVobTransportBuyVobView_Count1, colorVobTransportBuyVobView_Count1, - spaceWidth * 2);	//negative value - align right with margin
 
-		zcView_SetText (hVobTransportBuyVobView_Line2, sVobTransportBuyVobView_Line2, spaceWidth * 2);
-		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count2, sVobTransportBuyVobView_Count2, colorVobTransportBuyVobView_Count2, - spaceWidth * 2);
+		View_SetText (hVobTransportBuyVobView_Line2, sVobTransportBuyVobView_Line2, spaceWidth * 2);
+		View_SetTextAndFontColor (hVobTransportBuyVobView_Count2, sVobTransportBuyVobView_Count2, colorVobTransportBuyVobView_Count2, - spaceWidth * 2);
 
-		zcView_SetText (hVobTransportBuyVobView_Line3, sVobTransportBuyVobView_Line3, spaceWidth * 2);
-		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count3, sVobTransportBuyVobView_Count3, colorVobTransportBuyVobView_Count3, - spaceWidth * 2);
+		View_SetText (hVobTransportBuyVobView_Line3, sVobTransportBuyVobView_Line3, spaceWidth * 2);
+		View_SetTextAndFontColor (hVobTransportBuyVobView_Count3, sVobTransportBuyVobView_Count3, colorVobTransportBuyVobView_Count3, - spaceWidth * 2);
 
-		zcView_SetText (hVobTransportBuyVobView_Line4, sVobTransportBuyVobView_Line4, spaceWidth * 2);
-		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count4, sVobTransportBuyVobView_Count4, colorVobTransportBuyVobView_Count4, - spaceWidth * 2);
+		View_SetText (hVobTransportBuyVobView_Line4, sVobTransportBuyVobView_Line4, spaceWidth * 2);
+		View_SetTextAndFontColor (hVobTransportBuyVobView_Count4, sVobTransportBuyVobView_Count4, colorVobTransportBuyVobView_Count4, - spaceWidth * 2);
 
-		zcView_SetText (hVobTransportBuyVobView_Line5, sVobTransportBuyVobView_Line5, spaceWidth * 2);
-		zcView_SetTextAndFontColor (hVobTransportBuyVobView_Count5, sVobTransportBuyVobView_Count5, colorVobTransportBuyVobView_Count5, - spaceWidth * 2);
+		View_SetText (hVobTransportBuyVobView_Line5, sVobTransportBuyVobView_Line5, spaceWidth * 2);
+		View_SetTextAndFontColor (hVobTransportBuyVobView_Count5, sVobTransportBuyVobView_Count5, colorVobTransportBuyVobView_Count5, - spaceWidth * 2);
 	} else {
 		if (vobTransportBuyVobViewVisible) {
 			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Description)) { View_Close (hVobTransportBuyVobView_Description); };

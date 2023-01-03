@@ -130,7 +130,7 @@ func void PickLockHelper_Show () {
 	View_Open (hPickLockHelper_LastCombination);
 	View_MoveTo (hPickLockHelper_LastCombination, posX, posY);
 	View_Resize (hPickLockHelper_LastCombination, viewWidth, fontHeight);
-	zcView_SetText (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, spaceWidth);
+	View_SetText (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, spaceWidth);
 
 	if (!Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) {
 		hPickLockHelper_CurrentCombination = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
@@ -140,7 +140,7 @@ func void PickLockHelper_Show () {
 	View_Open (hPickLockHelper_CurrentCombination);
 	View_MoveTo (hPickLockHelper_CurrentCombination, posX, posY);
 	View_Resize (hPickLockHelper_CurrentCombination, viewWidth, fontHeight);
-	zcView_SetText (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, spaceWidth);
+	View_SetText (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, spaceWidth);
 
 	if (!Hlp_IsValidHandle (hpickLockHelper_LastKey)) {
 		hpickLockHelper_LastKey = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
@@ -152,7 +152,7 @@ func void PickLockHelper_Show () {
 	View_Open (hpickLockHelper_LastKey);
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
 	View_Resize (hpickLockHelper_LastKey, viewWidth, fontHeight);
-	zcView_SetText (hpickLockHelper_LastKey, pickLockHelper_LastKey, spaceWidth);
+	View_SetText (hpickLockHelper_LastKey, pickLockHelper_LastKey, spaceWidth);
 };
 
 func void PickLockHelper_Hide () {
@@ -180,8 +180,8 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
-	zcView_SetTextAndFontColor (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, RGBA (255, 255, 255, 64), spaceWidth);
-	zcView_SetTextAndFontColor (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, RGBA (096, 255, 096, 255), spaceWidth);
+	View_SetTextAndFontColor (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, RGBA (255, 255, 255, 64), spaceWidth);
+	View_SetTextAndFontColor (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, RGBA (096, 255, 096, 255), spaceWidth);
 
 	var int posX; posX = PickLockHelper_GetPosX ();
 	var int posY; posY = PickLockHelper_GetPosY ();
@@ -190,7 +190,7 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
 
-	zcView_SetTextAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
+	View_SetTextAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
 
 	//Continue with original function
 	PassArgumentI (bSuccess);
