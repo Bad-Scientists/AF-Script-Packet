@@ -795,3 +795,30 @@ func void API_CallByString (var string fnc) {
 
     MEM_CallByID (symbID);
 };
+
+//--
+
+func string AlphaBlendFuncTypeToString (var int rndAlphaBlendFunc) {
+	const int zRND_ALPHA_FUNC_MAT_DEFAULT = 0;
+	const int zRND_ALPHA_FUNC_NONE        = 1;
+	const int zRND_ALPHA_FUNC_BLEND       = 2;
+	const int zRND_ALPHA_FUNC_ADD         = 3;
+	const int zRND_ALPHA_FUNC_SUB         = 4;
+	const int zRND_ALPHA_FUNC_MUL         = 5;
+	const int zRND_ALPHA_FUNC_MUL2        = 6;
+	const int zRND_ALPHA_FUNC_TEST        = 7;
+	const int zRND_ALPHA_FUNC_BLEND_TEST  = 8;
+
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MAT_DEFAULT) { return "zRND_ALPHA_FUNC_MAT_DEFAULT"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_NONE) { return "zRND_ALPHA_FUNC_NONE"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_BLEND) { return "zRND_ALPHA_FUNC_BLEND"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_ADD) { return "zRND_ALPHA_FUNC_ADD"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_SUB) { return "zRND_ALPHA_FUNC_SUB"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MUL) { return "zRND_ALPHA_FUNC_MUL"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MUL2) { return "zRND_ALPHA_FUNC_MUL2"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_TEST) { return "zRND_ALPHA_FUNC_TEST"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_BLEND_TEST) { return "zRND_ALPHA_FUNC_BLEND_TEST"; };
+
+	return "NONE";
+};
+
