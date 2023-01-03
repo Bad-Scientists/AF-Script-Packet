@@ -1462,7 +1462,7 @@ func void FrameFunction__VobTransport () {
 			vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
 			if ((vobPtr) && (vobPtr == vobTransportVobPtr)) {
 				//Remove from hand
-				//vobTransportVobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
+				//vobTransportVobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 1, 0);
 				vobTransportVobPtr = oCNpc_DropFromSlot (hero, "ZS_RIGHTHAND");
 
 				//Stop item from moving

@@ -3670,6 +3670,13 @@ func void G12_EnhancedInfoManager_Init () {
 	_InfoManagerAnswerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERANSWERINDICATORSTRING", "...");
 
 	_InfoManagerSpinnerIndicatorAnimation = API_GetSymbolIntValue ("INFOMANAGERSPINNERINDICATORANIMATION", 1);
+
+	_InfoManagerNumKeysControls = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSCONTROLS", 1);
+	_InfoManagerNumKeysNumbers = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSNUMBERS", 0);
+
+	_InfoManagerAlphaBlendFunc = API_GetSymbolIntValue ("INFOMANAGERALPHABLENDFUNC", 1);
+
+	_InfoManagerRememberSelectedChoice = API_GetSymbolIntValue ("INFOMANAGERREMEMBERSELECTEDCHOICE", cIM_RememberSelectedChoice_Spinners);
 	//--
 
 	const int once = 0;

@@ -1,14 +1,16 @@
 // sizeof 108h
 class zCVobSpot {
-//class zCVobSpot : public zCVob {
-//class zCVob {
-	var int _vtbl;
-// zCObject {
-	var int _zCObject_refCtr;
-	var int _zCObject_hashIndex;
-	var int _zCObject_hashNext;
-	var string _zCObject_objectName;
-// }
+//class zCVobSpot
+	//public zCVob {
+	//public zCObject
+	var int _vtbl;			//0
+
+	var int _zCObject_refCtr;			//4 int
+	var int _zCObject_hashIndex;		//8 unsigned short
+	var int _zCObject_hashNext;		//12 zCObject*
+	var string _zCObject_objectName;	//16 zSTRING
+	//};
+
 	var int globalVobTreeNode; // 0x0024 zCTree<zCVob>*
 	var int lastTimeDrawn; // 0x0028 zTFrameCtr
 	var int lastTimeCollected; // 0x002C zDWORD
