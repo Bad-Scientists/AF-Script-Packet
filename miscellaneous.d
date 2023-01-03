@@ -843,3 +843,26 @@ func int zCRenderer_GetAlphaBlendFunc (var int ptr) {
 	return + retVal;
 };
 
+/*
+ *	Pos_ToScreenXYF (float)
+ *	 - converts 3D coordinates in the world to screen coordinates
+ */
+func void Pos_ToScreenXYF (var int posPtr, var int ptrXF, var int ptrYF) {
+
+	var int activeCam; activeCam = zCCamera_Get_activeCam ();
+	zCCamera_Activate (activeCam);
+
+	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
+
+	zCCamera_ProjectF (activeCam, posPtr, ptrXF, ptrYF);
+};
+
+func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
+
+	var int activeCam; activeCam = zCCamera_Get_activeCam ();
+	zCCamera_Activate (activeCam);
+
+	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
+
+	zCCamera_Project (activeCam, posPtr, ptrX, ptrY);
+};
