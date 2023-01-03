@@ -32,7 +32,7 @@
 
 class oCNpc_States {
 	var int _vtbl;
-	
+
 	var string name;			//zSTRING name;
 	var int npc;				//oCNpc* npc;
 
@@ -43,6 +43,9 @@ class oCNpc_States {
 	var int curState_timeBehaviour;		//int timeBehaviour;
 	var int curState_restTime;		//float restTime;
 	var int curState_phase;			//int phase;
+	//0 loop	//_LOOP
+	//1 end		//_END
+	//2 ended	//_INTERRUPT
 	var int curState_valid;			//int valid;
 	var string curState_name;		//zSTRING name;
 	var int curState_stateTime;		//float stateTime;
@@ -55,6 +58,9 @@ class oCNpc_States {
 	var int nextState_timeBehaviour;	//int timeBehaviour;
 	var int nextState_restTime;		//float restTime;
 	var int nextState_phase;		//int phase;
+	//-1 not yet initialized
+	//1 end previous state properly
+	//2 end previous state
 	var int nextState_valid;		//int valid;
 	var string nextState_name;		//zSTRING name;
 	var int nextState_stateTime;		//float stateTime;

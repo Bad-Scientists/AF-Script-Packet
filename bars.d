@@ -248,7 +248,7 @@ func void SprintBar_SetDisplayMethod (var int displayMethod) {
 };
 
 /*
- *	Helping functions for sidplay methods
+ *	Helping functions for display methods
  */
 func void HUD_Standard () {
 	HealthBar_SetDisplayMethod (BarDisplay_Standard);

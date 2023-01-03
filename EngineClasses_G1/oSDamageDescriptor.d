@@ -62,7 +62,7 @@ class oSDamageDescriptor {
 	var int interval; 		//128 float fTimeInterval;
 	var int dmgPerInterval;		//132 float fDamagePerInterval;
 
-	var int bitfield; // 1 -> Once, 2 -> finished, 4 -> isDead, 8 -> isUnconscious
+	var int bitfield; //136 1 -> Once, 2 -> finished, 4 -> isDead, 8 -> isUnconscious
 	//group {
 	//unsigned long bOnce          : 1;
 	//unsigned long bFinished      : 1;
@@ -70,7 +70,6 @@ class oSDamageDescriptor {
 	//unsigned long bIsUnconscious : 1;
 	//unsigned long lReserved      : 28;
 	//};
-	//var int lReserved;		//136
 
 	var int azimuth;		//140 float fAzimuth;
 	var int elevation;		//144 float fElevation;
