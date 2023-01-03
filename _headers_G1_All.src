@@ -212,3 +212,5 @@ Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
 Standalone-Packages\G12-AddPerceptions\addPerceptions.d
 
 Standalone-Packages\G12-MoonPhases\moonPhases.d
+Standalone-Packages\G12-EquipControl\equipControl.d
+
