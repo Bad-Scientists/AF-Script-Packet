@@ -1110,6 +1110,29 @@ func void oCNpc_AddItemEffects (var int slfInstance, var int itemPtr) {
 	};
 };
 
+func void oCNpc_RemoveItemEffects (var int slfInstance, var int itemPtr) {
+	//0x0068F7D0 public: void __thiscall oCNpc::RemoveItemEffects(class oCItem *)
+	const int oCNpc__RemoveItemEffects_G1 = 6879184;
+
+	//0x00732270 public: void __thiscall oCNpc::RemoveItemEffects(class oCItem *)
+	const int oCNpc__RemoveItemEffects_G2 = 7545456;
+
+	if (!itemPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(itemPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__RemoveItemEffects_G1, oCNpc__RemoveItemEffects_G2));
+		call = CALL_End();
+	};
+};
+
 /*
  *	oCNpc_Equip_Safe
  *	 - when compared to LeGo function this has safety checks, also does not use npc pointer, other than that it's same
