@@ -795,3 +795,74 @@ func void API_CallByString (var string fnc) {
 
     MEM_CallByID (symbID);
 };
+
+//--
+
+func string AlphaBlendFuncTypeToString (var int rndAlphaBlendFunc) {
+	const int zRND_ALPHA_FUNC_MAT_DEFAULT = 0;
+	const int zRND_ALPHA_FUNC_NONE        = 1;
+	const int zRND_ALPHA_FUNC_BLEND       = 2;
+	const int zRND_ALPHA_FUNC_ADD         = 3;
+	const int zRND_ALPHA_FUNC_SUB         = 4;
+	const int zRND_ALPHA_FUNC_MUL         = 5;
+	const int zRND_ALPHA_FUNC_MUL2        = 6;
+	const int zRND_ALPHA_FUNC_TEST        = 7;
+	const int zRND_ALPHA_FUNC_BLEND_TEST  = 8;
+
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MAT_DEFAULT) { return "zRND_ALPHA_FUNC_MAT_DEFAULT"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_NONE) { return "zRND_ALPHA_FUNC_NONE"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_BLEND) { return "zRND_ALPHA_FUNC_BLEND"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_ADD) { return "zRND_ALPHA_FUNC_ADD"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_SUB) { return "zRND_ALPHA_FUNC_SUB"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MUL) { return "zRND_ALPHA_FUNC_MUL"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_MUL2) { return "zRND_ALPHA_FUNC_MUL2"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_TEST) { return "zRND_ALPHA_FUNC_TEST"; };
+	if (rndAlphaBlendFunc == zRND_ALPHA_FUNC_BLEND_TEST) { return "zRND_ALPHA_FUNC_BLEND_TEST"; };
+
+	return "NONE";
+};
+
+func int zCRenderer_GetAlphaBlendFunc (var int ptr) {
+	//0x00713A90 public: virtual enum zTRnd_AlphaBlendFunc __thiscall zCRenderer::GetAlphaBlendFunc(void)const
+	const int zCRenderer__GetAlphaBlendFunc_G1 = 7420560;
+
+	//0x0064A1E0 public: virtual enum zTRnd_AlphaBlendFunc __thiscall zCRenderer::GetAlphaBlendFunc(void)const
+	const int zCRenderer__GetAlphaBlendFunc_G2 = 6595040;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall(_@(ptr), MEMINT_SwitchG1G2 (zCRenderer__GetAlphaBlendFunc_G1, zCRenderer__GetAlphaBlendFunc_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	Pos_ToScreenXYF (float)
+ *	 - converts 3D coordinates in the world to screen coordinates
+ */
+func void Pos_ToScreenXYF (var int posPtr, var int ptrXF, var int ptrYF) {
+
+	var int activeCam; activeCam = zCCamera_Get_activeCam ();
+	zCCamera_Activate (activeCam);
+
+	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
+
+	zCCamera_ProjectF (activeCam, posPtr, ptrXF, ptrYF);
+};
+
+func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
+
+	var int activeCam; activeCam = zCCamera_Get_activeCam ();
+	zCCamera_Activate (activeCam);
+
+	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
+
+	zCCamera_Project (activeCam, posPtr, ptrX, ptrY);
+};

@@ -31,6 +31,10 @@ EngineClasses_G2\zCSkyState.d
 ScriptBin\strings.d
 ScriptBin\convert.d
 
+algebra.d
+polygons.d
+draw3D.d
+
 strings.d
 utils.d
 files.d
@@ -72,6 +76,8 @@ eventManager.d
 
 functions_oCMobInter_engine.d
 
+inventory_oCNPC.d
+
 functions_oCNpc_engine.d
 functions_NPC.d
 
@@ -80,8 +86,6 @@ functions_PC.d
 functions_oCItem.d
 
 inventory_oCMob.d
-
-inventory_oCNpc.d
 
 console.d
 interface.d
@@ -96,9 +100,9 @@ game_engine.d
 
 portals.d
 
-view.d
-
 zError_engine.d
+
+view.d
 
 routines_waynet.d
 
@@ -108,6 +112,8 @@ spawnManager.d
 
 time.d
 sound.d
+
+camera.d
 
 miscellaneous.d
 
@@ -150,6 +156,7 @@ Standalone-Packages\G12-BetterBars\betterBars.d
 
 Standalone-Packages\G12-Debugging\focusPlay.d
 Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\debugTextures.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
