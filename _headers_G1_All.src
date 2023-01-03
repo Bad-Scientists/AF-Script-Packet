@@ -183,6 +183,7 @@ Standalone-Packages\G12-BetterBars\betterBars.d
 
 Standalone-Packages\G12-Debugging\focusPlay.d
 Standalone-Packages\G12-Debugging\debugDialogues.d
+Standalone-Packages\G12-Debugging\debugTextures.d
 Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
