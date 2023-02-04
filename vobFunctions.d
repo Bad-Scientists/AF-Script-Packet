@@ -1641,3 +1641,21 @@ func int zCMesh_SharePoly (var int ptr, var int index) {
 
 	return Call_RetValAsPtr ();
 };
+
+func int zCVob_GetHomeWorld (var int vobPtr) {
+	//0x0073F4D0 public: class zCWorld * __thiscall zCVob::GetHomeWorld(void)const
+	const int zCVob__GetHomeWorld_G1 = 7599312;
+
+	//0x006742A0 public: class zCWorld * __thiscall zCVob::GetHomeWorld(void)const
+	const int zCVob__GetHomeWorld_G2 = 6767264;
+
+	if (!vobPtr) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetHomeWorld_G1, zCVob__GetHomeWorld_G2));
+		call = CALL_End();
+	};
+
+	return Call_RetValAsPtr ();
+};
