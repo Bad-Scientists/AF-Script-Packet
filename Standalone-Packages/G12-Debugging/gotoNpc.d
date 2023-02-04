@@ -21,7 +21,7 @@ func string CC_GotoNpc (var string param) {
 		var int ptr; ptr = MEM_SearchVobByName (objectName);
 
 		if (ptr) {
-			oCNPC_BeamTo (hero, objectName);
+			oCNpc_BeamTo (hero, objectName);
 			return "Vob found.";
 		};
 
