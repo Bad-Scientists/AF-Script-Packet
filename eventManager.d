@@ -590,17 +590,17 @@ func string zCEventMusicControler_MD_GetSubTypeString (var int eMsg, var int sub
 	return CALL_RetValAszstring ();
 };
 
-func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) {
+func int oCNpc_GetTalkingWithMessage (var int slfInstance, var int npcInstance) {
 	//0x00633620 public: class zCEventMessage * __thiscall oCNpc::GetTalkingWithMessage(class oCNpc *)
-	const int oCNPC__GetTalkingWithMessage_G1 = 6501920;
+	const int oCNpc__GetTalkingWithMessage_G1 = 6501920;
 
 	//0x006BCFB0 public: class zCEventMessage * __thiscall oCNpc::GetTalkingWithMessage(class oCNpc *)
-	const int oCNPC__GetTalkingWithMessage_G2 = 7065520;
+	const int oCNpc__GetTalkingWithMessage_G2 = 7065520;
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var oCNPC npc; npc = Hlp_GetNPC (npcinstance);
+	var oCNpc npc; npc = Hlp_GetNPC (npcInstance);
 	if (!Hlp_IsValidNPC (npc)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -609,7 +609,7 @@ func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) 
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetTalkingWithMessage_G1, oCNPC__GetTalkingWithMessage_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetTalkingWithMessage_G1, oCNpc__GetTalkingWithMessage_G2));
 		call = CALL_End();
 	};
 
@@ -1414,10 +1414,10 @@ func int zcEventManager_GetIndexByEventName (var int eMgr, var string eventName)
 
 /*
  *	Function returns number of Event messages in NPC's Event Manager
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  */
-func int NPC_EM_GetEventCount (var int slfinstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func int NPC_EM_GetEventCount (var int slfInstance){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -1431,13 +1431,13 @@ func int NPC_EM_GetEventCount (var int slfinstance){
 
 /*
  *	Function returns Event Name from NPC's Event Manager at index
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *		index			Event Message index (starts at 0)
  */
-func string NPC_EM_GetEventName (var int slfinstance, var int index){
+func string NPC_EM_GetEventName (var int slfInstance, var int index){
 	if (index < 0) { return ""; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
@@ -1447,11 +1447,11 @@ func string NPC_EM_GetEventName (var int slfinstance, var int index){
 
 /*
  *	Function returns number of Event Messages which are in NPC's Event Manager (by name)
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *		eventName		Event Name
  */
-func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventName){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func int NPC_EM_GetEventCountByEventName (var int slfInstance, var string eventName){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -1462,13 +1462,13 @@ func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventN
 
 /*
  *	Function returns Event Name of Active Event Message from NPC's Event Manager
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *
  *
  *	Hmmm this one does not return same thing as NPC_EM_GetEventName (eMgr, 0);
  */
-func string NPC_EM_GetActiveEventName (var int slfinstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func string NPC_EM_GetActiveEventName (var int slfInstance){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
@@ -1487,7 +1487,7 @@ func string NPC_EM_GetActiveEventName (var int slfinstance){
 };
 
 func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	//Get Event Manager
@@ -1501,7 +1501,7 @@ func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
 };
 
 func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string eventName) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	//Get Event Manager
