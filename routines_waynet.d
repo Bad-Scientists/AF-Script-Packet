@@ -314,6 +314,9 @@ func int zCWay_GetLength (var int wayPtr) {
  *	 - we will also setup first target --> it should be starting waypoint
  */
 func void zCRoute_InitWayNode (var int rt) {
+	//Safety check
+	if (!rt) { return; };
+
 	var zCRoute route; route = _^ (rt);
 	if (!route.wayNode) {
 		route.wayNode = route.wayList_next;
