@@ -954,3 +954,35 @@ func void Wld_EnableNpc (var int slfInstance) {
 	oCNpc_Enable (slfInstance, _@ (pos));
 };
 
+/*
+ *	NPC_TeleportToNpc
+ *	 - function teleports one Npc to another Npc
+ */
+func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var oCNpc npc; npc = Hlp_GetNpc (npcInstance);
+	if (!Hlp_IsValidNPC (npc)) { return; };
+
+	var int pos[3];
+
+	//Default position - current world position
+	if (zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) {
+		//...
+	};
+
+	//Get target Npc current world position
+	Npc_GetCurrentWorldPos (npc, _@ (pos));
+
+	var zCVob vob; vob = Hlp_GetNPC (slf);
+
+	//Hard-update position
+	vob.trafoObjToWorld[3] = pos[0];
+	vob.trafoObjToWorld[7] = pos[1];
+	vob.trafoObjToWorld[11] = pos[2];
+
+	//oCNpc::Enable @ position
+	oCNpc_Enable (npc, _@ (pos));
+};
+
