@@ -28,6 +28,8 @@ EngineClasses_G2\zCWay.d
 EngineClasses_G2\oSSpawnNode.d
 EngineClasses_G2\zCSkyState.d
 
+EngineClasses_G2\zCAICamera.d
+
 ScriptBin\strings.d
 ScriptBin\convert.d
 
