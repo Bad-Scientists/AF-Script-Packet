@@ -1,20 +1,43 @@
-func void oCGame_TriggerChangeLevel (var string levelName, var string waypoint) {
+func void oCGame_TriggerChangeLevel (var string levelName, var string vobName) {
 	//0x0063D480 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
 	const int oCGame__TriggerChangeLevel_G1 = 6542464;
 
 	//0x006C7AF0 public: virtual void __thiscall oCGame::TriggerChangeLevel(class zSTRING const &,class zSTRING const &)
 	const int oCGame__TriggerChangeLevel_G2 = 7109360;
 
-	waypoint = STR_Upper (waypoint);
+	vobName = STR_Upper (vobName);
 	levelName = STR_Upper (levelName);
 
 	//Safety check - game crashes if you try to trigger change to current world
 	var string thisLevelName; thisLevelName = oCWorld_GetWorldFilename ();
 
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
-		oCNpc_BeamTo (hero, waypoint);
+		if (STR_Len (vobName)) {
+
+			//oCNpc_BeamTo (hero, vobName);
+			var int pos[3];
+
+			var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+			if (wpPtr) {
+				var zCWaypoint wp; wp = _^ (wpPtr);
+				MEM_CopyBytes (_@ (wp.pos), _@ (pos), 12);
+			} else {
+				//Is this vob?
+				var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+
+				if (vobPtr) {
+					if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+					};
+				};
+			};
+			//Update hero's position
+			var zCVob vob; vob = Hlp_GetNPC (hero);
+			vob.trafoObjToWorld[3] = pos[0];
+			vob.trafoObjToWorld[7] = pos[1];
+			vob.trafoObjToWorld[11] = pos[2];
+		};
 	} else {
-		CALL_zStringPtrParam (waypoint);
+		CALL_zStringPtrParam (vobName);
 		CALL_zStringPtrParam (levelName);
 		CALL__thiscall (_@(MEM_Game), MEMINT_SwitchG1G2 (oCGame__TriggerChangeLevel_G1, oCGame__TriggerChangeLevel_G2));
 	};
