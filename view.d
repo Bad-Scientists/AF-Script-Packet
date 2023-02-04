@@ -124,6 +124,8 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 	};
 
 	ViewPtr_AlignText_Fixed (viewPtr, margin);
+
+	ViewPtr_SetAlphaAll (viewPtr, v.alpha);
 };
 
 func void View_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
