@@ -16,7 +16,7 @@ func void EnhancedTrading_Trader_NotEnoughOre () {
 };
 
 func void EnhancedTrading_Trader_NotEnoughOre_Confirm () {
-	PrintScreen ("You will loose ore with this trade. Do you really want to accept?";, -1, 45, ENHANCEDTRADING_FONT, _TIME_MESSAGE_LOGENTRY);
+	PrintScreen ("You will loose ore with this trade. Do you really want to accept?", -1, 45, ENHANCEDTRADING_FONT, _TIME_MESSAGE_LOGENTRY);
 };
 
 func void Subtitles_ForTrading () {
