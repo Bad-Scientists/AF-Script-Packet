@@ -866,3 +866,27 @@ func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
 
 	zCCamera_Project (activeCam, posPtr, ptrX, ptrY);
 };
+
+//--
+
+/*
+ *	Npc_SetAIStatePos
+ *	 - function sets aiStatePosition to current position in the world
+ */
+func void Npc_SetAIStatePos (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	var int statePtr; statePtr = NPC_GetNPCState (slf);
+	if (!statePtr) { return; };
+	var oCNPC_States state; state = _^ (statePtr);
+
+	if (state.hasRoutine) { return; };
+
+	//Update aiStateDriven - to kick in ai state
+	state.aiStateDriven = 1;
+
+	//Update ai position
+	slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
+	slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
+	slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
+};
