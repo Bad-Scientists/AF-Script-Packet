@@ -1202,7 +1202,7 @@ func void Npc_ClearAIState (var int slfInstance) {
 	};
 };
 
-func void NPC_EndCurrentState (var int slfInstance) {
+func void Npc_EndCurrentState (var int slfInstance) {
 	//0x006C6340 public: void __thiscall oCNpc_States::EndCurrentState(void)
 	const int oCNpc_States__EndCurrentState_G1 = 7103296;
 
@@ -1212,5 +1212,10 @@ func void NPC_EndCurrentState (var int slfInstance) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 	if (!statePtr) { return; };
 
-	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
+		call = CALL_End();
+	};
+};
 };
