@@ -1218,4 +1218,22 @@ func void Npc_EndCurrentState (var int slfInstance) {
 		call = CALL_End();
 	};
 };
+
+func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
+	//0x006C7350 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
+	const int oCNpc_States__InitAIStateDriven_G1 = 7107408;
+
+	//0x0076E8E0 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
+	const int oCNpc_States__InitAIStateDriven_G2 = 7792864;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (posPtr));
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__InitAIStateDriven_G1, oCNpc_States__InitAIStateDriven_G2));
+		call = CALL_End();
+	};
+};
 };
