@@ -468,7 +468,7 @@ func void oCRtnManager_InfoManager_CheckAllRoutines () {
 
 		if (Hlp_IsValidNpc (slf)) {
 			//Beam player to NPC!
-			PC_BeamToNpc (slf);
+			NPC_TeleportToNpc (hero, slf);
 
 			//Backup daily routine of this NPC
 			var int daily_routine; daily_routine = NPC_GetDailyRoutineFuncID (slf);
