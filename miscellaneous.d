@@ -940,3 +940,17 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 	};
 };
 
+/*
+ *	Wld_EnableNpc
+ *	 -
+ */
+func void Wld_EnableNpc (var int slfInstance) {
+	var int pos[3];
+
+	//Get target Npc current world position
+	Npc_GetCurrentWorldPos (slfInstance, _@ (pos));
+
+	//oCNpc::Enable @ position
+	oCNpc_Enable (slfInstance, _@ (pos));
+};
+
