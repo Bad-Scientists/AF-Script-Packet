@@ -247,7 +247,7 @@ func string CC_DebugTextures (var string param) {
 	return "Textures debugging disabled.";
 };
 
-func void G12_DebugTextures_Init () {
+func void CC_DebugTextures_Init () {
 	//Register console command
 	CC_Register (CC_DebugTextures, "debug textures", "Display texture names.");
 };
