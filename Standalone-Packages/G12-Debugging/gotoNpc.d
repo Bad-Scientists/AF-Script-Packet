@@ -11,14 +11,8 @@ func string CC_GotoNpc (var string param) {
 	param = STR_Trim (param, " ");
 	param = STR_Upper (param);
 
-	var int count; count = STR_SplitCount (param, " ");
-	var string objectName; objectName = "";
-
-	if (count > 0) {
-		objectName = STR_Split (param, " ", 0);
-		objectName = STR_Trim (objectName, " ");
-		objectName = STR_Upper (objectName);
-	};
+	var string objectName;
+	objectName = param;
 
 	if (STR_Len (objectName)) {
 		var oCNpc npc;
