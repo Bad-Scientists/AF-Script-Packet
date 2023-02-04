@@ -127,6 +127,19 @@ func void NPC_SetTimeScale (var int slfInstance, var int f) {
 	};
 };
 
+func int NPC_GetNPCState (var int slfInstance) {
+	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
+	//oCNpc.state_vfptr	// 0x0470
+	//oCNpc.state_vtbl	// 0x0588
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int offset; offset = MEMINT_SwitchG1G2 (1136, 1416);
+
+	return (_@ (slf) + offset);
+};
+
 func string NPC_GetRoutineName (var int slfInstance) {
 //	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 //	if (!Hlp_IsValidNPC (slf)) { return ""; };
@@ -957,19 +970,6 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 	};
 
 	return (Hlp_StrCmp (lastStateName, stateName));
-};
-
-func int NPC_GetNPCState (var int slfInstance) {
-	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
-	//oCNpc.state_vfptr	// 0x0470
-	//oCNpc.state_vtbl	// 0x0588
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int offset; offset = MEMINT_SwitchG1G2 (1136, 1416);
-
-	return (_@ (slf) + offset);
 };
 
 func int NPC_GetDailyRoutineFuncID (var int slfInstance) {
