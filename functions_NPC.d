@@ -195,13 +195,18 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 		curRtnName = STR_Left (curRtnName, STR_Len (curRtnName) - STR_Len (suffix));
 	};
 
-	//We will allow wild-card '*' in routine name ;)
-	if (STR_EndsWith (rtnName, "*")) {
-		rtnName = STR_left (rtnName, STR_Len (rtnName) - 1);
-		return (STR_StartsWith (curRtnName, rtnName));
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (rtnName, "*");
+
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
+
+		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
 	};
 
-	return Hlp_StrCmp (rtnName, curRtnName);
+	return + (Hlp_StrCmp (rtnName, curRtnName));
 };
 
 func string NPC_GetAIStateName (var int slfInstance) {
@@ -941,14 +946,18 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 
 	stateName = STR_Upper (stateName);
 
-	//We will allow wild-card '*' at the end
-	if (STR_EndsWith (stateName, "*")) {
-		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (stateName, "*");
 
-		return (STR_StartsWith (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
+
+		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
 	};
 
-	return (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	return + (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
 };
 
 func int NPC_WasInStateName (var int slfInstance, var string stateName) {
@@ -962,14 +971,18 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 	var string lastStateName;
 	lastStateName = GetSymbolName (slf.state_lastAIState);
 
-	//We will allow wild-card '*' at the end
-	if (STR_EndsWith (stateName, "*")) {
-		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (stateName, "*");
 
-		return (STR_StartsWith (lastStateName, stateName));
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
+
+		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
 	};
 
-	return (Hlp_StrCmp (lastStateName, stateName));
+	return + (Hlp_StrCmp (lastStateName, stateName));
 };
 
 func int NPC_GetDailyRoutineFuncID (var int slfInstance) {
