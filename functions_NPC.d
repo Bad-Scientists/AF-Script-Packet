@@ -128,25 +128,37 @@ func void NPC_SetTimeScale (var int slfInstance, var int f) {
 };
 
 func string NPC_GetRoutineName (var int slfInstance) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	if (!Hlp_IsValidNPC (slf)) { return ""; };
+//
+//	var int ptr; ptr = _@ (slf);
+//
+//	//var func daily_routine;	//G1	0x0218 int
+//	//var func daily_routine;	//G2	0x0260 int
+//
+//	var int offset; offset = MEMINT_SwitchG1G2 (536, 608);
+//
+//	var int symbID; symbID = MEM_ReadInt (ptr + offset);
+//
+//	if (symbID > 0) && (symbID < currSymbolTableLength) {
+//		var zCPar_symbol symb; symb = _^ (MEM_GetSymbolByIndex (symbID));
+//		return symb.name;
+//	};
+//
+//	return "";
 
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	//0x006C6C10 public: class zSTRING __thiscall oCNpc_States::GetRoutineName(void)
+	const int oCNpc_States__GetRoutineName_G1 = 7105552;
 
-	var int ptr; ptr = _@ (slf);
+	//0x0076E180 public: class zSTRING __thiscall oCNpc_States::GetRoutineName(void)
+	const int oCNpc_States__GetRoutineName_G2 = 7790976;
 
-	//var func daily_routine;	//G1	0x0218 int
-	//var func daily_routine;	//G2	0x0260 int
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return ""; };
 
-	var int offset; offset = MEMINT_SwitchG1G2 (536, 608);
-
-	var int symbID; symbID = MEM_ReadInt (ptr + offset);
-
-	if (symbID > 0) && (symbID < currSymbolTableLength) {
-		var zCPar_symbol symb; symb = _^ (MEM_GetSymbolByIndex (symbID));
-		return symb.name;
-	};
-
-	return "";
+	CALL_RetValIszString ();
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__GetRoutineName_G1, oCNpc_States__GetRoutineName_G2));
+	return CALL_RetValAszstring ();
 };
 
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
