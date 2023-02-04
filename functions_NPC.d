@@ -127,26 +127,51 @@ func void NPC_SetTimeScale (var int slfInstance, var int f) {
 	};
 };
 
+func int NPC_GetNPCState (var int slfInstance) {
+	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
+	//oCNpc.state_vfptr	// 0x0470
+	//oCNpc.state_vtbl	// 0x0588
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int offset; offset = MEMINT_SwitchG1G2 (1136, 1416);
+
+	return (_@ (slf) + offset);
+};
+
 func string NPC_GetRoutineName (var int slfInstance) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	if (!Hlp_IsValidNPC (slf)) { return ""; };
+//
+//	var int ptr; ptr = _@ (slf);
+//
+//	//var func daily_routine;	//G1	0x0218 int
+//	//var func daily_routine;	//G2	0x0260 int
+//
+//	var int offset; offset = MEMINT_SwitchG1G2 (536, 608);
+//
+//	var int symbID; symbID = MEM_ReadInt (ptr + offset);
+//
+//	if (symbID > 0) && (symbID < currSymbolTableLength) {
+//		var zCPar_symbol symb; symb = _^ (MEM_GetSymbolByIndex (symbID));
+//		return symb.name;
+//	};
+//
+//	return "";
 
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	//0x006C6C10 public: class zSTRING __thiscall oCNpc_States::GetRoutineName(void)
+	const int oCNpc_States__GetRoutineName_G1 = 7105552;
 
-	var int ptr; ptr = _@ (slf);
+	//0x0076E180 public: class zSTRING __thiscall oCNpc_States::GetRoutineName(void)
+	const int oCNpc_States__GetRoutineName_G2 = 7790976;
 
-	//var func daily_routine;	//G1	0x0218 int
-	//var func daily_routine;	//G2	0x0260 int
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return ""; };
 
-	var int offset; offset = MEMINT_SwitchG1G2 (536, 608);
-
-	var int symbID; symbID = MEM_ReadInt (ptr + offset);
-
-	if (symbID > 0) && (symbID < currSymbolTableLength) {
-		var zCPar_symbol symb; symb = _^ (MEM_GetSymbolByIndex (symbID));
-		return symb.name;
-	};
-
-	return "";
+	CALL_RetValIszString ();
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__GetRoutineName_G1, oCNpc_States__GetRoutineName_G2));
+	return CALL_RetValAszstring ();
 };
 
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
@@ -170,13 +195,18 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 		curRtnName = STR_Left (curRtnName, STR_Len (curRtnName) - STR_Len (suffix));
 	};
 
-	//We will allow wild-card '*' in routine name ;)
-	if (STR_EndsWith (rtnName, "*")) {
-		rtnName = STR_left (rtnName, STR_Len (rtnName) - 1);
-		return (STR_StartsWith (curRtnName, rtnName));
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (rtnName, "*");
+
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
+
+		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
 	};
 
-	return Hlp_StrCmp (rtnName, curRtnName);
+	return + (Hlp_StrCmp (rtnName, curRtnName));
 };
 
 func string NPC_GetAIStateName (var int slfInstance) {
@@ -916,14 +946,18 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 
 	stateName = STR_Upper (stateName);
 
-	//We will allow wild-card '*' at the end
-	if (STR_EndsWith (stateName, "*")) {
-		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (stateName, "*");
 
-		return (STR_StartsWith (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
+
+		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
 	};
 
-	return (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	return + (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
 };
 
 func int NPC_WasInStateName (var int slfInstance, var string stateName) {
@@ -937,27 +971,18 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 	var string lastStateName;
 	lastStateName = GetSymbolName (slf.state_lastAIState);
 
-	//We will allow wild-card '*' at the end
-	if (STR_EndsWith (stateName, "*")) {
-		stateName = STR_left (stateName, STR_Len (stateName) - 1);
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (stateName, "*");
 
-		return (STR_StartsWith (lastStateName, stateName));
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
+
+		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
 	};
 
-	return (Hlp_StrCmp (lastStateName, stateName));
-};
-
-func int NPC_GetNPCState (var int slfInstance) {
-	//Here we have inconsistency with class declaration in G1/G2A - different naming, so we have to work with offset instead
-	//oCNpc.state_vfptr	// 0x0470
-	//oCNpc.state_vtbl	// 0x0588
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int offset; offset = MEMINT_SwitchG1G2 (1136, 1416);
-
-	return (_@ (slf) + offset);
+	return + (Hlp_StrCmp (lastStateName, stateName));
 };
 
 func int NPC_GetDailyRoutineFuncID (var int slfInstance) {
@@ -1160,7 +1185,7 @@ func void NPC_RemoveFromFocus (var int slfInstance, var int vobPtr) {
 	};
 };
 
-func void NPC_ClearAIState (var int slfInstance) {
+func void Npc_ClearAIState (var int slfInstance) {
 	//0x006C61A0 public: void __thiscall oCNpc_States::ClearAIState(void)
 	const int oCNpc_States__ClearAIState_G1 = 7102880;
 
@@ -1170,10 +1195,14 @@ func void NPC_ClearAIState (var int slfInstance) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 	if (!statePtr) { return; };
 
-	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__ClearAIState_G1, oCNpc_States__ClearAIState_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__ClearAIState_G1, oCNpc_States__ClearAIState_G2));
+		call = CALL_End();
+	};
 };
 
-func void NPC_EndCurrentState (var int slfInstance) {
+func void Npc_EndCurrentState (var int slfInstance) {
 	//0x006C6340 public: void __thiscall oCNpc_States::EndCurrentState(void)
 	const int oCNpc_States__EndCurrentState_G1 = 7103296;
 
@@ -1183,5 +1212,28 @@ func void NPC_EndCurrentState (var int slfInstance) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 	if (!statePtr) { return; };
 
-	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__EndCurrentState_G1, oCNpc_States__EndCurrentState_G2));
+		call = CALL_End();
+	};
+};
+
+func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
+	//0x006C7350 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
+	const int oCNpc_States__InitAIStateDriven_G1 = 7107408;
+
+	//0x0076E8E0 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
+	const int oCNpc_States__InitAIStateDriven_G2 = 7792864;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (posPtr));
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__InitAIStateDriven_G1, oCNpc_States__InitAIStateDriven_G2));
+		call = CALL_End();
+	};
+};
 };

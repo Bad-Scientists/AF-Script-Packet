@@ -28,7 +28,7 @@ func void Subtitles_EnhancedPickLocking () {
 	AI_Output (self, self, "DIA_EnhancedPickLocking_MissingSkill_15_05");		//Sesame, open up! Nothing ...
 };
 
-func void EnhancedPickLocking_MissingKey (C_NPC slf) {
+func void EnhancedPickLocking_MissingKey (var C_NPC slf) {
 	if (PC_PickLockOutputVariation > 5) { PC_PickLockOutputVariation = 1; };
 
 	//G1 vanilla output

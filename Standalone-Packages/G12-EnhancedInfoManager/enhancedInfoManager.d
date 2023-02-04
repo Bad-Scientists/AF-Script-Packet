@@ -2082,8 +2082,12 @@ MEM_InformationMan.LastMethod:
 					self = _^ (MEM_InformationMan.npc);
 					other = _^ (MEM_InformationMan.player);
 
-					MEM_CallByID (dlgInstance.conditions);
-					retVal = MEMINT_PopInt();
+					retVal = FALSE;
+
+					if (dlgInstance.conditions > -1) {
+						MEM_CallByID (dlgInstance.conditions);
+						retVal = MEMINT_PopInt();
+					};
 					//<--
 
 					dlgDescription = dlgInstance.description;
@@ -2106,8 +2110,12 @@ MEM_InformationMan.LastMethod:
 						self = _^ (MEM_InformationMan.npc);
 						other = _^ (MEM_InformationMan.player);
 
-						MEM_CallByID (dlgInstance.conditions);
-						retVal = MEMINT_PopInt();
+						retVal = FALSE;
+						if (dlgInstance.conditions > -1) {
+							MEM_CallByID (dlgInstance.conditions);
+							retVal = MEMINT_PopInt();
+						};
+
 						choiceConditionEvaluated = TRUE;
 					};
 					//<--
@@ -3452,8 +3460,11 @@ func void _hook_oCInformationManager_CollectChoices () {
 	other = _^ (MEM_InformationMan.player);
 
 	//--> re-evaluate dialog conditions
-	MEM_CallByID (dlgInstance.conditions);
-	var int retVal; retVal = MEMINT_PopInt();
+	var int retVal; retVal = FALSE;
+	if (dlgInstance.conditions > -1) {
+		MEM_CallByID (dlgInstance.conditions);
+		retVal = MEMINT_PopInt();
+	};
 	//<--
 
 	var int i; i = 0;
@@ -3588,8 +3599,13 @@ func void _hook_oCInformationManager_CollectInfos () {
 
 				self = _^ (MEM_InformationMan.npc);
 				other = _^ (MEM_InformationMan.player);
-				MEM_CallByID (dlgInstance.conditions);
-				var int retVal; retVal = MEMINT_PopInt();
+
+				var int retVal; retVal = FALSE;
+
+				if (dlgInstance.conditions > -1) {
+					MEM_CallByID (dlgInstance.conditions);
+					retVal = MEMINT_PopInt();
+				};
 
 				if (Choice_IsHidden (dlgInstance.description)) {
 					//hide
@@ -3674,7 +3690,7 @@ func void G12_EnhancedInfoManager_Init () {
 	_InfoManagerNumKeysControls = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSCONTROLS", 1);
 	_InfoManagerNumKeysNumbers = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSNUMBERS", 0);
 
-	_InfoManagerAlphaBlendFunc = API_GetSymbolIntValue ("INFOMANAGERALPHABLENDFUNC", 1);
+	_InfoManagerAlphaBlendFunc = API_GetSymbolIntValue ("INFOMANAGERALPHABLENDFUNC", 3);
 
 	_InfoManagerRememberSelectedChoice = API_GetSymbolIntValue ("INFOMANAGERREMEMBERSELECTEDCHOICE", cIM_RememberSelectedChoice_Spinners);
 	//--

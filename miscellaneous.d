@@ -866,3 +866,177 @@ func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
 
 	zCCamera_Project (activeCam, posPtr, ptrX, ptrY);
 };
+
+//--
+
+/*
+ *	Npc_SetAIStatePos
+ *	 - function sets aiStatePosition to current position in the world
+ */
+func void Npc_SetAIStatePos (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	var int statePtr; statePtr = NPC_GetNPCState (slf);
+	if (!statePtr) { return; };
+	var oCNPC_States state; state = _^ (statePtr);
+
+	if (state.hasRoutine) { return; };
+
+	//Update aiStateDriven - to kick in ai state
+	state.aiStateDriven = 1;
+
+	//Update ai position
+	slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
+	slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
+	slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
+};
+
+/*
+ *	Npc_GetCurrentWorldPos
+ *	 - function gets current world position of an Npc (either from Routine manager or using spawnPoint in case of aiStateDriven logic)
+ */
+func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Get NPC state
+	var int statePtr; statePtr = NPC_GetNPCState (slf);
+	if (statePtr) {
+		var oCNPC_States state; state = _^ (statePtr);
+
+		//Get routine position
+		if (state.hasRoutine) {
+			var int posPtr; posPtr = oCRtnManager_GetRoutinePos (slf);
+			MEM_CopyBytes (posPtr, targetPosPtr, 12);
+			MEM_Free (posPtr);
+		} else {
+			//Update aiStateDriven - to kick in AI state
+			state.aiStateDriven = 1;
+
+			//Use spawnPoint
+			if (STR_Len (slf.spawnPoint)) {
+				//Is this waypoint?
+				var int wpPtr; wpPtr = SearchWaypointByName (slf.spawnPoint);
+				if (wpPtr) {
+					var zCWaypoint wp; wp = _^ (wpPtr);
+					MEM_CopyBytes (_@ (wp.pos), _@ (slf.state_aiStatePosition), 12);
+				} else {
+					//Is this vob?
+					var int vobPtr; vobPtr = MEM_SearchVobByName (slf.spawnPoint);
+
+					if (vobPtr) {
+						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (slf.state_aiStatePosition))) {
+						};
+					};
+				};
+			};
+
+			//Update waypoint
+			Npc_InitAIStateDriven (slf, _@ (slf.state_aiStatePosition));
+
+			//Get AI state position
+			MEM_CopyBytes (_@ (slf.state_aiStatePosition), targetPosPtr, 12);
+		};
+	};
+};
+
+/*
+ *	Wld_EnableNpc
+ *	 -
+ */
+func void Wld_EnableNpc (var int slfInstance) {
+	var int pos[3];
+
+	//Get target Npc current world position
+	Npc_GetCurrentWorldPos (slfInstance, _@ (pos));
+
+	//oCNpc::Enable @ position
+	oCNpc_Enable (slfInstance, _@ (pos));
+};
+
+/*
+ *	NPC_TeleportToNpc
+ *	 - function teleports one Npc to another Npc
+ */
+func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var oCNpc npc; npc = Hlp_GetNpc (npcInstance);
+	if (!Hlp_IsValidNPC (npc)) { return; };
+
+	var int pos[3];
+
+	//Default position - current world position
+	if (zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) {
+		//...
+	};
+
+	//Get target Npc current world position
+	Npc_GetCurrentWorldPos (npc, _@ (pos));
+
+	var zCVob vob; vob = Hlp_GetNPC (slf);
+
+	//Hard-update position
+	vob.trafoObjToWorld[3] = pos[0];
+	vob.trafoObjToWorld[7] = pos[1];
+	vob.trafoObjToWorld[11] = pos[2];
+
+	//oCNpc::Enable @ position
+	oCNpc_Enable (npc, _@ (pos));
+};
+
+/*
+ *	Npc_EM_SendTozSpy
+ *	 - list current events in AI queue to zSpy
+ */
+func void Npc_EM_SendTozSpy (var int slfInstance) {
+	var int count; count = NPC_EM_GetEventCount (slfInstance);
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	var string s;
+
+	s = ConcatStrings ("Npc_EM_SendTozSpy: ", slf.Name);
+	s = ConcatStrings (s, " -->");
+
+	zSpy_Info (s);
+
+	if (count) {
+		var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+		repeat (i, count); var int i;
+			var string eventName;
+			eventName = NPC_EM_GetEventName (slfInstance, i);
+
+			var int eMsg;
+			eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+			if (zCEventMessage_IsHighPriority (eMsg)) {
+				eventName = ConcatStrings (eventName, " (high prio)");
+			};
+
+			if (zCEventMessage_IsOverlay (eMsg)) {
+				eventName = ConcatStrings (eventName, " (overlay)");
+			};
+
+			if (zCEventMessage_IsDeleted (eMsg)) {
+				eventName = ConcatStrings (eventName, " (deleted)");
+			};
+
+			if (zCEventManager_IsRunning (eMgr, eMsg)) {
+				eventName = ConcatStrings (eventName, " (running)");
+			};
+
+			if ((slf.lastLookMsg == eMsg) && (eMsg)) {
+				eventName = ConcatStrings (eventName, " (lastLookMsg)");
+			};
+
+			zSpy_Info (eventName);
+		end;
+	} else {
+		zSpy_Info ("AI queue is empty.");
+	};
+
+	zSpy_Info ("<--");
+};

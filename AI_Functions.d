@@ -200,7 +200,7 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
-	zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
+	//zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
 
 
 	var int posNpc[3];
@@ -219,8 +219,8 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (toWp)) {
-		zSpy_Info ("... target waypoint - can't see vob. Waynet might not be reliable.");
-		zSpy_Info ("<--");
+		//zSpy_Info ("... target waypoint - can't see vob. Waynet might not be reliable.");
+		//zSpy_Info ("<--");
 		return;
 	};
 
@@ -234,8 +234,8 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (fromWp)) {
-		zSpy_Info ("... npc waypoint - can't see npc. Waynet might not be reliable.");
-		zSpy_Info ("<--");
+		//zSpy_Info ("... npc waypoint - can't see npc. Waynet might not be reliable.");
+		//zSpy_Info ("<--");
 		return;
 	};
 
@@ -273,10 +273,10 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	var int isTooFar; isTooFar = (distWaynet > distToVobTolerance);
 
-	zSpy_Info (ConcatStrings ("... dist air: ", IntToString (RoundF (distToVob))));
-	zSpy_Info (ConcatStrings ("... dist tolerance (120% air dist): ", IntToString (distToVobTolerance)));
-	zSpy_Info (ConcatStrings ("... dist waynet: ", IntToString (distWaynet)));
-	zSpy_Info (ConcatStrings ("... ", zCRoute_GetDesc (routePtr)));
+	//zSpy_Info (ConcatStrings ("... dist air: ", IntToString (RoundF (distToVob))));
+	//zSpy_Info (ConcatStrings ("... dist tolerance (120% air dist): ", IntToString (distToVobTolerance)));
+	//zSpy_Info (ConcatStrings ("... dist waynet: ", IntToString (distWaynet)));
+	//zSpy_Info (ConcatStrings ("... ", zCRoute_GetDesc (routePtr)));
 
 //-- Detect chasms
 
@@ -385,8 +385,8 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 		};
 
 		if (Debug_GenerateWaypoints) {
-			zSpy_Info (ConcatStrings ("... chasmDetected", IntToString (chasmDetected)));
-			zSpy_Info (ConcatStrings ("... distF", toStringF (distF)));
+			//zSpy_Info (ConcatStrings ("... chasmDetected", IntToString (chasmDetected)));
+			//zSpy_Info (ConcatStrings ("... distF", toStringF (distF)));
 
 			if (i > 0) {
 				var int heightDelta;
@@ -396,7 +396,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 				//heightDelta = heightDelta - lastHeightDelta;
 
-				zSpy_Info (ConcatStrings ("... height check ", IntToString (heightDelta)));
+				//zSpy_Info (ConcatStrings ("... height check ", IntToString (heightDelta)));
 
 				if (abs (heightDelta) > 50) {
 					chasmDetected = TRUE;
@@ -426,43 +426,43 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	if (!chasmDetected) {
 		//if waypoint is too far from vob & it is not on the way to vob ... ignore
 		if ((wpDistToVob > 300) && (npcDistToVobWp > RoundF (distToVob))) {
-			zSpy_Info ("... target waypoint too far");
-			zSpy_Info ("<--");
+			//zSpy_Info ("... target waypoint too far");
+			//zSpy_Info ("<--");
 			return;
 		};
 
 		//if waypoint is too far from Npc & it is not on the way to vob ... ignore
 		if ((wpDistToNpc > 300) && (RoundF (vobDistToFromWp) > RoundF (distToVob))) {
-			zSpy_Info ("... npc waypoint too far");
-			zSpy_Info ("<--");
+			//zSpy_Info ("... npc waypoint too far");
+			//zSpy_Info ("<--");
 			return;
 		};
 
 		//If Npc can see vob - and if waynet navigation is longer then air distance - ignore ...
 		if (oCNpc_CanSee (slfInstance, vobPtr, 1) && isTooFar) {
-			zSpy_Info ("... npc can see vob + distance through waynet navigation > air distance");
-			zSpy_Info ("<--");
+			//zSpy_Info ("... npc can see vob + distance through waynet navigation > air distance");
+			//zSpy_Info ("<--");
 			return;
 		};
 
 		if (isTooFar) {
-			zSpy_Info ("... distance through waynet navigation > air distance ... but npc can't see vob - using waynet");
+			//zSpy_Info ("... distance through waynet navigation > air distance ... but npc can't see vob - using waynet");
 		};
 	} else {
-		zSpy_Info ("... chasm detected!");
+		//zSpy_Info ("... chasm detected!");
 	};
 
 	if ((!Hlp_StrCmp (fromWp, toWp)) || isTooFar || chasmDetected) {
-		var string s; s = "... navigating using waynet, from: ";
-		s = ConcatStrings (s, fromWp);
-		s = ConcatStrings (s, " to: ");
-		s = ConcatStrings (s, toWp);
-		zSpy_Info (s);
+		//var string s; s = "... navigating using waynet, from: ";
+		//s = ConcatStrings (s, fromWp);
+		//s = ConcatStrings (s, " to: ");
+		//s = ConcatStrings (s, toWp);
+		//zSpy_Info (s);
 
 		AI_GotoWp (slf, toWp);
 	};
 
-	zSpy_Info ("<--");
+	//zSpy_Info ("<--");
 };
 
 /*
@@ -534,34 +534,33 @@ func void _AI_TeleportKeepQueue (var string vobName) {
 
 	var int pos[3];
 
-	var zCVob Vob;
+	var zCVob vob;
 	var int vobPtr;
 
-	//Search for Vob Name
+	//Search for vob Name
 	vobPtr = MEM_SearchVobByName (vobName);
 
-	//if Vob does not exist - search for waypoint
+	//if vob does not exist - search for waypoint
 	if (!vobPtr) {
 		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
 
 		//if waypoint does not exist - exit
 		if (!wpPtr) { return; };
 
-		var zCWaypoint wp;
-		wp = _^ (wpPtr);
+		var zCWaypoint wp; wp = _^ (wpPtr);
 		copyVector (_@ (wp.pos), _@ (pos));
 	} else {
-		Vob = _^ (vobPtr);
+		vob = _^ (vobPtr);
 		TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
 	};
 
-	Vob = Hlp_GetNPC (self);
+	vob = Hlp_GetNPC (self);
 
 	//Update hero's position
 	//TODO: teleport to Vob needs to be updated
-	Vob.trafoObjToWorld[3] = pos[0];
-	Vob.trafoObjToWorld[7] = pos[1];
-	Vob.trafoObjToWorld[11] = pos[2];
+	vob.trafoObjToWorld[3] = pos[0];
+	vob.trafoObjToWorld[7] = pos[1];
+	vob.trafoObjToWorld[11] = pos[2];
 
 	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", hero, hero, 0, 0, 0, FALSE);
 };

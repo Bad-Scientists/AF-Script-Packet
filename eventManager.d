@@ -590,79 +590,17 @@ func string zCEventMusicControler_MD_GetSubTypeString (var int eMsg, var int sub
 	return CALL_RetValAszstring ();
 };
 
-/*
-
-0x00417DD0 public: class zCEventMessage * __thiscall zCCutscene::GetNextMessage(struct zTCSBlockPosition &)
-0x00417E20 public: class zCCSBlockBase * __thiscall zCCutscene::GetNextBlock(struct zTCSBlockPosition &)
-
-00401DF0  .text     Debug data           ?_GetClassDef@zCEventMessage@@EBEPAVzCClassDef@@XZ
-00401E00  .text     Debug data           ?IsOverlay@zCEventMessage@@UAEHXZ
-00401E10  .text     Debug data           ?IsNetRelevant@zCEventMessage@@UAEHXZ
-00401E20  .text     Debug data           ?IsHighPriority@zCEventMessage@@UAEHXZ
-00401E30  .text     Debug data           ?IsJob@zCEventMessage@@UAEHXZ
-00401E40  .text     Debug data           ?Delete@zCEventMessage@@UAEXXZ
-00401E50  .text     Debug data           ?IsDeleteable@zCEventMessage@@UAEHXZ
-00401E60  .text     Debug data           ?IsDeleted@zCEventMessage@@UAEHXZ
-00401E70  .text     Debug data           ?SetCutsceneMode@zCEventMessage@@UAEXH@Z
-00401E80  .text     Debug data           ?GetCutsceneMode@zCEventMessage@@UAEHXZ
-00401E90  .text     Debug data           ?MD_GetNumOfSubTypes@zCEventMessage@@UAEHXZ
-00401EA0  .text     Debug data           ?MD_GetSubTypeString@zCEventMessage@@UAE?AVzSTRING@@H@Z
-00401EE0  .text     Debug data           ?MD_GetVobRefName@zCEventMessage@@UAE?AVzSTRING@@XZ
-00401F20  .text     Debug data           ?MD_SetVobRefName@zCEventMessage@@UAEXABVzSTRING@@@Z
-00401F30  .text     Debug data           ?MD_SetVobParam@zCEventMessage@@UAEXPAVzCVob@@@Z
-00401F40  .text     Debug data           ?MD_GetTimeBehavior@zCEventMessage@@UAE?AW4zTTimeBehavior@1@XZ
-00401F50  .text     Debug data           ?MD_GetMinTime@zCEventMessage@@UAEMXZ
-
-00452600  .text     Debug data           ?GetNumMessages@zCEventManager@@UAEHXZ
-005D49B0  .text     Debug data           ?GetEM@zCVob@@QAIPAVzCEventManager@@H@Z
-005D8E80  .text     Debug data           ?GetMessageID@zCEventMessage@@IBEKXZ
-005D8EA0  .text     Debug data           ?AnalyzeMessageID@zCEventMessage@@CAXKAAG0@Z
-005D8EC0  .text     Debug data           ?CreateFromID@zCEventMessage@@KAPAV1@K@Z
-005D8EE0  .text     Debug data           ?PackToBuffer@zCEventMessage@@QAEXAAVzCBuffer@@PAVzCEventManager@@@Z
-005D8F30  .text     Debug data           ?CreateFromBuffer@zCEventMessage@@SAPAV1@AAVzCBuffer@@PAVzCEventManager@@@Z
-006DD030  .text     Debug data           ?KillMessages@zCEventManager@@QAEXXZ
-006DD090  .text     Debug data           ?OnMessage@zCEventManager@@UAEXPAVzCEventMessage@@PAVzCVob@@@Z
-006DD970  .text     Debug data           ?SendMessageToHost@zCEventManager@@MAEXPAVzCEventMessage@@PAVzCVob@@1@Z
-006DDB10  .text     Debug data           ?SetShowMessageCommunication@zCEventManager@@SAXH@Z
-006DDB20  .text     Debug data           ?GetShowMessageCommunication@zCEventManager@@SAHXZ
-006DDB30  .text     Debug data           ?ShowMessageCommunication@zCEventManager@@IAEXPAVzCVob@@0@Z
-006DDD10  .text     Debug data           ?ProcessMessageList@zCEventManager@@MAEXXZ
-006DDE20  .text     Debug data           ?SetActive@zCEventManager@@UAEXH@Z
-006DDFA0  .text     Debug data           ?Delete@zCEventManager@@MAEXPAVzCEventMessage@@@Z
-006DDFE0  .text     Debug data           ?RemoveFromList@zCEventManager@@MAEXPAVzCEventMessage@@@Z
-006DE030  .text     Debug data           ?InsertInList@zCEventManager@@MAEXPAVzCEventMessage@@@Z
-006DE260  .text     Debug data           ?SetCutscene@zCEventManager@@UAEXPAVzCCutscene@@@Z
-006DE2D0  .text     Debug data           ?GetCutscene@zCEventManager@@UAEPAVzCCutscene@@XZ
-006DE2E0  .text     Debug data           ?GetCutsceneMode@zCEventManager@@UAEHXZ
-006DE2F0  .text     Debug data           ?Clear@zCEventManager@@UAEXXZ
-006DE4F0  .text     Debug data           ?IsEmpty@zCEventManager@@UAEHH@Z
-006DE550  .text     Debug data           ?IsRunning@zCEventManager@@UAEHPAVzCEventMessage@@@Z
-006DE580  .text     Debug data           ?GetActiveMessage@zCEventManager@@UAEPAVzCEventMessage@@XZ
-006DE5C0  .text     Debug data           ?Print_db@zCEventManager@@IAEXABVzSTRING@@PAVzCVob@@@Z
-006DE5D0  .text     Debug data           ?OnTouch@zCEventManager@@UAEXPAVzCVob@@@Z
-006DE690  .text     Debug data           ?OnUntouch@zCEventManager@@UAEXPAVzCVob@@@Z
-006DE750  .text     Debug data           ?OnTouchLevel@zCEventManager@@UAEXXZ
-006DE760  .text     Debug data           ?OnTrigger@zCEventManager@@UAEXPAVzCVob@@0@Z
-006DE820  .text     Debug data           ?OnUntrigger@zCEventManager@@UAEXPAVzCVob@@0@Z
-006DE8E0  .text     Debug data           ?OnDamage@zCEventManager@@UAEXPAVzCVob@@0MHABVzVEC3@@@Z
-006DE9B0  .text     Debug data           ?GetEventMessage@zCEventManager@@UAEPAVzCEventMessage@@H@Z
-006DE9C0  .text     Debug data           ?ShowList@zCEventManager@@UAEXHH@Z
-006DEC70  .text     Debug data           ?Archive@zCEventManager@@MAEXAAVzCArchiver@@@Z
-006DECB0  .text     Debug data           ?Unarchive@zCEventManager@@MAEXAAVzCArchiver@@@Z
-006DED20  .text     Debug data           ?Remove@?$zCArray@PAVzCEventManager@@@@QAEXABQAVzCEventManager@@@Z
-*/
-
-func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) {
+func int oCNpc_GetTalkingWithMessage (var int slfInstance, var int npcInstance) {
 	//0x00633620 public: class zCEventMessage * __thiscall oCNpc::GetTalkingWithMessage(class oCNpc *)
-	const int oCNPC__GetTalkingWithMessage_G1 = 6501920;
+	const int oCNpc__GetTalkingWithMessage_G1 = 6501920;
 
 	//0x006BCFB0 public: class zCEventMessage * __thiscall oCNpc::GetTalkingWithMessage(class oCNpc *)
-	const int oCNPC__GetTalkingWithMessage_G2 = 7065520;
+	const int oCNpc__GetTalkingWithMessage_G2 = 7065520;
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var oCNPC npc; npc = Hlp_GetNPC (npcinstance);
+	var oCNpc npc; npc = Hlp_GetNPC (npcInstance);
 	if (!Hlp_IsValidNPC (npc)) { return 0; };
 
 	var int slfPtr; slfPtr = _@ (slf);
@@ -671,7 +609,7 @@ func int oCNPC_GetTalkingWithMessage (var int slfinstance, var int npcinstance) 
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNPC__GetTalkingWithMessage_G1, oCNPC__GetTalkingWithMessage_G2));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetTalkingWithMessage_G1, oCNpc__GetTalkingWithMessage_G2));
 		call = CALL_End();
 	};
 
@@ -1476,10 +1414,10 @@ func int zcEventManager_GetIndexByEventName (var int eMgr, var string eventName)
 
 /*
  *	Function returns number of Event messages in NPC's Event Manager
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  */
-func int NPC_EM_GetEventCount (var int slfinstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func int NPC_EM_GetEventCount (var int slfInstance){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -1493,13 +1431,13 @@ func int NPC_EM_GetEventCount (var int slfinstance){
 
 /*
  *	Function returns Event Name from NPC's Event Manager at index
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *		index			Event Message index (starts at 0)
  */
-func string NPC_EM_GetEventName (var int slfinstance, var int index){
+func string NPC_EM_GetEventName (var int slfInstance, var int index){
 	if (index < 0) { return ""; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
@@ -1509,11 +1447,11 @@ func string NPC_EM_GetEventName (var int slfinstance, var int index){
 
 /*
  *	Function returns number of Event Messages which are in NPC's Event Manager (by name)
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *		eventName		Event Name
  */
-func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventName){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func int NPC_EM_GetEventCountByEventName (var int slfInstance, var string eventName){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
@@ -1524,13 +1462,13 @@ func int NPC_EM_GetEventCountByEventName (var int slfinstance, var string eventN
 
 /*
  *	Function returns Event Name of Active Event Message from NPC's Event Manager
- *		slfinstance		NPC instance
+ *		slfInstance		NPC instance
  *
  *
  *	Hmmm this one does not return same thing as NPC_EM_GetEventName (eMgr, 0);
  */
-func string NPC_EM_GetActiveEventName (var int slfinstance){
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+func string NPC_EM_GetActiveEventName (var int slfInstance){
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	//Get Event Manager
@@ -1549,7 +1487,7 @@ func string NPC_EM_GetActiveEventName (var int slfinstance){
 };
 
 func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	//Get Event Manager
@@ -1563,7 +1501,7 @@ func int NPC_EM_GetEventMessage (var int slfInstance, var int index) {
 };
 
 func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string eventName) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfinstance);
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
 	//Get Event Manager
