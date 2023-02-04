@@ -1,3 +1,13 @@
+func string CC_ShowRoutine (var string newRtn) {
+	var oCNPC her; her = Hlp_GetNPC (hero);
+
+	if (!Hlp_Is_oCNpc (her.focus_vob)) { return "No NPC in focus."; };
+
+	var C_NPC npc; npc = _^ (her.focus_vob);
+	var string curRtn; curRtn = NPC_GetRoutineName (npc);
+	return curRtn;
+};
+
 func string CC_SetRoutine (var string newRtn) {
 	var oCNPC her; her = Hlp_GetNPC (hero);
 
@@ -37,5 +47,6 @@ func string CC_SetRoutine (var string newRtn) {
 };
 
 func void CC_SetRoutine_Init () {
+	CC_Register (CC_ShowRoutine, "show routine", "Display NPC routine.");
 	CC_Register (CC_SetRoutine, "set routine", "Change NPC routine.");
 };
