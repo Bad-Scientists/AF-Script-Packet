@@ -186,10 +186,11 @@ func int View_IsOpen (var int hndl) {
 
 func int zCView_Noise_IsActive () {
 	const int cGAME_VIEW_NOISE = 5;
-	var int zCView_NoisePtr; zCView_NoisePtr = MEM_Game.array_view [cGAME_VIEW_NOISE];
 
-	if (zCView_NoisePtr) {
-		var zCView v; v = _^ (zCView_NoisePtr);
+	var int ptr; ptr = MEM_Game.array_view [cGAME_VIEW_NOISE];
+
+	if (ptr) {
+		var zCView v; v = _^ (ptr);
 		return v.ondesk;
 	};
 
