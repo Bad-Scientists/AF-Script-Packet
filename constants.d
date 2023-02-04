@@ -11,6 +11,26 @@ const int NPC_GAME_NORMAL = 0; //When player is taking item
 const int NPC_GAME_PLUNDER = 1; //When player is looting Npc
 const int NPC_GAME_STEAL = 2; //When player is stealing from Npc (in RM we won't have this situation)
 
+const int MAX_CTRL_VOBS = 80;
+
+//enum zTAICamMsg {
+const int zPLAYER_MOVED_FORWARD = 1 << 1;
+const int zPLAYER_MOVED_BACKWARD = 1 << 2;
+const int zPLAYER_MOVED_LEFT = 1 << 3;
+const int zPLAYER_MOVED_RIGHT = 1 << 4;
+const int zPLAYER_MOVED_UP = 1 << 5;
+const int zPLAYER_MOVED_DOWN = 1 << 6;
+const int zPLAYER_ROTATED_LEFT = 1 << 7;
+const int zPLAYER_ROTATED_RIGHT = 1 << 8;
+const int zPLAYER_ROTATED_UP = 1 << 9;
+const int zPLAYER_ROTATED_DOWN = 1 << 10;
+const int zPLAYER_MOVED = 1 << 11;
+const int zPLAYER_STAND = 1 << 12;
+const int zPLAYER_ROTATED = 1 << 13;
+const int zPLAYER_ROT_NONE = 1 << 14;
+const int zPLAYER_BEAMED = 1 << 15;
+//};
+
 
 /*
  *	GFA has these constants defined globally - so in order to be compatible - we will not have them defined globally - only use them locally where we need them.
