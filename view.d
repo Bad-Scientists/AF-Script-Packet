@@ -224,6 +224,18 @@ func int View_IsOpen (var int hndl) {
 	return + ViewPtr_IsOpen (viewPtr);
 };
 
+func void ViewPtr_SetAlphaFunc (var int viewPtr, var int alphaFunc) {
+	if (!viewPtr) { return; };
+	var zCView view; view = _^ (viewPtr);
+	view.alphaFunc = alphaFunc;
+};
+
+func void View_SetAlphaFunc (var int hndl, var int alphaFunc) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetAlphaFunc (viewPtr, alphaFunc);
+};
+
 //-- engine stuff
 
 func int zCView_Noise_IsActive () {
