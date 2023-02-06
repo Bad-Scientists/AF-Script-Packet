@@ -149,15 +149,36 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 	ViewPtr_SetAlphaAll (viewPtr, v.alpha);
 };
 
-func void View_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
-	if (!Hlp_IsValidHandle (hndl)) { return; };
-	var int viewPtr; viewPtr = getPtr (hndl);
-	ViewPtr_SetTextAndFontColor (viewPtr, texts, color, margin);
+func void ViewPtr_SetTextMarginAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
+	ViewPtr_SetTextAndFontColor (viewPtr, texts, color);
+	ViewPtr_AlignText_Fixed (viewPtr, margin);
 };
 
-func void View_SetText (var int hndl, var string texts, var int margin) {
-	View_SetTextAndFontColor (hndl, texts, -1, margin);
+//-- View_SetTextAndFontColor
+
+func void View_SetTextAndFontColor (var int hndl, var string texts, var int color) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetTextAndFontColor (viewPtr, texts, color);
 };
+
+func void View_SetTextMarginAndFontColor (var int hndl, var string texts, var int color, var int margin) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetTextMarginAndFontColor (viewPtr, texts, color, margin);
+};
+
+//-- View_SetText
+
+func void View_SetText (var int hndl, var string texts) {
+	ViewPtr_SetTextAndFontColor (hndl, texts, -1);
+};
+
+func void View_SetTextMargin (var int hndl, var string texts, var int margin) {
+	View_SetTextMarginAndFontColor (hndl, texts, -1, margin);
+};
+
+//--
 
 func void ViewPtr_SetFontColor (var int viewPtr, var int color) {
 	if (!viewPtr) { return; };
