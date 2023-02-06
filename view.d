@@ -52,7 +52,7 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	};
 };
 
-func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
+func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color) {
 	if (!viewPtr) { return; };
 
 	var zCView v; v = _^ (viewPtr);
@@ -140,8 +140,6 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 		//Or add texts - if they were not added yet
 		ViewPtr_AddText (viewPtr, vposX, vposY, texts, fontName, color);
 	};
-
-	ViewPtr_AlignText_Fixed (viewPtr, margin);
 
 	ViewPtr_SetAlphaAll (viewPtr, v.alpha);
 };
