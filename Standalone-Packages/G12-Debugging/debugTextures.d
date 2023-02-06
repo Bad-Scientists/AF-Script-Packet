@@ -56,7 +56,7 @@ func void DisplayTextureName__DebugTextures (var int posPtr, var string texts, v
 	View_MoveTo (hView__DebugTextures, X - (viewWidth / 2), Y);
 	View_Resize (hView__DebugTextures, viewWidth, (fontHeight * linesCount) + linesCount);
 
-	View_SetText (hView__DebugTextures, texts, 0);
+	View_SetTextMargin (hView__DebugTextures, texts, 0);
 };
 
 func void FrameFunction__DebugTextures () {
