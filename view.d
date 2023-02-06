@@ -90,8 +90,11 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 					vt = _^ (l.data);
 
 					vt.text = text;
-					vt.color = color;
-					vt.colored = (color != -1);
+
+					if (color != -1) {
+						vt.color = color;
+						vt.colored = (color != -1);
+					};
 
 					var string vtFontName; vtFontName = Print_GetFontName (vt.font);
 					var int vtFontHeight; vtFontHeight = Print_ToVirtual (Print_GetFontHeight (vtFontName), v.psizey);
