@@ -113,13 +113,26 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 
 		//Remove extra text views
 		if (!flagListExtended) {
-			while (l.next);
-				var zCList del; del = _^ (l.next);
-				l.next = del.next;
-				MEM_Free (_@ (del));
+			//Not sure why ... but when I tried this with some engine views - game crashed:
+			//23:710E016A (0x219BEE20 0x006E9208 0x008DCE50 0x00000000) MSVCR100.dll, free()+28 byte(s) .... <zError.cpp,#467>
+			//var int n; n = l.next;
+			//l.next = 0;
 
-				if (l.next) {
-					l = _^ (l.next);
+			//while (n);
+			//	var zCList del; del = _^ (n);
+
+			//	n = del.next;
+			//	MEM_Free (_@ (del));
+			//end;
+
+			//So I am using timed property - seems like engine view will remove these text views properly on its own
+			while (l.next);
+				l = _^ (l.next);
+
+				if (l.data) {
+					vt = _^ (l.data);
+					vt.timed = TRUE;
+					vt.timer = FLOATNULL;
 				};
 			end;
 		};
