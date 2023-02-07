@@ -23,6 +23,40 @@ func void zCView_CheckTimedText (var int viewPtr) {
 	};
 };
 
+func void ViewPtr_DeleteText_Safe (var int viewPtr) {
+	if (!viewPtr) { return; };
+
+	var zCView v; v = _^ (viewPtr);
+
+	var zCList l;
+	var int list; list = v.textLines_next;
+
+	if (!list) { return; };
+
+	var zCViewText vt;
+
+	l = _^ (list);
+
+	while (l.next);
+		l = _^ (l.next);
+
+		if (l.data) {
+			vt = _^ (l.data);
+			vt.timed = TRUE;
+			vt.timer = FLOATNULL;
+		};
+	end;
+
+	zCView_CheckTimedText (viewPtr);
+};
+
+func void View_DeleteText_Safe (var int hndl, var int color) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+
+	ViewPtr_DeleteText_Safe (viewPtr, color);
+};
+
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
 func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	if (!viewPtr) { return; };
