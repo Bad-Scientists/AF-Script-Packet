@@ -49,11 +49,11 @@ func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	zCList_zCViewText_DeleteListDatas (_@ (v.textLines_data));
 };
 
-func void View_DeleteText_Safe (var int hndl, var int color) {
+func void View_DeleteText_Safe (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 	var int viewPtr; viewPtr = getPtr (hndl);
 
-	ViewPtr_DeleteText_Safe (viewPtr, color);
+	ViewPtr_DeleteText_Safe (viewPtr);
 };
 
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
