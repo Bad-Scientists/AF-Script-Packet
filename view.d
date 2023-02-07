@@ -41,6 +41,16 @@ func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
 	};
 };
 
+/*
+ *	zCView_DeleteText alternatives
+ */
+
+//Not sure why ... but when I tried this with some engine views - game crashed:
+//23:710E016A (0x219BEE20 0x006E9208 0x008DCE50 0x00000000) MSVCR100.dll, free()+28 byte(s) .... <zError.cpp,#467>
+
+//LeGo-devs informed, for now I will use this method ... we can change it if needed later :)
+//https://forum.worldofplayers.de/forum/threads/1505251-Skriptpaket-LeGo-4/page27?p=27126692#post27126692
+
 func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	if (!viewPtr) { return; };
 	var zCView v; v = _^ (viewPtr);
@@ -178,7 +188,7 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//end;
 
 			if (l.next) {
-				//Disconnect list
+				//Dettach list
 				var int n; n = l.next;
 				l.next = 0;
 
