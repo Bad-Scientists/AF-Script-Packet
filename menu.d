@@ -148,3 +148,23 @@ func int Log_GetNoOfTopics(var int logSection, var int logStatus) {
     return count;
 };
 
+/*
+ *	zCMenuItem functions
+ */
+
+/*
+ *	zCMenuItem_GetByName
+ *	 - same as MEM_GetMenuItemBystring ?
+ */
+func int zCMenuItem_GetByName (var string menuItemName) {
+	//0x004D17A0 public: static class zCMenuItem * __cdecl zCMenuItem::GetByName(class zSTRING const &)
+	const int zCMenuItem__GetByName_G1 = 5052320;
+
+	//0x004DE5F0 public: static class zCMenuItem * __cdecl zCMenuItem::GetByName(class zSTRING const &)
+	const int zCMenuItem__GetByName_G2 = 5105136;
+
+	CALL_zStringPtrParam (menuItemName);
+	CALL__cdecl (MEMINT_SwitchG1G2(zCMenuItem__GetByName_G1, zCMenuItem__GetByName_G2));
+
+	return CALL_RetValAsPtr ();
+};
