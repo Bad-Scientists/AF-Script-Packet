@@ -178,7 +178,7 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//	MEM_Free (_@ (del));
 			//end;
 
-			//So I am using timed property - seems like engine view will remove these text views properly on its own
+			//So I am using timed property - removing these views this way seems to be safer
 			while (l.next);
 				l = _^ (l.next);
 
@@ -188,6 +188,8 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 					vt.timer = FLOATNULL;
 				};
 			end;
+
+			zCView_CheckTimedText (viewPtr);
 		};
 	} else {
 		//Or add texts - if they were not added yet
