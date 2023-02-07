@@ -25,29 +25,8 @@ func void zCView_CheckTimedText (var int viewPtr) {
 
 func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	if (!viewPtr) { return; };
-
 	var zCView v; v = _^ (viewPtr);
 
-	var zCList l;
-	var int list; list = v.textLines_next;
-
-	if (!list) { return; };
-
-	var zCViewText vt;
-
-	l = _^ (list);
-
-	while (l.next);
-		l = _^ (l.next);
-
-		if (l.data) {
-			vt = _^ (l.data);
-			vt.timed = TRUE;
-			vt.timer = FLOATNULL;
-		};
-	end;
-
-	zCView_CheckTimedText (viewPtr);
 };
 
 func void View_DeleteText_Safe (var int hndl, var int color) {
@@ -178,18 +157,7 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//	MEM_Free (_@ (del));
 			//end;
 
-			//So I am using timed property - removing these views this way seems to be safer
-			while (l.next);
-				l = _^ (l.next);
 
-				if (l.data) {
-					vt = _^ (l.data);
-					vt.timed = TRUE;
-					vt.timer = FLOATNULL;
-				};
-			end;
-
-			zCView_CheckTimedText (viewPtr);
 		};
 	} else {
 		//Or add texts - if they were not added yet
