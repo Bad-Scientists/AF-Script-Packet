@@ -99,8 +99,6 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 					var string vtFontName; vtFontName = Print_GetFontName (vt.font);
 					var int vtFontHeight; vtFontHeight = Print_ToVirtual (Print_GetFontHeight (vtFontName), v.psizey);
 
-					//Update Y position - seems like some engine views don't have Y position updated?
-					vt.posY = vposY;
 					vposY = vt.posY + vtFontHeight;
 				};
 
