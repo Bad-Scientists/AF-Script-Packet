@@ -23,10 +23,30 @@ func void zCView_CheckTimedText (var int viewPtr) {
 	};
 };
 
+//Releases list.data
+//Deletes list.next
+func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
+	//0x00702EA0 public: void __thiscall zCList<class zCViewText>::DeleteListDatas(void)
+	const int zCList_zCViewText__DeleteListDatas_G1 = 7351968;
+
+	//0x007ACAB0 public: void __thiscall zCList<class zCViewText>::DeleteListDatas(void)
+	const int zCList_zCViewText__DeleteListDatas_G2 = 8047280;
+
+	if (!listPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (listPtr), MEMINT_SwitchG1G2 (zCList_zCViewText__DeleteListDatas_G1, zCList_zCViewText__DeleteListDatas_G2));
+		call = CALL_End ();
+	};
+};
+
 func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	if (!viewPtr) { return; };
 	var zCView v; v = _^ (viewPtr);
 
+	//Destroy list
+	zCList_zCViewText_DeleteListDatas (_@ (v.textLines_data));
 };
 
 func void View_DeleteText_Safe (var int hndl, var int color) {
@@ -157,7 +177,15 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//	MEM_Free (_@ (del));
 			//end;
 
+			if (l.next) {
+				//Disconnect list
+				var int n; n = l.next;
+				l.next = 0;
 
+				//Destroy the rest of the list
+				l = _^ (n);
+				zCList_zCViewText_DeleteListDatas (_@ (l.data));
+			};
 		};
 	} else {
 		//Or add texts - if they were not added yet
