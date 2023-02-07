@@ -7,6 +7,22 @@
  *	 View* functions - working with handles
  */
 
+func void zCView_CheckTimedText (var int viewPtr) {
+	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
+	const int zCView__CheckTimedText_G1 = 6753728;
+
+	//0x007A7C50 public: void __thiscall zCView::CheckTimedText(void)
+	const int zCView__CheckTimedText_G2 = 7410288;
+
+	if (!viewPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (viewPtr), MEMINT_SwitchG1G2 (zCView__CheckTimedText_G1, zCView__CheckTimedText_G2));
+		call = CALL_End ();
+	};
+};
+
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
 func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	if (!viewPtr) { return; };
