@@ -124,6 +124,7 @@ spawnManager.d
 time.d
 sound.d
 
+menu.d
 camera.d
 
 miscellaneous.d

@@ -11,6 +11,18 @@ const int NPC_GAME_NORMAL = 0; //When player is taking item
 const int NPC_GAME_PLUNDER = 1; //When player is looting Npc
 const int NPC_GAME_STEAL = 2; //When player is stealing from Npc (in RM we won't have this situation)
 
+//Log constants
+const int LOG_STATUS_INVALID = -1;
+//const int LOG_DEFAULT = 0;
+//const int LOG_RUNNING = 1;
+//const int LOG_SUCCESS = 2;
+//const int LOG_FAILED = 3;
+//const int LOG_OBSOLETE = 4;
+
+const int LOG_SECTION_INVALID = -1;
+//const int LOG_MISSION = 0;
+//const int LOG_NOTE = 1;
+
 const int MAX_CTRL_VOBS = 80;
 
 //enum zTAICamMsg {

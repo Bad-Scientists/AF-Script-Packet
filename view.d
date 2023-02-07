@@ -7,6 +7,56 @@
  *	 View* functions - working with handles
  */
 
+func void zCView_CheckTimedText (var int viewPtr) {
+	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
+	const int zCView__CheckTimedText_G1 = 6753728;
+
+	//0x007A7C50 public: void __thiscall zCView::CheckTimedText(void)
+	const int zCView__CheckTimedText_G2 = 7410288;
+
+	if (!viewPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (viewPtr), MEMINT_SwitchG1G2 (zCView__CheckTimedText_G1, zCView__CheckTimedText_G2));
+		call = CALL_End ();
+	};
+};
+
+func void ViewPtr_DeleteText_Safe (var int viewPtr) {
+	if (!viewPtr) { return; };
+
+	var zCView v; v = _^ (viewPtr);
+
+	var zCList l;
+	var int list; list = v.textLines_next;
+
+	if (!list) { return; };
+
+	var zCViewText vt;
+
+	l = _^ (list);
+
+	while (l.next);
+		l = _^ (l.next);
+
+		if (l.data) {
+			vt = _^ (l.data);
+			vt.timed = TRUE;
+			vt.timer = FLOATNULL;
+		};
+	end;
+
+	zCView_CheckTimedText (viewPtr);
+};
+
+func void View_DeleteText_Safe (var int hndl, var int color) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+
+	ViewPtr_DeleteText_Safe (viewPtr, color);
+};
+
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
 func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	if (!viewPtr) { return; };
@@ -22,8 +72,11 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 		while(lp);
 			l = _^(lp);
 			vt = _^(l.data);
-			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
-			vt.posx = PS_VMAX / 2 - width / 2;
+			//When I tried to center some views created by engine vsizex was set to PS_VMAX, psizex contained correct value (these views are confusing ...)
+			//width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
+			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
+			//vt.posx = (PS_VMAX / 2) - (width / 2);
+			vt.posx = (PS_VMAX - width) / 2;
 			lp = l.next;
 		end;
 	}
@@ -39,7 +92,9 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 		while(lp);
 			l = _^(lp);
 			vt = _^(l.data);
-			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
+			//width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
+			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
+			//LeGo bug - subtraction of negative number is addition ... so we need to add negative number ...
 			//vt.posx = PS_VMAX - width - margin;
 			vt.posx = PS_VMAX - width + margin;
 			lp = l.next;
@@ -47,7 +102,7 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	};
 };
 
-func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
+func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color) {
 	if (!viewPtr) { return; };
 
 	var zCView v; v = _^ (viewPtr);
@@ -85,8 +140,11 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 					vt = _^ (l.data);
 
 					vt.text = text;
-					vt.color = color;
-					vt.colored = (color != -1);
+
+					if (color != -1) {
+						vt.color = color;
+						vt.colored = (color != -1);
+					};
 
 					var string vtFontName; vtFontName = Print_GetFontName (vt.font);
 					var int vtFontHeight; vtFontHeight = Print_ToVirtual (Print_GetFontHeight (vtFontName), v.psizey);
@@ -108,35 +166,69 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 
 		//Remove extra text views
 		if (!flagListExtended) {
-			while (l.next);
-				var zCList del; del = _^ (l.next);
-				l.next = del.next;
-				MEM_Free (_@ (del));
+			//Not sure why ... but when I tried this with some engine views - game crashed:
+			//23:710E016A (0x219BEE20 0x006E9208 0x008DCE50 0x00000000) MSVCR100.dll, free()+28 byte(s) .... <zError.cpp,#467>
+			//var int n; n = l.next;
+			//l.next = 0;
 
-				if (l.next) {
-					l = _^ (l.next);
+			//while (n);
+			//	var zCList del; del = _^ (n);
+
+			//	n = del.next;
+			//	MEM_Free (_@ (del));
+			//end;
+
+			//So I am using timed property - removing these views this way seems to be safer
+			while (l.next);
+				l = _^ (l.next);
+
+				if (l.data) {
+					vt = _^ (l.data);
+					vt.timed = TRUE;
+					vt.timer = FLOATNULL;
 				};
 			end;
+
+			zCView_CheckTimedText (viewPtr);
 		};
 	} else {
 		//Or add texts - if they were not added yet
 		ViewPtr_AddText (viewPtr, vposX, vposY, texts, fontName, color);
 	};
 
-	ViewPtr_AlignText_Fixed (viewPtr, margin);
-
 	ViewPtr_SetAlphaAll (viewPtr, v.alpha);
 };
 
-func void View_SetTextAndFontColor (var int hndl, var string texts, var int color, var int margin) {
-	if (!Hlp_IsValidHandle (hndl)) { return; };
-	var int viewPtr; viewPtr = getPtr (hndl);
-	ViewPtr_SetTextAndFontColor (viewPtr, texts, color, margin);
+func void ViewPtr_SetTextMarginAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
+	ViewPtr_SetTextAndFontColor (viewPtr, texts, color);
+	ViewPtr_AlignText_Fixed (viewPtr, margin);
 };
 
-func void View_SetText (var int hndl, var string texts, var int margin) {
-	View_SetTextAndFontColor (hndl, texts, -1, margin);
+//-- View_SetTextAndFontColor
+
+func void View_SetTextAndFontColor (var int hndl, var string texts, var int color) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetTextAndFontColor (viewPtr, texts, color);
 };
+
+func void View_SetTextMarginAndFontColor (var int hndl, var string texts, var int color, var int margin) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetTextMarginAndFontColor (viewPtr, texts, color, margin);
+};
+
+//-- View_SetText
+
+func void View_SetText (var int hndl, var string texts) {
+	ViewPtr_SetTextAndFontColor (hndl, texts, -1);
+};
+
+func void View_SetTextMargin (var int hndl, var string texts, var int margin) {
+	View_SetTextMarginAndFontColor (hndl, texts, -1, margin);
+};
+
+//--
 
 func void ViewPtr_SetFontColor (var int viewPtr, var int color) {
 	if (!viewPtr) { return; };
@@ -180,6 +272,18 @@ func int View_IsOpen (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
 	var int viewPtr; viewPtr = getPtr (hndl);
 	return + ViewPtr_IsOpen (viewPtr);
+};
+
+func void ViewPtr_SetAlphaFunc (var int viewPtr, var int alphaFunc) {
+	if (!viewPtr) { return; };
+	var zCView view; view = _^ (viewPtr);
+	view.alphaFunc = alphaFunc;
+};
+
+func void View_SetAlphaFunc (var int hndl, var int alphaFunc) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_SetAlphaFunc (viewPtr, alphaFunc);
 };
 
 //-- engine stuff
