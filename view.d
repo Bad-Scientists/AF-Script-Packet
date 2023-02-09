@@ -23,38 +23,47 @@ func void zCView_CheckTimedText (var int viewPtr) {
 	};
 };
 
-func void ViewPtr_DeleteText_Safe (var int viewPtr) {
-	if (!viewPtr) { return; };
+//Releases list.data
+//Deletes list.next
+func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
+	//0x00702EA0 public: void __thiscall zCList<class zCViewText>::DeleteListDatas(void)
+	const int zCList_zCViewText__DeleteListDatas_G1 = 7351968;
 
-	var zCView v; v = _^ (viewPtr);
+	//0x007ACAB0 public: void __thiscall zCList<class zCViewText>::DeleteListDatas(void)
+	const int zCList_zCViewText__DeleteListDatas_G2 = 8047280;
 
-	var zCList l;
-	var int list; list = v.textLines_next;
+	if (!listPtr) { return; };
 
-	if (!list) { return; };
-
-	var zCViewText vt;
-
-	l = _^ (list);
-
-	while (l.next);
-		l = _^ (l.next);
-
-		if (l.data) {
-			vt = _^ (l.data);
-			vt.timed = TRUE;
-			vt.timer = FLOATNULL;
-		};
-	end;
-
-	zCView_CheckTimedText (viewPtr);
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (listPtr), MEMINT_SwitchG1G2 (zCList_zCViewText__DeleteListDatas_G1, zCList_zCViewText__DeleteListDatas_G2));
+		call = CALL_End ();
+	};
 };
 
-func void View_DeleteText_Safe (var int hndl, var int color) {
+/*
+ *	zCView_DeleteText alternatives
+ */
+
+//Not sure why ... but when I tried this with some engine views - game crashed:
+//23:710E016A (0x219BEE20 0x006E9208 0x008DCE50 0x00000000) MSVCR100.dll, free()+28 byte(s) .... <zError.cpp,#467>
+
+//LeGo-devs informed, for now I will use this method ... we can change it if needed later :)
+//https://forum.worldofplayers.de/forum/threads/1505251-Skriptpaket-LeGo-4/page27?p=27126692#post27126692
+
+func void ViewPtr_DeleteText_Safe (var int viewPtr) {
+	if (!viewPtr) { return; };
+	var zCView v; v = _^ (viewPtr);
+
+	//Destroy list
+	zCList_zCViewText_DeleteListDatas (_@ (v.textLines_data));
+};
+
+func void View_DeleteText_Safe (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 	var int viewPtr; viewPtr = getPtr (hndl);
 
-	ViewPtr_DeleteText_Safe (viewPtr, color);
+	ViewPtr_DeleteText_Safe (viewPtr);
 };
 
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
@@ -178,18 +187,15 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//	MEM_Free (_@ (del));
 			//end;
 
-			//So I am using timed property - removing these views this way seems to be safer
-			while (l.next);
-				l = _^ (l.next);
+			if (l.next) {
+				//Dettach list
+				var int n; n = l.next;
+				l.next = 0;
 
-				if (l.data) {
-					vt = _^ (l.data);
-					vt.timed = TRUE;
-					vt.timer = FLOATNULL;
-				};
-			end;
-
-			zCView_CheckTimedText (viewPtr);
+				//Destroy the rest of the list
+				l = _^ (n);
+				zCList_zCViewText_DeleteListDatas (_@ (l.data));
+			};
 		};
 	} else {
 		//Or add texts - if they were not added yet

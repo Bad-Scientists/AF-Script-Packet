@@ -194,6 +194,11 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 					itm = _^ (itmPtr);
 					amount = itm.amount;
 
+					//Don't transfer active/equipped items!
+					if ((itm.flags & ITEM_ACTIVE_LEGO) == ITEM_ACTIVE_LEGO) {
+						return TRUE;
+					};
+
 					//Left ctrl moves a single piece
 					if (key == KEY_LCONTROL) { amount = 1; };
 
