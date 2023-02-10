@@ -198,18 +198,22 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 	ContinueCall ();
 };
 
-func void _hook_oCMobLockable_PickLock () {
+func void _hook_oCMobLockable_PickLock__PickLockHelper () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
 	var oCMobLockable mob; mob = _^ (ECX);
 
 	var int c; c = MEM_ReadInt (ESP + 8);
 
-	var string pickLockString;
+	var string pickLockString; pickLockString = "";
 
 	var int currCharCount; currCharCount = (mob.bitfield & oCMobLockable_bitfield_pickLockNr) >> 2;
 
 	currCharCount += 1;
+
+	if (currCharCount > STR_Len (mob.pickLockStr)) {
+		currCharCount = STR_Len (mob.pickLockStr);
+	};
 
 	if (currCharCount > 0) {
 		pickLockString = STR_Prefix (mob.pickLockStr, currCharCount);
@@ -304,7 +308,7 @@ func void _eventMobStartInteraction__PickLockHelper () {
 };
 
 //Function is called when player ended interation
-func void _hook_oCMobInter_EndInteraction () {
+func void _hook_oCMobInter_EndInteraction__PickLockHelper () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
 	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
@@ -317,7 +321,7 @@ func void _hook_oCMobInter_EndInteraction () {
 };
 
 //Function is called when player broke picklock and does not have any
-func void _hook_oCMobInter_StopInteraction () {
+func void _hook_oCMobInter_StopInteraction__PickLockHelper () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
 	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
@@ -362,12 +366,12 @@ func void G12_PickLockHelper_Init () {
 
 	if (!once) {
 		//Hook Len for G1 = 13, for G2A = 6
-		HookEngine (oCMobLockable__PickLock, MEMINT_SwitchG1G2 (13, 6), "_hook_oCMobLockable_PickLock");
+		HookEngine (oCMobLockable__PickLock, MEMINT_SwitchG1G2 (13, 6), "_hook_oCMobLockable_PickLock__PickLockHelper");
 
 		HookDaedalusFunc (G_PickLock, _daedalusHook_G_PickLock);
 
-		HookEngine (oCMobInter__EndInteraction, 6, "_hook_oCMobInter_EndInteraction");
-		HookEngine (oCMobInter__StopInteraction, 6, "_hook_oCMobInter_StopInteraction");
+		HookEngine (oCMobInter__EndInteraction, 6, "_hook_oCMobInter_EndInteraction__PickLockHelper");
+		HookEngine (oCMobInter__StopInteraction, 6, "_hook_oCMobInter_StopInteraction__PickLockHelper");
 
 		once = 1;
 	};
