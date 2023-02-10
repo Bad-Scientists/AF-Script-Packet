@@ -213,7 +213,7 @@ func void G12_Focus_Init () {
 
 	_PC_ChangeFocus_Color_Default = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_DEFAULT", "FFFFFF");
 	_PC_ChangeFocus_Color_LockedKey = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEY", "FF8000");
-	_PC_ChangeFocus_Color_LockedPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEY", "FFFF00");
+	_PC_ChangeFocus_Color_LockedPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDPICKLOCKS", "FFFF00");
 	_PC_ChangeFocus_Color_LockedKeyPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEYPICKLOCKS", "FFFF00");
 	_PC_ChangeFocus_Color_LockedHasKey = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDHASKEY", "FFFF00");
 
