@@ -174,7 +174,6 @@ Standalone-Packages\G12-Debugging\create.d
 Standalone-Packages\G12-Debugging\printPos.d
 Standalone-Packages\G12-Debugging\holdTime.d
 Standalone-Packages\G12-Debugging\puppetMaster.d
-Standalone-Packages\G12-Debugging\consoleHistory.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
