@@ -91,6 +91,8 @@ const int ANIDIR_FORWARD = 0;
 const int ANIDIR_REVERSE = 1;
 const int ANIDIR_ENDFASTEST = 2;
 
+const int ANI_TIME_INFINITE = -915135488; //-1000000.0f;
+
 /*
 enum {
 	zMDL_STARTANI_DEFAULT,
