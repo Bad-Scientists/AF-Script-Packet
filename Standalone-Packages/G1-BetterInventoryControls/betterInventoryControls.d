@@ -194,7 +194,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 					itm = _^ (itmPtr);
 					amount = itm.amount;
 
-					//Don't transfer active/equipped items!
+					//Don't transfer active/equipped items! bruh
 					if ((itm.flags & ITEM_ACTIVE_LEGO) == ITEM_ACTIVE_LEGO) {
 						return TRUE;
 					};

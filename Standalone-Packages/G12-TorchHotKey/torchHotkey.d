@@ -331,7 +331,7 @@ func void G12_TorchHotKey_Init () {
 	var string symbName;
 	var string ascModel;
 
-	_TorchHotkey_RelitMobs = API_GetSymbolIntValue ("TORCHHOTKEY_RELITMOBS", -1);
+	_TorchHotkey_RelitMobs = API_GetSymbolIntValue ("TORCHHOTKEY_RELITMOBS", 1);
 
 	_TorchHotkey_RelitMobs_ascModels_Count = API_GetSymbolIntValue ("TORCHHOTKEY_RELITMOBS_ASCMODELS_COUNT", 0);
 

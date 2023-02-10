@@ -743,6 +743,7 @@ func string API_GetSymbolStringValue (var string symbolName, var string defaultV
 	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
 
 	if (symbID == -1) {
+		MEM_Info (ConcatStrings ("API_GetSymbolStringValue symbol not found: ", symbolName));
 		return defaultValue;
 	};
 
@@ -754,6 +755,7 @@ func int API_GetSymbolIntValue (var string symbolName, var int defaultValue) {
 	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
 
 	if (symbID == -1) {
+		MEM_Info (ConcatStrings ("API_GetSymbolIntValue symbol not found: ", symbolName));
 		return defaultValue;
 	};
 
@@ -767,6 +769,7 @@ func int API_GetSymbolHEX2RGBAValue (var string symbolName, var string defaultVa
 	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
 
 	if (symbID == -1) {
+		MEM_Info (ConcatStrings ("API_GetSymbolHEX2RGBAValue symbol not found: ", symbolName));
 		return + HEX2RGBA (defaultValue);
 	};
 

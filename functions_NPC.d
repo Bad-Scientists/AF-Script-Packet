@@ -1236,4 +1236,18 @@ func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
 		call = CALL_End();
 	};
 };
+
+/*
+ *
+ */
+func void NPC_SetSoundVobPtr (var int slfInstance, var int vobPtr) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	slf.soundVob = vobPtr;
+};
+
+func int NPC_GetSoundVobPtr (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+	return slf.soundVob;
 };
