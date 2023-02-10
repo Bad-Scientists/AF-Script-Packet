@@ -797,6 +797,49 @@ func void zCEventMessage_Delete (var int eMsg) {
  *
  */
 
+func int zCEventManager_IsRunning (var int eMgr, var int eMsg) {
+	//0x006DE550 public: virtual int __thiscall zCEventManager::IsRunning(class zCEventMessage *)
+	const int zCEventManager__IsRunning_G1 = 7202128;
+
+	//0x007877E0 public: virtual int __thiscall zCEventManager::IsRunning(class zCEventMessage *)
+	const int zCEventManager__IsRunning_G2 = 7895008;
+
+	//This function loops through EM event list and checks if specified message is in the list
+	//It can be used t check if message is 'safe' (if it is in EM then it's kinda safe :) )
+	//Function Hlp_Is_zCEventMessage is reading pointer - if pointer is invalid we might crash (which happened to me as I used some EM manipulation functions incorrectly ...)
+	//Anyway it's counter-productive to check eMsg here --> thus only checking if eMsg is NULL
+	//if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (eMsg));
+		CALL__thiscall (_@ (eMgr), MEMINT_SwitchG1G2 (zCEventManager__IsRunning_G1, zCEventManager__IsRunning_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
+func int zCEventManager_GetCutsceneMode (var int eMgr) {
+	//0x006DE2E0 public: virtual int __thiscall zCEventManager::GetCutsceneMode(void)
+	const int zCEventManager__GetCutsceneMode_G1 = 7201504;
+
+	//0x00787570 public: virtual int __thiscall zCEventManager::GetCutsceneMode(void)
+	const int zCEventManager__GetCutsceneMode_G2 = 7894384;
+
+	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (eMgr), MEMINT_SwitchG1G2 (zCEventManager__GetCutsceneMode_G1, zCEventManager__GetCutsceneMode_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
 func int zCEventManager_GetNumMessages (var int eMgr) {
 	//0x00452600 public: virtual int __thiscall zCEventManager::GetNumMessages(void)
 	const int zCEventManager__GetNumMessages_G1 = 4531712;
@@ -1035,6 +1078,25 @@ func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) 
 		CALL_PtrParam(_@(vobPtr));
 		CALL_PtrParam(_@(eMsg));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnMessage_G1, zCEventManager__OnMessage_G2));
+
+		call = CALL_End();
+	};
+};
+
+func void zCEventManager_Delete (var int eMgr, var int eMsg) {
+	//0x006DDFA0 protected: virtual void __thiscall zCEventManager::Delete(class zCEventMessage *)
+	const int zCEventManager__Delete_G1 = 7200672;
+
+	//0x00787270 protected: virtual void __thiscall zCEventManager::Delete(class zCEventMessage *)
+	const int zCEventManager__Delete_G2 = 7893616;
+
+	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
+	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(eMsg));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__Delete_G1, zCEventManager__Delete_G2));
 
 		call = CALL_End();
 	};
