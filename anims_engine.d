@@ -527,6 +527,23 @@ func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int model
 	};
 };
 
+func void oCAniCtrl_Human_StopLookAtTarget (var int aniCtrlPtr) {
+	//0x0062CF70 public: void __thiscall oCAniCtrl_Human::StopLookAtTarget(void)
+	const int oCAniCtrl_Human__StopLookAtTarget_G1 = 6475632;
+
+	//0x006B6640 public: void __thiscall oCAniCtrl_Human::StopLookAtTarget(void)
+	const int oCAniCtrl_Human__StopLookAtTarget_G2 = 7038528;
+
+	//Safety check
+	if (!aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__StopLookAtTarget_G1, oCAniCtrl_Human__StopLookAtTarget_G2));
+		call = CALL_End ();
+	};
+};
+
 func void oCAniCtrl_Human_StopCombineAni (var int aniCtrlPtr, var int aniID) {
 	//0x0062D2E0 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
 	const int oCAniCtrl_Human__StopCombineAni_G1 = 6476512;
