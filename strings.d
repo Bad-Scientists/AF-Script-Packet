@@ -280,16 +280,14 @@ func int STR_IsNumeric (var string s) {
 func string Concat3Strings (var string s1, var string s2, var string s3) {
 	var string s;
 	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	return s;
+	return ConcatStrings (s, s3);
 };
 
 func string Concat4Strings (var string s1, var string s2, var string s3, var string s4) {
 	var string s;
 	s = ConcatStrings (s1, s2);
 	s = ConcatStrings (s, s3);
-	s = ConcatStrings (s, s4);
-	return s;
+	return ConcatStrings (s, s4);
 };
 
 func string Concat5Strings (var string s1, var string s2, var string s3, var string s4, var string s5) {
@@ -297,6 +295,5 @@ func string Concat5Strings (var string s1, var string s2, var string s3, var str
 	s = ConcatStrings (s1, s2);
 	s = ConcatStrings (s, s3);
 	s = ConcatStrings (s, s4);
-	s = ConcatStrings (s, s5);
-	return s;
+	return ConcatStrings (s, s5);
 };
