@@ -205,9 +205,7 @@ func string BtoC (var int i) {
 };
 
 func string STR_Left (var string s, var int count) {
-	var int len; len = STR_Len (s);
-
-	if (len < count) {
+	if (STR_Len (s) < count) {
 		return s;
 	};
 
@@ -240,9 +238,7 @@ func string STR_AddString (var string s, var string s1, var string separator) {
 		s = ConcatStrings (s, separator);
 	};
 
-	s = ConcatStrings (s, s1);
-
-	return s;
+	return ConcatStrings (s, s1);
 };
 
 /*
@@ -278,25 +274,13 @@ func int STR_IsNumeric (var string s) {
  *	ConcatStrings
  */
 func string Concat3Strings (var string s1, var string s2, var string s3) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	return s;
+	return ConcatStrings(ConcatStrings(s1, s2), s3));
 };
 
 func string Concat4Strings (var string s1, var string s2, var string s3, var string s4) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	s = ConcatStrings (s, s4);
-	return s;
+	return ConcatStrings(Concat3Strings(s1, s2, s3), s4);
 };
 
 func string Concat5Strings (var string s1, var string s2, var string s3, var string s4, var string s5) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	s = ConcatStrings (s, s4);
-	s = ConcatStrings (s, s5);
-	return s;
+	return ConcatStrings(Concat4Strings(s1, s2, s3, s4), s5);
 };
