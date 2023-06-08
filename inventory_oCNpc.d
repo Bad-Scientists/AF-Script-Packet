@@ -1906,3 +1906,12 @@ func void Npc_InvOpenPassive (var int slfInstance, var int itemInstanceID, var i
 	slf.inventory2_oCItemContainer_frame = hasInvFocus;
 };
 
+/*
+ *	Npc_CloseInventory
+ *	 - function closes inventory
+ */
+func void Npc_CloseInventory (var int slfInstance) {
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	oCNpcInventory_Close (npcInventoryPtr);
+};
+
