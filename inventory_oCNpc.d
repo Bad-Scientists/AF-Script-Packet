@@ -316,16 +316,14 @@ func int Hlp_GetOpenContainer_oCNpcInventory () {
 
 //-- oCItemContainer functions
 
-func int oCItemContainer_Draw (var int ptr) {
+func void oCItemContainer_Draw (var int ptr) {
 	//0x00667660 protected: virtual void __thiscall oCItemContainer::Draw(void)
 	const int oCItemContainer__Draw_G1 = 6714976;
 
 	//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
 	const int oCItemContainer__Draw_G2 = 7370416;
 
-	if (!ptr) { return 0; };
-
-	var int retVal;
+	if (!ptr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
