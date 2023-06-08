@@ -123,13 +123,13 @@ var int EnhancedInfoManagerReady;
 const int ALIGN_TAB = 255;
 const string InfoManagerTabSize = "-";
 
-func void oCInfoManager_Reset_EIM () {
+func void EIM_Reset () {
 	EnhancedInfoManagerReady = cEIM_Idle;
 	InfoManagerDialogInstPtrCount = 0;
 	InfoManagerCollectInfosAllDisabled = FALSE;
 };
 
-func int oCInfoManager_GetInfoPtr__EIM (var int index) {
+func int EIM_GetInfoPtr (var int index) {
 	if ((index < 0) || (index >= InfoManagerDialogInstPtrCount)) {
 		return 0;
 	};
@@ -1052,7 +1052,7 @@ func string InfoManager_GetChoiceDescription_EIM (var int index) {
 			//var C_NPC her; her = _^ (MEM_InformationMan.player);
 
 			//infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, index);
-			infoPtr = oCInfoManager_GetInfoPtr__EIM (index);
+			infoPtr = EIM_GetInfoPtr (index);
 
 			if (infoPtr) {
 				dlgInstance = _^ (infoPtr);
@@ -1160,7 +1160,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 	};
 };
 
-func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
+func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	var string s;
 
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
@@ -1659,7 +1659,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	//zCInputCallback_SetHandleEventTop (ECX);
 };
 
-func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
+func void _hook_oCInformationManager_Update_EIM () {
 	const int cINFO_MGR_MODE_IMPORTANT	= 0;
 	const int cINFO_MGR_MODE_INFO		= 1;
 	const int cINFO_MGR_MODE_CHOICE		= 2;
@@ -2073,7 +2073,7 @@ MEM_InformationMan.LastMethod:
 
 			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
 				//infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, i);
-				infoPtr = oCInfoManager_GetInfoPtr__EIM (i);
+				infoPtr = EIM_GetInfoPtr (i);
 
 				if (infoPtr) {
 					dlgInstance = _^ (infoPtr);
@@ -3435,8 +3435,8 @@ MEM_InformationMan.LastMethod:
 /*
  *
  */
-func void _hook_oCInformationManager_CollectChoices () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_CollectChoices_EIM () {
+	EIM_Reset ();
 
 	if (!MEM_Game.infoman) { return; };
 
@@ -3557,8 +3557,8 @@ func void _hook_oCInformationManager_CollectChoices () {
 /*
  *
  */
-func void _hook_oCInformationManager_CollectInfos () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_CollectInfos_EIM () {
+	EIM_Reset ();
 
 	if (!MEM_Game.infoman) { return; };
 
@@ -3649,15 +3649,15 @@ func void _hook_oCInformationManager_CollectInfos () {
 	};
 };
 
-func void _hook_oCInformationManager_OnImportantBegin () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_OnImportantBegin_EIM () {
+	EIM_Reset ();
 };
 
-func void _hook_oCInformationManager_OnExit () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_OnExit_EIM () {
+	EIM_Reset ();
 };
 
-func void _hook_zCViewDialogChoice_HighlightSelected () {
+func void _hook_zCViewDialogChoice_HighlightSelected_EIM () {
 	InfoManagerHighlightSelected = TRUE;
 };
 
@@ -3696,11 +3696,11 @@ func void G12_EnhancedInfoManager_Init () {
 
 	const int once = 0;
 	if (!once) {
-		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
-		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EnhancedInfoManager");
+		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EIM");
+		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EIM");
 
-		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices");
-		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos");
+		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices_EIM");
+		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos_EIM");
 
 		//0x0072D0A0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
 		const int oCInformationManager__OnImportantBegin_G1 = 7524512;
@@ -3708,7 +3708,7 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x00661DB0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
 		const int oCInformationManager__OnImportantBegin_G2 = 6692272;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin");
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin_EIM");
 
 		//0x0072E360 protected: void __fastcall oCInformationManager::OnExit(void)
 		const int oCInformationManager__OnExit_G1 = 7529312;
@@ -3716,7 +3716,7 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x006630D0 protected: void __fastcall oCInformationManager::OnExit(void)
 		const int oCInformationManager__OnExit_G2 = 6697168;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit");
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit_EIM");
 
 		//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
 		const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
@@ -3724,7 +3724,7 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
 		const int zCViewDialogChoice__HighlightSelected_G2 = 6878752;
 
-		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected");
+		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected_EIM");
 
 		//TODO: investigate potential performance improvement - if we would sort all infos by both .npc and .nr then we could in theory improve performance (infos without npc would have to be at the beginning of the list)
 		//0x006647E0 private: static int __cdecl oCInfoManager::CompareInfos(class oCInfo *,class oCInfo *)
