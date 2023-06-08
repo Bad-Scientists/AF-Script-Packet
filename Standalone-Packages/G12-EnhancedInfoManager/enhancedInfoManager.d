@@ -266,6 +266,93 @@ func int Choice_IsHidden (var string s) {
 	return FALSE;
 };
 
+func string Choice_ExtractModifier (var int strPtr, var string modifierID) {
+	var string s; s = MEM_ReadString (strPtr);
+
+	var int index1; index1 = STR_IndexOf (s, modifierID);
+	if (index1 == -1) { return ""; };
+
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
+
+	//Get prefix
+	var string s1; s1 = mySTR_SubStr (s, 0, index1);
+
+	//Get modifier
+	var string s2; s2 = mySTR_SubStr (s, index1 + lenModifier, len - (lenModifier + index1));
+	var int index2; index2 = STR_IndexOf (s2, " ");
+
+	var int index3; index3 = index2;
+
+	if (index2 == -1) {
+		index3 = STR_Len (s2);
+	};
+
+	var string modifierValue; modifierValue = mySTR_Prefix (s2, index3);
+
+	//Get suffix
+	var string s3; s3 = mySTR_SubStr (s, index1 + (index2 + 1) + lenModifier, len - (lenModifier + index1 + (index2 + 1)));
+
+	//Concat prefix with suffix and override original string
+	s = s1;
+	s = ConcatStrings (s, s3);
+
+	MEM_WriteString (strPtr, s);
+
+	//Return modifier value
+	return modifierValue;
+};
+
+//"modifierID@modifierValue "
+func string Choice_GetModifier (var string s, var string modifierID) {
+	var int index; index = STR_IndexOf (s, modifierID);
+	if (index == -1) { return ""; };
+
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
+
+	//Get modifier
+	var string s1; s1 = mySTR_SubStr (s, index + lenModifier, len - lenModifier);
+	index = STR_IndexOf (s1, " ");
+
+	if (index == -1) {
+		index = STR_Len (s1);
+	};
+
+	var string modifierValue; modifierValue = mySTR_Prefix (s1, index);
+	return modifierValue;
+};
+
+func string Choice_RemoveModifier (var string s, var string modifierID) {
+	var int index1; index1 = STR_IndexOf (s, modifierID);
+	if (index1 == -1) { return s; };
+
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
+
+	//Get prefix
+	var string s1; s1 = mySTR_SubStr (s, 0, index1);
+
+	//Get modifier
+	var string s2; s2 = mySTR_SubStr (s, index1 + lenModifier, len - (lenModifier + index1));
+	var int index2; index2 = STR_IndexOf (s2, " ");
+
+	var int index3; index3 = index2;
+
+	if (index2 == -1) {
+		index3 = STR_Len (s2);
+	};
+
+	//Get suffix
+	var string s3; s3 = mySTR_SubStr (s, index1 + (index2 + 1) + lenModifier, len - (lenModifier + index1 + (index2 + 1)));
+
+	//Concat prefix with suffix and override original string
+	s = s1;
+	s = ConcatStrings (s, s3);
+
+	return s;
+};
+
 func string Choice_RemoveModifierOverlay (var string s) {
 	var string s1;
 	var string s2;
@@ -425,20 +512,21 @@ func string Choice_RemoveAllModifiers (var string s) {
 	s = Choice_RemoveAllOverlays (s);
 
 	//
-	s = Choice_RemoveModifierByText (s, "indOff@");
+	s = Choice_RemoveModifier (s, "indOff@");
+	s = Choice_RemoveModifier (s, "item@");
 
-	s = Choice_RemoveModifierFont (s);
-	s = Choice_RemoveModifierFontSelected (s);
-	s = Choice_RemoveModifierColor (s);
-	s = Choice_RemoveModifierColorSelected (s);
-	s = Choice_RemoveModifierByText (s, "a@");
-	s = Choice_RemoveModifierByText (s, "d@");
-	s = Choice_RemoveModifierSpinner (s);
+	s = Choice_RemoveModifier (s, "f@");
+	s = Choice_RemoveModifier (s, "fs@");
+	s = Choice_RemoveModifier (s, "h@");
+	s = Choice_RemoveModifier (s, "hs@");
+	s = Choice_RemoveModifier (s, "a@");
+	s = Choice_RemoveModifier (s, "d@");
+	s = Choice_RemoveModifier (s, "s@");
 
-	s = Choice_RemoveModifierByText (s, "al@");
-	s = Choice_RemoveModifierByText (s, "ac@");
-	s = Choice_RemoveModifierByText (s, "ar@");
-	s = Choice_RemoveModifierByText (s, "tab@");
+	s = Choice_RemoveModifier (s, "al@");
+	s = Choice_RemoveModifier (s, "ac@");
+	s = Choice_RemoveModifier (s, "ar@");
+	s = Choice_RemoveModifier (s, "tab@");
 
 	return s;
 };
@@ -539,20 +627,24 @@ func string Choice_GetCleanText (var string s) {
 	end;
 
 //--- Remove all other modifiers
-	s = Choice_RemoveModifierByText (s, "indOff@");
 
-	s = Choice_RemoveModifierFont (s);
-	s = Choice_RemoveModifierFontSelected (s);
-	s = Choice_RemoveModifierColor (s);
-	s = Choice_RemoveModifierColorSelected (s);
-	s = Choice_RemoveModifierByText (s, "a@");
-	s = Choice_RemoveModifierByText (s, "d@");
-	s = Choice_RemoveModifierSpinner (s);
+//	s = Choice_RemoveAllModifiers (s);
 
-	s = Choice_RemoveModifierByText (s, "al@");
-	s = Choice_RemoveModifierByText (s, "ac@");
-	s = Choice_RemoveModifierByText (s, "ar@");
-	s = Choice_RemoveModifierByText (s, "tab@");
+	s = Choice_RemoveModifier (s, "indOff@");
+	s = Choice_RemoveModifier (s, "item@");
+
+	s = Choice_RemoveModifier (s, "f@");
+	s = Choice_RemoveModifier (s, "fs@");
+	s = Choice_RemoveModifier (s, "h@");
+	s = Choice_RemoveModifier (s, "hs@");
+	s = Choice_RemoveModifier (s, "a@");
+	s = Choice_RemoveModifier (s, "d@");
+	s = Choice_RemoveModifier (s, "s@");
+
+	s = Choice_RemoveModifier (s, "al@");
+	s = Choice_RemoveModifier (s, "ac@");
+	s = Choice_RemoveModifier (s, "ar@");
+	s = Choice_RemoveModifier (s, "tab@");
 
 	return s;
 };
@@ -588,7 +680,7 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 					var oCInfoChoice dlgChoice;
 					dlgChoice = _^ (l.data);
 
-					If (Hlp_StrCmp (Choice_GetModifierSpinnerID (dlgChoice.text), spinnerID)) {
+					If (Hlp_StrCmp (Choice_GetModifier (dlgChoice.text, "s@"), spinnerID)) {
 						dlgChoice.Text = text;
 						return;
 					};
@@ -1819,7 +1911,7 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "indOff@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "indOff@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "indOff@");
 						properties = properties | dialogChoiceType_IndicatorsOff;
 					};
 
@@ -1827,7 +1919,7 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "a@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "a@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "a@");
 						properties = properties | dialogChoiceType_Answer;
 					};
 
@@ -1835,7 +1927,7 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "d@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "d@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "d@");
 						properties = properties | dialogChoiceType_Disabled;
 					};
 
@@ -1967,26 +2059,25 @@ MEM_InformationMan.LastMethod:
 						index = STR_IndexOf (overlayFormat, "al@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_LEFT;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "al@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "al@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "ac@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_CENTER;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ac@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "ac@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "ar@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_RIGHT;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ar@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "ar@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "tab@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_TAB;
-							overlayTab = Choice_GetModifierTab (overlayFormat);
-							overlayFormat = Choice_RemoveModifierTab (overlayFormat);
+							overlayTab = STR_ToInt (Choice_ExtractModifier (_@s (overlayFormat), "tab@"));
 						};
 						//<--
 
@@ -2035,16 +2126,14 @@ MEM_InformationMan.LastMethod:
 						index = STR_IndexOf (overlayFormat, "h@");
 
 						if (index > -1) {
-							overlayColor = HEX2RGBA (Choice_GetModifierColor (overlayFormat));
-							overlayFormat = Choice_RemoveModifierColor (overlayFormat);
+							overlayColor = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "h@"));
 						};
 
 						//Extract color selected
 						index = STR_IndexOf (overlayFormat, "hs@");
 
 						if (index > -1) {
-							overlayColorSelected = HEX2RGBA (Choice_GetModifierColorSelected (overlayFormat));
-							overlayFormat = Choice_RemoveModifierColorSelected (overlayFormat);
+							overlayColorSelected = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "hs@"));
 						};
 						//<--
 
@@ -2060,24 +2149,21 @@ MEM_InformationMan.LastMethod:
 								index = (STR_IndexOf (overlayText, "f@"));
 
 								if (index > -1) {
-									dlgFont = Choice_GetModifierFont (overlayText);
-									overlayText = Choice_RemoveModifierFont (overlayText);
+									dlgFont = Choice_ExtractModifier (_@s (overlayText), "f@");
 								};
 
 								//Extract font selected name
 								index = (STR_IndexOf (overlayText, "fs@"));
 
 								if (index > -1) {
-									dlgFontSelected = Choice_GetModifierFontSelected (overlayText);
-									overlayText = Choice_RemoveModifierFontSelected (overlayText);
+									dlgFontSelected = Choice_ExtractModifier (_@s (overlayText), "fs@");
 								};
 
 								//Extract color grayed
 								index = (STR_IndexOf (overlayText, "h@"));
 
 								if (index > -1) {
-									dlgColor = Choice_GetModifierColor (overlayText);
-									overlayText = Choice_RemoveModifierColor (overlayText);
+									dlgColor = Choice_ExtractModifier (_@s (overlayText), "h@");
 									overlayColor = HEX2RGBA (dlgColor);
 								};
 
@@ -2085,8 +2171,7 @@ MEM_InformationMan.LastMethod:
 								index = (STR_IndexOf (overlayText, "hs@"));
 
 								if (index > -1) {
-									dlgColorSelected = Choice_GetModifierColorSelected (overlayText);
-									overlayText = Choice_RemoveModifierColorSelected (overlayText);
+									dlgColorSelected = Choice_ExtractModifier (_@s (overlayText), "hs@");
 									overlayColorSelected = HEX2RGBA (dlgColorSelected);
 								};
 
@@ -2095,7 +2180,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_LEFT;
 									overlayAlignment = ALIGN_LEFT;
-									overlayText = Choice_RemoveModifierByText (overlayText, "al@");
+									overlayText = Choice_RemoveModifier (overlayText, "al@");
 								};
 
 								//ac@ align center
@@ -2103,7 +2188,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_CENTER;
 									overlayAlignment = ALIGN_CENTER;
-									overlayText = Choice_RemoveModifierByText (overlayText, "ac@");
+									overlayText = Choice_RemoveModifier (overlayText, "ac@");
 								};
 
 								//ar@ align right
@@ -2111,7 +2196,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_RIGHT;
 									overlayAlignment = ALIGN_RIGHT;
-									overlayText = Choice_RemoveModifierByText (overlayText, "ar@");
+									overlayText = Choice_RemoveModifier (overlayText, "ar@");
 								};
 
 								//spinner s@
@@ -2119,9 +2204,8 @@ MEM_InformationMan.LastMethod:
 
 								if (index > -1) {
 									properties = properties | dialogChoiceType_Spinner;
-									spinnerID = Choice_GetModifierSpinnerID (overlayText);
+									spinnerID = Choice_ExtractModifier (_@s (overlayText), "s@");
 									MEM_WriteStringArray (_@s (dialogSpinnerID), i, spinnerID);
-									overlayText = Choice_RemoveModifierSpinner (overlayText);
 								};
 						};
 
@@ -2362,62 +2446,57 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "f@");
 
 					if (index > -1) {
-						dlgFont = Choice_GetModifierFont (dlgDescription);
-						dlgDescription = Choice_RemoveModifierFont (dlgDescription);
+						dlgFont = Choice_ExtractModifier (_@s (dlgDescription), "f@");
 					};
 
 					//Extract font selected name
 					index = STR_IndexOf (dlgDescription, "fs@");
 
 					if (index > -1) {
-						dlgFontSelected = Choice_GetModifierFontSelected (dlgDescription);
-						dlgDescription = Choice_RemoveModifierFontSelected (dlgDescription);
+						dlgFontSelected = Choice_ExtractModifier (_@s (dlgDescription), "fs@");
 					};
 
 					//Extract color grayed
 					index = STR_IndexOf (dlgDescription, "h@");
 
 					if (index > -1) {
-						dlgColor = Choice_GetModifierColor (dlgDescription);
-						dlgDescription = Choice_RemoveModifierColor (dlgDescription);
+						dlgColor = Choice_ExtractModifier (_@s (dlgDescription), "h@");
 					};
 
 					//Extract color selected
 					index = STR_IndexOf (dlgDescription, "hs@");
 
 					if (index > -1) {
-						dlgColorSelected = Choice_GetModifierColorSelected (dlgDescription);
-						dlgDescription = Choice_RemoveModifierColorSelected (dlgDescription);
+						dlgColorSelected = Choice_ExtractModifier (_@s (dlgDescription), "hs@");
 					};
 
 					//al@ align left
 					index = STR_IndexOf (dlgDescription, "al@");
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "al@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "al@");
 					};
 
 					//ac@ align center
 					index = STR_IndexOf (dlgDescription, "ac@");
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ac@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "ac@");
 					};
 
 					//ar@ align right
 					index = STR_IndexOf (dlgDescription, "ar@");
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ar@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "ar@");
 					};
 
 					//spinner s@
 					index = STR_IndexOf (dlgDescription, "s@");
 					if (index > -1) {
 						properties = properties | dialogChoiceType_Spinner;
-						spinnerID = Choice_GetModifierSpinnerID (dlgDescription);
+						spinnerID = Choice_ExtractModifier (_@s (dlgDescription), "s@");
 						MEM_WriteStringArray (_@s (dialogSpinnerID), i, spinnerID);
-						dlgDescription = Choice_RemoveModifierSpinner (dlgDescription);
 					};
 
 					//txtIndicator.pixelPositionX = dlg.pixelSizeX - txt.pixelPositionX - textWidth - dlg.offsetTextPixelX;
