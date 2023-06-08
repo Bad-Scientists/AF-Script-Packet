@@ -27,6 +27,7 @@
  *		hidden@			'hidden@'							 - removes dialog choice from dialog box.
  *
  *		indOff@			'indOff@'							 - does not create spinner / answer indicators
+ *		item@			'item@self:ItMiNugget'				 - creates 'item preview' - passively opens inventory for specified npc (default self) with focusing on specified item - will display item info
  *
  *	---> DEV NOTES <---
  *	Notes for us: keep in mind that some modifiers do have same naming: spinner 's@', color selected 'hs@', font selected 'fs@' --> that's why we have to work with modifiers in specific order.
@@ -69,6 +70,15 @@ var int _InfoManagerRememberSelectedChoice;
 var int InfoManagerSpinnerValueMin;	//Home
 var int InfoManagerSpinnerValueMax;	//End
 var int InfoManagerSpinnerPageSize; //Page Up/Down
+
+//Item 'Preview mode'
+var int InfoManagerItemPreviewMode;
+var int InfoManagerItemPreviewModeOn;
+var int InfoManagerItemPreviewNpcOne;
+var int InfoManagerItemPreviewNpcTwo;
+
+var int InfoManagerItemPreviewIDOne;
+var int InfoManagerItemPreviewIDTwo;
 
 //Dialog 'Answering system'
 var int InfoManagerAnswerPossible;
@@ -1322,6 +1332,19 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	//zCInputCallback_SetHandleEventTop (ECX);
 };
 
+func void EIM_CloseItemPreview ()
+{
+	if (InfoManagerItemPreviewModeOn) {
+		Npc_CloseInventory (InfoManagerItemPreviewNpcOne);
+		Npc_CloseInventory (InfoManagerItemPreviewNpcTwo);
+
+		InfoManagerItemPreviewNpcOne = -1;
+		InfoManagerItemPreviewNpcTwo = -1;
+
+		InfoManagerItemPreviewModeOn = FALSE;
+	};
+};
+
 func void _hook_oCInformationManager_Update_EIM () {
 	const int cINFO_MGR_MODE_IMPORTANT	= 0;
 	const int cINFO_MGR_MODE_INFO		= 1;
@@ -1329,6 +1352,16 @@ func void _hook_oCInformationManager_Update_EIM () {
 	const int cINFO_MGR_MODE_TRADE		= 3;
 
 	if (!MEM_Game.infoman) { return; };
+
+	//Close item preview
+	if (MEM_InformationMan.IsDone)
+	|| (MEM_InformationMan.IsWaitingForClose)
+	|| (MEM_InformationMan.IsWaitingForScript)
+	|| (MEM_InformationMan.IsWaitingForEnd)
+	{
+		//Close item preview every time we are waiting for something
+		EIM_CloseItemPreview ();
+	};
 
 	//Don't run if done
 	if (MEM_InformationMan.IsDone) { return; };
@@ -1434,6 +1467,7 @@ MEM_InformationMan.LastMethod:
 		const int dialogChoiceType_AlignLeft		= 16;
 		const int dialogChoiceType_AlignCenter		= 32;
 		const int dialogChoiceType_AlignRight		= 64;
+		const int dialogChoiceType_ItemPreview		= 128;
 
 //---
 	const int OVERLAY_MAX = 255;
@@ -1518,6 +1552,14 @@ MEM_InformationMan.LastMethod:
 	var int timerHorizontalScrollingDisabled;
 
 	var int timerSpinnerAnimation;
+
+	var int symbID;
+
+	var int itemPreviewNo;
+	var int itemPreviewID;
+	var int loopItemPreview;
+
+	var C_NPC npc;
 
 //---
 
@@ -1906,6 +1948,63 @@ MEM_InformationMan.LastMethod:
 					dlgDescriptionNoOverlays = Choice_RemoveAllOverlays (dlgDescription);
 
 					overlayConcat = "";
+
+					itemPreviewNo = 0;
+					loopItemPreview = MEM_StackPos.position;
+
+					//Item preview?
+					index = STR_IndexOf (dlgDescription, "item@");
+
+					if (index > -1) {
+						var string itemPreviewInstName;
+						itemPreviewInstName = Choice_ExtractModifier (_@s (dlgDescription), "item@");
+
+						//Update only for selected choice
+						if (i == dlg.ChoiceSelected) {
+							//By default self
+							npc = Hlp_GetNpc (self);
+
+							//Check if we have another Npc specified
+							index = STR_IndexOf (itemPreviewInstName, ":");
+							if (index > -1) {
+								var string npcInstanceName; npcInstanceName = mySTR_SubStr (itemPreviewInstName, 0, index);
+								itemPreviewInstName = mySTR_SubStr (itemPreviewInstName, index + 1, STR_Len (itemPreviewInstName) - (index + 1));
+
+								symbID = MEM_GetSymbolIndex (npcInstanceName);
+
+								if (symbID > -1) {
+									npc = Hlp_GetNpc (symbID);
+								};
+							};
+
+							itemPreviewID = -1;
+
+							if (NPC_HasItemInstanceName (npc, itemPreviewInstName)) {
+								itemPreviewID = Hlp_GetInstanceID (item);
+							};
+
+							itemPreviewNo += 1;
+							if (itemPreviewNo == 1) {
+
+								//Close item preview every time selection changes
+								EIM_CloseItemPreview ();
+
+								InfoManagerItemPreviewIDOne = itemPreviewID;
+								InfoManagerItemPreviewNpcOne = Hlp_GetInstanceID (npc);
+								//Reset second value
+								InfoManagerItemPreviewNpcTwo = -1;
+							} else
+							{
+								InfoManagerItemPreviewIDTwo = itemPreviewID;
+								InfoManagerItemPreviewNpcTwo = Hlp_GetInstanceID (npc);
+							};
+
+							properties = properties | dialogChoiceType_ItemPreview;
+						};
+
+						//We can have 2 entries
+						MEM_StackPos.position = loopItemPreview;
+					};
 
 					//Disable indicators?
 					index = STR_IndexOf (dlgDescription, "indOff@");
@@ -2830,6 +2929,31 @@ MEM_InformationMan.LastMethod:
 				};
 			};
 
+			InfoManagerItemPreviewMode = properties & dialogChoiceType_ItemPreview;
+
+			if (InfoManagerItemPreviewMode) {
+				//Open item preview only once dialogue is fully opened
+				if (dlg.hasOpened) {
+					if ((InfoManagerItemPreviewNpcOne > -1) && (InfoManagerItemPreviewIDOne > -1)) {
+						//Enable item preview
+						if (!InfoManagerItemPreviewModeOn) {
+							InfoManagerItemPreviewModeOn = TRUE;
+
+							//First time will have focus - in order to render item details
+							//Npc_InvOpenPassive (var int slfInstance, var int itemInstanceID, var int hasInvFocus)
+							Npc_InvOpenPassive (InfoManagerItemPreviewNpcOne, InfoManagerItemPreviewIDOne, TRUE);
+
+							if ((InfoManagerItemPreviewNpcTwo > -1) && (InfoManagerItemPreviewIDTwo > -1)) {
+								Npc_InvOpenPassive (InfoManagerItemPreviewNpcTwo, InfoManagerItemPreviewIDTwo, FALSE);
+							};
+						};
+					};
+				};
+			} else {
+				//Close item preview if not active anymore
+				EIM_CloseItemPreview ();
+			};
+
 			InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
 
 			if (InfoManagerAnswerPossible) {
@@ -3311,6 +3435,73 @@ func void _hook_zCViewDialogChoice_HighlightSelected_EIM () {
 	InfoManagerHighlightSelected = TRUE;
 };
 
+func void _hook_oCItemContainer_DrawCategory_EIM () {
+	if (!ECX) { return; };
+	if (!InfoManagerItemPreviewModeOn) { return; };
+
+	var oCItemContainer itemContainer; itemContainer = _^ (ECX);
+
+	/*
+	var int    inventory2_oCItemContainer_maxSlotsCol;                    // 44
+	var int    inventory2_oCItemContainer_maxSlotsColScr;                 // 48
+	var int    inventory2_oCItemContainer_maxSlotsRow;                    // 52
+	var int    inventory2_oCItemContainer_maxSlotsRowScr;                 // 56
+	var int    inventory2_oCItemContainer_maxSlots;                       // 60
+	*/
+
+	const int maxSlotsCol = 1;
+	const int maxSlotsRow = 1;
+	const int maxSlots = maxSlotsCol * maxSlotsRow;
+
+	//We have to use offsets - G1 class is different than the one from G2A
+	MEM_WriteInt (_@ (itemContainer) + 44, maxSlotsCol);
+	MEM_WriteInt (_@ (itemContainer) + 48, maxSlotsCol * 2);
+	MEM_WriteInt (_@ (itemContainer) + 52, maxSlotsRow);
+	MEM_WriteInt (_@ (itemContainer) + 56, maxSlotsRow * 2);
+	MEM_WriteInt (_@ (itemContainer) + 60, maxSlots);
+};
+
+func void _hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM () {
+	if (!ECX) { return; };
+
+	//0x007A5560 public: int __thiscall zCInputCallback::GetEnableHandleEvent(void)
+	const int zCInputCallback__GetEnableHandleEvent_G2 = 8017248;
+
+	CALL__thiscall (ECX, zCInputCallback__GetEnableHandleEvent_G2);
+	var int retVal; retVal = CALL_RetValAsInt ();
+
+	EAX = 0;
+
+	if ((retVal) || (InfoManagerItemPreviewModeOn)) {
+		EAX = 1;
+	};
+};
+
+func void _hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM () {
+	var int npcInventoryPtr; npcInventoryPtr = MEMINT_SwitchG1G2 (ESI, EBP);
+	if (!npcInventoryPtr) { return; };
+
+	var oCNpcInventory npcInventory; npcInventory = _^ (npcInventoryPtr);
+
+	//If there is dialogue choice - move viewItemInfo above dialogue
+	if (MEM_InformationMan.DlgChoice) {
+		var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
+
+		if (dlg.hasOpened) || (gf (dlg.timeOpen, FLOATNULL))
+		{
+			var zCView v; v = _^ (npcInventory.inventory2_oCItemContainer_viewItemInfo);
+
+			var int newX;
+			var int newY;
+
+			newX = v.vposx;
+			newY = v.vposy - (8192 - dlg.virtualPositionY);
+
+			zCView_SetPos (npcInventory.inventory2_oCItemContainer_viewItemInfo, newX, newY);
+		};
+	};
+};
+
 func void G12_EnhancedInfoManager_Init () {
 	//Reset pointers
 	InfoManagerSpinnerIndicator = 0;
@@ -3378,6 +3569,39 @@ func void G12_EnhancedInfoManager_Init () {
 
 		//TODO: investigate potential performance improvement - if we would sort all infos by both .npc and .nr then we could in theory improve performance (infos without npc would have to be at the beginning of the list)
 		//0x006647E0 private: static int __cdecl oCInfoManager::CompareInfos(class oCInfo *,class oCInfo *)
+
+		//-- Item preview --
+
+		//G2A only
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			//This hook will override maxSlots to 1 slot
+			//0x00706B60 protected: virtual void __thiscall oCItemContainer::DrawCategory(void)
+			const int oCItemContainer__DrawCategory_G2 = 7367520;
+			HookEngine (oCItemContainer__DrawCategory_G2, 6, "_hook_oCItemContainer_DrawCategory_EIM");
+
+			//This hook makes sure DrawItemInfo renders at all (in G2A item info is not rendered if inventory has not enabled events - so we override it with item preview feature)
+			//00706e5f
+			const int oCItemContainer__DrawItemInfo_GetHandleEvent_G2 = 7368287;
+
+			var int ptr; ptr = oCItemContainer__DrawItemInfo_GetHandleEvent_G2;
+			MemoryProtectionOverride (ptr, 5);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+
+			HookEngine (oCItemContainer__DrawItemInfo_GetHandleEvent_G2, 5, "_hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM");
+		};
+
+		//This hook moves item info above dialogue choice box
+		//00667328
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G1 = 6714152;
+
+		//00706fee
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G2 = 7368686;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__DrawItemInfo_PreRenderItem_G1, oCItemContainer__DrawItemInfo_PreRenderItem_G2), 5, "_hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM");
 
 		once = 1;
 	};
