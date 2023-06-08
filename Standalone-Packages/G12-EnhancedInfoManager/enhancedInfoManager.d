@@ -21,8 +21,9 @@
  *		ac@				'ac@'								 - aligns text to center. Does not have to be separated by space.
  *		ar@				'ar@'								 - aligns text to right. Does not have to be separated by space.
  *		o@				'o@format:TEST~'					 - adds text in between : ~ as an overlay with its own format (unique color or alignment). Don't use with fonts changing text height - this is not supported yet.
- *						'o@h@00CC66 hs@66FFB2:TEST~'
- *						'o@ar@ h@00CC66 hs@66FFB2:TEST~'
+ *						'o@h@00CC66 hs@66FFB2:TEST~'			- colors modifiers
+ *						'o@ar@ h@00CC66 hs@66FFB2:TEST~'		- alignment modifiers
+ *						'o@tab8@:TEST~'					 	 	- tab offset modifier
  *
  *		hidden@			'hidden@'							 - removes dialog choice from dialog box.
  *
@@ -1366,8 +1367,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 	//Don't run if done
 	if (MEM_InformationMan.IsDone) { return; };
 
-	//Don't run if opening / in dialogue / ending
+	//Don't run if opening / closing / in dialogue / ending
 	if (MEM_InformationMan.IsWaitingForOpen) { return; };
+	if (MEM_InformationMan.IsWaitingForClose) { return; };
 	if (MEM_InformationMan.IsWaitingForScript) { return; };
 	if (MEM_InformationMan.IsWaitingForEnd) { return; };
 
@@ -1488,9 +1490,9 @@ MEM_InformationMan.LastMethod:
 
 	var int overlayChoice;
 
-	//Default colors
 	var string spinnerID;
 
+	//Default colors
 	var string dlgColor; dlgColor = _InfoManagerDefaultColorDialogGrey;
 	var string dlgColorSelected; dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
 
