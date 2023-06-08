@@ -688,6 +688,14 @@ func void oCNpcInventory_Close (var int npcInventoryPtr) {
 	};
 };
 
+func int Npc_GetNpcInventoryPtr (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	return + npcInventoryPtr;
+};
+
 //G1 only
 func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCategory) {
 	//0x0066DE60 public: int __thiscall oCNpcInventory::SwitchToCategory(int)
@@ -1378,7 +1386,7 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1659,7 +1667,7 @@ func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1714,7 +1722,7 @@ func int NPC_HasMissionItem (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1790,7 +1798,8 @@ func void oCNpc_UnpackInventory (var int slfInstance)
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	if (!npcInventoryPtr) { return; };
 
 	if (MEMINT_SwitchG1G2 (1, 0)) {
 		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_WEAPON);
@@ -1807,9 +1816,6 @@ func void oCNpc_UnpackInventory (var int slfInstance)
 };
 
 func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
-	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
-	if (!Hlp_IsValidNpc (slf)) { return -1; };
-
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
     return + oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
 };
