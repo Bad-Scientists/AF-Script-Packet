@@ -3260,7 +3260,6 @@ MEM_InformationMan.LastMethod:
 
 		//First wait for a moment ...
 		if (horizontalScrolling == HSCROLL_INIT) {
-			timerHorizontalScrolling = 0;
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrolling >= 2000) {
