@@ -522,6 +522,45 @@ func void oCItemContainer_Close (var int ptr) {
 	};
 };
 
+/*
+ *	oCItemContainer_OpenPassive
+ *	 - G1 mode - item list mode
+ *	 - G2A inventory mode - INV_MODE_DEFAULT, INV_MODE_CONTAINER, INV_MODE_PLUNDER, INV_MODE_STEAL, INV_MODE_BUY, INV_MODE_SELL
+ */
+
+/*
+
+//enum oTItemListMode { FULLSCREEN, HALFSCREEN, ONE };
+
+enum {
+	INV_MODE_DEFAULT,
+	INV_MODE_CONTAINER,
+	INV_MODE_PLUNDER,
+	INV_MODE_STEAL,
+	INV_MODE_BUY,
+	INV_MODE_SELL,
+	INV_MODE_MAX
+};
+*/
+func void oCItemContainer_OpenPassive (var int ptr, var int x, var int y, var int mode) {
+	//0x00668050 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,enum oCItemContainer::oTItemListMode)
+	const int oCItemContainer__OpenPassive_G1 = 6717520;
+
+	//0x007086D0 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,int)
+	const int oCItemContainer__OpenPassive_G2 = 7374544;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (mode));
+		CALL_PtrParam (_@ (y));
+		CALL_PtrParam (_@ (x));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__OpenPassive_G1, oCItemContainer__OpenPassive_G2));
+		call = CALL_End();
+	};
+};
+
 //-- oCNpcContainer functions
 
 func int oCNpcContainer_Insert (var int ptr, var int itemPtr) {
