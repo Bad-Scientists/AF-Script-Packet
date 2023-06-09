@@ -18,6 +18,8 @@ var int _PC_ChangeFocus_Color_LockedKey;
 var int _PC_ChangeFocus_Color_LockedPickLocks;
 var int _PC_ChangeFocus_Color_LockedKeyPickLocks;
 var int _PC_ChangeFocus_Color_LockedHasKey;
+var int _PC_ChangeFocus_Color_ContainerUnLocked;
+var int _PC_ChangeFocus_Color_ContainerUnLockedEmpty;
 
 var int _PC_ChangeFocus_Color_Friendly;
 var int _PC_ChangeFocus_Color_Neutral;
@@ -122,14 +124,39 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 		} else
 		if ((PC_FocusVobStatus == PC_FocusVob_DoorHasRequiredKey) || (PC_FocusVobStatus == PC_FocusVob_ChestHasRequiredKey)) {
 			focusColor = _PC_ChangeFocus_Color_LockedHasKey;
+		} else
+		if (PC_FocusVobStatus == PC_FocusVob_ChestOpened) {
+			if (Mob_IsEmpty (her.focus_vob)) {
+				focusColor = _PC_ChangeFocus_Color_ContainerUnLockedEmpty;
+			} else {
+				focusColor = _PC_ChangeFocus_Color_ContainerUnLocked;
+			};
 		};
 	};
 
 	if (_PC_ChangeFocus_Flags & PC_CHANGEFOCUS_NPCATTITUDE) {
 		//NPC attitude (we could use LeGo color functions, but wanted to have all color functions in 1 file :))
 		if (Hlp_Is_oCNpc (her.focus_vob)) {
-			var c_npc oth; oth = MEM_PtrToInst(her.focus_vob);
-			var int att; att = Npc_GetPermAttitude(hero, oth);
+			var C_NPC oth; oth = _^ (her.focus_vob);
+
+			var int att;
+
+			//Custom function determining whether Npc is friendly or not
+			const int symbID = 0;
+			if (!symbID) {
+				symbID = MEM_GetSymbolIndex ("C_NPC_GETATTITUDE");
+			};
+
+			if (symbID != -1) {
+				MEM_PushInstParam (oth);
+				MEM_CallByID (symbID);
+
+				att = MEM_PopIntResult ();
+			} else {
+				//Default - use Perm attitude
+				att = Npc_GetPermAttitude(hero, oth);
+			};
+
 			if (att == ATT_FRIENDLY) {
 				focusColor = _PC_ChangeFocus_Color_Friendly;
 			} else
@@ -216,6 +243,9 @@ func void G12_Focus_Init () {
 	_PC_ChangeFocus_Color_LockedPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDPICKLOCKS", "FFFF00");
 	_PC_ChangeFocus_Color_LockedKeyPickLocks = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDKEYPICKLOCKS", "FFFF00");
 	_PC_ChangeFocus_Color_LockedHasKey = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_LOCKEDHASKEY", "FFFF00");
+
+	_PC_ChangeFocus_Color_ContainerUnLocked = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_CONTAINERUNLOCKED", "66FFB2");
+	_PC_ChangeFocus_Color_ContainerUnLockedEmpty = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_CONTAINERUNLOCKEDEMPTY", "FFFFFF");
 
 	_PC_ChangeFocus_Color_Friendly = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_FRIENDLY", "66FFB2");
 	_PC_ChangeFocus_Color_Neutral = API_GetSymbolHEX2RGBAValue ("PC_CHANGEFOCUS_COLOR_NEUTRAL", "FFFFFF");
