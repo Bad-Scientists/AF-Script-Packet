@@ -21,12 +21,14 @@
  *		ac@				'ac@'								 - aligns text to center. Does not have to be separated by space.
  *		ar@				'ar@'								 - aligns text to right. Does not have to be separated by space.
  *		o@				'o@format:TEST~'					 - adds text in between : ~ as an overlay with its own format (unique color or alignment). Don't use with fonts changing text height - this is not supported yet.
- *						'o@h@00CC66 hs@66FFB2:TEST~'
- *						'o@ar@ h@00CC66 hs@66FFB2:TEST~'
+ *						'o@h@00CC66 hs@66FFB2:TEST~'			- colors modifiers
+ *						'o@ar@ h@00CC66 hs@66FFB2:TEST~'		- alignment modifiers
+ *						'o@tab8@:TEST~'					 	 	- tab offset modifier
  *
  *		hidden@			'hidden@'							 - removes dialog choice from dialog box.
  *
  *		indOff@			'indOff@'							 - does not create spinner / answer indicators
+ *		item@			'item@self:ItMiNugget'				 - creates 'item preview' - passively opens inventory for specified npc (default self) with focusing on specified item - will display item info
  *
  *	---> DEV NOTES <---
  *	Notes for us: keep in mind that some modifiers do have same naming: spinner 's@', color selected 'hs@', font selected 'fs@' --> that's why we have to work with modifiers in specific order.
@@ -69,6 +71,15 @@ var int _InfoManagerRememberSelectedChoice;
 var int InfoManagerSpinnerValueMin;	//Home
 var int InfoManagerSpinnerValueMax;	//End
 var int InfoManagerSpinnerPageSize; //Page Up/Down
+
+//Item 'Preview mode'
+var int InfoManagerItemPreviewMode;
+var int InfoManagerItemPreviewModeOn;
+var int InfoManagerItemPreviewNpcOne;
+var int InfoManagerItemPreviewNpcTwo;
+
+var int InfoManagerItemPreviewIDOne;
+var int InfoManagerItemPreviewIDTwo;
 
 //Dialog 'Answering system'
 var int InfoManagerAnswerPossible;
@@ -123,13 +134,13 @@ var int EnhancedInfoManagerReady;
 const int ALIGN_TAB = 255;
 const string InfoManagerTabSize = "-";
 
-func void oCInfoManager_Reset_EIM () {
+func void EIM_Reset () {
 	EnhancedInfoManagerReady = cEIM_Idle;
 	InfoManagerDialogInstPtrCount = 0;
 	InfoManagerCollectInfosAllDisabled = FALSE;
 };
 
-func int oCInfoManager_GetInfoPtr__EIM (var int index) {
+func int EIM_GetInfoPtr (var int index) {
 	if ((index < 0) || (index >= InfoManagerDialogInstPtrCount)) {
 		return 0;
 	};
@@ -258,22 +269,6 @@ func int Choice_IsDisabled (var string s) {
 	return FALSE;
 };
 
-func int Choice_IsAnswer (var string s) {
-	if (STR_IndexOf (s, "a@ ") > -1) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
-func int Choice_IsSpinner (var string s) {
-	if (STR_IndexOf (s, "s@") > -1) {
-		return TRUE;
-	};
-
-	return FALSE;
-};
-
 func int Choice_IsHidden (var string s) {
 	if (STR_IndexOf (s, "hidden@") > -1) {
 		return TRUE;
@@ -282,417 +277,91 @@ func int Choice_IsHidden (var string s) {
 	return FALSE;
 };
 
-func string Choice_GetModifierFont (var string s) {
-	var int len;
-	var int index;
+func string Choice_ExtractModifier (var int strPtr, var string modifierID) {
+	var string s; s = MEM_ReadString (strPtr);
 
-	var string s1; s1 = "";
+	var int index1; index1 = STR_IndexOf (s, modifierID);
+	if (index1 == -1) { return ""; };
 
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "f@");
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
 
-	if (index == -1) {
-		return "";
+	//Get prefix
+	var string s1; s1 = mySTR_SubStr (s, 0, index1);
+
+	//Get modifier
+	var string s2; s2 = mySTR_SubStr (s, index1 + lenModifier, len - (lenModifier + index1));
+	var int index2; index2 = STR_IndexOf (s2, " ");
+
+	var int index3; index3 = index2;
+
+	if (index2 == -1) {
+		index3 = STR_Len (s2);
 	};
 
-	s1 = mySTR_SubStr (s, index + 2, len - 2);
+	var string modifierValue; modifierValue = mySTR_Prefix (s2, index3);
 
-	len = STR_Len (s1);
+	//Get suffix
+	var string s3; s3 = mySTR_SubStr (s, index1 + (index2 + 1) + lenModifier, len - (lenModifier + index1 + (index2 + 1)));
+
+	//Concat prefix with suffix and override original string
+	s = s1;
+	s = ConcatStrings (s, s3);
+
+	MEM_WriteString (strPtr, s);
+
+	//Return modifier value
+	return modifierValue;
+};
+
+//"modifierID@modifierValue "
+func string Choice_GetModifier (var string s, var string modifierID) {
+	var int index; index = STR_IndexOf (s, modifierID);
+	if (index == -1) { return ""; };
+
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
+
+	//Get modifier
+	var string s1; s1 = mySTR_SubStr (s, index + lenModifier, len - lenModifier);
 	index = STR_IndexOf (s1, " ");
 
 	if (index == -1) {
-		index = len;
+		index = STR_Len (s1);
 	};
 
-	return mySTR_Prefix (s1, index);
+	var string modifierValue; modifierValue = mySTR_Prefix (s1, index);
+	return modifierValue;
 };
 
-func string Choice_RemoveModifierFont (var string s) {
-	var int len;
-	var int index1;
+func string Choice_RemoveModifier (var string s, var string modifierID) {
+	var int index1; index1 = STR_IndexOf (s, modifierID);
+	if (index1 == -1) { return s; };
 
-	var string s1; s1 = "";
-	var string s2; s2 = "";
+	var int len; len = STR_Len (s);
+	var int lenModifier; lenModifier = STR_Len (modifierID);
 
-	len = STR_Len (s);
-	index1 = STR_IndexOf (s, "f@");
+	//Get prefix
+	var string s1; s1 = mySTR_SubStr (s, 0, index1);
 
-	if (index1 == -1) {
-		return s;
+	//Get modifier
+	var string s2; s2 = mySTR_SubStr (s, index1 + lenModifier, len - (lenModifier + index1));
+	var int index2; index2 = STR_IndexOf (s2, " ");
+
+	var int index3; index3 = index2;
+
+	if (index2 == -1) {
+		index3 = STR_Len (s2);
 	};
 
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
+	//Get suffix
+	var string s3; s3 = mySTR_SubStr (s, index1 + (index2 + 1) + lenModifier, len - (lenModifier + index1 + (index2 + 1)));
 
-	s2 = mySTR_SubStr (s, index1 + 2, len - 2);
+	//Concat prefix with suffix and override original string
+	s = s1;
+	s = ConcatStrings (s, s3);
 
-	len = STR_Len (s2);
-	index1 = STR_IndexOf (s2, " ");
-
-	if (index1 == -1) {
-		index1 = len;
-	};
-
-	if (index1 == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
-	};
-
-	return ConcatStrings (s1, s2);
-};
-
-func string Choice_GetModifierFontSelected (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "fs@");
-
-	if (index == -1) {
-		return "";
-	};
-
-	s1 = mySTR_SubStr (s, index + 3, len - 3);
-
-	len = STR_Len (s1);
-	index = STR_IndexOf (s1, " ");
-
-	if (index == -1) {
-		index = len;
-	};
-
-	return mySTR_Prefix (s1, index);
-};
-
-func string Choice_RemoveModifierFontSelected (var string s) {
-	var int len;
-	var int index1;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-	index1 = STR_IndexOf (s, "fs@");
-
-	if (index1 == -1) {
-		return s;
-	};
-
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
-
-	s2 = mySTR_SubStr (s, index1 + 3, len - 3);
-
-	len = STR_Len (s2);
-	index1 = STR_IndexOf (s2, " ");
-
-	if (index1 == -1) {
-		index1 = len;
-	};
-
-	if (index1 == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
-	};
-
-	return ConcatStrings (s1, s2);
-};
-
-func string Choice_GetModifierColor (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "h@");
-
-	if (index == -1) {
-		return "";
-	};
-
-	s1 = mySTR_SubStr (s, index + 2, len - 2);
-
-	len = STR_Len (s1);
-	index = STR_IndexOf (s1, " ");
-
-	if (index == -1) {
-		index = len;
-	};
-
-	return mySTR_Prefix (s1, index);
-};
-
-func string Choice_RemoveModifierColor (var string s) {
-	var int len;
-	var int index1;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-	index1 = STR_IndexOf (s, "h@");
-
-	if (index1 == -1) {
-		return s;
-	};
-
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
-
-	s2 = mySTR_SubStr (s, index1 + 2, len - 2);
-
-	len = STR_Len (s2);
-	index1 = STR_IndexOf (s2, " ");
-
-	if (index1 == -1) {
-		index1 = len;
-	};
-
-	if (index1 == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
-	};
-
-	return ConcatStrings (s1, s2);
-};
-
-func string Choice_GetModifierColorSelected (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "hs@");
-
-	if (index == -1) {
-		return "";
-	};
-
-	s1 = mySTR_SubStr (s, index + 3, len - 3);
-
-	len = STR_Len (s1);
-	index = STR_IndexOf (s1, " ");
-
-	if (index == -1) {
-		index = len;
-	};
-
-	return mySTR_Prefix (s1, index);
-};
-
-func string Choice_RemoveModifierColorSelected (var string s) {
-	var int len;
-	var int index1;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-	index1 = STR_IndexOf (s, "hs@");
-
-	if (index1 == -1) {
-		return s;
-	};
-
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
-
-	s2 = mySTR_SubStr (s, index1 + 3, len - 3);
-
-	len = STR_Len (s2);
-	index1 = STR_IndexOf (s2, " ");
-
-	if (index1 == -1) {
-		index1 = len;
-	};
-
-	if (index1 == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
-	};
-
-	return ConcatStrings (s1, s2);
-};
-
-func int Choice_GetModifierTab (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "tab@");
-
-	if (index == -1) {
-		return 0;
-	};
-
-	s1 = mySTR_SubStr (s, index + 4, len - 4);
-
-	len = STR_Len (s1);
-	index = STR_IndexOf (s1, " ");
-
-	if (index == -1) {
-		index = len;
-	};
-
-	s1 = mySTR_Prefix (s1, index);
-
-	if (!STR_IsNumeric (s1)) { return 0; };
-
-	return STR_ToInt (s1);
-};
-
-func string Choice_RemoveModifierTab (var string s) {
-	var int len;
-	var int index1;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-	index1 = STR_IndexOf (s, "tab@");
-
-	if (index1 == -1) {
-		return s;
-	};
-
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
-
-	s2 = mySTR_SubStr (s, index1 + 4, len - 4);
-
-	len = STR_Len (s2);
-	index1 = STR_IndexOf (s2, " ");
-
-	if (index1 == -1) {
-		index1 = len;
-	};
-
-	if (index1 == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index1 + 1, (len - index1 - 1));
-	};
-
-	return ConcatStrings (s1, s2);
-};
-
-/*
- *	Removes modifier by text (removes also space after modifier!), for example: "a@", "a@ "
- *		Choice_RemoveModifierByText (s, "a@")
- */
-func string Choice_RemoveModifierByText (var string s, var string modifier) {
-	var int len;
-	var int index1;
-	var int index2;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-
-	index1 = STR_IndexOf (s, modifier);
-	index2 = STR_IndexOf (s, ConcatStrings (modifier, " "));
-
-	if (index1 == index2) {
-		modifier = ConcatStrings (modifier, " ");
-	};
-
-	if (index1 == -1) {
-		return s;
-	};
-
-	if (index1 > 0) {
-		s1 = mySTR_SubStr (s, 0, index1);
-	};
-
-	s2 = mySTR_SubStr (s, index1 + STR_Len (modifier), len - STR_Len (modifier));
-
-	return ConcatStrings (s1, s2);
-};
-
-//spinner s@
-func string Choice_GetModifierSpinnerID (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	var string spinnerID; spinnerID = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "s@");
-
-	if (index > -1) {
-		if (index > 0) {
-			s1 = mySTR_SubStr (s, 0, index);
-		};
-
-		len = STR_Len (s);
-		s2 = mySTR_SubStr (s, index + 2, len - 2);
-
-		index = STR_IndexOf (s2, " ");
-		len = STR_Len (s2);
-
-		if (index == -1) {
-			index = len;
-		};
-
-		spinnerID = mySTR_Prefix (s2, index);
-	};
-
-	return spinnerID;
-};
-
-func string Choice_RemoveModifierSpinner (var string s) {
-	var int len;
-	var int index;
-
-	var string s1; s1 = "";
-	var string s2; s2 = "";
-
-	len = STR_Len (s);
-	index = STR_IndexOf (s, "s@");
-
-	if (index == -1) {
-		return s;
-	};
-
-	if (index > 0) {
-		s1 = mySTR_SubStr (s, 0, index);
-	};
-
-	s2 = mySTR_SubStr (s, index + 2, len - 2);
-
-	index = STR_IndexOf (s2, " ");
-	len = STR_Len (s2);
-
-	if (index == -1) {
-		index = len;
-	};
-
-	if (index == len) {
-		s2 = "";
-	} else {
-		s2 = mySTR_SubStr (s2, index + 1, (len - index - 1));
-	};
-
-	return ConcatStrings (s1, s2);
+	return s;
 };
 
 func string Choice_RemoveModifierOverlay (var string s) {
@@ -854,20 +523,21 @@ func string Choice_RemoveAllModifiers (var string s) {
 	s = Choice_RemoveAllOverlays (s);
 
 	//
-	s = Choice_RemoveModifierByText (s, "indOff@");
+	s = Choice_RemoveModifier (s, "indOff@");
+	s = Choice_RemoveModifier (s, "item@");
 
-	s = Choice_RemoveModifierFont (s);
-	s = Choice_RemoveModifierFontSelected (s);
-	s = Choice_RemoveModifierColor (s);
-	s = Choice_RemoveModifierColorSelected (s);
-	s = Choice_RemoveModifierByText (s, "a@");
-	s = Choice_RemoveModifierByText (s, "d@");
-	s = Choice_RemoveModifierSpinner (s);
+	s = Choice_RemoveModifier (s, "f@");
+	s = Choice_RemoveModifier (s, "fs@");
+	s = Choice_RemoveModifier (s, "h@");
+	s = Choice_RemoveModifier (s, "hs@");
+	s = Choice_RemoveModifier (s, "a@");
+	s = Choice_RemoveModifier (s, "d@");
+	s = Choice_RemoveModifier (s, "s@");
 
-	s = Choice_RemoveModifierByText (s, "al@");
-	s = Choice_RemoveModifierByText (s, "ac@");
-	s = Choice_RemoveModifierByText (s, "ar@");
-	s = Choice_RemoveModifierByText (s, "tab@");
+	s = Choice_RemoveModifier (s, "al@");
+	s = Choice_RemoveModifier (s, "ac@");
+	s = Choice_RemoveModifier (s, "ar@");
+	s = Choice_RemoveModifier (s, "tab@");
 
 	return s;
 };
@@ -968,20 +638,24 @@ func string Choice_GetCleanText (var string s) {
 	end;
 
 //--- Remove all other modifiers
-	s = Choice_RemoveModifierByText (s, "indOff@");
 
-	s = Choice_RemoveModifierFont (s);
-	s = Choice_RemoveModifierFontSelected (s);
-	s = Choice_RemoveModifierColor (s);
-	s = Choice_RemoveModifierColorSelected (s);
-	s = Choice_RemoveModifierByText (s, "a@");
-	s = Choice_RemoveModifierByText (s, "d@");
-	s = Choice_RemoveModifierSpinner (s);
+//	s = Choice_RemoveAllModifiers (s);
 
-	s = Choice_RemoveModifierByText (s, "al@");
-	s = Choice_RemoveModifierByText (s, "ac@");
-	s = Choice_RemoveModifierByText (s, "ar@");
-	s = Choice_RemoveModifierByText (s, "tab@");
+	s = Choice_RemoveModifier (s, "indOff@");
+	s = Choice_RemoveModifier (s, "item@");
+
+	s = Choice_RemoveModifier (s, "f@");
+	s = Choice_RemoveModifier (s, "fs@");
+	s = Choice_RemoveModifier (s, "h@");
+	s = Choice_RemoveModifier (s, "hs@");
+	s = Choice_RemoveModifier (s, "a@");
+	s = Choice_RemoveModifier (s, "d@");
+	s = Choice_RemoveModifier (s, "s@");
+
+	s = Choice_RemoveModifier (s, "al@");
+	s = Choice_RemoveModifier (s, "ac@");
+	s = Choice_RemoveModifier (s, "ar@");
+	s = Choice_RemoveModifier (s, "tab@");
 
 	return s;
 };
@@ -1017,7 +691,7 @@ func void InfoManager_SetInfoChoiceText_BySpinnerID (var string text, var string
 					var oCInfoChoice dlgChoice;
 					dlgChoice = _^ (l.data);
 
-					If (Hlp_StrCmp (Choice_GetModifierSpinnerID (dlgChoice.text), spinnerID)) {
+					If (Hlp_StrCmp (Choice_GetModifier (dlgChoice.text, "s@"), spinnerID)) {
 						dlgChoice.Text = text;
 						return;
 					};
@@ -1052,7 +726,7 @@ func string InfoManager_GetChoiceDescription_EIM (var int index) {
 			//var C_NPC her; her = _^ (MEM_InformationMan.player);
 
 			//infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, index);
-			infoPtr = oCInfoManager_GetInfoPtr__EIM (index);
+			infoPtr = EIM_GetInfoPtr (index);
 
 			if (infoPtr) {
 				dlgInstance = _^ (infoPtr);
@@ -1160,7 +834,7 @@ func void InfoManager_SkipDisabledDialogChoices (var int key) {
 	};
 };
 
-func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
+func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	var string s;
 
 	//'Refresh' dialogs (in case that there is just 1 dialog choice)
@@ -1659,7 +1333,20 @@ func void _hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager () {
 	//zCInputCallback_SetHandleEventTop (ECX);
 };
 
-func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
+func void EIM_CloseItemPreview ()
+{
+	if (InfoManagerItemPreviewModeOn) {
+		Npc_CloseInventory (InfoManagerItemPreviewNpcOne);
+		Npc_CloseInventory (InfoManagerItemPreviewNpcTwo);
+
+		InfoManagerItemPreviewNpcOne = -1;
+		InfoManagerItemPreviewNpcTwo = -1;
+
+		InfoManagerItemPreviewModeOn = FALSE;
+	};
+};
+
+func void _hook_oCInformationManager_Update_EIM () {
 	const int cINFO_MGR_MODE_IMPORTANT	= 0;
 	const int cINFO_MGR_MODE_INFO		= 1;
 	const int cINFO_MGR_MODE_CHOICE		= 2;
@@ -1667,11 +1354,22 @@ func void _hook_oCInformationManager_Update_EnhancedInfoManager () {
 
 	if (!MEM_Game.infoman) { return; };
 
+	//Close item preview
+	if (MEM_InformationMan.IsDone)
+	|| (MEM_InformationMan.IsWaitingForClose)
+	|| (MEM_InformationMan.IsWaitingForScript)
+	|| (MEM_InformationMan.IsWaitingForEnd)
+	{
+		//Close item preview every time we are waiting for something
+		EIM_CloseItemPreview ();
+	};
+
 	//Don't run if done
 	if (MEM_InformationMan.IsDone) { return; };
 
-	//Don't run if opening / in dialogue / ending
+	//Don't run if opening / closing / in dialogue / ending
 	if (MEM_InformationMan.IsWaitingForOpen) { return; };
+	if (MEM_InformationMan.IsWaitingForClose) { return; };
 	if (MEM_InformationMan.IsWaitingForScript) { return; };
 	if (MEM_InformationMan.IsWaitingForEnd) { return; };
 
@@ -1771,6 +1469,7 @@ MEM_InformationMan.LastMethod:
 		const int dialogChoiceType_AlignLeft		= 16;
 		const int dialogChoiceType_AlignCenter		= 32;
 		const int dialogChoiceType_AlignRight		= 64;
+		const int dialogChoiceType_ItemPreview		= 128;
 
 //---
 	const int OVERLAY_MAX = 255;
@@ -1791,9 +1490,9 @@ MEM_InformationMan.LastMethod:
 
 	var int overlayChoice;
 
-	//Default colors
 	var string spinnerID;
 
+	//Default colors
 	var string dlgColor; dlgColor = _InfoManagerDefaultColorDialogGrey;
 	var string dlgColorSelected; dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
 
@@ -1855,6 +1554,14 @@ MEM_InformationMan.LastMethod:
 	var int timerHorizontalScrollingDisabled;
 
 	var int timerSpinnerAnimation;
+
+	var int symbID;
+
+	var int itemPreviewNo;
+	var int itemPreviewID;
+	var int loopItemPreview;
+
+	var C_NPC npc;
 
 //---
 
@@ -2073,7 +1780,7 @@ MEM_InformationMan.LastMethod:
 
 			if (MEM_InformationMan.Mode == cINFO_MGR_MODE_INFO) {
 				//infoPtr = oCInfoManager_GetInfoUnimportant_ByPtr (MEM_InformationMan.npc, MEM_InformationMan.player, i);
-				infoPtr = oCInfoManager_GetInfoPtr__EIM (i);
+				infoPtr = EIM_GetInfoPtr (i);
 
 				if (infoPtr) {
 					dlgInstance = _^ (infoPtr);
@@ -2244,11 +1951,68 @@ MEM_InformationMan.LastMethod:
 
 					overlayConcat = "";
 
+					itemPreviewNo = 0;
+					loopItemPreview = MEM_StackPos.position;
+
+					//Item preview?
+					index = STR_IndexOf (dlgDescription, "item@");
+
+					if (index > -1) {
+						var string itemPreviewInstName;
+						itemPreviewInstName = Choice_ExtractModifier (_@s (dlgDescription), "item@");
+
+						//Update only for selected choice
+						if (i == dlg.ChoiceSelected) {
+							//By default self
+							npc = Hlp_GetNpc (self);
+
+							//Check if we have another Npc specified
+							index = STR_IndexOf (itemPreviewInstName, ":");
+							if (index > -1) {
+								var string npcInstanceName; npcInstanceName = mySTR_SubStr (itemPreviewInstName, 0, index);
+								itemPreviewInstName = mySTR_SubStr (itemPreviewInstName, index + 1, STR_Len (itemPreviewInstName) - (index + 1));
+
+								symbID = MEM_GetSymbolIndex (npcInstanceName);
+
+								if (symbID > -1) {
+									npc = Hlp_GetNpc (symbID);
+								};
+							};
+
+							itemPreviewID = -1;
+
+							if (NPC_HasItemInstanceName (npc, itemPreviewInstName)) {
+								itemPreviewID = Hlp_GetInstanceID (item);
+							};
+
+							itemPreviewNo += 1;
+							if (itemPreviewNo == 1) {
+
+								//Close item preview every time selection changes
+								EIM_CloseItemPreview ();
+
+								InfoManagerItemPreviewIDOne = itemPreviewID;
+								InfoManagerItemPreviewNpcOne = Hlp_GetInstanceID (npc);
+								//Reset second value
+								InfoManagerItemPreviewNpcTwo = -1;
+							} else
+							{
+								InfoManagerItemPreviewIDTwo = itemPreviewID;
+								InfoManagerItemPreviewNpcTwo = Hlp_GetInstanceID (npc);
+							};
+
+							properties = properties | dialogChoiceType_ItemPreview;
+						};
+
+						//We can have 2 entries
+						MEM_StackPos.position = loopItemPreview;
+					};
+
 					//Disable indicators?
 					index = STR_IndexOf (dlgDescription, "indOff@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "indOff@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "indOff@");
 						properties = properties | dialogChoiceType_IndicatorsOff;
 					};
 
@@ -2256,7 +2020,7 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "a@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "a@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "a@");
 						properties = properties | dialogChoiceType_Answer;
 					};
 
@@ -2264,7 +2028,7 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "d@");
 
 					if (index > -1) {
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "d@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "d@");
 						properties = properties | dialogChoiceType_Disabled;
 					};
 
@@ -2396,26 +2160,25 @@ MEM_InformationMan.LastMethod:
 						index = STR_IndexOf (overlayFormat, "al@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_LEFT;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "al@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "al@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "ac@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_CENTER;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ac@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "ac@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "ar@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_RIGHT;
-							overlayFormat = Choice_RemoveModifierByText (overlayFormat, "ar@");
+							overlayFormat = Choice_RemoveModifier (overlayFormat, "ar@");
 						};
 
 						index = STR_IndexOf (overlayFormat, "tab@");
 						if (index > -1) {
 							overlayAlignment = ALIGN_TAB;
-							overlayTab = Choice_GetModifierTab (overlayFormat);
-							overlayFormat = Choice_RemoveModifierTab (overlayFormat);
+							overlayTab = STR_ToInt (Choice_ExtractModifier (_@s (overlayFormat), "tab@"));
 						};
 						//<--
 
@@ -2464,16 +2227,14 @@ MEM_InformationMan.LastMethod:
 						index = STR_IndexOf (overlayFormat, "h@");
 
 						if (index > -1) {
-							overlayColor = HEX2RGBA (Choice_GetModifierColor (overlayFormat));
-							overlayFormat = Choice_RemoveModifierColor (overlayFormat);
+							overlayColor = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "h@"));
 						};
 
 						//Extract color selected
 						index = STR_IndexOf (overlayFormat, "hs@");
 
 						if (index > -1) {
-							overlayColorSelected = HEX2RGBA (Choice_GetModifierColorSelected (overlayFormat));
-							overlayFormat = Choice_RemoveModifierColorSelected (overlayFormat);
+							overlayColorSelected = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "hs@"));
 						};
 						//<--
 
@@ -2489,24 +2250,21 @@ MEM_InformationMan.LastMethod:
 								index = (STR_IndexOf (overlayText, "f@"));
 
 								if (index > -1) {
-									dlgFont = Choice_GetModifierFont (overlayText);
-									overlayText = Choice_RemoveModifierFont (overlayText);
+									dlgFont = Choice_ExtractModifier (_@s (overlayText), "f@");
 								};
 
 								//Extract font selected name
 								index = (STR_IndexOf (overlayText, "fs@"));
 
 								if (index > -1) {
-									dlgFontSelected = Choice_GetModifierFontSelected (overlayText);
-									overlayText = Choice_RemoveModifierFontSelected (overlayText);
+									dlgFontSelected = Choice_ExtractModifier (_@s (overlayText), "fs@");
 								};
 
 								//Extract color grayed
 								index = (STR_IndexOf (overlayText, "h@"));
 
 								if (index > -1) {
-									dlgColor = Choice_GetModifierColor (overlayText);
-									overlayText = Choice_RemoveModifierColor (overlayText);
+									dlgColor = Choice_ExtractModifier (_@s (overlayText), "h@");
 									overlayColor = HEX2RGBA (dlgColor);
 								};
 
@@ -2514,8 +2272,7 @@ MEM_InformationMan.LastMethod:
 								index = (STR_IndexOf (overlayText, "hs@"));
 
 								if (index > -1) {
-									dlgColorSelected = Choice_GetModifierColorSelected (overlayText);
-									overlayText = Choice_RemoveModifierColorSelected (overlayText);
+									dlgColorSelected = Choice_ExtractModifier (_@s (overlayText), "hs@");
 									overlayColorSelected = HEX2RGBA (dlgColorSelected);
 								};
 
@@ -2524,7 +2281,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_LEFT;
 									overlayAlignment = ALIGN_LEFT;
-									overlayText = Choice_RemoveModifierByText (overlayText, "al@");
+									overlayText = Choice_RemoveModifier (overlayText, "al@");
 								};
 
 								//ac@ align center
@@ -2532,7 +2289,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_CENTER;
 									overlayAlignment = ALIGN_CENTER;
-									overlayText = Choice_RemoveModifierByText (overlayText, "ac@");
+									overlayText = Choice_RemoveModifier (overlayText, "ac@");
 								};
 
 								//ar@ align right
@@ -2540,7 +2297,7 @@ MEM_InformationMan.LastMethod:
 								if (index > -1) {
 									//alignment = ALIGN_RIGHT;
 									overlayAlignment = ALIGN_RIGHT;
-									overlayText = Choice_RemoveModifierByText (overlayText, "ar@");
+									overlayText = Choice_RemoveModifier (overlayText, "ar@");
 								};
 
 								//spinner s@
@@ -2548,9 +2305,8 @@ MEM_InformationMan.LastMethod:
 
 								if (index > -1) {
 									properties = properties | dialogChoiceType_Spinner;
-									spinnerID = Choice_GetModifierSpinnerID (overlayText);
+									spinnerID = Choice_ExtractModifier (_@s (overlayText), "s@");
 									MEM_WriteStringArray (_@s (dialogSpinnerID), i, spinnerID);
-									overlayText = Choice_RemoveModifierSpinner (overlayText);
 								};
 						};
 
@@ -2791,62 +2547,57 @@ MEM_InformationMan.LastMethod:
 					index = STR_IndexOf (dlgDescription, "f@");
 
 					if (index > -1) {
-						dlgFont = Choice_GetModifierFont (dlgDescription);
-						dlgDescription = Choice_RemoveModifierFont (dlgDescription);
+						dlgFont = Choice_ExtractModifier (_@s (dlgDescription), "f@");
 					};
 
 					//Extract font selected name
 					index = STR_IndexOf (dlgDescription, "fs@");
 
 					if (index > -1) {
-						dlgFontSelected = Choice_GetModifierFontSelected (dlgDescription);
-						dlgDescription = Choice_RemoveModifierFontSelected (dlgDescription);
+						dlgFontSelected = Choice_ExtractModifier (_@s (dlgDescription), "fs@");
 					};
 
 					//Extract color grayed
 					index = STR_IndexOf (dlgDescription, "h@");
 
 					if (index > -1) {
-						dlgColor = Choice_GetModifierColor (dlgDescription);
-						dlgDescription = Choice_RemoveModifierColor (dlgDescription);
+						dlgColor = Choice_ExtractModifier (_@s (dlgDescription), "h@");
 					};
 
 					//Extract color selected
 					index = STR_IndexOf (dlgDescription, "hs@");
 
 					if (index > -1) {
-						dlgColorSelected = Choice_GetModifierColorSelected (dlgDescription);
-						dlgDescription = Choice_RemoveModifierColorSelected (dlgDescription);
+						dlgColorSelected = Choice_ExtractModifier (_@s (dlgDescription), "hs@");
 					};
 
 					//al@ align left
 					index = STR_IndexOf (dlgDescription, "al@");
 					if (index > -1) {
 						alignment = ALIGN_LEFT;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "al@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "al@");
 					};
 
 					//ac@ align center
 					index = STR_IndexOf (dlgDescription, "ac@");
 					if (index > -1) {
 						alignment = ALIGN_CENTER;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ac@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "ac@");
 					};
 
 					//ar@ align right
 					index = STR_IndexOf (dlgDescription, "ar@");
 					if (index > -1) {
 						alignment = ALIGN_RIGHT;
-						dlgDescription = Choice_RemoveModifierByText (dlgDescription, "ar@");
+						dlgDescription = Choice_RemoveModifier (dlgDescription, "ar@");
 					};
 
 					//spinner s@
 					index = STR_IndexOf (dlgDescription, "s@");
 					if (index > -1) {
 						properties = properties | dialogChoiceType_Spinner;
-						spinnerID = Choice_GetModifierSpinnerID (dlgDescription);
+						spinnerID = Choice_ExtractModifier (_@s (dlgDescription), "s@");
 						MEM_WriteStringArray (_@s (dialogSpinnerID), i, spinnerID);
-						dlgDescription = Choice_RemoveModifierSpinner (dlgDescription);
 					};
 
 					//txtIndicator.pixelPositionX = dlg.pixelSizeX - txt.pixelPositionX - textWidth - dlg.offsetTextPixelX;
@@ -3180,6 +2931,31 @@ MEM_InformationMan.LastMethod:
 				};
 			};
 
+			InfoManagerItemPreviewMode = properties & dialogChoiceType_ItemPreview;
+
+			if (InfoManagerItemPreviewMode) {
+				//Open item preview only once dialogue is fully opened
+				if (dlg.hasOpened) {
+					if ((InfoManagerItemPreviewNpcOne > -1) && (InfoManagerItemPreviewIDOne > -1)) {
+						//Enable item preview
+						if (!InfoManagerItemPreviewModeOn) {
+							InfoManagerItemPreviewModeOn = TRUE;
+
+							//First time will have focus - in order to render item details
+							//Npc_InvOpenPassive (var int slfInstance, var int itemInstanceID, var int hasInvFocus)
+							Npc_InvOpenPassive (InfoManagerItemPreviewNpcOne, InfoManagerItemPreviewIDOne, TRUE);
+
+							if ((InfoManagerItemPreviewNpcTwo > -1) && (InfoManagerItemPreviewIDTwo > -1)) {
+								Npc_InvOpenPassive (InfoManagerItemPreviewNpcTwo, InfoManagerItemPreviewIDTwo, FALSE);
+							};
+						};
+					};
+				};
+			} else {
+				//Close item preview if not active anymore
+				EIM_CloseItemPreview ();
+			};
+
 			InfoManagerAnswerPossible = properties & dialogChoiceType_Answer;
 
 			if (InfoManagerAnswerPossible) {
@@ -3260,7 +3036,6 @@ MEM_InformationMan.LastMethod:
 
 		//First wait for a moment ...
 		if (horizontalScrolling == HSCROLL_INIT) {
-			timerHorizontalScrolling = 0;
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrolling >= 2000) {
@@ -3436,8 +3211,8 @@ MEM_InformationMan.LastMethod:
 /*
  *
  */
-func void _hook_oCInformationManager_CollectChoices () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_CollectChoices_EIM () {
+	EIM_Reset ();
 
 	if (!MEM_Game.infoman) { return; };
 
@@ -3558,8 +3333,8 @@ func void _hook_oCInformationManager_CollectChoices () {
 /*
  *
  */
-func void _hook_oCInformationManager_CollectInfos () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_CollectInfos_EIM () {
+	EIM_Reset ();
 
 	if (!MEM_Game.infoman) { return; };
 
@@ -3650,16 +3425,83 @@ func void _hook_oCInformationManager_CollectInfos () {
 	};
 };
 
-func void _hook_oCInformationManager_OnImportantBegin () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_OnImportantBegin_EIM () {
+	EIM_Reset ();
 };
 
-func void _hook_oCInformationManager_OnExit () {
-	oCInfoManager_Reset_EIM ();
+func void _hook_oCInformationManager_OnExit_EIM () {
+	EIM_Reset ();
 };
 
-func void _hook_zCViewDialogChoice_HighlightSelected () {
+func void _hook_zCViewDialogChoice_HighlightSelected_EIM () {
 	InfoManagerHighlightSelected = TRUE;
+};
+
+func void _hook_oCItemContainer_DrawCategory_EIM () {
+	if (!ECX) { return; };
+	if (!InfoManagerItemPreviewModeOn) { return; };
+
+	var oCItemContainer itemContainer; itemContainer = _^ (ECX);
+
+	/*
+	var int    inventory2_oCItemContainer_maxSlotsCol;                    // 44
+	var int    inventory2_oCItemContainer_maxSlotsColScr;                 // 48
+	var int    inventory2_oCItemContainer_maxSlotsRow;                    // 52
+	var int    inventory2_oCItemContainer_maxSlotsRowScr;                 // 56
+	var int    inventory2_oCItemContainer_maxSlots;                       // 60
+	*/
+
+	const int maxSlotsCol = 1;
+	const int maxSlotsRow = 1;
+	const int maxSlots = maxSlotsCol * maxSlotsRow;
+
+	//We have to use offsets - G1 class is different than the one from G2A
+	MEM_WriteInt (_@ (itemContainer) + 44, maxSlotsCol);
+	MEM_WriteInt (_@ (itemContainer) + 48, maxSlotsCol * 2);
+	MEM_WriteInt (_@ (itemContainer) + 52, maxSlotsRow);
+	MEM_WriteInt (_@ (itemContainer) + 56, maxSlotsRow * 2);
+	MEM_WriteInt (_@ (itemContainer) + 60, maxSlots);
+};
+
+func void _hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM () {
+	if (!ECX) { return; };
+
+	//0x007A5560 public: int __thiscall zCInputCallback::GetEnableHandleEvent(void)
+	const int zCInputCallback__GetEnableHandleEvent_G2 = 8017248;
+
+	CALL__thiscall (ECX, zCInputCallback__GetEnableHandleEvent_G2);
+	var int retVal; retVal = CALL_RetValAsInt ();
+
+	EAX = 0;
+
+	if ((retVal) || (InfoManagerItemPreviewModeOn)) {
+		EAX = 1;
+	};
+};
+
+func void _hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM () {
+	var int npcInventoryPtr; npcInventoryPtr = MEMINT_SwitchG1G2 (ESI, EBP);
+	if (!npcInventoryPtr) { return; };
+
+	var oCNpcInventory npcInventory; npcInventory = _^ (npcInventoryPtr);
+
+	//If there is dialogue choice - move viewItemInfo above dialogue
+	if (MEM_InformationMan.DlgChoice) {
+		var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
+
+		if (dlg.hasOpened) || (gf (dlg.timeOpen, FLOATNULL))
+		{
+			var zCView v; v = _^ (npcInventory.inventory2_oCItemContainer_viewItemInfo);
+
+			var int newX;
+			var int newY;
+
+			newX = v.vposx;
+			newY = v.vposy - (8192 - dlg.virtualPositionY);
+
+			zCView_SetPos (npcInventory.inventory2_oCItemContainer_viewItemInfo, newX, newY);
+		};
+	};
 };
 
 func void G12_EnhancedInfoManager_Init () {
@@ -3697,11 +3539,11 @@ func void G12_EnhancedInfoManager_Init () {
 
 	const int once = 0;
 	if (!once) {
-		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EnhancedInfoManager");
-		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EnhancedInfoManager");
+		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EIM");
+		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EIM");
 
-		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices");
-		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos");
+		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices_EIM");
+		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos_EIM");
 
 		//0x0072D0A0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
 		const int oCInformationManager__OnImportantBegin_G1 = 7524512;
@@ -3709,7 +3551,7 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x00661DB0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
 		const int oCInformationManager__OnImportantBegin_G2 = 6692272;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin");
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin_EIM");
 
 		//0x0072E360 protected: void __fastcall oCInformationManager::OnExit(void)
 		const int oCInformationManager__OnExit_G1 = 7529312;
@@ -3717,7 +3559,7 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x006630D0 protected: void __fastcall oCInformationManager::OnExit(void)
 		const int oCInformationManager__OnExit_G2 = 6697168;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit");
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit_EIM");
 
 		//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
 		const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
@@ -3725,10 +3567,43 @@ func void G12_EnhancedInfoManager_Init () {
 		//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
 		const int zCViewDialogChoice__HighlightSelected_G2 = 6878752;
 
-		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected");
+		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected_EIM");
 
 		//TODO: investigate potential performance improvement - if we would sort all infos by both .npc and .nr then we could in theory improve performance (infos without npc would have to be at the beginning of the list)
 		//0x006647E0 private: static int __cdecl oCInfoManager::CompareInfos(class oCInfo *,class oCInfo *)
+
+		//-- Item preview --
+
+		//G2A only
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			//This hook will override maxSlots to 1 slot
+			//0x00706B60 protected: virtual void __thiscall oCItemContainer::DrawCategory(void)
+			const int oCItemContainer__DrawCategory_G2 = 7367520;
+			HookEngine (oCItemContainer__DrawCategory_G2, 6, "_hook_oCItemContainer_DrawCategory_EIM");
+
+			//This hook makes sure DrawItemInfo renders at all (in G2A item info is not rendered if inventory has not enabled events - so we override it with item preview feature)
+			//00706e5f
+			const int oCItemContainer__DrawItemInfo_GetHandleEvent_G2 = 7368287;
+
+			var int ptr; ptr = oCItemContainer__DrawItemInfo_GetHandleEvent_G2;
+			MemoryProtectionOverride (ptr, 5);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+			MEM_WriteByte (ptr, 144); ptr += 1;
+
+			HookEngine (oCItemContainer__DrawItemInfo_GetHandleEvent_G2, 5, "_hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM");
+		};
+
+		//This hook moves item info above dialogue choice box
+		//00667328
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G1 = 6714152;
+
+		//00706fee
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G2 = 7368686;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__DrawItemInfo_PreRenderItem_G1, oCItemContainer__DrawItemInfo_PreRenderItem_G2), 5, "_hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM");
 
 		once = 1;
 	};

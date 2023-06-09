@@ -316,16 +316,14 @@ func int Hlp_GetOpenContainer_oCNpcInventory () {
 
 //-- oCItemContainer functions
 
-func int oCItemContainer_Draw (var int ptr) {
+func void oCItemContainer_Draw (var int ptr) {
 	//0x00667660 protected: virtual void __thiscall oCItemContainer::Draw(void)
 	const int oCItemContainer__Draw_G1 = 6714976;
 
 	//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
 	const int oCItemContainer__Draw_G2 = 7370416;
 
-	if (!ptr) { return 0; };
-
-	var int retVal;
+	if (!ptr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -522,6 +520,45 @@ func void oCItemContainer_Close (var int ptr) {
 	};
 };
 
+/*
+ *	oCItemContainer_OpenPassive
+ *	 - G1 mode - item list mode
+ *	 - G2A inventory mode - INV_MODE_DEFAULT, INV_MODE_CONTAINER, INV_MODE_PLUNDER, INV_MODE_STEAL, INV_MODE_BUY, INV_MODE_SELL
+ */
+
+/*
+
+//enum oTItemListMode { FULLSCREEN, HALFSCREEN, ONE };
+
+enum {
+	INV_MODE_DEFAULT,
+	INV_MODE_CONTAINER,
+	INV_MODE_PLUNDER,
+	INV_MODE_STEAL,
+	INV_MODE_BUY,
+	INV_MODE_SELL,
+	INV_MODE_MAX
+};
+*/
+func void oCItemContainer_OpenPassive (var int ptr, var int x, var int y, var int mode) {
+	//0x00668050 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,enum oCItemContainer::oTItemListMode)
+	const int oCItemContainer__OpenPassive_G1 = 6717520;
+
+	//0x007086D0 public: virtual void __thiscall oCItemContainer::OpenPassive(int,int,int)
+	const int oCItemContainer__OpenPassive_G2 = 7374544;
+
+	if (!ptr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (mode));
+		CALL_PtrParam (_@ (y));
+		CALL_PtrParam (_@ (x));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__OpenPassive_G1, oCItemContainer__OpenPassive_G2));
+		call = CALL_End();
+	};
+};
+
 //-- oCNpcContainer functions
 
 func int oCNpcContainer_Insert (var int ptr, var int itemPtr) {
@@ -649,6 +686,14 @@ func void oCNpcInventory_Close (var int npcInventoryPtr) {
 		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__Close_G1, oCNpcInventory__Close_G2));
 		call = CALL_End();
 	};
+};
+
+func int Npc_GetNpcInventoryPtr (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	return + npcInventoryPtr;
 };
 
 //G1 only
@@ -1341,7 +1386,7 @@ func int NPC_GetItemPtrByInstance (var int slfInstance, var int invCat, var int 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1622,7 +1667,7 @@ func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1677,7 +1722,7 @@ func int NPC_HasMissionItem (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slf);
 
 	var oCItem itm;
 	var zCListSort list;
@@ -1753,7 +1798,8 @@ func void oCNpc_UnpackInventory (var int slfInstance)
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	if (!npcInventoryPtr) { return; };
 
 	if (MEMINT_SwitchG1G2 (1, 0)) {
 		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_WEAPON);
@@ -1770,9 +1816,102 @@ func void oCNpc_UnpackInventory (var int slfInstance)
 };
 
 func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
-	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
-	if (!Hlp_IsValidNpc (slf)) { return -1; };
-
-	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
     return + oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
 };
+
+/*
+ *	Npc_GetItemSlot
+ *	 - function loops through inventory and return index of inventory slot in which item is stored
+ */
+func int Npc_GetItemSlot (var int slfInstance, var int invCategory, var int searchItemInstanceID) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	var int itmSlot; itmSlot = 0;
+	var int amount; amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+
+	var int itemInstanceID;
+
+	while (amount > 0);
+		itemInstanceID = Hlp_GetInstanceID (item);
+
+		if (itemInstanceID == searchItemInstanceID) {
+			return + itmSlot;
+		};
+
+		itmSlot += 1;
+		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	end;
+
+	return -1;
+};
+
+/*
+ *	Npc_InvSelectItem
+ *	 - function selects item in inventory
+ */
+func void Npc_InvSelectItem (var int slfInstance, var int itemInstanceID) {
+	var oCNPC slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (Npc_GetInvItem (slf, itemInstanceID)) {
+		var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+		var int invCategory; invCategory = oCNpcInventory_GetCategory (npcInventoryPtr, _@ (item));
+		oCNpcInventory_SwitchToCategory (npcInventoryPtr, invCategory);
+
+		var int itmSlot; itmSlot = Npc_GetItemSlot (slf, invCategory, itemInstanceID);
+
+		slf.inventory2_oCItemContainer_offset = itmSlot;
+		slf.inventory2_oCItemContainer_selectedItem = itmSlot;
+	};
+};
+
+/*
+ *	Npc_InvOpenPassive
+ *	 - function opens inventory passively
+ */
+func void Npc_InvOpenPassive (var int slfInstance, var int itemInstanceID, var int hasInvFocus) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Unpack item category
+	oCNpc_UnpackInventory (slfInstance);
+
+	//Select inventory item
+	Npc_InvSelectItem (slfInstance, itemInstanceID);
+
+	//Get Npc inventory ptr
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	if (!npcInventoryPtr) { return; };
+
+	//In G1 invMode 2 means only a single item will be rendered on screen
+	//enum oTItemListMode { FULLSCREEN, HALFSCREEN, ONE };
+
+	//In G2A inv mode represents something else
+	//INV_MODE_DEFAULT, INV_MODE_CONTAINER, INV_MODE_PLUNDER, INV_MODE_STEAL, INV_MODE_BUY, INV_MODE_SELL
+	var int invMode; invMode = 0;
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		invMode = 2;
+	};
+
+	if (Npc_IsPlayer (slf)) {
+		oCItemContainer_OpenPassive (npcInventoryPtr, 8192, 0, invMode);
+		slf.inventory2_oCItemContainer_right = TRUE;
+	} else {
+		oCItemContainer_OpenPassive (npcInventoryPtr, 0, 0, invMode);
+		slf.inventory2_oCItemContainer_right = FALSE;
+	};
+
+	slf.inventory2_oCItemContainer_frame = hasInvFocus;
+};
+
+/*
+ *	Npc_CloseInventory
+ *	 - function closes inventory
+ */
+func void Npc_CloseInventory (var int slfInstance) {
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	oCNpcInventory_Close (npcInventoryPtr);
+};
+

@@ -163,7 +163,7 @@ func int DIA_Debug_Dialogues_Condition() {
 
 	if ((choiceIndex >= 0) && (choiceIndex < debugDialoguesChoiceCount)) {
 		var string choiceText; choiceText = InfoManager_GetChoiceDescription (choiceIndex);
-		var string spinnerID; spinnerID = Choice_GetModifierSpinnerID (choiceText);
+		var string spinnerID; spinnerID = Choice_GetModifier (choiceText, "s@");
 
 		//--
 
