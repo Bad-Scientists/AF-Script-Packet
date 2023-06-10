@@ -88,46 +88,37 @@ func int oCNpc_IsFadingAway (var int slfInstance) {
 	return + retVal;
 };
 
-func void _hook_oCAIHuman_DoAI__FadeAway () {
-	//Safety check
-	if (!ECX) { return; };
+
+func void _hook_oCAIHuman_DoAI_IsDead__FadeAway () {
+	//ECX 0x007DCBEC const oCGame::`vftable'
+	//EDX 0x007DDF34 const oCNpc::`vftable'
+	//ESI 0x007DC814 const oCAIHuman::`vftable'
+	//EDI 0x007D3FEC const zCModel::`vftable'
 
 	//class oCAIHuman : public oCAniCtrl_Human {
 	//Class oCAIHuman inherits all properties from oCAniCtrl_Human ... so we can use oCAniCtrl_Human here for our purposes (to get to NPC information)
-	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (ECX);
+	var int aniCtrlPtr; aniCtrlPtr = ESI;
+	if (!aniCtrlPtr) { return; };
 
-	//Is this NPC?
-	if (!Hlp_Is_oCNpc (aniCtrl.npc)) { return; };
-	var oCNpc slf; slf = _^ (aniCtrl.npc);
+	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (aniCtrlPtr);
 
-	//Get state
-	var int statePtr; statePtr = NPC_GetNPCState (slf);
-	if (!statePtr) { return; };
-	var oCNPC_States state; state = _^ (statePtr);
+	var int npcPtr; /*npcPtr = EDX;*/ npcPtr = aniCtrl.npc;
+	if (!Hlp_Is_oCNpc (npcPtr)) { return; };
 
-	//Hardcoded in Gothic engine
-	const int NPC_AISTATE_FADEAWAY = -5;
+	var oCNpc slf; slf = _^ (npcPtr);
 
-	//Are we in ZS_FadeAway state?
-	if (state.curState_prgIndex == NPC_AISTATE_FADEAWAY) {
+	if (oCNpc_IsFadingAway (slf)) {
 		//Ignored by traceray (we will not be able to focus it)
-		VobTree_SetBitfield (aniCtrl.npc, zCVob_bitfield0_ignoredByTraceRay, 1);
+		VobTree_SetBitfield (npcPtr, zCVob_bitfield0_ignoredByTraceRay, 1);
 
 		//Remove shadow casting
-		VobTree_SetBitfield (aniCtrl.npc, zCVob_bitfield0_castDynShadow, 0);
+		VobTree_SetBitfield (npcPtr, zCVob_bitfield0_castDynShadow, 0);
 
 		//Remove from players focus
-		NPC_RemoveFromFocus (hero, aniCtrl.npc);
+		NPC_RemoveFromFocus (hero, npcPtr);
 
-		//Was NPC removed?
-		if (oCNpc_FadeAway (slf)) {
-			//Problem:
-			//oCAIHuman::DoAI crashes as soon as NPC is removed from the world by oCNpc::FadeAway
-			//So here we have a workaround --> we will repoint ECX to player's AI
-			//This way game will not crash - and everyting seems to be working ... hopefully without any side-effects :)
-			slf = Hlp_GetNpc (hero);
-			ECX = slf.human_ai;
-		};
+		//Fade away Npc
+		var int retVal; retVal = oCNpc_FadeAway (slf);
 	};
 };
 
@@ -156,12 +147,12 @@ func void G12_FadeAway_Init () {
 
 	if (!once) {
 		//0x00615A50 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
-		const int oCAIHuman__DoAI_G1 = 6380112;
+		const int oCAIHuman__DoAI_IsDead_G1 = 6380432;
 
 		//0x0069BAB0 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
-		const int oCAIHuman__DoAI_G2 = 6929072;
+		const int oCAIHuman__DoAI_IsDead_G2 = 6929568;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCAIHuman__DoAI_G1, oCAIHuman__DoAI_G2), 6, "_hook_oCAIHuman_DoAI__FadeAway");
+		HookEngine (MEMINT_SwitchG1G2 (oCAIHuman__DoAI_IsDead_G1, oCAIHuman__DoAI_IsDead_G2), 5, "_hook_oCAIHuman_DoAI_IsDead__FadeAway");
 
 		once = 1;
 	};
