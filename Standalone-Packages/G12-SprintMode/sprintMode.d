@@ -34,6 +34,7 @@ var int PC_SprintModeStaminaMax;
 var int PC_SprintModeConsumeStamina;
 
 var int PC_SprintModeCooldown;
+var int PC_SprintModeRemovedByExhaustion;
 var int PC_SprintModeBarAlpha;
 var int PC_SprintModeBarFlashingTimer;
 var int PC_SprintModeBarFlashingFadeOut;
@@ -44,6 +45,7 @@ var int PC_SprintModePlayerTimedOverlayTimerMax;
 var int PC_SprintModePlayerTimedOverlayDetected;
 
 //--
+
 var int _PC_SprintModeBar_PPosX;
 var int _PC_SprintModeBar_PPosY;
 
@@ -60,6 +62,12 @@ const int _PC_SprintMode_IgnoreWithOverlays_Max = 255; //We probably don't need 
 var string _PC_SprintMode_IgnoreWithOverlays[_PC_SprintMode_IgnoreWithOverlays_Max];
 
 var int _PC_SprintModeTimedOverlayStacking;
+
+//--
+
+var int _sprintBar_LastValue;
+var int _sprintBar_DisplayTime;
+
 //--
 
 func void _eventGameStateLoaded__SprintMode (var int state) {
@@ -96,6 +104,8 @@ func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
 		//Toggle if not in cool down
 		if (!PC_SprintModeCooldown) {
 			PC_SprintModeSwitch = (!PC_SprintModeSwitch);
+		} else {
+			PC_SprintModeRemovedByExhaustion = TRUE;
 		};
 
 		//Activate
@@ -120,8 +130,25 @@ func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
 			if (dontActivate) {
 				//Don't enable sprint mode if player already has HUMANS_SPRINT.MDS overlay or if he is drunk :)
 				PC_SprintModeSwitch = FALSE;
+
+				//--> Bugfix: set sprintmode to true if player already has relevant overlay!
+				//In G1 with spell SPL_CONTROL I had enabled sprint mode on player
+				//then I controlled Npc and disabled sprint mode on the Npc (PC_SprintMode variable was set to FALSE) & released control
+				//Because of that PC_Hero had sprint mode overlay already applied --> this completely broke sprint mode feature and player could run forever :)
+				if (!PC_SprintMode) {
+					if (NPC_HasOverlay (hero, _PC_SprintModeOverlayName)) {
+						PC_SprintMode = TRUE;
+						PC_SprintModeDisable = TRUE;
+					};
+				};
+				//<--
 			} else {
 				PC_SprintMode = TRUE;
+
+				if (_sprintBar_DisplayTime) {
+					_sprintBar_DisplayTime = 120 - _sprintBar_DisplayTime;
+				};
+
 				Mdl_ApplyOverlayMds (hero, _PC_SprintModeOverlayName);
 				PlayerResetWeaponMode__SprintMode ();
 			};
@@ -151,6 +178,10 @@ func void DisableExhausted_SprintMode () {
 	if (!PC_SprintModeCooldown) {
 		PC_SprintModeCooldown = TRUE;
 		PC_SprintModeBarFlashingFadeOut = TRUE;
+
+		if (PC_SprintMode) {
+			PC_SprintModeRemovedByExhaustion = TRUE;
+		};
 	};
 
 	PC_SprintModeBarFlashingTimer = 80;
@@ -158,6 +189,7 @@ func void DisableExhausted_SprintMode () {
 
 func void FrameFunction__SprintMode () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
+	if (Npc_IsDead (hero)) { return; };
 
 	//Get animation name
 	var string aniName; aniName = NPC_GetAniName (hero);
@@ -253,6 +285,13 @@ func void FrameFunction__SprintMode () {
 		DisableExhausted_SprintMode ();
 	};
 
+	//If sprint mode was removed by exhaustion - reset variable as soon as cooldown is gone (by default we will keep bar on screen during cool down)
+	if (PC_SprintModeRemovedByExhaustion) {
+		if (!PC_SprintModeCooldown) {
+			PC_SprintModeRemovedByExhaustion = FALSE;
+		};
+	};
+
 	//First time this is called player will most likely not have timed overlay - so set to 1 in order to 'reset' texture
 	if (PC_SprintModePlayerHasTimedOverlay) {
 		//Get timer value - this is current value
@@ -299,38 +338,6 @@ func void FrameFunction__SprintMode () {
 		Bar_SetMax (hStaminaBar, PC_SprintModeStaminaMax);
 		Bar_SetValue (hStaminaBar, PC_SprintModeStamina);
 	};
-
-	var int posX;
-	var int posY;
-	var int scaleF; scaleF = _getInterfaceScaling ();
-
-	//Move bar right underneath health bar (if modder didn't define his own values)
-	if (_PC_SprintModeBar_PPosY == -1) {
-		if (MEM_Game.hpBar) {
-			var oCViewStatusBar hpBar; hpBar = _^ (MEM_Game.hpBar);
-
-			//These LeGo bars have weird positions :-/
-			posX = hpBar.zCView_pposx + (hpBar.zCView_psizex / 2);
-			posY = hpBar.zCView_pposy + (hpBar.zCView_psizey / 2) * 2;
-		};
-	} else {
-		posX = _PC_SprintModeBar_PPosX;
-		posY = _PC_SprintModeBar_PPosY;
-	};
-
-	posX = Print_ToVirtual (posX, PS_X);
-	posY = Print_ToVirtual (posY, PS_Y);
-
-	if (_PC_SprintModeBar_VPosX > -1) {
-		posX = _PC_SprintModeBar_VPosX;
-	};
-
-	if (_PC_SprintModeBar_VPosY > -1) {
-		posY = _PC_SprintModeBar_VPosY;
-	};
-
-	//Bar_MoveTo (hStaminaBar, posX, posY);
-	_Bar_MoveTo_Internal (hStaminaBar, posX, posY);
 };
 
 func void FrameFunction_FlashBar__SprintMode () {
@@ -355,12 +362,44 @@ func void FrameFunction_FlashBar__SprintMode () {
 		PC_SprintModeBarFlashingTimer -= 1;
 
 		if (PC_SprintModeBarFlashingTimer == 0) {
-			PC_SprintModeBarAlpha = 255;
 			PC_SprintModeCooldown = FALSE;
 		};
+	};
+
+	if ((PC_SprintModeCooldown) || (PC_SprintModeBarAlpha < 255))
+	{
+		if (!PC_SprintModeCooldown) {
+			PC_SprintModeBarAlpha += 32;
+			PC_SprintModeBarAlpha = clamp (PC_SprintModeBarAlpha, 0, 255);
+		};
+
+		/*
+			Fade effect logic - in relation to display time:
+			Fade in		Display		Fade out
+			120 - 80	80 - 40		40 - 0
+		*/
+		var int alphaBack;
+
+		//Fade in
+		if (_sprintBar_DisplayTime > 80) {
+			//255 * ((120 - _sprintBar_DisplayTime) / 40)
+			alphaBack = roundf (mulf (mkf (255), divf (mkf (120 - _sprintBar_DisplayTime), mkf (40))));
+		} else
+		//Display
+		if (_sprintBar_DisplayTime > 40) {
+			alphaBack = 255;
+		} else {
+		//Fade out
+			alphaBack = 255 - roundf (mulf (mkf (255), divf (mkf (40 - _sprintBar_DisplayTime), mkf (40))));
+		};
+
+		var int alphaBar; alphaBar = roundf (divf (mulf (mkf (PC_SprintModeBarAlpha), mkf (alphaBack)), mkf (255)));
+
+		//Check boundaries min/max and set alpha
+		alphaBar = clamp (alphaBar, 0, 255);
 
 		//Change alpha value for stamina bar
-		Bar_SetAlphaBackAndBar (hStaminaBar, -1, PC_SprintModeBarAlpha);
+		Bar_SetAlphaBackAndBar (hStaminaBar, -1, alphaBar);
 	};
 };
 
@@ -369,18 +408,18 @@ func void FrameFunction_FlashBar__SprintMode () {
  */
 func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 	//If this method returns true - then bar should be 100% visible
-	if (BarGetOnDesk (BarType_SprintBar, sprintBarDisplayMethod)) {
+	if (BarGetOnDesk (BarType_SprintBar, _sprintBar_DisplayMethod)) {
 		Bar_SetAlphaBackAndBar (hStaminaBar, 255, PC_SprintModeBarAlpha);
 		return;
 	};
 
 	//If we somehow ended up here with bar display method inventory ... then remove display time
-	if (sprintBarDisplayMethod == BarDisplay_OnlyInInventory) {
-		sprintBarDisplayTime = 0;
+	if (_sprintBar_DisplayMethod == BarDisplay_OnlyInInventory) {
+		_sprintBar_DisplayTime = 0;
 	};
 
 	//If we run out of display time - hide bar
-	if (!sprintBarDisplayTime) {
+	if (!_sprintBar_DisplayTime) {
 		Bar_Hide (hStaminaBar);
 
 		FF_Remove (FrameFunction_FadeInOutSprintBar__BetterBars);
@@ -397,7 +436,7 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 	//If bar is visible (this is not redundant condition, _Bar_PlayerStatus might return FALSE)
 	if (Bar_IsVisible (hStaminaBar)) {
 		//Decrease display time
-		sprintBarDisplayTime -= 1;
+		_sprintBar_DisplayTime -= 1;
 
 		/*
 			Fade effect logic - in relation to display time:
@@ -405,23 +444,27 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 			120 - 80	80 - 40		40 - 0
 		*/
 		var int alphaBack;
-		var int alphaBar;
 
 		//Fade in
-		if (sprintBarDisplayTime > 80) {
-			alphaBack = roundf (mulf (mkf (255), divf (mkf (120 - sprintBarDisplayTime), mkf (40))));
+		if (_sprintBar_DisplayTime > 80) {
+			//255 * ((120 - _sprintBar_DisplayTime) / 40)
+			alphaBack = roundf (mulf (mkf (255), divf (mkf (120 - _sprintBar_DisplayTime), mkf (40))));
 		} else
 		//Display
-		if (sprintBarDisplayTime > 40) {
+		if (_sprintBar_DisplayTime > 40) {
 			alphaBack = 255;
 		} else {
 		//Fade out
-			alphaBack = 255 - roundf (mulf (mkf (255), divf (mkf (40 - sprintBarDisplayTime), mkf (40))));
+			alphaBack = 255 - roundf (mulf (mkf (255), divf (mkf (40 - _sprintBar_DisplayTime), mkf (40))));
 		};
 
 		//Check boundaries min/max and set alpha
 		alphaBack = clamp (alphaBack, 0, 255);
-		alphaBar = alphaBack * PC_SprintModeBarAlpha / 255; //bar might be flashing in & out
+
+		var int alphaBar; alphaBar = roundf (divf (mulf (mkf (PC_SprintModeBarAlpha), mkf (alphaBack)), mkf (255)));
+
+		//Check boundaries min/max and set alpha
+		alphaBar = clamp (alphaBar, 0, 255);
 
 		//Bar_SetAlpha (hStaminaBar, alphaBack);
 		Bar_SetAlphaBackAndBar (hStaminaBar, alphaBack, alphaBar);
@@ -430,22 +473,22 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 
 func void FrameFunction_EachFrame__SprintMode () {
 	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("GAME", "sprintBarDisplayMethod")) {
+	if (MEM_GothOptExists ("GAME", "_sprintBar_DisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - alwas on
-		sprintBarDisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "sprintBarDisplayMethod"));
+		_sprintBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "_sprintBar_DisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "sprintBarDisplayMethod")) {
-			sprintBarDisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "sprintBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (sprintBarDisplayMethod));
+		if (MEM_ModOptExists ("GAME", "_sprintBar_DisplayMethod")) {
+			_sprintBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "_sprintBar_DisplayMethod"));
+			MEM_SetGothOpt ("GAME", "_sprintBar_DisplayMethod", IntToString (_sprintBar_DisplayMethod));
 		} else {
 			//Default
-			sprintBarDisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (sprintBarDisplayMethod));
+			_sprintBar_DisplayMethod = BarDisplay_DynamicUpdate;
+			MEM_SetGothOpt ("GAME", "_sprintBar_DisplayMethod", IntToString (_sprintBar_DisplayMethod));
 		};
 	};
 
-	var int sprintBarOnDesk; sprintBarOnDesk = BarGetOnDesk (BarType_SprintBar, sprintBarDisplayMethod);
+	var int sprintBarOnDesk; sprintBarOnDesk = BarGetOnDesk (BarType_SprintBar, _sprintBar_DisplayMethod);
 
 //-- Auto hiding/display for sprint bar (when updated)
 
@@ -454,51 +497,51 @@ func void FrameFunction_EachFrame__SprintMode () {
 
 	//Potion effect
 	if (PC_SprintModePlayerHasTimedOverlay) {
-		if (sprintBarLastValue != PC_SprintModePlayerTimedOverlayTimer) {
+		if (_sprintBar_LastValue != PC_SprintModePlayerTimedOverlayTimer) {
 			sprintBarUpdated = TRUE;
-			sprintBarLastValue = PC_SprintModePlayerTimedOverlayTimer;
+			_sprintBar_LastValue = PC_SprintModePlayerTimedOverlayTimer;
 		};
 	} else
 	//'Standard' sprinting
-	if (sprintBarLastValue != PC_SprintModeStamina) {
-		sprintBarUpdated = TRUE;
-		sprintBarLastValue = PC_SprintModeStamina;
+	if (_sprintBar_LastValue != PC_SprintModeStamina) {
+		//Consider bar updated whenever sprint mode is activated, or when sprint was on cooldown previously
+		if (PC_SprintMode || PC_SprintModeRemovedByExhaustion) {
+			sprintBarUpdated = TRUE;
+			_sprintBar_LastValue = PC_SprintModeStamina;
+		};
 	};
 
 	//Display only in inventory ...
-	if ((sprintBarDisplayMethod == BarDisplay_OnlyInInventory) && (!sprintBarOnDesk) && (!sprintBarForceOnDesk)) {
+	if ((_sprintBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!sprintBarOnDesk) && (!_sprintBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
 	//Sprint bar value updated / game status changed / fight mode
-	if ((sprintBarForceOnDesk) || (sprintBarUpdated) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE))) {
+	if ((_sprintBar_ForceOnDesk) || (sprintBarUpdated) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE))) {
 		//
-		if ((sprintBarDisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk)) {
-			if (sprintBarDisplayMethod == BarDisplay_DynamicUpdate) {
-				if (!sprintBarDisplayTime) {
-					sprintBarDisplayTime = 120;
-				} else
-				if (sprintBarDisplayTime < 80) {
-					sprintBarDisplayTime = 80;
+		if ((_sprintBar_DisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk)) {
+			if (_sprintBar_DisplayMethod == BarDisplay_DynamicUpdate) {
+				if (!_sprintBar_DisplayTime) {
+					_sprintBar_DisplayTime = 120;
 				};
 			};
 		};
 
-		if (sprintBarDisplayTime < 80) {
-			sprintBarDisplayTime = 80;
+		if (_sprintBar_DisplayTime < 80) {
+			_sprintBar_DisplayTime = 80;
 		};
 
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutSprintBar__BetterBars, 60, -1);
 	};
 
-	if ((sprintBarDisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk) || (sprintBarDisplayTime))
+	if ((_sprintBar_DisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk) || (_sprintBar_DisplayTime))
 	{
 		if (!Bar_IsVisible (hStaminaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				//Bar_SetAlpha (hStaminaBar, 0);
 				Bar_SetAlphaBackAndBar (hStaminaBar, 0, 0);
 
-				if ((sprintBarDisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk)) {
-					if (!sprintBarDisplayTime) {
+				if ((_sprintBar_DisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk)) {
+					if (!_sprintBar_DisplayTime) {
 						//Bar_SetAlpha (hStaminaBar, 255);
 						Bar_SetAlphaBackAndBar (hStaminaBar, 255, PC_SprintModeBarAlpha);
 					};
@@ -509,8 +552,8 @@ func void FrameFunction_EachFrame__SprintMode () {
 		};
 	};
 
-	if ((sprintBarDisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk) && (!sprintBarDisplayTime))
-	|| ((sprintBarDisplayMethod == BarDisplay_OnlyInInventory) && (!sprintBarOnDesk))
+	if ((_sprintBar_DisplayMethod != BarDisplay_AlwaysOn) && (!sprintBarOnDesk) && (!_sprintBar_DisplayTime))
+	|| ((_sprintBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!sprintBarOnDesk))
 	{
 		if (Bar_IsVisible (hStaminaBar)) {
 			if (_Bar_PlayerStatus ()) {
@@ -520,6 +563,46 @@ func void FrameFunction_EachFrame__SprintMode () {
 	};
 
 	//Bar_PreviewSetValue (hStaminaBar, vSprintBarPreview, previewValueSprintBar);
+
+//-- Dynamic position update
+
+	var int posX;
+	var int posY;
+
+	//If modder didn't define their own values - align with default swimbar position
+	if (_PC_SprintModeBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_PC_SprintModeBar_PPosY, PS_Y);
+	};
+
+	if (_PC_SprintModeBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_PC_SprintModeBar_PPosX, PS_X);
+	};
+
+	if (_PC_SprintModeBar_VPosX > -1) {
+		posX = _PC_SprintModeBar_VPosX;
+	};
+
+	if (_PC_SprintModeBar_VPosY > -1) {
+		posY = _PC_SprintModeBar_VPosY;
+	};
+
+	Bar_MoveTo (hStaminaBar, posX, posY);
+
+//-- Add Stamina bar values
+
+	if (!Hlp_IsValidHandle (vStaminaBarValue)) {
+		vStaminaBarValue = Bar_CreatePreview (hStaminaBar, "");
+		View_AddText (vStaminaBarValue, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (vStaminaBarValue, _sprintBar_DisplayValues_AlphaFunc);
+	};
+
+	Bar_DisplayValue_Update (hStaminaBar, _sprintBar_DisplayValues);
 };
 
 func void G12_SprintMode_Init () {
@@ -539,6 +622,17 @@ func void G12_SprintMode_Init () {
 	_PC_SprintModeOverlayName = API_GetSymbolStringValue ("PC_SPRINTMODEOVERLAYNAME", "HUMANS_SPRINT.MDS");
 
 	_PC_SprintMode_IgnoreWithOverlays_Count = API_GetSymbolIntValue ("PC_SPRINTMODE_IGNOREWITHOVERLAYS_COUNT", 0);
+
+	//--
+
+	_sprintBar_DisplayMethod = API_GetSymbolIntValue ("SPRINTBAR_DISPLAYMETHOD", BarDisplay_DynamicUpdate);
+	_sprintBar_PreviewEffect = API_GetSymbolIntValue ("SPRINTBAR_PREVIEWEFFECT", BarPreviewEffect_FadeInOut);
+
+	_sprintBar_DisplayValues = API_GetSymbolIntValue ("SPRINTBAR_DISPLAYVALUES", 0);
+	_sprintBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("SPRINTBAR_VIEW_ALPHAFUNC", 2);
+	_sprintBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("SPRINTBAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	//--
 
 	if (_PC_SprintMode_IgnoreWithOverlays_Count > _PC_SprintMode_IgnoreWithOverlays_Max) {
 		_PC_SprintMode_IgnoreWithOverlays_Count = _PC_SprintMode_IgnoreWithOverlays_Max;
@@ -580,12 +674,6 @@ func void G12_SprintMode_Init () {
 	//Create stamina bar
 	if (!Hlp_IsValidHandle(hStaminaBar)) {
 		hStaminaBar = Bar_Create (GothicBar@);
-
-		//If Bar_Show is called immediately bar is visible already on load screen
-		//Bar_Show (hStaminaBar);
-
-		//180, 20
-		Bar_ResizePxl (hStaminaBar, 180, 10);
 
 		//Initialize texture
 		Bar_SetBarTexture (hStaminaBar, _PC_SprintModeBar_Tex);

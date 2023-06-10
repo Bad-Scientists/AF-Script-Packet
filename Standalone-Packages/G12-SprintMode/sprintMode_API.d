@@ -33,4 +33,20 @@ const int PC_SPRINTMODEBAR_TIMEDOVERLAY_STACKING = 0;
 //Initial stamina
 const int PC_SPRINTMODE_STAMINAMAX_DEFAULT = 80;
 const int PC_SPRINTMODE_CONSUMESTAMINA_DEFAULT = TRUE;
+
+//const int ALPHA_FUNC_MAT_DEFAULT	= 0;
+//const int ALPHA_FUNC_NONE		= 1;
+//const int ALPHA_FUNC_BLEND	= 2;
+//const int ALPHA_FUNC_ADD		= 3;
+//const int ALPHA_FUNC_SUB		= 4;
+//const int ALPHA_FUNC_MUL		= 5;
+//const int ALPHA_FUNC_MUL2		= 6;
+//const int ALPHA_FUNC_TEST		= 7;
+
+const int SPRINTBAR_DISPLAYMETHOD = BarDisplay_DynamicUpdate;
+const int SPRINTBAR_PREVIEWEFFECT = BarPreviewEffect_FadeInOut;
+
+const int SPRINTBAR_DISPLAYVALUES = 1;
+const int SPRINTBAR_VIEW_ALPHAFUNC = 2; //ALPHA_FUNC_BLEND
+const string SPRINTBAR_DISPLAYVALUES_COLOR = "FFFFFF";
 */
