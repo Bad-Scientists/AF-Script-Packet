@@ -147,7 +147,7 @@ func void _hook_oCNpc_EquipControl () {
 	var int retVal; retVal = 0;
 
 	if (!symbID) {
-		symbID = MEM_FindParserSymbol ("C_NpcCanEquip");
+		symbID = MEM_FindParserSymbol ("C_Npc_CanEquip");
 	};
 
 	if (symbID != -1) {
@@ -159,7 +159,7 @@ func void _hook_oCNpc_EquipControl () {
 	};
 
 	if (retVal) {
-		//Null item pointer - this will cancel equip action (everything handled from function C_NpcCanEquip - no need to let engine do it)
+		//Null item pointer - this will cancel equip action (everything handled from function C_Npc_CanEquip - no need to let engine do it)
 		MEM_WriteInt (ESP + 4, 0);
 	};
 };
