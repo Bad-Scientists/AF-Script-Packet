@@ -155,7 +155,10 @@ func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
 		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
 
 		if (funcID == percFuncID) {
-			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, 0);
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2, 0);
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, -1);
+
+			slf.percActive -= 1;
 		};
 	end;
 };
@@ -165,8 +168,8 @@ func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
  *	 - main hook that handles perception execution
  */
 func void _hook_oCNpc_PerceptionCheck__AddPerceptions () {
-	if (!Hlp_Is_oCNpc (ECX)) { return; };
-	var oCNpc slf; slf = _^ (ECX);
+	if (!Hlp_Is_oCNpc (EDI)) { return; };
+	var oCNpc slf; slf = _^ (EDI);
 
 	//NPC_PERC_MAX = 33
 	//percList[66] has 66 indexes 0 - 65
@@ -196,20 +199,12 @@ func void G12_AddPerceptions_Init () {
 
 	if (!once) {
 		//0x006B7400 public: void __thiscall oCNpc::PerceptionCheck(void)
-		const int oCNpc__PerceptionCheck_G1 = 7042048;
+		const int oCNpc__PerceptionCheck_VobListCreated_G1 = 7042410;
 
 		//0x0075DD30 public: void __thiscall oCNpc::PerceptionCheck(void)
-		const int oCNpc__PerceptionCheck_G2 = 7724336;
+		const int oCNpc__PerceptionCheck_VobListCreated_G2 = 7724698;
 
-		//HookEngine (oCNpc__PerceptionCheck_G1 + 15, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
-		//HookEngine (oCNpc__PerceptionCheck_G1 + 21, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
-		//HookEngine (oCNpc__PerceptionCheck_G1 + 27, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
-
-		//+ 44 (trial & error) --> works exactly as I hoped - get's called once a perception time
-		//HookEngine (oCNpc__PerceptionCheck_G1 + 44, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
-		//HookEngine (oCNpc__PerceptionCheck_G1 + 50, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
-
-		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PerceptionCheck_G1, oCNpc__PerceptionCheck_G2) + 44, 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
+		HookEngine (MEMINT_SwitchG1G2 (oCNpc__PerceptionCheck_VobListCreated_G1, oCNpc__PerceptionCheck_VobListCreated_G2), 6, "_hook_oCNpc_PerceptionCheck__AddPerceptions");
 
 		once = 1;
 	};
