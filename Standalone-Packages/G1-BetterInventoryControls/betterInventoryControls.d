@@ -500,6 +500,9 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	var oCItem itm;
 	var int amount;
 
+	//Vanilla-like check - don't allow item manipulation if body state is NOT interruptable (e.g. if Npc is controlled)
+	if (!oCNpc_IsBodyStateInterruptable (hero)) { return; };
+
 	var int openInvType; openInvType = Hlp_GetOpenInventoryType ();
 
 //-- Player's inventory - additional controls
