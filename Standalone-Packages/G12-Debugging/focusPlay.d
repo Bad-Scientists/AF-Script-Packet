@@ -50,8 +50,14 @@ func string CC_FocusPlayAni (var string param) {
 	};
 
 	var string msg;
-	msg = ConcatStrings ("Animation ", aniName);
-	msg = ConcatStrings (msg, " started.");
+
+	if (NPC_IsAniActive_ByAniName (npc, aniName)) {
+		msg = ConcatStrings ("Animation ", aniName);
+		msg = ConcatStrings (msg, " started.");
+	} else {
+		msg = ConcatStrings ("Animation ", aniName);
+		msg = ConcatStrings (msg, " could not be started. (does not exist?)");
+	};
 
 	return msg;
 };

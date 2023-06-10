@@ -6,7 +6,7 @@ const int MAX_EQUIPPED_AMULETS = 1;
 const int MAX_EQUIPPED_BELTS = 1;
 
 //
-func int C_NpcCanEquip (var oCNpc slf, var int itemPtr) {
+func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 	//Same for G1 & G2A
 	const int ITM_FLAG_ACTIVE = 1 << 30;
 

@@ -40,9 +40,62 @@ func string CC_GotoNpc (var string param) {
 			//Loop through list of Npcs and search by name
 			var int listPtr;
 
+			var zCListSort list;
 			listPtr = MEM_World_Get_voblist_npcs ();
 
-			ptr = 0;
+			while (listPtr);
+				list = _^ (listPtr);
+				if (list.data) {
+					if (Hlp_Is_oCNpc (list.data)) {
+						npc = _^ (list.data);
+						if (Hlp_IsValidNPC (npc)) {
+							if (Hlp_StrCmp (STR_Trim (STR_Upper (npc.name), " "), objectName)) {
+								PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
+
+								//Enable npc first
+								Wld_EnableNpc (npc);
+
+								NPC_TeleportToNpc (hero, npc);
+								return "Npc found.";
+							};
+						};
+					};
+				};
+
+				listPtr = list.next;
+			end;
+		};
+	};
+
+	return "Vob/Npc not found.";
+};
+
+func string CC_BringNpc (var string param) {
+	param = STR_Trim (param, " ");
+	param = STR_Upper (param);
+
+	var string objectName;
+	objectName = param;
+
+	if (STR_Len (objectName)) {
+		var oCNpc npc;
+
+		//Get variable name
+		var int symbID; symbID = MEM_GetSymbolIndex (objectName);
+
+		if (symbID > -1) {
+			npc = Hlp_GetNpc (symbID);
+
+			if (Hlp_IsValidNpc (npc)) {
+				PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
+				NPC_TeleportToNpc (npc, hero);
+				return "Npc found.";
+			};
+		} else {
+			//Loop through list of Npcs and search by name
+			var int listPtr;
+
+			listPtr = MEM_World_Get_voblist_npcs ();
 
 			var zCListSort list;
 
@@ -54,7 +107,11 @@ func string CC_GotoNpc (var string param) {
 						if (Hlp_IsValidNPC (npc)) {
 							if (Hlp_StrCmp (STR_Trim (STR_Upper (npc.name), " "), objectName)) {
 								PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
-								NPC_TeleportToNpc (hero, npc);
+
+								//Enable npc first
+								Wld_EnableNpc (npc);
+
+								NPC_TeleportToNpc (npc, hero);
 								return "Npc found.";
 							};
 						};
@@ -71,4 +128,5 @@ func string CC_GotoNpc (var string param) {
 
 func void CC_GotoNpc_Init () {
 	CC_Register (CC_GotoNpc, "goto npc", "Will teleport player to specific npc.");
+	CC_Register (CC_BringNpc, "bring npc", "Will teleport npc to player.");
 };

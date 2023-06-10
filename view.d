@@ -7,6 +7,20 @@
  *	 View* functions - working with handles
  */
 
+func void zCView_Printwin (var int viewPtr, var string s) {
+	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
+	const int zCView__Printwin_G1 = 7343392;
+
+	//0x007AA8D0 public: void __thiscall zCView::Printwin(class zSTRING const &)
+	const int zCView__Printwin_G2 = 8038608;
+
+	if (!viewPtr) { return; };
+
+	//CALL_zStringPtrParam cannot be used in recyclable call
+	CALL_zStringPtrParam (s);
+	CALL__thiscall (viewPtr, MEMINT_SwitchG1G2 (zCView__Printwin_G1, zCView__Printwin_G2));
+};
+
 func void zCView_CheckTimedText (var int viewPtr) {
 	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
 	const int zCView__CheckTimedText_G1 = 6753728;

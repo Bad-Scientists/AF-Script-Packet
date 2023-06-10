@@ -32,6 +32,10 @@ EngineClasses_G2\zCSkyState.d
 
 EngineClasses_G2\zCAICamera.d
 
+EngineClasses_G2\TObjectRoutine.d
+
+EngineClasses_G2\zCConDat.d
+
 ScriptBin\strings.d
 ScriptBin\convert.d
 

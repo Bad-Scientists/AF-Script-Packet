@@ -88,3 +88,159 @@ func void oCGame_TestKeys (var int key) {
 		call = CALL_End ();
 	};
 };
+
+/*
+ *	Update console
+ */
+func void zCConsole_Update () {
+	//0x006DA760 public: void __thiscall zCConsole::Update(void)
+	const int zCConsole__Update_G1 = 7186272;
+
+	//0x007838E0 public: void __thiscall zCConsole::Update(void)
+	const int zCConsole__Update_G2 = 7878880;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL__thiscall (_@ (zcon_address), MEMINT_SwitchG1G2 (zCConsole__Update_G1, zCConsole__Update_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	Register console command
+ */
+func void zCConsole_Register (var string commandPrefix, var string description, var int param) {
+	//0x006D9810 public: void __thiscall zCConsole::Register(class zSTRING const &,class zSTRING const &,int)
+	const int zCConsole__Register_G1 = 7182352;
+
+	//0x007829C0 public: void __thiscall zCConsole::Register(class zSTRING const &,class zSTRING const &,int)
+	const int zCConsole__Register_G2 = 7875008;
+
+	var int descPtr; descPtr = _@s(description);
+	var int comPtr; comPtr = _@s(commandPrefix);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(param));
+		CALL_PtrParam(_@(descPtr));
+		CALL_PtrParam(_@(comPtr));
+		CALL__thiscall(_@(zcon_address_lego), MEMINT_SwitchG1G2 (zCConsole__Register_G1, zCConsole__Register_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	zCConsole_Get_Cur_Console
+ *	 - get current console
+ */
+func int zCConsole_Get_Cur_Console () {
+	//0x008DC688 private: static class zCConsole * zCConsole::cur_console
+	const int cur_console__addr_G1 = 9291400;
+
+	//0x00AB3944 private: static class zCConsole * zCConsole::cur_console
+	const int cur_console__addr_G2 = 11221316;
+
+	return + MEM_ReadInt (MEMINT_SwitchG1G2 (cur_console__addr_G1, cur_console__addr_G2));
+};
+
+/*
+ *	Update type for already existing console commands
+ */
+func void zCConsole_UpdateType (var string command, var int type) {
+	var zCConsole console; console = _^ (zcon_address_lego);
+
+	var int ptr; ptr = console.wurzel;
+
+	var zCConDat dat;
+
+	command = STR_Upper (command);
+
+	while (ptr);
+		dat = _^ (ptr);
+
+		if (Hlp_StrCmp (dat.name, command)) {
+			dat.type = type;
+			return;
+		};
+
+		ptr = dat.next;
+	end;
+};
+
+/*
+ *	Get type for already existing console commands
+ */
+func int zCConsole_GetType (var string command) {
+	var zCConsole console; console = _^ (zcon_address_lego);
+
+	var int ptr; ptr = console.wurzel;
+
+	var zCConDat dat;
+
+	command = STR_Upper (command);
+
+	while (ptr);
+		dat = _^ (ptr);
+
+		if (Hlp_StrCmp (dat.name, command)) {
+			return dat.type;
+		};
+
+		ptr = dat.next;
+	end;
+
+	return -1;
+};
+
+/*
+ *	zCParser_AutoCompletion
+ *	 - default automcompletion used by console (reading symbol table)
+ */
+func int zCParser_AutoCompletion (var int parserPtr, var int wordPtr) {
+	//0x006EB440 public: int __thiscall zCParser::AutoCompletion(class zSTRING &)
+	const int zCParser__AutoCompletion_G1 = 7255104;
+
+	//0x00794950 public: int __thiscall zCParser::AutoCompletion(class zSTRING &)
+	const int zCParser__AutoCompletion_G2 = 7948624;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_PtrParam(_@(wordPtr));
+		CALL__thiscall(_@(parserPtr), MEMINT_SwitchG1G2 (zCParser__AutoCompletion_G1, zCParser__AutoCompletion_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	WayNet_AutoCompletion
+ *	 - waypoint AutoCompletion
+ */
+func int WayNet_AutoCompletion (var int wordPtr) {
+	//zCListSort
+	var int ptr; ptr = MEM_WayNet.wplist_next;
+
+	var zCListSort list;
+
+	var string wpName; wpName = MEM_ReadString (wordPtr);
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (list.data) {
+			var zCWaypoint wp; wp = _^ (list.data);
+			if (STR_StartsWith (wp.name, wpName)) {
+				MEM_WriteString (wordPtr, wp.name);
+				return TRUE;
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return FALSE;
+};
