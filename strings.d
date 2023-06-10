@@ -300,3 +300,123 @@ func string Concat5Strings (var string s1, var string s2, var string s3, var str
 	s = ConcatStrings (s, s5);
 	return s;
 };
+
+/*
+ *	MEM_StringArray* functions
+ */
+
+func void MEM_StringArrayFree (var int arrPtr) {
+	if (!arrPtr) { return; };
+
+	var zCArray arr; arr = _^ (arrPtr);
+
+	var int ptr;
+	var string t;
+
+	repeat (i, arr.numInArray); var int i;
+		ptr = MEM_ArrayRead (arrPtr, i);
+
+		MEM_Free (ptr);
+	end;
+
+	MEM_ArrayFree (arrPtr);
+};
+
+func void MEM_StringArrayInsert (var int arrPtr, var string s) {
+	var int ptr; ptr = MEM_Alloc (sizeof_zString);
+	MEM_WriteString (ptr, s);
+
+	MEM_ArrayInsert (arrPtr, ptr);
+};
+
+func int MEM_StringArrayContains (var int arrPtr, var string s) {
+	if (!arrPtr) { return FALSE; };
+
+	var zCArray arr; arr = _^ (arrPtr);
+
+	var int ptr;
+	var string t;
+
+	repeat (i, arr.numInArray); var int i;
+		ptr = MEM_ArrayRead (arrPtr, i);
+
+		if (ptr) {
+			t = MEM_ReadString (ptr);
+			if (Hlp_StrCmp (t, s)) {
+				return TRUE;
+			};
+		};
+	end;
+
+	return FALSE;
+};
+
+/*
+ *	STR_FormatLeadingZeros
+ */
+func string STR_FormatLeadingZeros (var int number, var int len) {
+	var string s; s = IntToString (number);
+
+	while (STR_Len (s) < len);
+		s = ConcatStrings ("0", s);
+	end;
+
+	return s;
+};
+
+func int STR_GetWords (var string s) {
+	var int count; count = STR_SplitCount (s, " ");
+	return + count;
+};
+
+/*
+ *	STR_PickWord
+ *	 - returns word at selected index (word is here text string separated by space)
+ *	 - index starts at 0
+ *   0      1    2     3
+ *  'insert item right here'
+ */
+func string STR_PickWord (var string s, var int num) {
+	var int count; count = STR_SplitCount (s, " ");
+
+	if ((num < 0) || (num > count)) { return ""; };
+
+	return STR_Split (s, " ", num);
+};
+
+func string STR_RemoveWord (var string s, var int num) {
+	var int count; count = STR_SplitCount (s, " ");
+
+	if ((num < 0) || (num > count)) { return s; };
+
+	var string s1; s1 = "";
+
+	repeat (i, count); var int i;
+		if (i == num) {
+			continue;
+		};
+
+		if (STR_Len (s1)) {
+			s1 = ConcatStrings (s1, " ");
+		};
+
+		s1 = ConcatStrings (s1, STR_Split (s, " ", i));
+	end;
+
+	return s1;
+};
+
+func int STR_WildMatch (var string s, var string pattern) {
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (pattern, "*");
+
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (pattern, 0, indexWildcard - 1);
+		var string s2; s2 = mySTR_SubStr (pattern, indexWildcard + 1, STR_Len (pattern));
+
+		return + (STR_StartsWith (s, s1) && STR_EndsWith (s, s2));
+	};
+
+	return + (Hlp_StrCmp (s, pattern));
+};
