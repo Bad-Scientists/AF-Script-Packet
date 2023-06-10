@@ -7,6 +7,7 @@
  *	 - 2 looting NPC
  *	 - 3 looting chest
  *	 - 4 trading inventory
+ *	 - 5 stealing
  */
 
 /*
@@ -26,6 +27,7 @@ const int OpenInvType_Player = 1;
 const int OpenInvType_NPC = 2;
 const int OpenInvType_Chest = 3;
 const int OpenInvType_Trading = 4;
+const int OpenInvType_Stealing = 5;
 
 func int Hlp_GetOpenInventoryType () {
 	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
@@ -87,6 +89,9 @@ func int Hlp_GetOpenInventoryType () {
 
 	//Trading inventory
 	if ((playerInventory) && (itemContainer) && (stealContainer) && (!npcContainer)) { return OpenInvType_Trading; };
+
+	//Stealing
+	if ((playerInventory) && (!itemContainer) && (stealContainer) && (!npcContainer)) { return OpenInvType_Stealing; };
 
 	return OpenInvType_None;
 };
