@@ -1,13 +1,13 @@
 /*
  *	FadeAway
- *	 - will slowly 'fade-away' NPC (will update its transparency) - as soon as NPC is invisible engine function oCNPC::FadeAway removes NPC from the world
- *	 - by default this feature prevents summoned NPCs to drop items!
+ *	 - will slowly 'fade-away' NPC (will slowly get transparent) - as soon as NPC is invisible engine function oCNPC::FadeAway removes NPC from the world
  *
  *	Usage:
+ *   - define function C_Npc_IsSummoned - defines which Npcs are spawned
  *	 - call from ZS_Dead state following code - if you want your dead NPCs to fade-away:
 
 	//Is this summoned NPC?
-	if (NPC_GetBitfield (self, oCNpc_bitfield0_isSummoned)) {
+	if (C_Npc_IsSummoned (self)) {
 		//Is it fading away?
 		if (!oCNpc_IsFadingAway (self)) {
 			//Start fading away effect:
@@ -16,6 +16,17 @@
 		};
 	};
  */
+
+//-- Internal variables
+
+var int _fadeAway_DropWeapon;
+var int _fadeAway_DropInventory;
+var int _fadeAway_DontDropFlags;
+var int _fadeAway_DontDropMainFlag;
+
+var string _fadeAway_ItemSlotName;
+
+//--
 
 /*
  *	We have to define this ZS state - as long as it is running (_LOOP function returns LOOP_CONTINUE) engine function oCAIHuman::DoAI will be active
@@ -72,6 +83,11 @@ func void oCNpc_StartFadeAway (var int slfInstance) {
 
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	//Drop inventory into the world
+	if (_fadeAway_DropInventory) {
+		Npc_DropInventory (slf, _fadeAway_ItemSlotName, _fadeAway_DontDropFlags, _fadeAway_DontDropMainFlag);
+	};
 
 	var int slfPtr; slfPtr = _@ (slf);
 
@@ -144,17 +160,53 @@ func void _hook_oCAIHuman_DoAI_IsDead__FadeAway () {
 	};
 };
 
+//0x006A6270 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
 func void _event_DropFromSlot_FadeAway (var int dummyVariable) {
+	//Customization
+	if (_fadeAway_DropWeapon) { return; };
+
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
 	var oCNpc slf; slf = _^ (ECX);
 
-	//Is this summoned NPC ?
-	if (NPC_GetBitfield (slf, oCNpc_bitfield0_isSummoned)) {
-		//If summoned - don't drop any items!
+	var int isSummoned; isSummoned = FALSE;
+
+	//Custom function checking whether Npc is summoned or not
+	//oCNpc_bitfield0_isSummoned is not saved in save-file! :-/
+	const int symbID = 0;
+	if (!symbID) {
+		symbID = MEM_GetSymbolIndex ("C_Npc_IsSummoned");
+	};
+
+	if (symbID != -1) {
+		MEM_PushInstParam (slf);
+		MEM_CallByID (symbID);
+
+		isSummoned = MEM_PopIntResult ();
+	};
+
+	//Keeping it here for 'compatibility' ...
+	if (!isSummoned) {
+		//Is this summoned NPC ?
+		if (NPC_GetBitfield (slf, oCNpc_bitfield0_isSummoned)) {
+			isSummoned = TRUE;
+		};
+	};
+
+	if (isSummoned) {
+		var int vobSlotPtr; vobSlotPtr = MEM_ReadInt (ESP + 4);
+
 		//By overriding first parameter (at ESP + 4) we will stop NPC from dropping an item
 		//oCNpc::DropFromSlot(struct TNpcSlot *)
-		MEM_WriteInt (ESP + 4, 0);
+		if (vobSlotPtr) {
+			var TNpcSlot vobSlot; vobSlot = _^ (vobSlotPtr);
+
+			var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+
+			if (vobSlot.vob == vobPtr) {
+				MEM_WriteInt (ESP + 4, 0);
+			};
+		};
 	};
 };
 
@@ -164,6 +216,17 @@ func void G12_FadeAway_Init () {
 
 	//Register new listener for DropFromSlot event
 	DropFromSlotEvent_AddListener (_event_DropFromSlot_FadeAway);
+
+	//-- Load API values / init default values
+
+	_fadeAway_DropWeapon = API_GetSymbolIntValue ("FADEAWAY_DROPWEAPON", FALSE);
+	_fadeAway_DropInventory = API_GetSymbolIntValue ("FADEAWAY_DROPINVENTORY", TRUE);
+	_fadeAway_DontDropFlags = API_GetSymbolIntValue ("FADEAWAY_DONTDROPFLAGS", 0);
+	_fadeAway_DontDropMainFlag = API_GetSymbolIntValue ("FADEAWAY_DONTDROPMAINFLAG", 0);
+
+	_fadeAway_ItemSlotName = API_GetSymbolStringValue ("FADEAWAY_ITEMSLOTNAME", "BIP01");
+
+	//--
 
 	const int once = 0;
 
