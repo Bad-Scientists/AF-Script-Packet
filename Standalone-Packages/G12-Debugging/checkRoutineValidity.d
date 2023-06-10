@@ -24,6 +24,34 @@
  *
  *	 - This should be used only for testing - it can take up to 10 minutes to check all routines.
  */
+
+func void zSpy_Info_RtnList (var int rtnListPtr) {
+	var oCRtnEntry rtn;
+
+	var zCArray rtnList;
+	rtnList = _^ (rtnListPtr);
+
+	var string msg;
+
+	repeat (i, rtnList.numInArray); var int i;
+		rtn = _^ (MEM_ArrayRead (rtnListPtr, i));
+
+		msg = "      ";
+
+		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.hour1, 2));
+		msg = ConcatStrings (msg, ":");
+		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.min1, 2));
+		msg = ConcatStrings (msg, " ");
+		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.hour2, 2));
+		msg = ConcatStrings (msg, ":");
+		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.min2, 2));
+		msg = ConcatStrings (msg, " ");
+		msg = ConcatStrings (msg, GetSymbolName (rtn.f_script));
+
+		zSpy_Info (msg);
+	end;
+};
+
 func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 	MEM_RtnMan_Init ();
 
@@ -33,9 +61,8 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 
 	var string msg;
 
+	var int i;
 	var int npcPtr;
-	var int npcPtrList; npcPtrList = MEM_ArrayCreate ();
-	var zCArray npcList; npcList = _^ (npcPtrList);
 
 	var int issueCounter; issueCounter = 0;
 
@@ -47,6 +74,15 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 
 	var int incompleteRoutine;
 	var int overlappingRoutines;
+
+	//List of already listed issues err msgs (to prevent duplicates)
+	var int errListPtr; errListPtr = MEM_ArrayCreate ();
+
+	//List of already checked npc instances (to prevent multiple checks --> MEM_RtnMan.rtnList_next is list, **subsequent** runs for same Npc would be missing routines)
+	var int npcListPtr; npcListPtr = MEM_ArrayCreate ();
+
+	var int rtnListPtr;
+	var zCArray rtnList;
 
 	while (rtnPtr);
 		list = _^ (rtnPtr);
@@ -61,28 +97,15 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 			overlappingRoutines = FALSE;
 
 			if ((rtn.npc == checkNpcPtr) || ((rtn.npc) && (!checkNpcPtr))) {
-				var int i;
-				var int newNpc; newNpc = TRUE;
+				var oCNpc npc; npc = _^ (rtn.npc);
+				var string npcInstanceName; npcInstanceName = GetSymbolName (Hlp_GetInstanceID (npc));
 
-				//Did we check this NPC already?
-				if (npcList.numInArray) {
-					repeat (i, npcList.numInArray);
-						npcPtr = MEM_ArrayRead (npcPtrList, i);
-
-						if (npcPtr == rtn.npc) {
-							newNpc = FALSE;
-							break;
-						};
-					end;
-				};
-
-				//We didn't check this one yet
-				if (newNpc) {
-					//Add to the list - to prevent multiple loops
-					MEM_ArrayInsert (npcPtrList, rtn.npc);
+				if (!MEM_StringArrayContains (npcListPtr, npcInstanceName)) {
+					//Insert npc instance name to array
+					MEM_StringArrayInsert (npcListPtr, npcInstanceName);
 
 					//Create list of routines for this NPC
-					var int rtnListPtr; rtnListPtr = MEM_ArrayCreate ();
+					rtnListPtr = MEM_ArrayCreate ();
 
 					//Add first routine
 					MEM_ArrayInsert (rtnListPtr, list.data);
@@ -111,40 +134,37 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 
 					//Is there anything in routine list?
 
-					var zCArray rtnList; rtnList = _^ (rtnListPtr);
+					rtnList = _^ (rtnListPtr);
 
-					if (rtnList.numInArray) {
-						//Loop through routines
-						repeat (i, rtnList.numInArray);
-							rtn2 = _^ (MEM_ArrayRead (rtnListPtr, i));
+					//Loop through routines
+					repeat (i, rtnList.numInArray);
+						rtn2 = _^ (MEM_ArrayRead (rtnListPtr, i));
 
-							//If there is an overlay - then ignore this NPC
-							if (rtn2.overlay) {
-								zSpy_Info (" - overlay routine --> ignoring");
-								minsPerDay = 0;
-								continue;
-							};
+						//If there is an overlay - then ignore this NPC
+						if (rtn2.overlay) {
+							zSpy_Info (" - overlay routine --> ignoring");
+							minsPerDay = 0;
+							continue;
+						};
 
-							//Deduct routine time
+						//Deduct routine time
 
-							//Convert end hour to midnight
-							var int endHour; endHour = rtn2.hour2;
-							if (endHour == 0) {
-								endHour = 24;
-							};
+						var int startHour; startHour = rtn2.hour1;
 
-							//Convert end hour to next day
-							var int startHour; startHour = rtn2.hour1;
-							if (startHour > endHour) {
-								endHour = endHour + 24;
-							};
+						//Convert end hour to midnight
+						var int endHour; endHour = rtn2.hour2;
+						if ((startHour != 0) && (endHour == 0)) {
+							endHour = 24;
+						};
 
-							var int minsRoutine; minsRoutine = (endHour * 60 + rtn2.min2) - (startHour * 60 + rtn2.min1);
-							minsPerDay -= minsRoutine;
-						end;
-					};
+						//Convert end hour to next day
+						if (startHour > endHour) {
+							endHour = endHour + 24;
+						};
 
-					MEM_ArrayFree (rtnListPtr);
+						var int minsRoutine; minsRoutine = (endHour * 60 + rtn2.min2) - (startHour * 60 + rtn2.min1);
+						minsPerDay -= minsRoutine;
+					end;
 
 					//Is there any spare time? If yes - routine is incomplete
 					if (minsPerDay > 0) {
@@ -206,39 +226,64 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 						};
 					};
 
-					zSpy_Info (msg);
+					if (!MEM_StringArrayContains (errListPtr, msg)) {
+						//Insert err msg to array
+						MEM_StringArrayInsert (errListPtr, msg);
+
+						zSpy_Info (msg);
+					};
 				};
 
 				if (overlappingRoutines) {
 					if (npcIsValid) {
+						issueCounter += 1;
+
 						slf = _^ (rtn.npc);
 						msg = " - rtn: ";
 						msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
 						msg = ConcatStrings (msg, ", npc: ");
 						msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
 						msg = ConcatStrings (msg, ", routines are overlapping - check the daily routine!");
-						zSpy_Info (msg);
+
+						if (!MEM_StringArrayContains (errListPtr, msg)) {
+							//Insert err msg to array
+							MEM_StringArrayInsert (errListPtr, msg);
+							zSpy_Info (msg);
+							zSpy_Info_RtnList (rtnListPtr);
+						};
 					};
 				};
 
 				if (incompleteRoutine) {
 					if (npcIsValid) {
+						issueCounter += 1;
+
 						slf = _^ (rtn.npc);
 						msg = " - rtn: ";
 						msg = ConcatStrings (msg, NPC_GetRoutineName (slf));
 						msg = ConcatStrings (msg, ", npc: ");
 						msg = ConcatStrings (msg, GetSymbolName (Hlp_GetInstanceID (slf)));
 						msg = ConcatStrings (msg, ", routine is incomplete - check the daily routine!");
-						zSpy_Info (msg);
+
+						if (!MEM_StringArrayContains (errListPtr, msg)) {
+							//Insert err msg to array
+							MEM_StringArrayInsert (errListPtr, msg);
+
+							zSpy_Info (msg);
+							zSpy_Info_RtnList (rtnListPtr);
+						};
 					};
 				};
+
+				MEM_ArrayFree (rtnListPtr);
 			};
 		};
 
 		rtnPtr = list.next;
 	end;
 
-	MEM_ArrayFree (npcPtrList);
+	MEM_StringArrayFree (npcListPtr);
+	MEM_StringArrayFree (errListPtr);
 
 	return + issueCounter;
 };
@@ -270,6 +315,9 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 	msg = ConcatStrings (" - world: ", msg);
 	zSpy_Info (msg);
 
+	//List of already listed issues err msgs (to prevent duplicates)
+	var int errListPtr; errListPtr = MEM_ArrayCreate ();
+
 	var int issueCounter; issueCounter = 0;
 
 	var int i;
@@ -280,8 +328,6 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 	var C_NPC selfBackup; selfBackup = Hlp_GetNpc (self);
 
 	var int npcPtr;
-	var int npcIDListPtr; npcIDListPtr = MEM_ArrayCreate ();
-	var zCArray npcIDList; npcIDList = _^ (npcIDListPtr);
 
 	repeat (i, currSymbolTableLength);
 		symb = _^ (MEM_GetSymbolByIndex (i));
@@ -349,41 +395,33 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 					end;
 
 					var int j;
-					var int newNpcID; newNpcID = TRUE;
 
-					var int npcCheckedID;
+					if (countNPC > 1) {
+						msg = " - npc ID: ";
+						msg = ConcatStrings (msg, s);
+						msg = ConcatStrings (msg, " npcs: ");
+						msg = ConcatStrings (msg, npcWithID);
+						msg = ConcatStrings (msg, " have same ID! Results of routine check for this ID above might be wrong.");
 
-					//Did we check this NPC ID already?
-					if (npcIDList.numInArray) {
-						repeat (j, npcIDList.numInArray);
-							npcCheckedID = MEM_ArrayRead (npcIDListPtr, j);
+						if (!MEM_StringArrayContains (errListPtr, msg)) {
+							//Insert err msg to array
+							MEM_StringArrayInsert (errListPtr, msg);
 
-							if (npcCheckedID == npcID) {
-								newNpcID = FALSE;
-								break;
-							};
-						end;
-					};
-
-					if (newNpcID) {
-						//Add to the list - to prevent multiple loops
-						MEM_ArrayInsert (npcIDListPtr, npcID);
-
-						if (countNPC > 1) {
-							msg = " - npc ID: ";
-							msg = ConcatStrings (msg, s);
-							msg = ConcatStrings (msg, " npcs: ");
-							msg = ConcatStrings (msg, npcWithID);
-							msg = ConcatStrings (msg, " have same ID! Results of routine check for this ID above might be wrong.");
 							zSpy_Info (msg);
 						};
+					};
 
-						if (countNPC == 0) {
-							msg = " - npc ID: ";
-							msg = ConcatStrings (msg, s);
-							msg = ConcatStrings (msg, " no NPC found. Routine ");
-							msg = ConcatStrings (msg, symb.Name);
-							msg = ConcatStrings (msg, " is either redundant or NPC was not yet inserted into the world.");
+					if (countNPC == 0) {
+						msg = " - npc ID: ";
+						msg = ConcatStrings (msg, s);
+						msg = ConcatStrings (msg, " no NPC found. Routine ");
+						msg = ConcatStrings (msg, symb.Name);
+						msg = ConcatStrings (msg, " is either redundant or NPC was not yet inserted into the world.");
+
+						if (!MEM_StringArrayContains (errListPtr, msg)) {
+							//Insert err msg to array
+							MEM_StringArrayInsert (errListPtr, msg);
+
 							zSpy_Info (msg);
 						};
 					};
@@ -392,7 +430,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 		};
 	end;
 
-	MEM_ArrayFree (npcIDListPtr);
+	MEM_StringArrayFree (errListPtr);
 
 	self = Hlp_GetNpc (selfBackup);
 
@@ -482,7 +520,15 @@ func void oCRtnManager_InfoManager_CheckAllRoutines () {
 
 			//If routine was changed ... check potential issues
 			if (lastDaily_routine != daily_routine) {
-				rtnIssueCounter += oCRtnManager_RtnList_CheckIssues (_@ (slf));
+				var int issues; issues = oCRtnManager_RtnList_CheckIssues (_@ (slf));
+
+				if (issues) {
+					msg = ConcatStrings (" - dialogue ", GetSymbolName (dlgInstance));
+					msg = ConcatStrings (msg, " might have caused issues with routines");
+					zSpy_Info (msg);
+				};
+
+				rtnIssueCounter += issues;
 
 				lastDaily_routine = daily_routine;
 			};
@@ -492,7 +538,7 @@ func void oCRtnManager_InfoManager_CheckAllRoutines () {
 	end;
 
 	if (rtnIssueCounter == 0) {
-		zSpy_Info (" - no issues detected for changes triggere by dialogues.");
+		zSpy_Info (" - no issues detected for changes triggered by dialogues.");
 	} else {
 		msg = " - total issues with routines: ";
 		msg = ConcatStrings (msg, IntToString (rtnIssueCounter));
