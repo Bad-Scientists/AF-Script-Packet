@@ -79,14 +79,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 		if (openInvType == OpenInvType_NPC) {
 			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
 
-			//If player is in pickpocketing mode - then transfer a **single item** and exit (pickpocketing hook will take care of the rest)
-			if (NPC_IsInStateName (hero, "ZS_PICKPOCKETING")) {
-				//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
-				//dir: -1 - left, 1 - right
-				retVal = oCItemContainer_TransferItem (openInvContainerPtr, 1, 1);
-				return TRUE;
-			};
-
 			npcContainer = _^ (openInvContainerPtr);
 			npc = _^ (npcContainer.inventory2_owner);
 
@@ -261,14 +253,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							//oCNpcContainer_CreateList (npcContainerPtr);
 
 						} else {
-							//If player is in pickpocketing mode - then transfer a **single item** and exit (pickpocketing hook will take care of the rest)
-							if (NPC_IsInStateName (hero, "ZS_PICKPOCKETING")) {
-								//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
-								//dir: -1 - left, 1 - right
-								retVal = oCItemContainer_TransferItem (openInvContainerPtr, 1, 1);
-								return TRUE;
-							};
-
 							//Get NPC container
 							npcContainerPtr = Hlp_GetOpenContainer_oCNpcContainer ();
 							npcContainer = _^ (npcContainerPtr);
