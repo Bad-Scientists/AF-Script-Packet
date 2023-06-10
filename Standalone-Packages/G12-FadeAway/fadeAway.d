@@ -46,8 +46,16 @@ func int oCNpc_FadeAway (var int slfInstance) {
 	if (!Hlp_IsValidNpc (slf)) { return FALSE; };
 
 	var int retVal;
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__FadeAway_G1, oCNpc__FadeAway_G2));
-	retVal = CALL_RetValAsInt ();
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__FadeAway_G1, oCNpc__FadeAway_G2));
+		call = CALL_End();
+	};
+
 	return + retVal;
 };
 
@@ -65,7 +73,13 @@ func void oCNpc_StartFadeAway (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNpc (slf)) { return; };
 
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__StartFadeAway_G1, oCNpc__StartFadeAway_G2));
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__StartFadeAway_G1, oCNpc__StartFadeAway_G2));
+		call = CALL_End();
+	};
 };
 
 /*
@@ -82,9 +96,17 @@ func int oCNpc_IsFadingAway (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNpc (slf)) { return FALSE; };
 
+	var int slfPtr; slfPtr = _@ (slf);
+
 	var int retVal;
-	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__IsFadingAway_G1, oCNpc__IsFadingAway_G2));
-	retVal = CALL_RetValAsInt ();
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__IsFadingAway_G1, oCNpc__IsFadingAway_G2));
+		call = CALL_End();
+	};
+
 	return + retVal;
 };
 
