@@ -1467,7 +1467,7 @@ func int NPC_HasItemInstanceName (var int slfInstance, var string instanceName) 
 	if (symbID > 0) && (symbID < currSymbolTableLength) {
 		//if (NPC_GetInventoryItem (slf, symbID))
 		if (NPC_GetInvItem (slf, symbID)) {
-			return (NPC_HasItems (slf, Hlp_GetinstanceID (item)));
+			return (NPC_HasItems (slf, Hlp_GetInstanceID (item)));
 		};
 	};
 
@@ -1478,34 +1478,31 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCategory,
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	var int amount;
-	var int itmInstance;
+	var int armorItemID; armorItemID = Npc_GetArmor (slf);
 
 	var int itmSlot; itmSlot = 0;
+	var int amount; amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 
-	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	var int itemInstanceID;
 
 	while (amount > 0);
-		itmInstance = Hlp_GetinstanceID (item);
+		itemInstanceID = Hlp_GetInstanceID (item);
 
-		//Chceme tieto itemy odstranit ?
-		//Zbroj - neodstranujeme taku, co je equipnuta
-		if ((item.Flags & flagsKeepItems) || (item.MainFlag & mainFlagsKeepItems) || ((invCategory == INV_ARMOR) && (NPC_GetArmor (slf) == itmInstance)))
+		//Do we want to remove this item?
+		//(do not remove equipped armor)
+		if ((item.Flags & flagsKeepItems) || (item.MainFlag & mainFlagsKeepItems) || ((armorItemID == itemInstanceID) && (item.Flags & ITEM_ACTIVE_LEGO)))
 		{
 			itmSlot += 1;
 			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 			continue;
 		};
 
-		var int ptr; ptr = _@ (item);
+		oCNPC_UnequipItemPtr (slf, _@ (item));
 
-		var oCItem itm; itm = _^ (ptr);
-
-		if (itm.amount == 1) {
-			oCNPC_UnequipItemPtr (slf, ptr);
-			NPC_RemoveInvItem (slf, itmInstance);
+		if (amount == 1) {
+			NPC_RemoveInvItem (slf, itemInstanceID);
 		} else {
-			NPC_RemoveInvItems (slf, itmInstance, itm.amount);
+			NPC_RemoveInvItems (slf, itemInstanceID, amount);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
@@ -1553,19 +1550,18 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
 	if (!Hlp_IsValidNPC (oth)) { return; };
 
-	var int amount;
-	var int itmInstance;
+	var int armorItemID; armorItemID = Npc_GetArmor (slf);
 
 	var int itmSlot; itmSlot = 0;
+	var int amount; amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 
-	amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
+	var int itemInstanceID;
 
 	while (amount > 0);
-		itmInstance = Hlp_GetinstanceID (item);
+		itemInstanceID = Hlp_GetInstanceID (item);
 
 		//Ignore equipped armor
-		if (!transferEquippedArmor)
-		&& (NPC_GetArmor (slf) == itmInstance) //&& (item.Flags & ITEM_ACTIVE_LEGO))
+		if ((!transferEquippedArmor) && (armorItemID == itemInstanceID) && (item.Flags & ITEM_ACTIVE_LEGO))
 		{
 			itmSlot += 1;
 			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
@@ -1573,8 +1569,7 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Ignore equipped items
-		if (!transferEquippedItems)
-		&& (((NPC_GetMeleeWeapon (slf) == itmInstance) || (NPC_GetRangedWeapon (slf) == itmInstance)) && (item.Flags & ITEM_ACTIVE_LEGO))
+		if ((!transferEquippedItems) && (item.Flags & ITEM_ACTIVE_LEGO))
 		{
 			itmSlot += 1;
 			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
@@ -1582,29 +1577,24 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Ignore mission items
-		if (!transferMissionItems)
-		&& (item.Flags & ITEM_MISSION)
+		if ((!transferMissionItems) && (item.Flags & ITEM_MISSION))
 		{
 			itmSlot += 1;
 			amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 			continue;
 		};
 
-		//Convert to oCItem to get amount property
-		var int itmPtr; itmPtr = _@ (item);
-		var oCItem itm; itm = _^ (itmPtr);
-
 		//Custom prints for transferred items
 		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
-			Event_Execute (_NpcTransferItemPrint_Event, itmPtr);
+			Event_Execute (_NpcTransferItemPrint_Event, _@ (item));
 		};
 
-		if (itm.amount == 1) {
-			CreateInvItem (oth, itmInstance);
-			NPC_RemoveInvItem (slf, itmInstance);
+		if (amount == 1) {
+			CreateInvItem (oth, itemInstanceID);
+			NPC_RemoveInvItem (slf, itemInstanceID);
 		} else {
-			CreateInvItems (oth, itmInstance, itm.amount);
-			NPC_RemoveInvItems (slf, itmInstance, itm.amount);
+			CreateInvItems (oth, itemInstanceID, amount);
+			NPC_RemoveInvItems (slf, itemInstanceID, amount);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
@@ -1668,7 +1658,7 @@ func void NPC_UnEquipInventory (var int slfinstance) {
  *	NPC_InventoryIsEmpty
  *	 - function checks whether inventory is empty
  */
-func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int ignoreMainFlags, var int ignoreArmor) {
+func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int ignoreMainFlags, var int ignoreEquippedArmor) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
@@ -1690,9 +1680,11 @@ func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int
 		noOfCategories = 1;
 	};
 
-	//NPC_GetArmor requires C_NPC ... ;-/
-	var C_NPC _slf; _slf = Hlp_GetNpc (slf);
-	var int armorID; armorID = NPC_GetArmor (_slf);
+	var int armorItemID; armorItemID = -1;
+    if (Npc_HasEquippedArmor(slf)) {
+		var C_ITEM armorItem; armorItem = Npc_GetEquippedArmor(slf);
+		armorItemID = Hlp_GetInstanceID(armorItem);
+	};
 
 	repeat (invCat, noOfCategories); var int invCat;
 		oCNpcInventory_UnpackCategory (npcInventoryPtr, invCat);
@@ -1703,7 +1695,7 @@ func int NPC_InventoryIsEmpty (var int slfInstance, var int ignoreFlags, var int
 
 			if (list.data) {
 				itm = _^ (list.data);
-				if ((itm.Flags & ignoreFlags) || (itm.MainFlag & ignoreMainFlags) || ((invCat == INV_ARMOR) && (armorID == Hlp_GetInstanceID (itm)) && (ignoreArmor))) {
+				if ((itm.Flags & ignoreFlags) || (itm.MainFlag & ignoreMainFlags) || ((armorItemID == Hlp_GetInstanceID (itm)) && (ignoreEquippedArmor) && (itm.Flags & ITEM_ACTIVE_LEGO))) {
 					ptr = list.next;
 					continue;
 				};
@@ -1744,10 +1736,6 @@ func int NPC_HasMissionItem (var int slfInstance) {
 		offset = 1816;						// 0x0718 zCListSort<oCItem>*
 		noOfCategories = 1;
 	};
-
-	//NPC_GetArmor requires C_NPC ... ;-/
-	var C_NPC _slf; _slf = Hlp_GetNpc (slf);
-	var int armorID; armorID = NPC_GetArmor (_slf);
 
 	repeat (invCat, noOfCategories); var int invCat;
 		oCNpcInventory_UnpackCategory (npcInventoryPtr, invCat);
