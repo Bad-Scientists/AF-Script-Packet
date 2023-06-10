@@ -35,6 +35,8 @@ EngineClasses_G2\zCAICamera.d
 ScriptBin\strings.d
 ScriptBin\convert.d
 
+list.d
+
 algebra.d
 polygons.d
 draw3D.d
