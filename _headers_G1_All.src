@@ -37,6 +37,7 @@ EngineClasses_G1\oSSpawnNode.d
 EngineClasses_G1\zCSkyState.d
 
 EngineClasses_G1\zCAICamera.d
+EngineClasses_G1\zCConDat.d
 
 ScriptBin\strings.d
 ScriptBin\convert.d
