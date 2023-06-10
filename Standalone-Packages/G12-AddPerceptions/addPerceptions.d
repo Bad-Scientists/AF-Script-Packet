@@ -155,7 +155,10 @@ func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
 		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
 
 		if (funcID == percFuncID) {
-			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, 0);
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2, 0);
+			MEM_WriteStatArr (_@ (slf.percList[0]), i * 2 + 1, -1);
+
+			slf.percActive -= 1;
 		};
 	end;
 };
