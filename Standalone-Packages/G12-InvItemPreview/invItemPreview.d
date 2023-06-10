@@ -52,7 +52,8 @@ func void GetItemPreviewData__InvItemPreview (var int npcInventoryPtr) {
 					const int lastHealth = 0;
 					const int lastMana = 0;
 
-					var int vobPtr; vobPtr = List_GetS (itemContainer.inventory2_oCItemContainer_contents, itemContainer.inventory2_oCItemContainer_selectedItem + 2);
+					//var int vobPtr; vobPtr = List_GetS (itemContainer.inventory2_oCItemContainer_contents, itemContainer.inventory2_oCItemContainer_selectedItem + 2);
+					var int vobPtr; vobPtr = zCListSort_GetData (itemContainer.inventory2_oCItemContainer_contents, itemContainer.inventory2_oCItemContainer_selectedItem);
 
 					if ((vobPtr) && (vobPtr != lastVobPtr)) {
 						PC_ItemPreviewHealth = GetItemCountValue (vobPtr, NAME_Bonus_HP);

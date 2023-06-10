@@ -520,7 +520,8 @@ func void _hook_OnTransfer__EnhancedTrading () {
 	if (!ptr) { return; };
 	container = _^ (ptr);
 
-	var int itemPtr; itemPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+	//var int itemPtr; itemPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+	var int itemPtr; itemPtr = zCListSort_GetData (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem);
 
 	if (itemPtr) {
 		//Update buy/sell multipliers

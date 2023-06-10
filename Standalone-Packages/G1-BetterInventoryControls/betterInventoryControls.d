@@ -17,10 +17,10 @@
  *	    - move 10 pieces from slot back and fort by pressing space bar KEY_SPACE
  *	    - move all items from single slot back and fort by pressing left alt KEY_LMENU
  *
- *	 - allows moving items to dead NPCs inventories
+ *	 - allows moving items to inventories of dead Npcs
  */
 
-const int invCategory_VobTaken = -1;
+const int invCategory_VobTaken_ItemInstanceID = -1;
 
 /*
  *	Wrapper function for all inventory 'types' (oCItemContainer, oCStealContainer, oCNpcContainer, oCNpcInventory)
@@ -30,20 +30,20 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 	var int itmPtr;
 	var oCItem itm;
+
 	var int amount;
 
 	var int openInvType;
 	var int openInvContainerPtr;
 
+	var int containerPtr;
 	var oCItemContainer container;
 
+	var oCNpc npc;
 	var int npcInventoryPtr;
-	var int containerPtr;
 
 	var int npcContainerPtr;
 	var oCNpcContainer npcContainer;
-
-	var oCNpc npc;
 
 	if (!ptr) { return 0; };
 
@@ -75,17 +75,10 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 			oCMobInter_SendStateChange (npc.interactMob, 1, 0);
 
 			return TRUE;
-		} else
+		};
+
 		if (openInvType == OpenInvType_NPC) {
 			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
-
-			//If player is in pickpocketing mode - then transfer a **single item** and exit (pickpocketing hook will take care of the rest)
-			if (NPC_IsInStateName (hero, "ZS_PICKPOCKETING")) {
-				//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
-				//dir: -1 - left, 1 - right
-				retVal = oCItemContainer_TransferItem (openInvContainerPtr, 1, 1);
-				return TRUE;
-			};
 
 			npcContainer = _^ (openInvContainerPtr);
 			npc = _^ (npcContainer.inventory2_owner);
@@ -114,7 +107,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			return TRUE;
 		};
-	} else
+	};
+
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
@@ -175,7 +169,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			return TRUE;
 		};
-	} else
+	};
 
 	//Transfer items
 	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE)) {
@@ -187,7 +181,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			if (openInvContainerPtr) {
 				container = _^ (openInvContainerPtr);
-				itmPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+				//itmPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+				itmPtr = zCListSort_GetData (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem);
 
 				if (itmPtr) {
 					//Left Alt move complete slot
@@ -208,9 +203,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 					if (amount > itm.amount) { amount = itm.amount; };
 
 					if (openInvType == OpenInvType_Chest) {
-
 						//Engine function oCItemContainer::TransferItem is sloooow (is it looping through all items?) ... can we create better version?
-						//Cannot be used with NPC - items moved to NPC would not be prperly stored in NPCs inventory ... closing inventory would remove all items
+						//Cannot be used with NPC - items moved to NPC would not be properly stored in NPCs inventory ... closing inventory would remove all items
 
 						//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
 						//dir: -1 - left, 1 - right
@@ -236,7 +230,9 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							npcInventoryPtr = _@ (npc.inventory2_vtbl);
 							oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
 						};
-					} else
+
+						return TRUE;
+					};
 
 					if (openInvType == OpenInvType_NPC) {
 						//From players inventory to the NPC (yes! we will allow it :) )
@@ -260,14 +256,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							//oCNpcContainer_CreateList (npcContainerPtr);
 
 						} else {
-							//If player is in pickpocketing mode - then transfer a **single item** and exit (pickpocketing hook will take care of the rest)
-							if (NPC_IsInStateName (hero, "ZS_PICKPOCKETING")) {
-								//oCItemContainer_TransferItem (var int ptr, var int dir, var int amount)
-								//dir: -1 - left, 1 - right
-								retVal = oCItemContainer_TransferItem (openInvContainerPtr, 1, 1);
-								return TRUE;
-							};
-
 							//Get NPC container
 							npcContainerPtr = Hlp_GetOpenContainer_oCNpcContainer ();
 							npcContainer = _^ (npcContainerPtr);
@@ -287,7 +275,9 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							oCStealContainer_CreateList (npcContainerPtr);
 							//oCNpcContainer_CreateList (npcContainerPtr);
 						};
-					} else
+
+						return TRUE;
+					};
 
 					if (openInvType == OpenInvType_Trading) {
 						var oCViewDialogTrade dialogTrade;
@@ -353,6 +343,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};
+
+						return TRUE;
 					};
 				} else {
 					//If there are no more items - next Alt key will close inventory
@@ -499,6 +491,9 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	var oCItem itm;
 	var int amount;
 
+	//Vanilla-like check - don't allow item manipulation if body state is NOT interruptable (e.g. if Npc is controlled)
+	if (!oCNpc_IsBodyStateInterruptable (hero)) { return; };
+
 	var int openInvType; openInvType = Hlp_GetOpenInventoryType ();
 
 //-- Player's inventory - additional controls
@@ -536,7 +531,8 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 								//Here we don't need to get length - all we need to know is whether list is empty :)
 								var zCListSort l; l = _^ (npcInventory.inventory2_oCItemContainer_contents);
 								if (l.next) {
-									vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+									//vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+									vobPtr = zCListSort_GetData (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem);
 
 									if (vobPtr) {
 										//Put in hand
@@ -616,6 +612,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 /*
  *	If player had in hand item and switched to fight mode - then engine calls oCNpc_DoDropVob - this function drops not only item in hand but also 1 piece from inventory for some reason
  */
+//0x006A10F0 public: virtual int __thiscall oCNpc::DoDropVob(class zCVob *)
 func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 
@@ -625,7 +622,6 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
 	if (vobPtr) {
 		//This engine function drops item from hand only
-		//oCNpc_RemoveFromHand__BetterInvControls (slf);
 		var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
 
 		//Crash ...
@@ -646,15 +642,15 @@ func void _eventDoTakeVob_SwitchCategory () {
 
 	if (Hlp_IsValidItem (itm)) {
 		if (NPC_IsPlayer (slf)) {
-			invCategory_VobTaken = Npc_ItemGetCategory (slf, itemPtr);
+			invCategory_VobTaken_ItemInstanceID = Hlp_GetInstanceID (itm);
 		};
 	};
 };
 
 func void _eventOpenInventory_SwitchToCategory () {
-	if (invCategory_VobTaken != -1) {
-		oCNpcInventory_SwitchToCategory (ECX, invCategory_VobTaken);
-		invCategory_VobTaken = -1;
+	if (invCategory_VobTaken_ItemInstanceID > -1) {
+		Npc_InvSelectItem (hero, invCategory_VobTaken_ItemInstanceID);
+		invCategory_VobTaken_ItemInstanceID = -1;
 	};
 };
 
