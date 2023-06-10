@@ -321,6 +321,28 @@ func int Hlp_GetOpenContainer_oCNpcInventory () {
 
 //-- oCItemContainer functions
 
+func int oCItemContainer_ActivateNextContainer (var int ptr, var int direction) {
+	//0x00669980 protected: int __thiscall oCItemContainer::ActivateNextContainer(int)
+	const int oCItemContainer__ActivateNextContainer_G1 = 6723968;
+
+	//0x0070A150 protected: int __thiscall oCItemContainer::ActivateNextContainer(int)
+	const int oCItemContainer__ActivateNextContainer_G2 = 7381328;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam (_@ (direction));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__ActivateNextContainer_G1, oCItemContainer__ActivateNextContainer_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 func void oCItemContainer_Draw (var int ptr) {
 	//0x00667660 protected: virtual void __thiscall oCItemContainer::Draw(void)
 	const int oCItemContainer__Draw_G1 = 6714976;
@@ -732,6 +754,9 @@ func int oCNpcInventory_SwitchToCategory (var int npcInventoryPtr, var int invCa
  *	 - in case of G2A inventory category is redundant
  */
 func void oCNpcInventory_UnpackCategory (var int npcInventoryPtr, var int invCategory) {
+	//0x00670740 public: void __thiscall oCNpcInventory::UnpackItemsInCategory(int)
+	//0x00710A20 public: void __thiscall oCNpcInventory::UnpackItemsInCategory(void)
+
 	//0x0066FAD0 public: void __thiscall oCNpcInventory::UnpackCategory(int)
 	const int oCNpcInventory__UnpackCategory_G1 = 6748880;
 
@@ -1007,8 +1032,6 @@ func int oCViewDialogTrade_OnTransferRight (var int ptr, var int amount) {
 
 	return +retVal;
 };
-
-//--
 
 /*
  *	Removes from NPC inventory item with specified qty and returns pointer to removed item
@@ -1634,7 +1657,6 @@ func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCategory
 		itmSlot = itmSlot + 1;
 		amount = NPC_GetInvItemBySlot (slf, invCategory, itmSlot);
 	end;
-
 };
 
 func void NPC_UnEquipInventory (var int slfinstance) {
@@ -1786,10 +1808,9 @@ func void Npc_UnequipWeapons (var int slfInstance) {
 	Npc_UnequipRangedWeapon (slfInstance);
 };
 
-func void oCNpc_UnpackInventory (var int slfInstance)
-{
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
+func void oCNpc_UnpackInventory (var int slfInstance) {
+	//0x00670400 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
+	//0x00710030 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
 
 	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
 	if (!npcInventoryPtr) { return; };
@@ -1908,3 +1929,11 @@ func void Npc_CloseInventory (var int slfInstance) {
 	oCNpcInventory_Close (npcInventoryPtr);
 };
 
+/*
+ *	Npc_InvSwitchToCategory
+ *	 - function switches inventory to specified inv category
+ */
+func void Npc_InvSwitchToCategory (var int slfInstance, var int invCategory) {
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	oCNpcInventory_SwitchToCategory (npcInventoryPtr, invCategory);
+};
