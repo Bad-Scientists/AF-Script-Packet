@@ -187,7 +187,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			if (openInvContainerPtr) {
 				container = _^ (openInvContainerPtr);
-				itmPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+				//itmPtr = List_GetS (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem + 2);
+				itmPtr = zCListSort_GetData (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem);
 
 				if (itmPtr) {
 					//Left Alt move complete slot
@@ -536,7 +537,8 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 								//Here we don't need to get length - all we need to know is whether list is empty :)
 								var zCListSort l; l = _^ (npcInventory.inventory2_oCItemContainer_contents);
 								if (l.next) {
-									vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+									//vobPtr = List_GetS (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem + 2);
+									vobPtr = zCListSort_GetData (npcInventory.inventory2_oCItemContainer_contents, npcInventory.inventory2_oCItemContainer_selectedItem);
 
 									if (vobPtr) {
 										//Put in hand
