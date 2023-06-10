@@ -20,7 +20,7 @@
  *	 - allows moving items to dead NPCs inventories
  */
 
-const int invCategory_VobTaken = -1;
+const int invCategory_VobTaken_ItemInstanceID = -1;
 
 /*
  *	Wrapper function for all inventory 'types' (oCItemContainer, oCStealContainer, oCNpcContainer, oCNpcInventory)
@@ -648,15 +648,15 @@ func void _eventDoTakeVob_SwitchCategory () {
 
 	if (Hlp_IsValidItem (itm)) {
 		if (NPC_IsPlayer (slf)) {
-			invCategory_VobTaken = Npc_ItemGetCategory (slf, itemPtr);
+			invCategory_VobTaken_ItemInstanceID = Hlp_GetInstanceID (itm);
 		};
 	};
 };
 
 func void _eventOpenInventory_SwitchToCategory () {
-	if (invCategory_VobTaken != -1) {
-		oCNpcInventory_SwitchToCategory (ECX, invCategory_VobTaken);
-		invCategory_VobTaken = -1;
+	if (invCategory_VobTaken_ItemInstanceID > -1) {
+		Npc_InvSelectItem (hero, invCategory_VobTaken_ItemInstanceID);
+		invCategory_VobTaken_ItemInstanceID = -1;
 	};
 };
 
