@@ -14,10 +14,61 @@
  */
 
 //-- Internal variables
+
 var string _tex_BarPreview_HealthBar;
 var string _tex_BarPreview_ManaBar;
 
 var int _healthBar_DisplayWhenHurt_Percentage;
+
+//--
+
+var int _healthBar_PreviewVisible;
+var int _healthBar_PreviewAlpha;
+
+var int _healthBar_LastValue;
+var int _healthBar_DisplayTime;
+
+var int _healthBar_PreviewFlashingFadeOut;
+
+//--
+
+var int _manaBar_PreviewVisible;
+var int _manaBar_PreviewAlpha;
+
+var int _manaBar_LastValue;
+var int _manaBar_DisplayTime;
+
+var int _manaBar_PreviewFlashingFadeOut;
+
+//--
+
+var int _healthBar_PPosX;
+var int _healthBar_PPosY;
+
+var int _healthBar_VPosX;
+var int _healthBar_VPosY;
+
+var int _manaBar_PPosX;
+var int _manaBar_PPosY;
+
+var int _manaBar_VPosX;
+var int _manaBar_VPosY;
+
+var int _swimBar_PPosX;
+var int _swimBar_PPosY;
+
+var int _swimBar_VPosX;
+var int _swimBar_VPosY;
+
+var int _focusBar_PPosX;
+var int _focusBar_PPosY;
+
+var int _focusBar_VPosX;
+var int _focusBar_VPosY;
+
+//--
+
+var string _betterBars_Font;
 
 /*
  *	Function that will update texture of health bar (using original Gothic health bar texture!)
@@ -26,25 +77,34 @@ func void HealthBar_UpdateTexture () {
 	if (Hlp_IsValidHandle (hHealthBar)) {
 		var oCViewStatusBar hpBar;
 		hpBar = _^ (MEM_Game.hpBar);
+
 		Bar_SetBarTexture (hHealthBar, hpBar.texValue);
-		//Bar_SetBarTexture (hHealthBar, ViewPtr_GetTexture (hpBar.value_bar));
+	};
+};
+
+func void FocusBar_UpdateTexture () {
+	if (Hlp_IsValidHandle (hHealthBar)) {
+		var oCViewStatusBar focusBar;
+		focusBar = _^ (MEM_Game.focusBar);
+
+		Bar_SetBarTexture (hFocusBar, focusBar.texValue);
 	};
 };
 
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	//If this method returns true - then bar should be 100% visible
-	if (BarGetOnDesk (BarType_HealthBar, healthBarDisplayMethod)) {
+	if (BarGetOnDesk (BarType_HealthBar, _healthBar_DisplayMethod)) {
 		Bar_SetAlpha (hHealthBar, 255);
 		return;
 	};
 
 	//If we somehow ended up here with bar display method inventory ... then remove display time
-	if (healthBarDisplayMethod == BarDisplay_OnlyInInventory) {
-		healthBarDisplayTime = 0;
+	if (_healthBar_DisplayMethod == BarDisplay_OnlyInInventory) {
+		_healthBar_DisplayTime = 0;
 	};
 
 	//If we run out of display time - hide bar
-	if (!healthBarDisplayTime) {
+	if (!_healthBar_DisplayTime) {
 		Bar_Hide (hHealthBar);
 
 		FF_Remove (FrameFunction_FadeInOutHealthBar__BetterBars);
@@ -62,7 +122,7 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	//If bar is visible (this is not redundant condition, _Bar_PlayerStatus might return FALSE)
 	if (Bar_IsVisible (hHealthBar)) {
 		//Decrease display time
-		healthBarDisplayTime -= 1;
+		_healthBar_DisplayTime -= 1;
 
 		/*
 			Fade effect logic - in relation to display time:
@@ -72,15 +132,15 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 		var int alpha;
 
 		//Fade in
-		if (healthBarDisplayTime > 80) {
-			alpha = roundf (mulf (mkf (255), divf (mkf (120 - healthBarDisplayTime), mkf (40))));
+		if (_healthBar_DisplayTime > 80) {
+			alpha = roundf (mulf (mkf (255), divf (mkf (120 - _healthBar_DisplayTime), mkf (40))));
 		} else
 		//Display
-		if (healthBarDisplayTime > 40) {
+		if (_healthBar_DisplayTime > 40) {
 			alpha = 255;
 		} else {
 		//Fade out
-			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - healthBarDisplayTime), mkf (40))));
+			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - _healthBar_DisplayTime), mkf (40))));
 		};
 
 		//Check boundaries min/max and set alpha
@@ -91,18 +151,18 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 
 func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	//If this method returns true - then bar should be 100% visible
-	if (BarGetOnDesk (BarType_ManaBar, manaBarDisplayMethod)) {
+	if (BarGetOnDesk (BarType_ManaBar, _manaBar_DisplayMethod)) {
 		Bar_SetAlpha (hManaBar, 255);
 		return;
 	};
 
 	//If we somehow ended up here with bar display method inventory ... then remove display time
-	if (manaBarDisplayMethod == BarDisplay_OnlyInInventory) {
-		manaBarDisplayTime = 0;
+	if (_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) {
+		_manaBar_DisplayTime = 0;
 	};
 
 	//If we run out of display time - hide bar
-	if (!manaBarDisplayTime) {
+	if (!_manaBar_DisplayTime) {
 		Bar_Hide (hManaBar);
 
 		FF_Remove (FrameFunction_FadeInOutManaBar__BetterBars);
@@ -120,7 +180,7 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	//If bar is visible (this is not redundant condition, _Bar_PlayerStatus might return FALSE)
 	if (Bar_IsVisible (hManaBar)) {
 		//Decrease display time
-		manaBarDisplayTime -= 1;
+		_manaBar_DisplayTime -= 1;
 
 		/*
 			Fade effect logic - in relation to display time:
@@ -130,15 +190,15 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 		var int alpha;
 
 		//Fade in
-		if (manaBarDisplayTime > 80) {
-			alpha = roundf (mulf (mkf (255), divf (mkf (120 - manaBarDisplayTime), mkf (40))));
+		if (_manaBar_DisplayTime > 80) {
+			alpha = roundf (mulf (mkf (255), divf (mkf (120 - _manaBar_DisplayTime), mkf (40))));
 		} else
 		//Display
-		if (manaBarDisplayTime > 40) {
+		if (_manaBar_DisplayTime > 40) {
 			alpha = 255;
 		} else {
 		//Fade out
-			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - manaBarDisplayTime), mkf (40))));
+			alpha = 255 - roundf (mulf (mkf (255), divf (mkf (40 - _manaBar_DisplayTime), mkf (40))));
 		};
 
 		//Check boundaries min/max and set alpha
@@ -148,102 +208,96 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 };
 
 func void FrameFunction_FlashPreviewBars__BetterBars () {
-	if ((!healthBarPreviewVisible) && (!manaBarPreviewVisible)) {
+	if ((!_healthBar_PreviewVisible) && (!_manaBar_PreviewVisible)) {
 		View_SetAlpha (vHealthPreview, 255);
 		View_SetAlpha (vManaPreview, 255);
 		FF_Remove (FrameFunction_FlashPreviewBars__BetterBars);
 		return;
 	};
 
-	if ((healthBarPreviewVisible) && (healthBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
-		if (Hlp_IsValidHandle (vHealthPreview)) {
-
-			if (healthBarPreviewFlashingFadeOut) {
-				healthBarPreviewAlpha -= 32;
-			} else {
-				healthBarPreviewAlpha += 32;
-			};
-
-			if (healthBarPreviewAlpha < 0) {
-				healthBarPreviewAlpha = 0;
-				healthBarPreviewFlashingFadeOut = (!healthBarPreviewFlashingFadeOut);
-			};
-
-			if (healthBarPreviewAlpha > 255) {
-				healthBarPreviewAlpha = 255;
-				healthBarPreviewFlashingFadeOut = (!healthBarPreviewFlashingFadeOut);
-			};
-
-			//
-			View_SetAlpha (vHealthPreview, healthBarPreviewAlpha);
+	if ((_healthBar_PreviewVisible) && (_healthBar_PreviewEffect == BarPreviewEffect_FadeInOut)) {
+		if (_healthBar_PreviewFlashingFadeOut) {
+			_healthBar_PreviewAlpha -= 32;
+		} else {
+			_healthBar_PreviewAlpha += 32;
 		};
+
+		if (_healthBar_PreviewAlpha < 0) {
+			_healthBar_PreviewAlpha = 0;
+			_healthBar_PreviewFlashingFadeOut = (!_healthBar_PreviewFlashingFadeOut);
+		};
+
+		if (_healthBar_PreviewAlpha > 255) {
+			_healthBar_PreviewAlpha = 255;
+			_healthBar_PreviewFlashingFadeOut = (!_healthBar_PreviewFlashingFadeOut);
+		};
+
+		//
+		View_SetAlpha (vHealthPreview, _healthBar_PreviewAlpha);
 	};
 
-	if ((manaBarPreviewVisible) && (manaBarPreviewEffect == BarPreviewEffect_FadeInOut)) {
-		if (Hlp_IsValidHandle (vManaPreview)) {
-
-			if (manaBarPreviewFlashingFadeOut) {
-				manaBarPreviewAlpha -= 32;
-			} else {
-				manaBarPreviewAlpha += 32;
-			};
-
-			if (manaBarPreviewAlpha < 0) {
-				manaBarPreviewAlpha = 0;
-				manaBarPreviewFlashingFadeOut = (!manaBarPreviewFlashingFadeOut);
-			};
-
-			if (manaBarPreviewAlpha > 255) {
-				manaBarPreviewAlpha = 255;
-				manaBarPreviewFlashingFadeOut = (!manaBarPreviewFlashingFadeOut);
-			};
-
-			//
-			View_SetAlpha (vManaPreview, manaBarPreviewAlpha);
+	if ((_manaBar_PreviewVisible) && (_manaBar_PreviewEffect == BarPreviewEffect_FadeInOut)) {
+		if (_manaBar_PreviewFlashingFadeOut) {
+			_manaBar_PreviewAlpha -= 32;
+		} else {
+			_manaBar_PreviewAlpha += 32;
 		};
+
+		if (_manaBar_PreviewAlpha < 0) {
+			_manaBar_PreviewAlpha = 0;
+			_manaBar_PreviewFlashingFadeOut = (!_manaBar_PreviewFlashingFadeOut);
+		};
+
+		if (_manaBar_PreviewAlpha > 255) {
+			_manaBar_PreviewAlpha = 255;
+			_manaBar_PreviewFlashingFadeOut = (!_manaBar_PreviewFlashingFadeOut);
+		};
+
+		//
+		View_SetAlpha (vManaPreview, _manaBar_PreviewAlpha);
 	};
 };
 
 func void FrameFunction_EachFrame__BetterBars () {
 	var oCViewStatusBar hpBar;
 	var oCViewStatusBar manaBar;
-	//var oCViewStatusBar swimBar;
-	//var oCViewStatusBar focusBar;
+	var oCViewStatusBar swimBar;
+	var oCViewStatusBar focusBar;
 
 	//Custom setup from Gothic.ini
 	if (MEM_GothOptExists ("GAME", "healthBarDisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - always on
-		healthBarDisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "healthBarDisplayMethod"));
+		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "healthBarDisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
 		if (MEM_ModOptExists ("GAME", "healthBarDisplayMethod")) {
-			healthBarDisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "healthBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (healthBarDisplayMethod));
+			_healthBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "healthBarDisplayMethod"));
+			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (_healthBar_DisplayMethod));
 		} else {
 			//Default
-			healthBarDisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (healthBarDisplayMethod));
+			_healthBar_DisplayMethod = BarDisplay_DynamicUpdate;
+			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (_healthBar_DisplayMethod));
 		};
 	};
 
-	if (MEM_GothOptExists ("GAME", "manaBarDisplayMethod")) {
+	if (MEM_GothOptExists ("GAME", "_manaBar_DisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - alwas on
-		manaBarDisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "manaBarDisplayMethod"));
+		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "_manaBar_DisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "manaBarDisplayMethod")) {
-			manaBarDisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "manaBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (manaBarDisplayMethod));
+		if (MEM_ModOptExists ("GAME", "_manaBar_DisplayMethod")) {
+			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "_manaBar_DisplayMethod"));
+			MEM_SetGothOpt ("GAME", "_manaBar_DisplayMethod", IntToString (_manaBar_DisplayMethod));
 		} else {
 			//Default
-			manaBarDisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (manaBarDisplayMethod));
+			_manaBar_DisplayMethod = BarDisplay_DynamicUpdate;
+			MEM_SetGothOpt ("GAME", "_manaBar_DisplayMethod", IntToString (_manaBar_DisplayMethod));
 		};
 	};
 
 //--
-	var int healthBarOnDesk; healthBarOnDesk = BarGetOnDesk (BarType_HealthBar, healthBarDisplayMethod);
-	var int manaBarOnDesk; manaBarOnDesk = BarGetOnDesk (BarType_ManaBar, manaBarDisplayMethod);
+	var int healthBarOnDesk; healthBarOnDesk = BarGetOnDesk (BarType_HealthBar, _healthBar_DisplayMethod);
+	var int manaBarOnDesk; manaBarOnDesk = BarGetOnDesk (BarType_ManaBar, _manaBar_DisplayMethod);
 
 //-- Health bar
 
@@ -255,13 +309,17 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 		//Initialize texture
 		Bar_SetBarTexture (hHealthBar, hpBar.texValue);
-		Bar_MoveTo (hHealthBar, hpBar.zCView_vposx + (hpBar.zCView_vsizex / 2), hpBar.zCView_vposy + (hpBar.zCView_vsizey / 2));
 	};
 
 	Bar_SetMax (hHealthBar, hero.attribute [ATR_HITPOINTS_MAX]);
 	Bar_SetValueSafe (hHealthBar, hero.attribute [ATR_HITPOINTS]);
 
-	//vHealthPreview is View created by Bar_Preview
+	//vHealthPreview is View created by Bar_CreatePreview
+	if (!Hlp_IsValidHandle (vHealthPreview)) {
+		vHealthPreview = Bar_CreatePreview (hHealthBar, _tex_BarPreview_HealthBar);
+		View_SetAlpha (vHealthPreview, 255);
+	};
+
 	var int previewValueHealthBar;
 	if (PC_ItemPreviewHealth > 0) {
 		previewValueHealthBar = hero.attribute [ATR_HITPOINTS] + PC_ItemPreviewHealth;
@@ -272,22 +330,17 @@ func void FrameFunction_EachFrame__BetterBars () {
 		previewValueHealthBar = 0;
 	};
 
-	if (!Hlp_IsValidHandle (vHealthPreview)) {
-		vHealthPreview = Bar_CreatePreview (hHealthBar, _tex_BarPreview_HealthBar);
-		View_SetAlpha (vHealthPreview, 255);
-	};
-
 	//
 	if (PC_ItemPreviewHealth) {
-		if (!healthBarPreviewVisible) {
+		if (!_healthBar_PreviewVisible) {
 			//Add frame function (16/1s)
 			FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
-			healthBarPreviewVisible = TRUE;
-			healthBarPreviewAlpha = 255;
-			healthBarPreviewFlashingFadeOut = TRUE;
+			_healthBar_PreviewVisible = TRUE;
+			_healthBar_PreviewAlpha = 255;
+			_healthBar_PreviewFlashingFadeOut = TRUE;
 		};
 	} else {
-		healthBarPreviewVisible = FALSE;
+		_healthBar_PreviewVisible = FALSE;
 	};
 
 //-- Auto hiding/display for health bar (when updated)
@@ -300,39 +353,36 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	//Display only in inventory ...
-	if ((healthBarDisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk) && (!healthBarForceOnDesk)) {
+	if ((_healthBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk) && (!_healthBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((healthBarForceOnDesk) || (healthBarLastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
+	if ((_healthBar_ForceOnDesk) || (_healthBar_LastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
 	{
-		healthBarLastValue = hero.attribute [ATR_HITPOINTS];
+		_healthBar_LastValue = hero.attribute [ATR_HITPOINTS];
 
 		//
-		if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
-			if (healthBarDisplayMethod == BarDisplay_DynamicUpdate) {
-				if (!healthBarDisplayTime) {
-					healthBarDisplayTime = 120;
-				} else
-				if (healthBarDisplayTime < 80) {
-					healthBarDisplayTime = 80;
+		if ((_healthBar_DisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
+			if (_healthBar_DisplayMethod == BarDisplay_DynamicUpdate) {
+				if (!_healthBar_DisplayTime) {
+					_healthBar_DisplayTime = 120;
 				};
 			};
 		};
 
-		if (healthBarDisplayTime < 80) {
-			healthBarDisplayTime = 80;
+		if (_healthBar_DisplayTime < 80) {
+			_healthBar_DisplayTime = 80;
 		};
 
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutHealthBar__BetterBars, 60, -1);
 	};
 
-	if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (healthBarDisplayTime)) {
+	if ((_healthBar_DisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (_healthBar_DisplayTime)) {
 		if (!Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hHealthBar, 0);
 
-				if ((healthBarDisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk)) {
-					if (!healthBarDisplayTime) {
+				if ((_healthBar_DisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk)) {
+					if (!_healthBar_DisplayTime) {
 						Bar_SetAlpha (hHealthBar, 255);
 					};
 				};
@@ -342,8 +392,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((healthBarDisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!healthBarDisplayTime))
-	|| ((healthBarDisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk))
+	if ((_healthBar_DisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk) && (!_healthBar_DisplayTime))
+	|| ((_healthBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk))
 	{
 		if (Bar_IsVisible (hHealthBar)) {
 			if (_Bar_PlayerStatus ()) {
@@ -353,6 +403,14 @@ func void FrameFunction_EachFrame__BetterBars () {
 	};
 
 	Bar_PreviewSetValue (hHealthBar, vHealthPreview, previewValueHealthBar);
+
+	if (!Hlp_IsValidHandle (vHealthBarValue)) {
+		vHealthBarValue = Bar_CreatePreview (hHealthBar, "");
+		View_AddText (vHealthBarValue, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (vHealthBarValue, _healthBar_DisplayValues_AlphaFunc);
+	};
+
+	Bar_DisplayValue_Update (hHealthBar, _healthBar_DisplayValues);
 
 //-- Mana Bar
 
@@ -364,19 +422,23 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 		//Initialize texture
 		Bar_SetBarTexture (hManaBar, manaBar.texValue);
-		Bar_MoveTo (hManaBar, manaBar.zCView_vposx + (manaBar.zCView_vsizex / 2), manaBar.zCView_vposy + (manaBar.zCView_vsizey / 2));
 
 		if (!manaBarOnDesk) {
 			Bar_Hide (hManaBar);
 		};
 
-		manaBarLastValue = hero.attribute [ATR_MANA];
+		_manaBar_LastValue = hero.attribute [ATR_MANA];
 	};
 
 	Bar_SetMax (hManaBar, hero.attribute [ATR_MANA_MAX]);
 	Bar_SetValueSafe (hManaBar, hero.attribute [ATR_MANA]);
 
-	//vHealthPreview is View created by Bar_Preview
+	//vHealthPreview is View created by Bar_CreatePreview
+	if (!Hlp_IsValidHandle (vManaPreview)) {
+		vManaPreview = Bar_CreatePreview (hManaBar, _tex_BarPreview_ManaBar);
+		View_SetAlpha (vManaPreview, 255);
+	};
+
 	var int previewValueManaBar;
 	if (PC_ItemPreviewMana > 0) {
 		previewValueManaBar = hero.attribute [ATR_MANA] + PC_ItemPreviewMana;
@@ -387,57 +449,52 @@ func void FrameFunction_EachFrame__BetterBars () {
 		previewValueManaBar = 0;
 	};
 
-	if (!Hlp_IsValidHandle (vManaPreview)) {
-		vManaPreview = Bar_CreatePreview (hManaBar, _tex_BarPreview_ManaBar);
-		View_SetAlpha (vManaPreview, 255);
-	};
-
 	//
 	if (PC_ItemPreviewMana) {
-		if (!manaBarPreviewVisible) {
+		if (!_manaBar_PreviewVisible) {
 			//Add frame function (8/1s)
 			FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
-			manaBarPreviewVisible = TRUE;
-			manaBarPreviewAlpha = 255;
-			manaBarPreviewFlashingFadeOut = TRUE;
+			_manaBar_PreviewVisible = TRUE;
+			_manaBar_PreviewAlpha = 255;
+			_manaBar_PreviewFlashingFadeOut = TRUE;
 		};
 	} else {
-		manaBarPreviewVisible = FALSE;
+		_manaBar_PreviewVisible = FALSE;
 	};
 
 //-- Auto hiding/display for mana bar (when updated)
 
 	//Display only in inventory ...
-	if ((manaBarDisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk) && (!manaBarForceOnDesk)) {
+	if ((_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk) && (!_manaBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((manaBarForceOnDesk) || (manaBarLastValue != hero.attribute [ATR_MANA])) {
-		manaBarLastValue = hero.attribute [ATR_MANA];
+	if ((_manaBar_ForceOnDesk) || (_manaBar_LastValue != hero.attribute [ATR_MANA])) {
+		_manaBar_LastValue = hero.attribute [ATR_MANA];
 
 		//
-		if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk)) {
-			if (manaBarDisplayMethod == BarDisplay_DynamicUpdate) {
-				if (!manaBarDisplayTime) {
-					manaBarDisplayTime = 120;
+		if ((!(_manaBar_DisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk)) {
+			if (_manaBar_DisplayMethod == BarDisplay_DynamicUpdate) {
+				if (!_manaBar_DisplayTime) {
+					_manaBar_DisplayTime = 120;
 				};
 			};
 		};
 
-		if (manaBarDisplayTime < 80) {
-			manaBarDisplayTime = 80;
+		if (_manaBar_DisplayTime < 80) {
+			_manaBar_DisplayTime = 80;
 		};
 
 		FF_ApplyOnceExtGT (FrameFunction_FadeInOutManaBar__BetterBars, 60, -1);
 	};
 
-	if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (manaBarDisplayTime))
+	if ((_manaBar_DisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (_manaBar_DisplayTime))
 	{
 		if (!Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
 				Bar_SetAlpha (hManaBar, 0);
 
-				if ((manaBarDisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk)) {
-					if (!manaBarDisplayTime) {
+				if ((_manaBar_DisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk)) {
+					if (!_manaBar_DisplayTime) {
 						Bar_SetAlpha (hManaBar, 255);
 					};
 				};
@@ -447,8 +504,8 @@ func void FrameFunction_EachFrame__BetterBars () {
 		};
 	};
 
-	if ((!(manaBarDisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!manaBarDisplayTime))
-	|| ((manaBarDisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk))
+	if ((!(_manaBar_DisplayMethod == BarDisplay_AlwaysOn)) && (!manaBarOnDesk) && (!_manaBar_DisplayTime))
+	|| ((_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk))
 	{
 		if (Bar_IsVisible (hManaBar)) {
 			if (_Bar_PlayerStatus ()) {
@@ -459,6 +516,219 @@ func void FrameFunction_EachFrame__BetterBars () {
 
 	Bar_PreviewSetValue (hManaBar, vManaPreview, previewValueManaBar);
 
+	if (!Hlp_IsValidHandle (vManaBarValue)) {
+		vManaBarValue = Bar_CreatePreview (hManaBar, "");
+		View_AddText (vManaBarValue, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (vManaBarValue, _manaBar_DisplayValues_AlphaFunc);
+	};
+
+	Bar_DisplayValue_Update (hManaBar, _manaBar_DisplayValues);
+
+//-- Swim bar - display values
+
+	swimBar = _^ (MEM_Game.swimBar);
+
+	//Create swim bar
+	if (!Hlp_IsValidHandle(hSwimBar)) {
+		hSwimBar = Bar_Create (GothicBar@);
+
+		//Initialize texture
+		Bar_SetBarTexture (hSwimBar, swimBar.texValue);
+	};
+
+	var oCNpc her; her = Hlp_GetNpc (hero);
+
+	var int diveTime; diveTime = her.divetime;
+	var int diveCtr; diveCtr = her.divectr;
+
+	if (diveTime == ANI_TIME_INFINITE) {
+		diveCtr = diveTime;
+	};
+
+	diveTime = RoundF (diveTime);
+	diveCtr = RoundF (diveCtr);
+
+	if (diveCtr < 0) { diveCtr = 0; };
+
+	Bar_SetMax (hSwimBar, diveTime);
+	Bar_SetValueSafe (hSwimBar, diveCtr);
+
+	if (!Hlp_IsValidHandle (vSwimBarValue)) {
+		vSwimBarValue = Bar_CreatePreview (hSwimBar, "");
+		View_AddText (vSwimBarValue, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (vSwimBarValue, _focusBar_DisplayValues_AlphaFunc);
+	};
+
+	//Figure out if bar should display or not
+	var int hideSwimBar; hideSwimBar = TRUE;
+
+	if (swimBar.zCView_ondesk) {
+		if (_Bar_PlayerStatus ()) {
+			Bar_Show (hSwimBar);
+			hideSwimBar = FALSE;
+		};
+	};
+
+	if (hideSwimBar) {
+		Bar_Hide (hSwimBar);
+	};
+
+	Bar_DisplayValue_Update (hSwimBar, _swimBar_DisplayValues);
+
+//-- Focus bar - display values
+
+	focusBar = _^ (MEM_Game.focusBar);
+
+	//Create focus bar
+	if (!Hlp_IsValidHandle(hFocusBar)) {
+		hFocusBar = Bar_Create (GothicBar@);
+
+		//Initialize texture
+		Bar_SetBarTexture (hFocusBar, focusBar.texValue);
+	};
+
+	if (Hlp_Is_oCNpc (her.focus_vob)) {
+		var oCNpc npc; npc = _^ (her.focus_vob);
+
+		Bar_SetMax (hFocusBar, npc.attribute [ATR_HITPOINTS_MAX]);
+		Bar_SetValueSafe (hFocusBar, npc.attribute [ATR_HITPOINTS]);
+	};
+
+	if (!Hlp_IsValidHandle (vFocusBarValue)) {
+		vFocusBarValue = Bar_CreatePreview (hFocusBar, "");
+		View_AddText (vFocusBarValue, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (vFocusBarValue, _focusBar_DisplayValues_AlphaFunc);
+	};
+
+	//Figure out if bar should display or not
+	var int hideFocusBar; hideFocusBar = TRUE;
+
+	if (focusBar.zCView_ondesk) {
+		if (_Bar_PlayerStatus ()) {
+			Bar_Show (hFocusBar);
+			hideFocusBar = FALSE;
+		};
+	};
+
+	if (hideFocusBar) {
+		Bar_Hide (hFocusBar);
+	};
+
+	Bar_DisplayValue_Update (hFocusBar, _focusBar_DisplayValues);
+
+//-- Dynamic position update
+
+	var int posX;
+	var int posY;
+
+//-- Health bar
+
+	//If modder didn't define their own values - add default position
+	if (_healthBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_healthBar_PPosY, PS_Y);
+	};
+
+	if (_healthBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = Print_ToVirtual (100, PS_X);
+	} else {
+		posX = Print_ToVirtual (_healthBar_PPosX, PS_X);
+	};
+
+	if (_healthBar_VPosX > -1) {
+		posX = _healthBar_VPosX;
+	};
+
+	if (_healthBar_VPosY > -1) {
+		posY = _healthBar_VPosY;
+	};
+
+	Bar_MoveTo (hHealthBar, posX, posY);
+
+//-- Mana bar
+
+	//If modder didn't define their own values - align with default swimbar position
+	if (_manaBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_manaBar_PPosY, PS_Y);
+	};
+
+	if (_manaBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax - Print_ToVirtual (100, PS_X);
+	} else {
+		posX = Print_ToVirtual (_manaBar_PPosX, PS_X);
+	};
+
+	if (_manaBar_VPosX > -1) {
+		posX = _manaBar_VPosX;
+	};
+
+	if (_manaBar_VPosY > -1) {
+		posY = _manaBar_VPosY;
+	};
+
+	Bar_MoveTo (hManaBar, posX, posY);
+
+//-- Swim bar
+
+	//If modder didn't define their own values - align with default swimbar position
+	if (_swimBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_swimBar_PPosY, PS_Y);
+	};
+
+	if (_swimBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_swimBar_PPosX, PS_X);
+	};
+
+	if (_swimBar_VPosX > -1) {
+		posX = _swimBar_VPosX;
+	};
+
+	if (_swimBar_VPosY > -1) {
+		posY = _swimBar_VPosY;
+	};
+
+	Bar_MoveTo (hSwimBar, posX, posY);
+
+//-- Focus bar
+
+	//If modder didn't define their own values - align with default swimbar position
+	if (_focusBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_focusBar_PPosY, PS_Y);
+	};
+
+	if (_focusBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_focusBar_PPosX, PS_X);
+	};
+
+	if (_focusBar_VPosX > -1) {
+		posX = _focusBar_VPosX;
+	};
+
+	if (_focusBar_VPosY > -1) {
+		posY = _focusBar_VPosY;
+	};
+
+	Bar_MoveTo (hFocusBar, posX, posY);
+
 //When I tried to change alpha of Gothic bar I was not able to do so
 	//View_SetAlpha (hpBarAddress, 0);
 	//View_SetAlpha (hpBar.range_bar, 0);
@@ -467,9 +737,12 @@ func void FrameFunction_EachFrame__BetterBars () {
 //I was also not able to remove Gothic bar
 	//ViewStatusBar_Remove (hpBarAddress);
 
-//Only option which was possible - moving original Gothic bars outside of screen
+//Only option which was possible - moving original Gothic bars outside of screen :-)
+
 	hpBar.zCView_vposy = 8192 * 2;
 	manaBar.zCView_vposy = 8192 * 2;
+	swimBar.zCView_vposy = 8192 * 2;
+	focusBar.zCView_vposy = 8192 * 2;
 };
 
 func void G12_BetterBars_Init () {
@@ -483,6 +756,56 @@ func void G12_BetterBars_Init () {
 	_tex_BarPreview_ManaBar = API_GetSymbolStringValue ("TEXTURE_BARPREVIEW_MANABAR", "BAR_MANA_PREVIEW.TGA");
 
 	_healthBar_DisplayWhenHurt_Percentage = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYWHENHURT_PERCENTAGE", 50);
+
+	_healthBar_DisplayMethod = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYMETHOD", BarDisplay_Standard);
+	_healthBar_PreviewEffect = API_GetSymbolIntValue ("HEALTHBAR_PREVIEWEFFECT", BarPreviewEffect_FadeInOut);
+
+	_healthBar_DisplayValues = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYVALUES", 0);
+	_healthBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("HEALTHBAR_VIEW_ALPHAFUNC", 2);
+	_healthBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("HEALTHBAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	_healthBar_PPosX = API_GetSymbolIntValue ("HEALTHBAR_PPOSX", -1);
+	_healthBar_PPosY = API_GetSymbolIntValue ("HEALTHBAR_PPOSY", -1);
+
+	_healthBar_VPosX = API_GetSymbolIntValue ("HEALTHBAR_VPOSX", -1);
+	_healthBar_VPosY = API_GetSymbolIntValue ("HEALTHBAR_VPOSY", -1);
+
+	_manaBar_DisplayMethod = API_GetSymbolIntValue ("MANABAR_DISPLAYMETHOD", BarDisplay_Standard);
+	_manaBar_PreviewEffect = API_GetSymbolIntValue ("MANABAR_PREVIEWEFFECT", BarPreviewEffect_FadeInOut);
+
+	_manaBar_DisplayValues = API_GetSymbolIntValue ("MANABAR_DISPLAYVALUES", 0);
+	_manaBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("MANABAR_VIEW_ALPHAFUNC", 2);
+	_manaBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("MANABAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	_manaBar_PPosX = API_GetSymbolIntValue ("MANABAR_PPOSX", -1);
+	_manaBar_PPosY = API_GetSymbolIntValue ("MANABAR_PPOSY", -1);
+
+	_manaBar_VPosX = API_GetSymbolIntValue ("MANABAR_VPOSX", -1);
+	_manaBar_VPosY = API_GetSymbolIntValue ("MANABAR_VPOSY", -1);
+
+	_swimBar_DisplayValues = API_GetSymbolIntValue ("SWIMBAR_DISPLAYVALUES", 0);
+	_swimBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("SWIMBAR_VIEW_ALPHAFUNC", 2);
+	_swimBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("SWIMBAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	_swimBar_PPosX = API_GetSymbolIntValue ("SWIMBAR_PPOSX", -1);
+	_swimBar_PPosY = API_GetSymbolIntValue ("SWIMBAR_PPOSY", -1);
+
+	_swimBar_VPosX = API_GetSymbolIntValue ("SWIMBAR_VPOSX", -1);
+	_swimBar_VPosY = API_GetSymbolIntValue ("SWIMBAR_VPOSY", -1);
+
+	_focusBar_DisplayValues = API_GetSymbolIntValue ("FOCUSBAR_DISPLAYVALUES", 0);
+	_focusBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("FOCUSBAR_VIEW_ALPHAFUNC", 2);
+	_focusBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("FOCUSBAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	_focusBar_PPosX = API_GetSymbolIntValue ("FOCUSBAR_PPOSX", -1);
+	_focusBar_PPosY = API_GetSymbolIntValue ("FOCUSBAR_PPOSY", -1);
+
+	_focusBar_VPosX = API_GetSymbolIntValue ("FOCUSBAR_VPOSX", -1);
+	_focusBar_VPosY = API_GetSymbolIntValue ("FOCUSBAR_VPOSY", -1);
+
+	//--
+
+	_betterBars_Font = API_GetSymbolStringValue ("BETTERBARS_FONT", "FONT_OLD_10_WHITE.TGA");
 
 	//--
 

@@ -31,41 +31,61 @@ const int BarPreviewEffect_FadeInOut = 1; //Fade in / out (you should definitell
 // HEALTH BAR
 
 var int hHealthBar;			//handle for HP bar
-var int vHealthPreview;			//handle for HP bar preview (view)
+var int vHealthPreview;		//handle for HP bar preview (view)
+var int vHealthBarValue;	//handle for HP bar values (view)
 
-var int healthBarPreviewVisible;
-var int healthBarPreviewAlpha;
-var int healthBarPreviewFlashingFadeOut;
-var int healthBarPreviewEffect;
-
-var int healthBarLastValue;
-var int healthBarDisplayMethod;
-var int healthBarDisplayTime;
-var int healthBarForceOnDesk;
+var int _healthBar_DisplayMethod;
+var int _healthBar_PreviewEffect;
+var int _healthBar_ForceOnDesk;
+var int _healthBar_DisplayValues;
+var int _healthBar_DisplayValues_Color;
+var int _healthBar_DisplayValues_AlphaFunc;
 
 // MANA BAR
 
 var int hManaBar;			//handle for Mana bar
-var int vManaPreview;			//handle for Mana bar preview (view)
+var int vManaPreview;		//handle for Mana bar preview (view)
+var int vManaBarValue;		//handle for Mana bar values (view)
 
-var int manaBarPreviewVisible;
-var int manaBarPreviewAlpha;
-var int manaBarPreviewFlashingFadeOut;
-var int manaBarPreviewEffect;
+var int _manaBar_DisplayMethod;
+var int _manaBar_PreviewEffect;
+var int _manaBar_ForceOnDesk;
+var int _manaBar_DisplayValues;
+var int _manaBar_DisplayValues_Color;
+var int _manaBar_DisplayValues_AlphaFunc;
 
-var int manaBarLastValue;
-var int manaBarDisplayMethod;
-var int manaBarDisplayTime;
-var int manaBarForceOnDesk;
+// STAMINA BAR
 
-// SPRINT BAR
+var int hStaminaBar;		//handle for Stamina bar
+var int vStaminaPreview;	//handle for Stamina bar preview (view)
+var int vStaminaBarValue;	//handle for Stamina bar values (view)
 
-var int hStaminaBar;			//handle for Stamina bar
+var int _sprintBar_DisplayMethod;
+var int _sprintBar_PreviewEffect;
+var int _sprintBar_ForceOnDesk;
+var int _sprintBar_DisplayValues;
+var int _sprintBar_DisplayValues_Color;
+var int _sprintBar_DisplayValues_AlphaFunc;
 
-var int sprintBarLastValue;
-var int sprintBarDisplayMethod;
-var int sprintBarDisplayTime;
-var int sprintBarForceOnDesk;
+// SWIM BAR
+
+var int hSwimBar;			//handle for Swim bar
+var int vSwimBarValue;		//handle for Swim bar values (view)
+
+var int _swimBar_DisplayValues;
+var int _swimBar_DisplayValues_Color;
+var int _swimBar_DisplayValues_AlphaFunc;
+
+// FOCUS BAR
+
+var int hFocusBar;			//handle for Focus bar
+var int vFocusBarValue;		//handle for Focus bar values (view)
+
+var int _focusBar_DisplayValues;
+var int _focusBar_DisplayValues_Color;
+var int _focusBar_DisplayValues_AlphaFunc;
+
+//--
 
 //Identifier which tells us whether inventory is opened
 var int BarDisplay_InventoryOpened;
@@ -216,9 +236,7 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 		View_MoveTo (vHnd, v.vposx, v.vposy);
 
 		View_Open (vHnd);
-		if (v.alpha != 255) {
-			View_SetAlpha (vHnd, v.alpha);
-		};
+		View_SetAlpha (vHnd, v.alpha);
 
 		//Re-arrange views - first background texture view, second 'preview' view and finally bar texture view
 		View_Top(b.v0);
@@ -229,22 +247,146 @@ func void Bar_PreviewSetValue (var int bHnd, var int vHnd, var int previewValue)
 	};
 };
 
+func void Bar_SetViewVisible (var int bHnd, var int vHnd) {
+	if(!Hlp_IsValidHandle(bHnd)) { return; };
+	if(!Hlp_IsValidHandle(vHnd)) { return; };
+
+	var _bar b; b = get(bHnd);
+
+	if (_Bar_PlayerStatus () && (!b.hidden)) {
+		var zCView v;
+		v = View_Get(b.v1);
+
+		View_Resize (vHnd, b.barW, -1);
+		View_MoveTo (vHnd, v.vposx, v.vposy);
+
+		View_Open (vHnd);
+
+		v = View_Get(b.v0);
+		View_SetAlphaAll (vHnd, v.alpha);
+
+		View_Top(vHnd);
+	} else {
+		View_Close (vHnd);
+	};
+};
+
+func void Bar_DisplayValue_Update (var int hBar, var int display) {
+	var string s;
+	var oCNpc her;
+
+	if (!Hlp_IsValidNpc (hero)) { return; };
+
+	if (display) {
+		if (hBar == hHealthBar) {
+			Bar_SetViewVisible (hHealthBar, vHealthBarValue);
+
+			s = " / ";
+			s = ConcatStrings (IntToString (hero.attribute [ATR_HITPOINTS]), s);
+			s = ConcatStrings (s, IntToString (hero.attribute [ATR_HITPOINTS_MAX]));
+
+			View_SetTextMarginAndFontColor (vHealthBarValue, s, _healthBar_DisplayValues_Color, 0);
+			return;
+		};
+
+		if (hBar == hManaBar) {
+			Bar_SetViewVisible (hManaBar, vManaBarValue);
+
+			s = " / ";
+			s = ConcatStrings (IntToString (hero.attribute [ATR_MANA]), s);
+			s = ConcatStrings (s, IntToString (hero.attribute [ATR_MANA_MAX]));
+
+			View_SetTextMarginAndFontColor (vManaBarValue, s, _manaBar_DisplayValues_Color, 0);
+			return;
+		};
+
+		if (hBar == hStaminaBar) {
+			Bar_SetViewVisible (hStaminaBar, vStaminaBarValue);
+
+			if (PC_SprintModePlayerHasTimedOverlay) {
+				var int hasteTimer; hasteTimer = PC_SprintModePlayerTimedOverlayTimer;
+				var int hasteTimerMax; hasteTimerMax = PC_SprintModePlayerTimedOverlayTimerMax;
+
+				hasteTimer = hasteTimer / 1000;
+				hasteTimerMax = hasteTimerMax / 1000;
+
+				s = " / ";
+				s = ConcatStrings (IntToString (hasteTimer), s);
+				s = ConcatStrings (s, IntToString (hasteTimerMax));
+			} else {
+				s = " / ";
+				s = ConcatStrings (IntToString (PC_SprintModeStamina), s);
+				s = ConcatStrings (s, IntToString (PC_SprintModeStaminaMax));
+			};
+
+			View_SetTextMarginAndFontColor (vStaminaBarValue, s, _sprintBar_DisplayValues_Color, 0);
+			return;
+		};
+
+		if (hBar == hFocusBar) {
+			Bar_SetViewVisible (hFocusBar, vFocusBarValue);
+
+			her = Hlp_GetNpc (hero);
+			if (Hlp_Is_oCNpc (her.focus_vob)) {
+				var oCNpc npc; npc = _^ (her.focus_vob);
+
+				s = " / ";
+				s = ConcatStrings (IntToString (npc.attribute [ATR_HITPOINTS]), s);
+				s = ConcatStrings (s, IntToString (npc.attribute [ATR_HITPOINTS_MAX]));
+
+				View_SetTextMarginAndFontColor (vFocusBarValue, s, _focusBar_DisplayValues_Color, 0);
+				return;
+			};
+		};
+
+		if (hBar == hSwimBar) {
+			Bar_SetViewVisible (hSwimBar, vSwimBarValue);
+
+			her = Hlp_GetNpc (hero);
+
+			var int diveTime; diveTime = her.divetime;
+			var int diveCtr; diveCtr = her.divectr;
+
+			if (diveTime == ANI_TIME_INFINITE) {
+				diveCtr = diveTime;
+				s = "- / -";
+			} else {
+
+				diveTime = RoundF (diveTime);
+				diveCtr = RoundF (diveCtr);
+
+				if (diveCtr < 0) { diveCtr = 0; };
+
+				diveTime = diveTime / 1000;
+				diveCtr = diveCtr / 1000;
+
+				s = " / ";
+				s = ConcatStrings (IntToString (diveCtr), s);
+				s = ConcatStrings (s, IntToString (diveTime));
+			};
+
+			View_SetTextMarginAndFontColor (vSwimBarValue, s, _swimBar_DisplayValues_Color, 0);
+			return;
+		};
+	};
+};
+
 /*
  *	Update display method (in-game)
  */
 func void HealthBar_SetDisplayMethod (var int displayMethod) {
-	healthBarDisplayMethod = displayMethod;
-	MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (healthBarDisplayMethod));
+	_healthBar_DisplayMethod = displayMethod;
+	MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (_healthBar_DisplayMethod));
 };
 
 func void ManaBar_SetDisplayMethod (var int displayMethod) {
-	manaBarDisplayMethod = displayMethod;
-	MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (manaBarDisplayMethod));
+	_manaBar_DisplayMethod = displayMethod;
+	MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (_manaBar_DisplayMethod));
 };
 
 func void SprintBar_SetDisplayMethod (var int displayMethod) {
-	sprintBarDisplayMethod = displayMethod;
-	MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (sprintBarDisplayMethod));
+	_sprintBar_DisplayMethod = displayMethod;
+	MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (_sprintBar_DisplayMethod));
 };
 
 /*
