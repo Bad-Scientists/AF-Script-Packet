@@ -40,11 +40,8 @@ func string CC_GotoNpc (var string param) {
 			//Loop through list of Npcs and search by name
 			var int listPtr;
 
-			listPtr = MEM_World_Get_voblist_npcs ();
-
-			ptr = 0;
-
 			var zCListSort list;
+			listPtr = MEM_World_Get_voblist_npcs ();
 
 			while (listPtr);
 				list = _^ (listPtr);
@@ -54,6 +51,10 @@ func string CC_GotoNpc (var string param) {
 						if (Hlp_IsValidNPC (npc)) {
 							if (Hlp_StrCmp (STR_Trim (STR_Upper (npc.name), " "), objectName)) {
 								PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
+
+								//Enable npc first
+								Wld_EnableNpc (npc);
+
 								NPC_TeleportToNpc (hero, npc);
 								return "Npc found.";
 							};
