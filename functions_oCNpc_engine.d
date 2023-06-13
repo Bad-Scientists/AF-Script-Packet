@@ -1136,29 +1136,3 @@ func void oCNpc_RemoveItemEffects (var int slfInstance, var int itemPtr) {
 	};
 };
 
-/*
- *	oCNpc_Equip_Safe
- *	 - when compared to LeGo function this has safety checks, also does not use npc pointer, other than that it's same
- */
-func void oCNpc_Equip_Safe (var int slfInstance, var int itemPtr) {
-	//0x006968F0 public: void __thiscall oCNpc::Equip(class oCItem *)
-	const int oCNpc__Equip_G1 = 6908144;
-
-	//0x00739C90 public: void __thiscall oCNpc::Equip(class oCItem *)
-	const int oCNpc__Equip_G2 = 7576720;
-
-	if (!Hlp_Is_oCItem (itemPtr)) { return; };
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	const int call = 0;
-
-	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(itemPtr));
-		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__Equip_G1, oCNpc__Equip_G2));
-		call = CALL_End();
-	};
-};

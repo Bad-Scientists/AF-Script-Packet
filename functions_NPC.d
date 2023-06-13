@@ -632,7 +632,7 @@ func int NPC_TorchSwitchOnOff (var int slfinstance) {
 		//Is it ItLsTorchBurning ?
 		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
 			//Use item - will put ItLsTorch back to inventory
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
 				Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
@@ -654,7 +654,7 @@ func int NPC_TorchSwitchOnOff (var int slfinstance) {
 			ptr = _@ (item);
 
 			//Equip it - puts ItLsTorchBurning in hand
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 			return 1;
 		};
 	};
@@ -676,7 +676,7 @@ func void NPC_TorchSwitchOff (var int slfinstance) {
 		//Is it ItLsTorchBurning ?
 		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
 			//Use item - will put ItLsTorch back to inventory
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
 				Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
@@ -698,7 +698,7 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 
 		//Is it ItLsTorchBurned? if yes - remove - script below will put ItLsTorchBurning in hand
 		if (Hlp_GetinstanceID (itm) == ItLsTorchBurned) {
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 			ptr = 0;
 		};
 	};
@@ -718,7 +718,7 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 			ptr = _@ (item);
 
 			//Use it - puts ItLsTorchBurning in hand
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			//Apply overlay
 			if (!NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
