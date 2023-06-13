@@ -55,12 +55,14 @@ func void FF_LogMenuAddSectionCount () {
 	var int countSuccess;
 	var int countFailed;
 	var int countNotes;
+	var int countAchievements;
 
 	if (refreshTopicSectionCount) {
 		countRunning = Log_GetNoOfTopics (LOG_MISSION, LOG_RUNNING);
 		countSuccess = Log_GetNoOfTopics (LOG_MISSION, LOG_SUCCESS);
 		countFailed = Log_GetNoOfTopics (LOG_MISSION, LOG_FAILED);
 		countNotes = Log_GetNoOfTopics (LOG_NOTE, -1);
+		countAchievements = Log_GetNoOfTopics (LOG_ACHIEVEMENT, -1);
 
 		refreshTopicSectionCount = FALSE;
 	};
@@ -69,6 +71,7 @@ func void FF_LogMenuAddSectionCount () {
 	Log_AddSectionCount ("MENU_ITEM_SEL_MISSIONS_OLD", countSuccess);
 	Log_AddSectionCount ("MENU_ITEM_SEL_MISSIONS_FAILED", countFailed);
 	Log_AddSectionCount ("MENU_ITEM_SEL_LOG", countNotes);
+	Log_AddSectionCount ("MENU_ITEM_SEL_ACHIEVEMENTS", countAchievements);
 };
 
 //-- Hooks - adding/removing frame function
