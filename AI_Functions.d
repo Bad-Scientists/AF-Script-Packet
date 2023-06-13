@@ -200,7 +200,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	//-- Get nearest waypoint to vob
 	//var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
 
-	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
+	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (toWp)) {
@@ -215,7 +215,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	//-- Get nearest waypoint to Npc
 	//var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
-	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
+	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (fromWp)) {
