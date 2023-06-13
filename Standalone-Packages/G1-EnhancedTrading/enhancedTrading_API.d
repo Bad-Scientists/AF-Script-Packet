@@ -73,15 +73,13 @@ func int C_Npc_GetSellMultiplierF (var C_NPC slf, var int itemPtr) {
 
 	//Wolf will trade furs and skins in 1 x 1 ratio
 	if (Hlp_StrCmp (npcInstName, "ORG_855_WOLF")) {
-		if ((Hlp_StrCmp (itmInstName, "WOLF_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "WARG_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "SHADOWBEAST_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "TROLL_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "BLACKTROLL_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "LURKER_SKIN"))
-		|| (Hlp_StrCmp (itmInstName, "SWAMPSHARK_SKIN"))
-
-		|| (Hlp_StrCmp (itmInstName, "ITAT_WOLF_01")))
+		if ((Hlp_StrCmp (itmInstName, "ITAT_WOLF_01"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_WOLF_02"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_SHADOW_01"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_TROLL_01"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_BLACKTROLL_01"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_LURKER_02"))
+		|| (Hlp_StrCmp (itmInstName, "ITAT_SWAMPSHARK_01")))
 		{
 			multiplier = FLOATONE;
 		};
