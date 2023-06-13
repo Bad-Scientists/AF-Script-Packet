@@ -1343,6 +1343,28 @@ func int WP_GetDistToVob (var string waypointName, var int vobPtr) {
 };
 
 /*
+ *	WP_DeleteWay
+ *	 - disconnects 2 waypoints
+ */
+func void WP_DeleteWay (var string wp1, var string wp2) {
+	var int wpPtr1; wpPtr1 = SearchWaypointByName (wp1);
+	var int wpPtr2; wpPtr2 = SearchWaypointByName (wp2);
+
+	zCWayNet_DeleteWay (wpPtr1, wpPtr2);
+};
+
+/*
+ *	WP_CreateWay
+ *	 - connects 2 waypoints
+ */
+func void WP_CreateWay (var string wp1, var string wp2) {
+	var int wpPtr1; wpPtr1 = SearchWaypointByName (wp1);
+	var int wpPtr2; wpPtr2 = SearchWaypointByName (wp2);
+
+	zCWayNet_CreateWay (wpPtr1, wpPtr2);
+};
+
+/*
  *	zCWaypoint_CanSee
  *	 - can we see vob from waypoint?
  */
