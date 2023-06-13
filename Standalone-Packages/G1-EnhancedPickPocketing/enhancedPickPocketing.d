@@ -17,6 +17,8 @@
  *		- if any of these determines that item **cannot** be stoled/inserted then feature calls oCNpc_StopTheft and will send perception PERC_CATCHTHIEF to victim
  */
 
+var int _enhancedPickPocketing_StealItemAnyway;
+
 func int oCNpcFocus_GetRange2 () {
 	//0x00635180 public: float __thiscall oCNpcFocus::GetRange2(void)
 	const int oCNpcFocus__GetRange2_G1 = 6508928;
@@ -359,6 +361,12 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 						symbID2 = MEM_FindParserSymbol ("C_PP_CanBeStolenFromInventory");
 					};
 
+					const int symbID3 = 0;
+
+					if (!symbID3) {
+						symbID3 = MEM_FindParserSymbol ("ENHANCEDPICKPOCKETING_STEALITEMANYWAY");
+					};
+
 					//By default ... allow stealing 1 item at a time (TODO: do we want to allow stealing more at once?)
 					amount = 1;
 
@@ -402,7 +410,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 						};
 
 						//Success - move item
-						if (retVal) {
+						//Additionaly we allow to move item to player's inventory even on failed attempt (if modder wishes to do so)
+						if ((retVal) || (_enhancedPickPocketing_StealItemAnyway)) {
 							if (amount) {
 								//Remove item from NPCs inventory
 								npcInventoryPtr = _@ (owner.inventory2_vtbl);
@@ -416,6 +425,15 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 
 								//Re-create list
 								oCStealContainer_CreateList (stealContainerPtr);
+							};
+
+							//Call EnhancedPickPocketing_StealItemAnyway (in case modder wants to update aivar or do some further actions)
+							if (!retVal) {
+								if (symbID3 != -1) {
+									MEM_PushInstParam (owner);
+									MEM_PushIntParam (itemPtr);
+									MEM_CallByID (symbID3);
+								};
 							};
 						};
 					};
@@ -497,6 +515,12 @@ func void G1_EnhancedPickPocketing_Init () {
 	StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__EnhancedPickPocketing);
 
 	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__EnhancedPickPocketing);
+
+	//-- Load API values / init default values
+
+	_enhancedPickPocketing_StealItemAnyway = API_GetSymbolIntValue ("ENHANCEDPICKPOCKETING_STEALITEMANYWAY", 1);
+
+	//--
 
 	const int once = 0;
 	if (!once) {
