@@ -1049,6 +1049,26 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 };
 
 /*
+ *	AI_ContinueState
+ *	 - alternative for AI_ContinueRoutine, which also creates event messages: EV_STANDUP, EV_STOPLOOKAT, EV_STOPPOINTAT, EV_REMOVEWEAPON, EV_STARTSTATE
+ *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogu to fight :)
+ *	 - this one only creates EV_STARTSTATE
+ */
+func void AI_ContinueState (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgState_Create (EV_STARTSTATE, 0, 0, "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
  *	AI_ResetStateTime
  *	 - resets state time - using AI queue
  */
