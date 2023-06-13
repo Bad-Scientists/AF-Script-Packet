@@ -1157,3 +1157,26 @@ func void oCNpc_RbtInit (var int slfInstance, var int posPtr, var int vobPtr) {
 	};
 };
 
+
+func int oCNpc_IsBodyStateInterruptable (var int slfInstance) {
+	//0x006B8600 public: int __thiscall oCNpc::IsBodyStateInterruptable(void)
+	const int oCNpc__IsBodyStateInterruptable_G1 = 7046656;
+
+	//0x0075EFA0 public: int __thiscall oCNpc::IsBodyStateInterruptable(void)
+	const int oCNpc__IsBodyStateInterruptable_G2 = 7729056;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__IsBodyStateInterruptable_G1, oCNpc__IsBodyStateInterruptable_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
