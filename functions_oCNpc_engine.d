@@ -453,7 +453,7 @@ func void oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr) {
 /*
  *
  */
-func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight){
+func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int ignoreAngles){
 	//0x0069E010 public: int __thiscall oCNpc::CanSee(class zCVob *,int)
 	const int oCNpc__CanSee_G1 = 6938640;
 
@@ -469,7 +469,7 @@ func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight)
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_IntParam (_@ (lineOfSight));
+		CALL_IntParam (_@ (ignoreAngles));
 		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CanSee_G1, oCNpc__CanSee_G2));
 		call = CALL_End();
