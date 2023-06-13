@@ -142,7 +142,7 @@ class oCVisualFX {
 	zVEC3 approxCollisionPos;
 */
 
-//class zCEffect {
+//class oCVisualFX {
 
 	var string visName_S; //zSTRING // sizeof 14h offset 100h
 	var string visSize_S; //zSTRING // sizeof 14h offset 114h

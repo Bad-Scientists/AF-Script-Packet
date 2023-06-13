@@ -26,19 +26,19 @@ class zCSkyState {
 
 	//zCSkyLayerData layer[zSKY_NUM_LAYER]; // sizeof 80h offset 40h
 	//class zCSkyLayerData {
-	var int layer0_skyMode; // zESkyLayerMode // sizeof 04h offset 00h
-	var int layer0_texBox[5]; // zCTexture* // sizeof 14h offset 04h
-	var int layer0_tex; // zCTexture* // sizeof 04h offset 18h
-	var string layer0_texName; // zSTRING // sizeof 14h offset 1Ch
-	var int layer0_texAlpha; // float // sizeof 04h offset 30h
-	var int layer0_texScale; // float // sizeof 04h offset 34h
-	var int layer0_texSpeed[2]; // zVEC2 // sizeof 08h offset 38h
+	var int layer0_skyMode; //64 zESkyLayerMode // sizeof 04h offset 00h
+	var int layer0_texBox[5]; //68 zCTexture* // sizeof 14h offset 04h 48h
+	var int layer0_tex; //88 zCTexture* // sizeof 04h offset 18h
+	var string layer0_texName; //92 zSTRING // sizeof 14h offset 1Ch
+	var int layer0_texAlpha; //112 float // sizeof 04h offset 30h
+	var int layer0_texScale; //116 float // sizeof 04h offset 34h
+	var int layer0_texSpeed[2]; //120 zVEC2 // sizeof 08h offset 38h
 
-	var int layer1_skyMode; // zESkyLayerMode // sizeof 04h offset 00h
-	var int layer1_texBox[5]; // zCTexture* // sizeof 14h offset 04h
-	var int layer1_tex; // zCTexture* // sizeof 04h offset 18h
-	var string layer1_texName; // zSTRING // sizeof 14h offset 1Ch
-	var int layer1_texAlpha; // float // sizeof 04h offset 30h
-	var int layer1_texScale; // float // sizeof 04h offset 34h
-	var int layer1_texSpeed[2]; // zVEC2 // sizeof 08h offset 38h
+	var int layer1_skyMode; //128 zESkyLayerMode // sizeof 04h offset 00h
+	var int layer1_texBox[5]; //132 zCTexture* // sizeof 14h offset 04h
+	var int layer1_tex; //152 zCTexture* // sizeof 04h offset 18h
+	var string layer1_texName; //156 zSTRING // sizeof 14h offset 1Ch
+	var int layer1_texAlpha; //176 float // sizeof 04h offset 30h
+	var int layer1_texScale; //180 float // sizeof 04h offset 34h
+	var int layer1_texSpeed[2]; //184 zVEC2 // sizeof 08h offset 38h
 };

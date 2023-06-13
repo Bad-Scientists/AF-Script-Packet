@@ -762,7 +762,7 @@ func void Vob_MoveToVob (var string moveVobName, var string toVobName) {
 func void Vob_PlayEffect (var string vobName, var string effectName)
 {
 	var int arr; arr = MEM_SearchAllVobsByName (vobName);
-	var zCArray zarr; zarr = MEM_PtrToInst(arr);
+	var zCArray zarr; zarr = _^ (arr);
 
 	var int vobPtr;
 	var zCVob vob;

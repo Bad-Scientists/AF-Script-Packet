@@ -88,7 +88,7 @@ func int hex2dec(var string hex) {
 
     // Check length
     if (zStr.len > 8) {
-        MEM_Error("hex2dec: Hexadecimal number to big. Considering the last 4 bytes only.");
+        MEM_Error("hex2dec: Hexadecimal number too big. Considering the last 4 bytes only.");
         hex = STR_Postfix(hex, zStr.len-8);
     };
 
@@ -143,7 +143,7 @@ func int bin2dec(var string bin) {
 
     // Check length
     if (zStr.len > 32) {
-        MEM_Error("bin2dec: Binary number to big. Considering the last 32 bits only.");
+        MEM_Error("bin2dec: Binary number too big. Considering the last 32 bits only.");
         bin = STR_Postfix(bin, zStr.len-32);
     };
 
