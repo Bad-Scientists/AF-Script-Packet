@@ -58,6 +58,24 @@ func int zERROR_GetFilterLevel () {
 	return CALL_RetValAsInt ();
 };
 
+func int zERROR_SearchForSpy () {
+	//0x008699D8 class zERROR zerr
+	const int zerr_G1 = 8821208;
+	//0x008CDCD0 class zERROR zerr
+	const int zerr_G2 = 9231568;
+
+	var int zerr; zerr = MEMINT_SwitchG1G2 (zerr_G1, zerr_G2);
+
+	//0x00449EB0 public: bool __thiscall zERROR::SearchForSpy(void)
+	const int zERROR__SearchForSpy_G1 = 4497072;
+	//0x0044E640 public: bool __thiscall zERROR::SearchForSpy(void)
+	const int zERROR__SearchForSpy_G2 = 4515392;
+
+	CALL__thiscall (zerr, MEMINT_SwitchG1G2 (zERROR__SearchForSpy_G1, zERROR__SearchForSpy_G2));
+
+	return CALL_RetValAsInt ();
+};
+
 func void zSpy_Info (var string s) {
 	var int errorLevel; errorLevel = zERROR_GetFilterLevel ();
 	zERROR_SetFilterLevel (1);
