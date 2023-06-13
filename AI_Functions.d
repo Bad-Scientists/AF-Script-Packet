@@ -1088,8 +1088,19 @@ func void AI_ResetStateTime (var int slfInstance) {
  *	 - function syncs AI queues
  */
 func void AI_SyncNpc (var int slfInstance, var int othInstance) {
+	/*
+	 *	EV_WaitTillEnd
+	 *	 - calls StopTurnAnis
+	 *	 - forces player to StandUp
+	 *	 - therefore adding check - if we are trying to sync npc with itself --> exit
+	 */
+	 if (slfInstance == othInstance) { return; };
+
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+
+	if (!HLp_IsValidNpc (slf)) { return; };
+	if (!HLp_IsValidNpc (oth)) { return; };
 
 	AI_WaitTillEnd (slf, oth);
 	AI_WaitTillEnd (oth, slf);
