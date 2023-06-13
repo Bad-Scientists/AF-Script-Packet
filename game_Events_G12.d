@@ -22,6 +22,7 @@ var int _GameHandleEvent_Event;
 var int _PlayerPortalRoomChange_Event;
 var int _MobStartInteraction_Event;
 var int _FocusChange_Event;
+var int _OpenLockable_Event;
 
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
@@ -135,12 +136,20 @@ func void MobStartInteraction_RemoveListener (var func f) {
 	Event_Remove (_MobStartInteraction_Event, f);
 };
 
-func void FocusChange_Event_AddListener (var func f) {
+func void FocusChangeEvent_AddListener (var func f) {
 	Event_AddOnce (_FocusChange_Event, f);
 };
 
-func void FocusChange_EventRemoveListener (var func f) {
+func void FocusChangeEvent_RemoveListener (var func f) {
 	Event_Remove (_FocusChange_Event, f);
+};
+
+func void OpenLockableEvent_AddListener (var func f) {
+	Event_AddOnce (_OpenLockable_Event, f);
+};
+
+func void OpenLockableEvent_RemoveListener (var func f) {
+	Event_Remove (_OpenLockable_Event, f);
 };
 
 /*
@@ -667,6 +676,103 @@ func void G12_FocusChangeEvent_Init () {
 	};
 };
 
+/*
+ *	Open lockable event
+ */
+
+const int OpenLockableEvent_UnlockWithKey = 1;
+const int OpenLockableEvent_UnlockWithPicklock = 2;
+const int OpenLockableEvent_PickLockSuccess = 3;
+const int OpenLockableEvent_PickLockFailure = 4;
+const int OpenLockableEvent_PickLockFailureBroken = 5;
+
+func void _hook_oCMobLockable_UnlockWithKey () {
+	if (_OpenLockable_Event) {
+		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithKey);
+	};
+};
+
+func void _hook_oCMobLockable_UnlockWithPickLock () {
+	if (_OpenLockable_Event) {
+		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithPicklock);
+	};
+};
+
+func void _hook_oCMobLockable_PickLockSuccess () {
+	if (_OpenLockable_Event) {
+		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockSuccess);
+	};
+};
+
+func void _hook_oCMobLockable_PickLockFailure () {
+	if (_OpenLockable_Event) {
+		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailure);
+	};
+};
+
+func void _hook_oCMobLockable_PickLockFailureBroken () {
+	if (_OpenLockable_Event) {
+		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailureBroken);
+	};
+};
+
+func void G12_OpenLockableEvent_Init () {
+	if (!_OpenLockable_Event) {
+		_OpenLockable_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//G1
+		//0x00681FF0 public: virtual void __thiscall oCMobLockable::Interact(class oCNpc *,int,int,int,int,int)
+
+		//G2A
+		//0x00723CF0 public: virtual void __thiscall oCMobLockable::Interact(class oCNpc *,int,int,int,int,int)
+
+		//006820d2 - unlock with key - success
+		const int oCMobLockable__Interact_UnlockWithKey_G1 = 6824146;
+
+		//00723dce
+		const int oCMobLockable__Interact_UnlockWithKey_G2 = 7486926;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_UnlockWithKey_G1, oCMobLockable__Interact_UnlockWithKey_G2), 6, "_hook_oCMobLockable_UnlockWithKey");
+
+		//00682212 - unlock with lockpick - success
+		const int oCMobLockable__Interact_UnlockWithPickLock_G1 = 6824466;
+
+		//00723ef5
+		const int oCMobLockable__Interact_UnlockWithPickLock_G2 = 7487221;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_UnlockWithPickLock_G1, oCMobLockable__Interact_UnlockWithPickLock_G2), 5, "_hook_oCMobLockable_UnlockWithPickLock");
+
+		//006822ad - picklock - success
+		const int oCMobLockable__Interact_PickLockSuccess_G1 = 6824621;
+
+		//723f77
+		const int oCMobLockable__Interact_PickLockSuccess_G2 = 7487351;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_PickLockSuccess_G1, oCMobLockable__Interact_PickLockSuccess_G2), 6, "_hook_oCMobLockable_PickLockSuccess");
+
+		//0068234f - picklock - failure - broken
+		const int oCMobLockable__Interact_PickLockFailureBroken_G1 = 6824783;
+
+		//00724019
+		const int oCMobLockable__Interact_PickLockFailureBroken_G2 = 7487513;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_PickLockFailureBroken_G1, oCMobLockable__Interact_PickLockFailureBroken_G2), 8, "_hook_oCMobLockable_PickLockFailureBroken");
+
+		//006824d6 - picklock - failure
+		const int oCMobLockable__Interact_PickLockFailure_G1 = 6825174;
+
+		//00724208
+		const int oCMobLockable__Interact_PickLockFailure_G2 = 7488008;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_PickLockFailure_G1, oCMobLockable__Interact_PickLockFailure_G2), 8, "_hook_oCMobLockable_PickLockFailure");
+
+		once = 1;
+	};
+};
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -682,4 +788,5 @@ func void G12_GameEvents_Init () {
 	G12_PlayerPortalRoomChangeEvent_Init ();
 	G12_oCMobInterStartInterationEvent_Init ();
 	G12_FocusChangeEvent_Init ();
+	G12_OpenLockableEvent_Init ();
 };
