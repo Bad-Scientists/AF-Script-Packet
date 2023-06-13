@@ -29,9 +29,9 @@ func void oCMob_SetOwnerStr (var int mobPtr, var string ownerStr, var string own
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (ownerGuildStrPtr);
-		CALL_PtrParam (ownerStrPtr);
-		CALL__thiscall (mobPtr, MEMINT_SwitchG1G2 (oCMOB__SetOwner_G1, oCMOB__SetOwner_G2));
+		CALL_PtrParam (_@ (ownerGuildStrPtr));
+		CALL_PtrParam (_@ (ownerStrPtr));
+		CALL__thiscall (_@ (mobPtr), MEMINT_SwitchG1G2 (oCMOB__SetOwner_G1, oCMOB__SetOwner_G2));
 		call = CALL_End();
 	};
 };
