@@ -168,8 +168,8 @@ func void DisplayProperties__VobTransport () {
 			s_conditionFunc = ConcatStrings ("conditionFunc: ", mobDoor._oCMobInter_conditionFunc);
 			s_onStateFuncName = ConcatStrings ("onStateFuncName: ", mobDoor._oCMobInter_onStateFuncName);
 
-			s_keyInstance = ConcatStrings ("keyInstance: ", mobContainer._oCMobLockable_keyInstance);
-			s_pickLockStr = ConcatStrings ("pickLockStr: ", mobContainer._oCMobLockable_pickLockStr);
+			s_keyInstance = ConcatStrings ("keyInstance: ", mobDoor._oCMobLockable_keyInstance);
+			s_pickLockStr = ConcatStrings ("pickLockStr: ", mobDoor._oCMobLockable_pickLockStr);
 
 			s_addName = ConcatStrings ("addName: ", mobDoor.addName);
 		} else
