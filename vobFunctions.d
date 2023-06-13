@@ -1659,3 +1659,27 @@ func int zCVob_GetHomeWorld (var int vobPtr) {
 
 	return Call_RetValAsPtr ();
 };
+func int zCVob_GetDistanceToVob2 (var int vobPtr, var int vobPtr2) {
+	//0x005EE530 public: float __thiscall zCVob::GetDistanceToVob2(class zCVob &)
+	const int zCVob__GetDistanceToVob2_G1 = 6219056;
+
+	//0x0061BA40 public: float __thiscall zCVob::GetDistanceToVob2(class zCVob &)
+	const int zCVob__GetDistanceToVob2_G2 = 6404672;
+
+	if (!vobPtr) { return FLOATNULL; };
+	if (!vobPtr2) { return FLOATNULL; };
+
+	var int retVal;
+
+	const int call = 0;
+
+	if (CALL_Begin(call)) {
+		CALL_RetValIsFloat ();
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_PtrParam (_@ (vobPtr2));
+		CALL__thiscall(_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetDistanceToVob2_G1, zCVob__GetDistanceToVob2_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
