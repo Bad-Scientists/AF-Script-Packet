@@ -913,8 +913,15 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 			MEM_CopyBytes (posPtr, targetPosPtr, 12);
 			MEM_Free (posPtr);
 		} else {
-			//Update aiStateDriven - to kick in AI state
-			state.aiStateDriven = 1;
+			if (!state.aiStateDriven) {
+				//Update aiStateDriven - to kick in AI state
+				//state.aiStateDriven = 1;
+
+				//No AI state --> get current world pos
+				slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
+				slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
+				slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
+			};
 
 			//Use spawnPoint
 			if (STR_Len (slf.spawnPoint)) {
@@ -939,6 +946,10 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 
 			//Get AI state position
 			MEM_CopyBytes (_@ (slf.state_aiStatePosition), targetPosPtr, 12);
+		};
+	} else {
+		//No state --> get current world pos
+		if (zCVob_GetPositionWorldToPos (_@ (slf), targetPosPtr)) {
 		};
 	};
 };
