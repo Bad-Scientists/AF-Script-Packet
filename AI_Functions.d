@@ -560,6 +560,22 @@ func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
 	AI_PlayAni (slf, _AI_GetAniName_T_HEASHOOT_2_STAND ());
 };
 
+func void _AI_BeamToKeepQueue (var string vobName) {
+	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
+	Npc_BeamToKeepQueue (self, vobName);
+};
+
+/*
+ *	AI_BeamToKeepQueue
+ *	 - function beams Npc to target vobName / waypoint without clearing AI queue
+ */
+func void AI_BeamToKeepQueue (var int slfInstance, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	AI_Function_S (slf, _AI_BeamToKeepQueue, vobName);
+};
+
 /*
  *	AI_TeleportToWorld
  *	 - function allows teleportation between worlds
