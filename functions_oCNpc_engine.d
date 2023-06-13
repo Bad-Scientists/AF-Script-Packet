@@ -47,6 +47,9 @@ func void oCNpc_DropUnconscious (var int slfInstance, var int attackerInstance) 
 
 	var int slfPtr; slfPtr = _@ (slf);
 
+	//Safety check - game crashes if called with Npc that is not in active vob list
+	if (!VobPtr_IsInActiveVobList (slfPtr)) { return; };
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (attackerPtr));
