@@ -1136,3 +1136,24 @@ func void oCNpc_RemoveItemEffects (var int slfInstance, var int itemPtr) {
 	};
 };
 
+func void oCNpc_RbtInit (var int slfInstance, var int posPtr, var int vobPtr) {
+	//0x00750720 public: void __thiscall oCNpc::RbtInit(class zVEC3 &,class zCVob *)
+	const int oCNpc__RbtInit_G1 = 7669536;
+
+	//0x00686670 public: void __thiscall oCNpc::RbtInit(class zVEC3 &,class zCVob *)
+	const int oCNpc__RbtInit_G2 = 6841968;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_PtrParam (_@ (posPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__RbtInit_G1, oCNpc__RbtInit_G2));
+		call = CALL_End();
+	};
+};
+
