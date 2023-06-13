@@ -1319,3 +1319,38 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 	return FALSE;
 };
 
+/*
+ *	Npc_TurnToVob
+ *	 - turns to vob
+ */
+func void oCAniCtrl_Human_TurnDegrees (var int aniCtrlPtr, var int degreesF, var int startTurnAnis) {
+	//0x00625FB0 public: void __thiscall oCAniCtrl_Human::TurnDegrees(float,int)
+	const int oCAniCtrl_Human__TurnDegrees_G1 = 6447024;
+
+	//0x006AEB10 public: void __thiscall oCAniCtrl_Human::TurnDegrees(float,int)
+	const int oCAniCtrl_Human__TurnDegrees_G2 = 7006992;
+
+	//Safety check
+	if (!aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (startTurnAnis));
+		CALL_FloatParam (_@ (degreesF));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__TurnDegrees_G1, oCAniCtrl_Human__TurnDegrees_G2));
+		call = CALL_End ();
+	};
+};
+
+func void Npc_TurnToVob (var int slfInstance, var int vobPtr, var int startTurnAnis) {
+	var int fAzimuth; fAzimuth = FLOATNULL;
+	var int fElevation; fElevation = FLOATNULL;
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	oCNpc_GetAnglesVob (slfInstance, vobPtr, _@ (fAzimuth), _@ (fElevation));
+
+	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, fAzimuth, startTurnAnis);
+};
+
