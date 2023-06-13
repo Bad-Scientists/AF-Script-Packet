@@ -1,8 +1,4 @@
 func string GetKeyName (var int key) {
-	const int mem = 0;
-	if (!mem) { mem = MEM_Alloc(1); };
-	var string s;
-
 	if (key == KEY_ESCAPE) { return "Escape"; };
 	if (key == KEY_1) { return "1"; };
 	if (key == KEY_2) { return "2"; };
@@ -45,11 +41,7 @@ func string GetKeyName (var int key) {
 	if (key == KEY_APOSTROPHE) { return "'"; };
 	if (key == KEY_GRAVE) { return "`"; };
 	if (key == KEY_LSHIFT) { return "Left Shift"; };
-	if (key == KEY_BACKSLASH) {
-		MEM_WriteByte (mem, 92);
-		s = STR_FromChar (mem);
-		return s;
-	};
+	if (key == KEY_BACKSLASH) { return BtoC (92); };
 	if (key == KEY_Z) { return "Z"; };
 	if (key == KEY_X) { return "X"; };
 	if (key == KEY_C) { return "C"; };
@@ -113,7 +105,7 @@ func string GetKeyName (var int key) {
 	if (key == KEY_AX) { return "Escape"; };
 	if (key == KEY_UNLABELED) { return "Escape"; };
 	if (key == KEY_NEXTTRACK) { return "Escape"; };
-*/	
+*/
 	if (key == KEY_NUMPADENTER) { return "Num Enter"; };
 	if (key == KEY_RCONTROL) { return "Right Control"; };
 /*
