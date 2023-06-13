@@ -21,6 +21,25 @@ func void zCView_Printwin (var int viewPtr, var string s) {
 	CALL__thiscall (viewPtr, MEMINT_SwitchG1G2 (zCView__Printwin_G1, zCView__Printwin_G2));
 };
 
+
+func void zCView_SetPos (var int viewPtr, var int vposx, var int vposy) {
+	//0x006FDA10 public: void __thiscall zCView::SetPos(int,int)
+	const int zCView__SetPos_G1 = 7330320;
+
+	//0x007A75B0 public: void __thiscall zCView::SetPos(int,int)
+	const int zCView__SetPos_G2 = 8025520;
+
+	if (!viewPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (vposy));
+		CALL_IntParam (_@ (vposx));
+		CALL__thiscall (_@ (viewPtr), MEMINT_SwitchG1G2 (zCView__SetPos_G1, zCView__SetPos_G2));
+		call = CALL_End ();
+	};
+};
+
 func void zCView_CheckTimedText (var int viewPtr) {
 	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
 	const int zCView__CheckTimedText_G1 = 6753728;
