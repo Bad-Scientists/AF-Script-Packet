@@ -996,8 +996,12 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 	vob.trafoObjToWorld[7] = pos[1];
 	vob.trafoObjToWorld[11] = pos[2];
 
-	//oCNpc::Enable @ position
-	oCNpc_Enable (npc, _@ (pos));
+	zCVob_PositionUpdated (_@ (slf));
+
+	//oCNpc::Enable @ position (if not player - this will clear AI queue)
+	if (!Npc_IsPlayer (npc)) {
+		oCNpc_Enable (npc, _@ (pos));
+	};
 };
 
 /*
