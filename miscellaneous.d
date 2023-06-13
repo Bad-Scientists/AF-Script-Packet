@@ -1015,7 +1015,7 @@ func void Npc_EM_SendTozSpy (var int slfInstance) {
 
 	var string s;
 
-	s = ConcatStrings ("Npc_EM_SendTozSpy: ", slf.Name);
+	s = ConcatStrings ("Npc_EM_SendTozSpy: ", GetSymbolName (Hlp_GetInstanceID (slf)));
 	s = ConcatStrings (s, " -->");
 
 	zSpy_Info (s);
