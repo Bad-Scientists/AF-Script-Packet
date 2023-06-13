@@ -47,6 +47,9 @@ func void oCNpc_DropUnconscious (var int slfInstance, var int attackerInstance) 
 
 	var int slfPtr; slfPtr = _@ (slf);
 
+	//Safety check - game crashes if called with Npc that is not in active vob list
+	if (!VobPtr_IsInActiveVobList (slfPtr)) { return; };
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (attackerPtr));
@@ -450,7 +453,7 @@ func void oCNpc_RemoveFromVobList (var int slfInstance, var int vobPtr) {
 /*
  *
  */
-func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight){
+func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int ignoreAngles){
 	//0x0069E010 public: int __thiscall oCNpc::CanSee(class zCVob *,int)
 	const int oCNpc__CanSee_G1 = 6938640;
 
@@ -466,7 +469,7 @@ func int oCNpc_CanSee (var int slfInstance, var int vobPtr, var int lineOfSight)
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_IntParam (_@ (lineOfSight));
+		CALL_IntParam (_@ (ignoreAngles));
 		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CanSee_G1, oCNpc__CanSee_G2));
 		call = CALL_End();
@@ -1133,29 +1136,47 @@ func void oCNpc_RemoveItemEffects (var int slfInstance, var int itemPtr) {
 	};
 };
 
-/*
- *	oCNpc_Equip_Safe
- *	 - when compared to LeGo function this has safety checks, also does not use npc pointer, other than that it's same
- */
-func void oCNpc_Equip_Safe (var int slfInstance, var int itemPtr) {
-	//0x006968F0 public: void __thiscall oCNpc::Equip(class oCItem *)
-	const int oCNpc__Equip_G1 = 6908144;
+func void oCNpc_RbtInit (var int slfInstance, var int posPtr, var int vobPtr) {
+	//0x00750720 public: void __thiscall oCNpc::RbtInit(class zVEC3 &,class zCVob *)
+	const int oCNpc__RbtInit_G1 = 7669536;
 
-	//0x00739C90 public: void __thiscall oCNpc::Equip(class oCItem *)
-	const int oCNpc__Equip_G2 = 7576720;
+	//0x00686670 public: void __thiscall oCNpc::RbtInit(class zVEC3 &,class zCVob *)
+	const int oCNpc__RbtInit_G2 = 6841968;
 
-	if (!Hlp_Is_oCItem (itemPtr)) { return; };
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	var int slfPtr; slfPtr = _@ (slf);
 
 	const int call = 0;
-
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(itemPtr));
-		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__Equip_G1, oCNpc__Equip_G2));
+		CALL_PtrParam (_@ (vobPtr));
+		CALL_PtrParam (_@ (posPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__RbtInit_G1, oCNpc__RbtInit_G2));
 		call = CALL_End();
 	};
+};
+
+
+func int oCNpc_IsBodyStateInterruptable (var int slfInstance) {
+	//0x006B8600 public: int __thiscall oCNpc::IsBodyStateInterruptable(void)
+	const int oCNpc__IsBodyStateInterruptable_G1 = 7046656;
+
+	//0x0075EFA0 public: int __thiscall oCNpc::IsBodyStateInterruptable(void)
+	const int oCNpc__IsBodyStateInterruptable_G2 = 7729056;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int retVal;
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__IsBodyStateInterruptable_G1, oCNpc__IsBodyStateInterruptable_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };

@@ -649,6 +649,17 @@ func int Vob_IsMoving (var int vobPtr) {
 	return + (magVector (_@ (vec)));
 };
 
+func int Vob_GetNoOfVobsByName (var string vobName) {
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int count; count = zarr.numInArray;
+
+	MEM_ArrayFree (arr);
+
+	return + count;
+};
+
 /*
  *
  */
@@ -751,7 +762,7 @@ func void Vob_MoveToVob (var string moveVobName, var string toVobName) {
 func void Vob_PlayEffect (var string vobName, var string effectName)
 {
 	var int arr; arr = MEM_SearchAllVobsByName (vobName);
-	var zCArray zarr; zarr = MEM_PtrToInst(arr);
+	var zCArray zarr; zarr = _^ (arr);
 
 	var int vobPtr;
 	var zCVob vob;
@@ -815,6 +826,20 @@ func int zCVob_GetAtVectorWorld (var int vobPtr) {
 	CALL_RetValIsStruct (12);
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCVob__GetAtVectorWorld_G1, zCVob__GetAtVectorWorld_G2));
 	return CALL_RetValAsPtr ();
+};
+
+//Wrapper function that frees allocated memory
+//return TRUE if everything went ok
+func int zCVob_GetAtVectorWorldToPos (var int vobPtr, var int posPtr) {
+	if (!posPtr) { return FALSE; };
+
+	var int vobPosPtr; vobPosPtr = zCVob_GetAtVectorWorld (vobPtr);
+	if (!vobPosPtr) { return FALSE; };
+
+	MEM_CopyBytes (vobPosPtr, posPtr, 12);
+	MEM_Free (vobPosPtr);
+
+	return TRUE;
 };
 
 func int zCVob_GetUpVectorWorld (var int vobPtr) {
@@ -1659,6 +1684,18 @@ func int zCVob_GetHomeWorld (var int vobPtr) {
 
 	return Call_RetValAsPtr ();
 };
+
+/*
+ *	Author: Sektenspinner
+ */
+func void zCVob_PositionUpdated (var int vobPtr) {
+	var int pos[3];
+
+	if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+		zCVob_SetPositionWorld (vobPtr, _@ (pos));
+	};
+};
+
 func int zCVob_GetDistanceToVob2 (var int vobPtr, var int vobPtr2) {
 	//0x005EE530 public: float __thiscall zCVob::GetDistanceToVob2(class zCVob &)
 	const int zCVob__GetDistanceToVob2_G1 = 6219056;

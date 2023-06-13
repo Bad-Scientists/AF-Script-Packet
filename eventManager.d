@@ -805,7 +805,7 @@ func int zCEventManager_IsRunning (var int eMgr, var int eMsg) {
 	const int zCEventManager__IsRunning_G2 = 7895008;
 
 	//This function loops through EM event list and checks if specified message is in the list
-	//It can be used t check if message is 'safe' (if it is in EM then it's kinda safe :) )
+	//It can be used to check if message is 'safe' (if it is in EM then it's kinda safe :) )
 	//Function Hlp_Is_zCEventMessage is reading pointer - if pointer is invalid we might crash (which happened to me as I used some EM manipulation functions incorrectly ...)
 	//Anyway it's counter-productive to check eMsg here --> thus only checking if eMsg is NULL
 	//if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };

@@ -113,6 +113,7 @@ func void _hook_oCNpc_OnMessage () {
 
 	var oCNPC npc; npc = _^ (ECX);
 
+	var oCMobInter mob;
 	var oCMsgManipulate msgManipulate;
 
 /*
@@ -258,7 +259,7 @@ func void _hook_oCNpc_OnMessage () {
 
 				msgManipulate = _^ (eMsg);
 				if (Hlp_Is_oCMobInter (msgManipulate.targetVob)) {
-					var oCMobInter mob; mob = _^ (msgManipulate.targetVob);
+					mob = _^ (msgManipulate.targetVob);
 
 					if ((msgManipulate.targetState == -1) && (mob.state == 1)) {
 						oCMobInter_SetInteractWith (msgManipulate.targetVob, 0);

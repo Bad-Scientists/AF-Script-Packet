@@ -79,6 +79,7 @@ ObjectFactory\oCMsgWeapon.d
 
 ObjectFactory\zCWaypoint.d
 
+ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
 mobFunctions.d
 
@@ -87,6 +88,8 @@ anims_engine.d
 eventManager.d
 
 functions_oCMobInter_engine.d
+
+view.d
 
 inventory_oCNPC.d
 
@@ -99,7 +102,6 @@ interface.d
 game_Events_G1.d
 game_Events_G12.d
 
-bars.d
 consoleCommands.d
 
 infoManager.d
@@ -120,7 +122,7 @@ portals.d
 
 zError_engine.d
 
-view.d
+bars.d
 
 routines_waynet.d
 
@@ -134,7 +136,10 @@ sound.d
 menu.d
 camera.d
 
+vobThrowing.d
 miscellaneous.d
+
+magic.d
 
 G2 NoTR emulation.d
 
@@ -198,7 +203,6 @@ Standalone-Packages\G12-Debugging\showAI.d
 Standalone-Packages\G12-Debugging\setSleepingMode.d
 Standalone-Packages\G12-Debugging\setRoutine.d
 Standalone-Packages\G12-Debugging\unlock.d
-Standalone-Packages\G12-Debugging\checkLockValidity.d
 Standalone-Packages\G12-Debugging\gotoNpc.d
 Standalone-Packages\G12-Debugging\gotoZEN.d
 Standalone-Packages\G12-Debugging\checkRoutineValidity.d
@@ -207,10 +211,11 @@ Standalone-Packages\G12-Debugging\printPos.d
 Standalone-Packages\G12-Debugging\holdTime.d
 Standalone-Packages\G12-Debugging\puppetMaster.d
 Standalone-Packages\G12-Debugging\consoleHistory.d
+Standalone-Packages\G12-Debugging\vobsCheckProperties.d
+Standalone-Packages\G12-Debugging\testSuite.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
-Standalone-Packages\G12-VobThrowing\vobFunctions.d
 Standalone-Packages\G12-VobThrowing\vobThrowing.d
 
 Standalone-Packages\G12-RainControl\rainControl.d
@@ -223,5 +228,8 @@ Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
 Standalone-Packages\G12-AddPerceptions\addPerceptions.d
 
 Standalone-Packages\G12-MoonPhases\moonPhases.d
+Standalone-Packages\G12-MenuLogAddSectionCount\menuLogAddSectionCount.d
+
 Standalone-Packages\G12-EquipControl\equipControl.d
 
+Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing.d

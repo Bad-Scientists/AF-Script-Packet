@@ -449,6 +449,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					npc = _^ (vobPtr);
+
 					if (NPC_IsInStateName (npc, stateName)) {
 						//Find route from Npc to vob - get total distance if Npc travels by waynet
 						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
@@ -563,6 +564,28 @@ func int NPC_VobListDetectByName (var int slfInstance, var string objectName, va
 	if (nearestPtr) { return nearestPtr; };
 
 	return firstPtr;
+};
+
+func void NPC_VobListRemoveDeadNpcs (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int vobPtr;
+	var int i; i = slf.vobList_numInArray;
+
+	while (i > 0);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+
+		if (Hlp_Is_oCNpc (vobPtr)) {
+			var oCNPC npc; npc = _^ (vobPtr);
+
+			if (Npc_IsDead (npc)) {
+				oCNpc_RemoveFromVobList (slfInstance, vobPtr);
+			};
+		};
+
+		i -= 1;
+	end;
 };
 
 /*
@@ -913,8 +936,15 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 			MEM_CopyBytes (posPtr, targetPosPtr, 12);
 			MEM_Free (posPtr);
 		} else {
-			//Update aiStateDriven - to kick in AI state
-			state.aiStateDriven = 1;
+			if (!state.aiStateDriven) {
+				//Update aiStateDriven - to kick in AI state
+				//state.aiStateDriven = 1;
+
+				//No AI state --> get current world pos
+				slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
+				slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
+				slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
+			};
 
 			//Use spawnPoint
 			if (STR_Len (slf.spawnPoint)) {
@@ -939,6 +969,10 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 
 			//Get AI state position
 			MEM_CopyBytes (_@ (slf.state_aiStatePosition), targetPosPtr, 12);
+		};
+	} else {
+		//No state --> get current world pos
+		if (zCVob_GetPositionWorldToPos (_@ (slf), targetPosPtr)) {
 		};
 	};
 };
@@ -985,8 +1019,12 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 	vob.trafoObjToWorld[7] = pos[1];
 	vob.trafoObjToWorld[11] = pos[2];
 
-	//oCNpc::Enable @ position
-	oCNpc_Enable (npc, _@ (pos));
+	zCVob_PositionUpdated (_@ (slf));
+
+	//oCNpc::Enable @ position (if not player - this will clear AI queue)
+	if (!Npc_IsPlayer (npc)) {
+		oCNpc_Enable (npc, _@ (pos));
+	};
 };
 
 /*
@@ -1000,7 +1038,7 @@ func void Npc_EM_SendTozSpy (var int slfInstance) {
 
 	var string s;
 
-	s = ConcatStrings ("Npc_EM_SendTozSpy: ", slf.Name);
+	s = ConcatStrings ("Npc_EM_SendTozSpy: ", GetSymbolName (Hlp_GetInstanceID (slf)));
 	s = ConcatStrings (s, " -->");
 
 	zSpy_Info (s);

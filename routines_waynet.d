@@ -1343,6 +1343,28 @@ func int WP_GetDistToVob (var string waypointName, var int vobPtr) {
 };
 
 /*
+ *	WP_DeleteWay
+ *	 - disconnects 2 waypoints
+ */
+func void WP_DeleteWay (var string wp1, var string wp2) {
+	var int wpPtr1; wpPtr1 = SearchWaypointByName (wp1);
+	var int wpPtr2; wpPtr2 = SearchWaypointByName (wp2);
+
+	zCWayNet_DeleteWay (wpPtr1, wpPtr2);
+};
+
+/*
+ *	WP_CreateWay
+ *	 - connects 2 waypoints
+ */
+func void WP_CreateWay (var string wp1, var string wp2) {
+	var int wpPtr1; wpPtr1 = SearchWaypointByName (wp1);
+	var int wpPtr2; wpPtr2 = SearchWaypointByName (wp2);
+
+	zCWayNet_CreateWay (wpPtr1, wpPtr2);
+};
+
+/*
  *	zCWaypoint_CanSee
  *	 - can we see vob from waypoint?
  */
@@ -1503,7 +1525,7 @@ func string WP_GenerateNewName (var string waypointName) {
  *	 - distLimit - max air distance to the vob
  *	 - verticalLimit - max vertical distance to the vob
  */
-func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
 	var int i;
 	var int vobPtr;
 
@@ -1526,6 +1548,7 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByP
 	searchByPortalName = STR_Trim (searchByPortalName, " ");
 	searchByPortalName = STR_Upper (searchByPortalName);
 
+	var int compareName; compareName = STR_Len (searchWaypointName);
 	var int checkPortalName; checkPortalName = STR_Len (searchByPortalName);
 
 	//Collect all vobs in range
@@ -1537,8 +1560,10 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByP
 		vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (Hlp_Is_zCVobWaypoint (vobPtr)) {
+			var int wpPtr;
+
 			if (searchFlags & SEARCHVOBLIST_CANSEE) {
-				var int wpPtr; wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
+				wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
 				canSee = zCWaypoint_CanSee (wpPtr, canSeeVobPtr);
 			} else {
 				canSee = TRUE;
@@ -1548,6 +1573,15 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByP
 				var string portalName; portalName = Vob_GetPortalName (vobPtr);
 
 				if (!Hlp_StrCmp (portalName, searchByPortalName)) {
+					canSee = FALSE;
+				};
+			};
+
+			if (compareName) {
+				wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
+				var string waypointName; waypointName = zCWaypoint_GetName (wpPtr);
+
+				if (!STR_WildMatch (waypointName, searchWaypointName)) {
 					canSee = FALSE;
 				};
 			};
@@ -1583,8 +1617,8 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchByP
 	return firstPtr;
 };
 
-func int zCWaypoint_GetByPosAndPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
-	var int vobPtr; vobPtr = zCVobWaypoint_GetByPortalRoom (fromPosPtr, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
+func int zCWaypoint_GetByPosAndPortalRoom (var int fromPosPtr, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+	var int vobPtr; vobPtr = zCVobWaypoint_GetByPortalRoom (fromPosPtr, searchWaypointName, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
 	return + zCVobWaypoint_GetWaypoint (vobPtr);
 };
 
@@ -1592,8 +1626,8 @@ func int zCWaypoint_GetByPosAndPortalRoom (var int fromPosPtr, var string search
  *	WP_GetByPortalRoom
  *	 - wrapper function to get nearest waypoint from certain position + possibility to filter by portal room
  */
-func string WP_GetByPosAndPortalRoom (var int fromPosPtr, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
-	var int wpPtr; wpPtr = zCWaypoint_GetByPosAndPortalRoom (fromPosPtr, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
+func string WP_GetByPosAndPortalRoom (var int fromPosPtr, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
+	var int wpPtr; wpPtr = zCWaypoint_GetByPosAndPortalRoom (fromPosPtr, searchWaypointName, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
 	return zCWaypoint_GetName (wpPtr);
 };
 
@@ -1601,14 +1635,14 @@ func string WP_GetByPosAndPortalRoom (var int fromPosPtr, var string searchByPor
  *	Npc_GetNearestWP_ByPortalRoom
  *	 - wrapper function to get nearest waypoint from Npc in a portal room
  */
-func string Npc_GetNearestWP_ByPortalRoom (var int slfInstance, var string searchByPortalName, var int searchFlags, var int range, var int distLimit, var int verticalLimit) {
+func string Npc_GetNearestWP_ByPortalRoom (var int slfInstance, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int range, var int distLimit, var int verticalLimit) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
 
 	var int pos[3];
 	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) { return ""; };
 
-	return WP_GetByPosAndPortalRoom (_@ (pos), searchByPortalName, searchFlags, _@ (slf), range, distLimit, verticalLimit);
+	return WP_GetByPosAndPortalRoom (_@ (pos), searchWaypointName, searchByPortalName, searchFlags, _@ (slf), range, distLimit, verticalLimit);
 };
 
 /*

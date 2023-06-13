@@ -632,7 +632,7 @@ func int NPC_TorchSwitchOnOff (var int slfinstance) {
 		//Is it ItLsTorchBurning ?
 		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
 			//Use item - will put ItLsTorch back to inventory
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
 				Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
@@ -654,7 +654,7 @@ func int NPC_TorchSwitchOnOff (var int slfinstance) {
 			ptr = _@ (item);
 
 			//Equip it - puts ItLsTorchBurning in hand
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 			return 1;
 		};
 	};
@@ -676,7 +676,7 @@ func void NPC_TorchSwitchOff (var int slfinstance) {
 		//Is it ItLsTorchBurning ?
 		if ((Hlp_GetinstanceID (itm) == ItLsTorchBurning) || (Hlp_GetinstanceID (itm) == ItLsTorchBurned)) {
 			//Use item - will put ItLsTorch back to inventory
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			if (NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
 				Mdl_RemoveOverlayMds (slf, "HUMANS_TORCH.MDS");
@@ -698,7 +698,7 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 
 		//Is it ItLsTorchBurned? if yes - remove - script below will put ItLsTorchBurning in hand
 		if (Hlp_GetinstanceID (itm) == ItLsTorchBurned) {
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 			ptr = 0;
 		};
 	};
@@ -718,7 +718,7 @@ func void NPC_TorchSwitchOn (var int slfinstance) {
 			ptr = _@ (item);
 
 			//Use it - puts ItLsTorchBurning in hand
-			oCNpc_Equip_Safe (slf, ptr);
+			oCNpc_EquipPtr (slf, ptr);
 
 			//Apply overlay
 			if (!NPC_HasOverlay (slf, "HUMANS_TORCH.MDS")) {
@@ -1251,3 +1251,132 @@ func int NPC_GetSoundVobPtr (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	return slf.soundVob;
 };
+
+/*
+ *	Npc_BeamToKeepQueue
+ *	 - updates 'physical' position of Npc
+ */
+func void Npc_BeamToKeepQueue (var int slfInstance, var string vobName) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int pos[3];
+
+	//Is this vob?
+	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+	if (vobPtr) {
+		if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+		};
+	} else {
+		//Is this waypooint?
+		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+		if (wpPtr) {
+			var zCWaypoint wp; wp = _^ (wpPtr);
+			MEM_CopyBytes (_@ (wp.pos), _@ (pos), 12);
+		} else {
+			//What do we do here?
+		};
+	};
+
+	//Update Npc's position
+	slf._zCVob_trafoObjToWorld[3] = pos[0];
+	slf._zCVob_trafoObjToWorld[7] = pos[1];
+	slf._zCVob_trafoObjToWorld[11] = pos[2];
+
+	zCVob_PositionUpdated (_@ (slf));
+};
+
+/*
+ *	Npc_HasAni
+ *	 - function loops through EM and checks if aniName is in AI queue
+ */
+func int Npc_HasAni (var int slfInstance, var string aniName) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	aniName = STR_Upper (aniName);
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY) {
+				var oCMsgConversation msg; msg = _^ (eMsg);
+
+				if (Hlp_StrCmp (msg.name, aniName)) {
+					return TRUE;
+				};
+			};
+		};
+	end;
+
+	return FALSE;
+};
+
+/*
+ *	Npc_TurnToVob
+ *	 - turns to vob
+ */
+func void oCAniCtrl_Human_TurnDegrees (var int aniCtrlPtr, var int degreesF, var int startTurnAnis) {
+	//0x00625FB0 public: void __thiscall oCAniCtrl_Human::TurnDegrees(float,int)
+	const int oCAniCtrl_Human__TurnDegrees_G1 = 6447024;
+
+	//0x006AEB10 public: void __thiscall oCAniCtrl_Human::TurnDegrees(float,int)
+	const int oCAniCtrl_Human__TurnDegrees_G2 = 7006992;
+
+	//Safety check
+	if (!aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_IntParam (_@ (startTurnAnis));
+		CALL_FloatParam (_@ (degreesF));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__TurnDegrees_G1, oCAniCtrl_Human__TurnDegrees_G2));
+		call = CALL_End ();
+	};
+};
+
+func void Npc_TurnToVob (var int slfInstance, var int vobPtr, var int startTurnAnis) {
+	var int fAzimuth; fAzimuth = FLOATNULL;
+	var int fElevation; fElevation = FLOATNULL;
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	oCNpc_GetAnglesVob (slfInstance, vobPtr, _@ (fAzimuth), _@ (fElevation));
+
+	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, fAzimuth, startTurnAnis);
+};
+
+/*
+ *	Npc_SetAIState
+ *	 - function overrides curState.index (#hacker)
+ */
+func void Npc_SetAIState (var int slfInstance, var string stateName) {
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	state.curState_valid = TRUE;
+	state.curState_index = MEM_FindParserSymbol (stateName);
+
+	//Special logic for by engine recognized ZS states
+	var int prgIndex; prgIndex = -1;
+	if (Hlp_StrCmp (stateName, "ZS_ANSWER")) { prgIndex = -2; };
+	if (Hlp_StrCmp (stateName, "ZS_DEAD")) { prgIndex = -3; };
+	if (Hlp_StrCmp (stateName, "ZS_UNCONSCIOUS")) { prgIndex = -4; };
+	if (Hlp_StrCmp (stateName, "ZS_FADEAWAY")) { prgIndex = -5; };
+	if (Hlp_StrCmp (stateName, "ZS_FOLLOW")) { prgIndex = -6; };
+
+	if (prgIndex < -1) {
+		state.curState_prgIndex = prgIndex;
+	};
+};
+

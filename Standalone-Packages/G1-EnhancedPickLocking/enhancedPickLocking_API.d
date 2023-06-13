@@ -49,7 +49,9 @@ func void EnhancedPickLocking_MissingKey (var C_NPC slf) {
 		AI_OutputSVM_Overlay (slf, NULL, "DIA_EnhancedPickLocking_MissingKey_15_05");
 	};
 
-	AI_PlayAni (slf, "T_DONTKNOW");
+	if (!Npc_HasAni (slf, "T_DONTKNOW")) {
+		AI_PlayAni (slf, "T_DONTKNOW");
+	};
 };
 
 func void EnhancedPickLocking_MissingLockPick (var C_NPC slf) {
@@ -73,7 +75,9 @@ func void EnhancedPickLocking_MissingLockPick (var C_NPC slf) {
 		AI_OutputSVM_Overlay (slf, NULL, "DIA_EnhancedPickLocking_MissingLockPick_15_05");
 	};
 
-	AI_PlayAni (slf, "T_DONTKNOW");
+	if (!Npc_HasAni (slf, "T_DONTKNOW")) {
+		AI_PlayAni (slf, "T_DONTKNOW");
+	};
 };
 
 func void EnhancedPickLocking_MissingLockPickOrKey (var C_NPC slf) {
@@ -115,6 +119,8 @@ func void EnhancedPickLocking_MissingSkill (var C_NPC slf) {
 		AI_OutputSVM_Overlay (slf, NULL, "DIA_EnhancedPickLocking_MissingSkill_15_05");
 	};
 
-	AI_PlayAni (slf, "T_DONTKNOW");
+	if (!Npc_HasAni (slf, "T_DONTKNOW")) {
+		AI_PlayAni (slf, "T_DONTKNOW");
+	};
 };
 */

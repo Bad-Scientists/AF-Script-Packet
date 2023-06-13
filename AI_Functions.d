@@ -79,21 +79,6 @@ func void AI_TurnAwayPos (var int slfInstance, var int posPtr) {
 };
 
 /*
- *	AI_TurnToWP
- *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
- */
-func void AI_TurnToWP (var int slfInstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
-	if (!wpPtr) { return; };
-
-	var zCWaypoint wp; wp = _^ (wpPtr);
-	AI_TurnToPos (slf, _@ (wp.pos));
-};
-
-/*
 	AI_TurnAwayWP
 	 - same as AI_TurnAway, but allows us to use waypoint
 
@@ -215,7 +200,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	//-- Get nearest waypoint to vob
 	//var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
 
-	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
+	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (toWp)) {
@@ -230,7 +215,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	//-- Get nearest waypoint to Npc
 	//var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
-	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
+	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (fromWp)) {
@@ -532,37 +517,9 @@ func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 func void _AI_TeleportKeepQueue (var string vobName) {
 	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
 
-	var int pos[3];
-
-	var zCVob vob;
-	var int vobPtr;
-
-	//Search for vob Name
-	vobPtr = MEM_SearchVobByName (vobName);
-
-	//if vob does not exist - search for waypoint
-	if (!vobPtr) {
-		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
-
-		//if waypoint does not exist - exit
-		if (!wpPtr) { return; };
-
-		var zCWaypoint wp; wp = _^ (wpPtr);
-		copyVector (_@ (wp.pos), _@ (pos));
-	} else {
-		vob = _^ (vobPtr);
-		TrfToPos (_@ (vob.trafoObjToWorld), _@ (pos));
-	};
-
-	vob = Hlp_GetNPC (self);
-
-	//Update hero's position
-	//TODO: teleport to Vob needs to be updated
-	vob.trafoObjToWorld[3] = pos[0];
-	vob.trafoObjToWorld[7] = pos[1];
-	vob.trafoObjToWorld[11] = pos[2];
-
-	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", hero, hero, 0, 0, 0, FALSE);
+	Npc_BeamToKeepQueue (self, vobName);
+	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", self, self, 0, 0, 0, FALSE);
+	Snd_Play ("MFX_TELEPORT_CAST");
 };
 
 func string _AI_GetAniName_T_MAGRUN_2_HEASHOOT () {
@@ -593,9 +550,30 @@ func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
+	var string aniTeleportationStart; aniTeleportationStart = _AI_GetAniName_T_MAGRUN_2_HEASHOOT ();
+
+	if (!Npc_HasAni (slf, aniTeleportationStart)) {
+		AI_PlayAni (slf, aniTeleportationStart);
+	};
+
 	AI_Function_S (slf, _AI_TeleportKeepQueue, vobName);
 	AI_PlayAni (slf, _AI_GetAniName_T_HEASHOOT_2_STAND ());
+};
+
+func void _AI_BeamToKeepQueue (var string vobName) {
+	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
+	Npc_BeamToKeepQueue (self, vobName);
+};
+
+/*
+ *	AI_BeamToKeepQueue
+ *	 - function beams Npc to target vobName / waypoint without clearing AI queue
+ */
+func void AI_BeamToKeepQueue (var int slfInstance, var string vobName) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	AI_Function_S (slf, _AI_BeamToKeepQueue, vobName);
 };
 
 /*
@@ -1071,6 +1049,26 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 };
 
 /*
+ *	AI_ContinueState
+ *	 - alternative for AI_ContinueRoutine, which also creates event messages: EV_STANDUP, EV_STOPLOOKAT, EV_STOPPOINTAT, EV_REMOVEWEAPON, EV_STARTSTATE
+ *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogu to fight :)
+ *	 - this one only creates EV_STARTSTATE
+ */
+func void AI_ContinueState (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgState_Create (EV_STARTSTATE, 0, 0, "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
  *	AI_ResetStateTime
  *	 - resets state time - using AI queue
  */
@@ -1090,8 +1088,19 @@ func void AI_ResetStateTime (var int slfInstance) {
  *	 - function syncs AI queues
  */
 func void AI_SyncNpc (var int slfInstance, var int othInstance) {
+	/*
+	 *	EV_WaitTillEnd
+	 *	 - calls StopTurnAnis
+	 *	 - forces player to StandUp
+	 *	 - therefore adding check - if we are trying to sync npc with itself --> exit
+	 */
+	 if (slfInstance == othInstance) { return; };
+
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+
+	if (!HLp_IsValidNpc (slf)) { return; };
+	if (!HLp_IsValidNpc (oth)) { return; };
 
 	AI_WaitTillEnd (slf, oth);
 	AI_WaitTillEnd (oth, slf);
@@ -1103,6 +1112,10 @@ func void AI_SyncNpc (var int slfInstance, var int othInstance) {
  */
 func void AI_DiaSync () {
 	if (!MEM_Game.infoman) { return; };
+
+	//If npc & player are one and the same (then we are most likely in MOBSI production dialogue) - then we don't need synchronization (it has side-effects, see above note about EV_WaitTillEnd)
+	if (MEM_InformationMan.npc == MEM_InformationMan.player) { return; };
+
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
 
@@ -1182,4 +1195,38 @@ func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	AI_Function_S (slf, _AI_RemoveItemFromSlot, slotName);
+};
+
+/*
+ *	AI_TurnToWP
+ *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
+ */
+//func void AI_TurnToWP (var int slfInstance, var string waypoint) {
+//	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	if (!Hlp_IsValidNPC (slf)) { return; };
+//
+//	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
+//	if (!wpPtr) { return; };
+//
+//	var zCWaypoint wp; wp = _^ (wpPtr);
+//	AI_TurnToPos (slf, _@ (wp.pos));
+//};
+
+/*
+ *	AI_TurnToVob
+ *	 - same as AI_TurnToNPC, but allows us to use vob / waypoint
+ */
+func void AI_TurnToVob (var int slfInstance, var string vobName) {
+	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+
+	if (vobPtr) {
+		AI_TurnToVobPtr (slfInstance, vobPtr);
+	} else {
+		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+
+		if (wpPtr) {
+			var zCWaypoint wp; wp = _^ (wpPtr);
+			AI_TurnToPos (slfInstance, _@ (wp.pos));
+		};
+	};
 };
