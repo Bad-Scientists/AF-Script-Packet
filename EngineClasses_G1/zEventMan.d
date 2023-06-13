@@ -98,6 +98,13 @@ const int EV_UNEQUIPARMOR = 12;
 const int EV_EQUIPARMOR = 13;
 const int EV_WEAPON_MAX = 14;
 
+const int EV_STARTSTATE = 0;
+const int EV_WAIT = 1;
+const int EV_SETNPCSTOSTATE = 2;
+const int EV_SETTIME = 3;
+const int EV_APPLYTIMEDOVERLAY = 4;
+const int EV_STATE_MAX = 5;
+
 const int bitfield_oCNpcMessage_highPriority = 1;
 const int bitfield_oCNpcMessage_deleted = 2;
 const int bitfield_oCNpcMessage_inUse = 4;
