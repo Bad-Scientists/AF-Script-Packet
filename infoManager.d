@@ -270,6 +270,22 @@ func void oCInformationManager_Exit () {
 	};
 };
 
+func void oCInformationManager_OnTermination () {
+	//0x0072E430 protected: void __fastcall oCInformationManager::OnTermination(void)
+	const int oCInformationManager__OnTermination_G1 = 7529520;
+
+	//0x006631A0 protected: void __fastcall oCInformationManager::OnTermination(void)
+	const int oCInformationManager__OnTermination_G2 = 6697376;
+
+	const int null = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall (_@ (MEMINT_oCInformationManager_Address), _@ (null), MEMINT_SwitchG1G2 (oCInformationManager__OnTermination_G1, oCInformationManager__OnTermination_G2));
+		call = CALL_End();
+	};
+};
+
 /*
 0072ABD0  .text     Debug data           ?GetInformationManager@oCInformationManager@@SAAAV1@XZ
 
@@ -905,4 +921,57 @@ func int Npc_KnowsInfoByString (var int slfInstance, var string instanceName) {
 
 	var oCInfo info; info = _^ (symb.offset - oCInfo_C_INFO_Offset);
 	return info.told;
+};
+
+func int oCInfoManager_GetInformation (var int diaInstance) {
+	//0x00664A00 public: class oCInfo * __thiscall oCInfoManager::GetInformation(int)
+	const int oCInfoManager__GetInformation_G1 = 6703616;
+
+	//0x00702910 public: class oCInfo * __thiscall oCInfoManager::GetInformation(int)
+	const int oCInfoManager__GetInformation_G2 = 7350544;
+
+	if (!MEM_Game.infoman) { return 0; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (diaInstance));
+		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInformation_G1, oCInfoManager__GetInformation_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsPtr ();
+};
+
+func void oCInfo_AddChoice (var int infoPtr, var string s, var int funcID) {
+	//0x00665A50 public: void __thiscall oCInfo::AddChoice(class zSTRING,int)
+	const int oCInfo__AddChoice_G1 = 6707792;
+
+	//0x00703B20 public: void __thiscall oCInfo::AddChoice(class zSTRING,int)
+	const int oCInfo__AddChoice_G2 = 7355168;
+
+	if (!infoPtr) { return; };
+
+	/*
+	Sooo ... I have no idea how to call engine function here :)
+
+	//This was crashing!
+	//CALL_zstringPtrParam cannot be used in recyclable call
+	//CALL_IntParam (funcID);
+	//CALL_zstringPtrParam (text);
+
+	//This was not crashing ... however it didn't work properly (sometimes I received completely random texts ?)
+	//CALL_IntParam (funcID);
+	//CALL_StructParam (_@s (text), 5);
+	//CALL__thiscall (infoPtr, MEMINT_SwitchG1G2(oCInfo__AddChoice_G1, oCInfo__AddChoice_G2));
+	*/
+
+	//--> Therefore using my own method - I will create oCInfoChoice object and will add it to listChoices
+	var oCInfo info; info = _^ (infoPtr);
+	var int infoChoicePtr; infoChoicePtr = oCInfoChoice_Create (s, funcID);
+	List_AddFront (info.listChoices_next, infoChoicePtr);
+};
+
+func void Info_AddChoiceByID (var int diaInstance, var string s, var int funcID) {
+	var int infoPtr; infoPtr = oCInfoManager_GetInformation (diaInstance);
+	oCInfo_AddChoice (infoPtr, s, funcID);
 };

@@ -76,6 +76,7 @@ ObjectFactory\oCMsgWeapon.d
 
 ObjectFactory\zCWaypoint.d
 
+ObjectFactory\oCInfoChoice.d
 mobFunctions.d
 
 anims_engine.d
