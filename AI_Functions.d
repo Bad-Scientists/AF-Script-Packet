@@ -1112,6 +1112,10 @@ func void AI_SyncNpc (var int slfInstance, var int othInstance) {
  */
 func void AI_DiaSync () {
 	if (!MEM_Game.infoman) { return; };
+
+	//If npc & player are one and the same (then we are most likely in MOBSI production dialogue) - then we don't need synchronization (it has side-effects, see above note about EV_WaitTillEnd)
+	if (MEM_InformationMan.npc == MEM_InformationMan.player) { return; };
+
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.npc)) { return; };
 	if (!Hlp_Is_oCNpc (MEM_InformationMan.player)) { return; };
 
