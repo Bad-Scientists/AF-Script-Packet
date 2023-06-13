@@ -927,7 +927,7 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 
 	//Get NPC state
 	var int statePtr; statePtr = NPC_GetNPCState (slf);
-	if (statePtr) {
+	if ((statePtr) && (!Npc_IsPlayer (slf))) {
 		var oCNPC_States state; state = _^ (statePtr);
 
 		//Get routine position
@@ -1022,6 +1022,10 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 	zCVob_PositionUpdated (_@ (slf));
 
 	//oCNpc::Enable @ position (if not player - this will clear AI queue)
+	if (!Npc_IsPlayer (slf)) {
+		oCNpc_Enable (slf, _@ (pos));
+	};
+
 	if (!Npc_IsPlayer (npc)) {
 		oCNpc_Enable (npc, _@ (pos));
 	};
