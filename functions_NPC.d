@@ -1286,3 +1286,36 @@ func void Npc_BeamToKeepQueue (var int slfInstance, var string vobName) {
 	zCVob_PositionUpdated (_@ (slf));
 };
 
+/*
+ *	Npc_HasAni
+ *	 - function loops through EM and checks if aniName is in AI queue
+ */
+func int Npc_HasAni (var int slfInstance, var string aniName) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	aniName = STR_Upper (aniName);
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY) {
+				var oCMsgConversation msg; msg = _^ (eMsg);
+
+				if (Hlp_StrCmp (msg.name, aniName)) {
+					return TRUE;
+				};
+			};
+		};
+	end;
+
+	return FALSE;
+};
+
