@@ -1354,3 +1354,29 @@ func void Npc_TurnToVob (var int slfInstance, var int vobPtr, var int startTurnA
 	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, fAzimuth, startTurnAnis);
 };
 
+/*
+ *	Npc_SetAIState
+ *	 - function overrides curState.index (#hacker)
+ */
+func void Npc_SetAIState (var int slfInstance, var string stateName) {
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	state.curState_valid = TRUE;
+	state.curState_index = MEM_FindParserSymbol (stateName);
+
+	//Special logic for by engine recognized ZS states
+	var int prgIndex; prgIndex = -1;
+	if (Hlp_StrCmp (stateName, "ZS_ANSWER")) { prgIndex = -2; };
+	if (Hlp_StrCmp (stateName, "ZS_DEAD")) { prgIndex = -3; };
+	if (Hlp_StrCmp (stateName, "ZS_UNCONSCIOUS")) { prgIndex = -4; };
+	if (Hlp_StrCmp (stateName, "ZS_FADEAWAY")) { prgIndex = -5; };
+	if (Hlp_StrCmp (stateName, "ZS_FOLLOW")) { prgIndex = -6; };
+
+	if (prgIndex < -1) {
+		state.curState_prgIndex = prgIndex;
+	};
+};
+
