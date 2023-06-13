@@ -489,7 +489,7 @@ func int CloneObject__VobTransport (var int vobPtr) {
 		visualName = Vob_GetVisualName (vobPtr);
 		objectName = CloneCreateNewName__VobTransport (mob._zCObject_objectName);
 
-		vobPtr = InsertObject ("oCMob", objectName, visualName, _@ (mob._zCVob_trafoObjToWorld), 0);
+		vobPtr = InsertObject ("oCMOB", objectName, visualName, _@ (mob._zCVob_trafoObjToWorld), 0);
 
 		var oCMob newMob; newMob = _^ (vobPtr);
 

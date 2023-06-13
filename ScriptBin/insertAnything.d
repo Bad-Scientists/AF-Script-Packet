@@ -556,22 +556,22 @@ func int InsertVobWP(var string nm, var string vis, var string wp) {
  * InsertMobAsChild   (string objName, string visual, int[16] *trafoMat,        int *parentVob)
  */
 func int InsertMobAsChild(var string nm, var string vis, var int trf, var int par) {
-    return InsertObject("oCMob", nm, vis, trf, par);
+    return InsertObject("oCMOB", nm, vis, trf, par);
 };
 func int InsertMobAsChildPos(var string nm, var string vis, var int pos, var int dir, var int par) {
-    return InsertObjectPos("oCMob", nm, vis, pos, dir, par);
+    return InsertObjectPos("oCMOB", nm, vis, pos, dir, par);
 };
 func int InsertMobAsChildWP(var string nm, var string vis, var string wp, var int par) {
-    return InsertObjectWP("oCMob", nm, vis, wp, par);
+    return InsertObjectWP("oCMOB", nm, vis, wp, par);
 };
 func int InsertMob(var string nm, var string vis, var int trf) {
-    return InsertObject("oCMob", nm, vis, trf, 0);
+    return InsertObject("oCMOB", nm, vis, trf, 0);
 };
 func int InsertMobPos(var string nm, var string vis, var int pos, var int dir) {
-    return InsertObjectPos("oCMob", nm, vis, pos, dir, 0);
+    return InsertObjectPos("oCMOB", nm, vis, pos, dir, 0);
 };
 func int InsertMobWP(var string nm, var string vis, var string wp) {
-    return InsertObjectWP("oCMob", nm, vis, wp, 0);
+    return InsertObjectWP("oCMOB", nm, vis, wp, 0);
 };
 
 

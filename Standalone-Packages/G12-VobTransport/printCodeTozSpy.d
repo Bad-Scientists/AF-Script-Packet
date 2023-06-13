@@ -360,11 +360,11 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMob (vobPtr)) {
-		//vobPtr = InsertObject ("oCMob", objectName, visualName, _@ (trafo), 0);
+		//vobPtr = InsertObject ("oCMOB", objectName, visualName, _@ (trafo), 0);
 		msg = "vobPtr = InsertObject (";
 		msg = ConcatStrings (msg, BtoC(34));
 
-		msg = ConcatStrings (msg, "oCMob");
+		msg = ConcatStrings (msg, "oCMOB");
 
 		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
