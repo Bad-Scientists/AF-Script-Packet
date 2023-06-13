@@ -449,6 +449,7 @@ func int NPC_VobListDetectNpc (var int slfInstance, var string stateName, var in
 			if (canSee) {
 				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 					npc = _^ (vobPtr);
+
 					if (NPC_IsInStateName (npc, stateName)) {
 						//Find route from Npc to vob - get total distance if Npc travels by waynet
 						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
@@ -563,6 +564,28 @@ func int NPC_VobListDetectByName (var int slfInstance, var string objectName, va
 	if (nearestPtr) { return nearestPtr; };
 
 	return firstPtr;
+};
+
+func void NPC_VobListRemoveDeadNpcs (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int vobPtr;
+	var int i; i = slf.vobList_numInArray;
+
+	while (i > 0);
+		vobPtr = MEM_ReadIntArray (slf.vobList_array, i);
+
+		if (Hlp_Is_oCNpc (vobPtr)) {
+			var oCNPC npc; npc = _^ (vobPtr);
+
+			if (Npc_IsDead (npc)) {
+				oCNpc_RemoveFromVobList (slfInstance, vobPtr);
+			};
+		};
+
+		i -= 1;
+	end;
 };
 
 /*
