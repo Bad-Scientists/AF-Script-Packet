@@ -1251,3 +1251,38 @@ func int NPC_GetSoundVobPtr (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 	return slf.soundVob;
 };
+
+/*
+ *	Npc_BeamToKeepQueue
+ *	 - updates 'physical' position of Npc
+ */
+func void Npc_BeamToKeepQueue (var int slfInstance, var string vobName) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int pos[3];
+
+	//Is this vob?
+	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+	if (vobPtr) {
+		if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
+		};
+	} else {
+		//Is this waypooint?
+		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+		if (wpPtr) {
+			var zCWaypoint wp; wp = _^ (wpPtr);
+			MEM_CopyBytes (_@ (wp.pos), _@ (pos), 12);
+		} else {
+			//What do we do here?
+		};
+	};
+
+	//Update Npc's position
+	slf._zCVob_trafoObjToWorld[3] = pos[0];
+	slf._zCVob_trafoObjToWorld[7] = pos[1];
+	slf._zCVob_trafoObjToWorld[11] = pos[2];
+
+	zCVob_PositionUpdated (_@ (slf));
+};
+
