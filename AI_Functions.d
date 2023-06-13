@@ -79,21 +79,6 @@ func void AI_TurnAwayPos (var int slfInstance, var int posPtr) {
 };
 
 /*
- *	AI_TurnToWP
- *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
- */
-func void AI_TurnToWP (var int slfInstance, var string waypoint) {
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
-	if (!wpPtr) { return; };
-
-	var zCWaypoint wp; wp = _^ (wpPtr);
-	AI_TurnToPos (slf, _@ (wp.pos));
-};
-
-/*
 	AI_TurnAwayWP
 	 - same as AI_TurnAway, but allows us to use waypoint
 
@@ -1182,4 +1167,38 @@ func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	AI_Function_S (slf, _AI_RemoveItemFromSlot, slotName);
+};
+
+/*
+ *	AI_TurnToWP
+ *	 - same as AI_TurnToNPC, but allows us to use vob waypoint
+ */
+//func void AI_TurnToWP (var int slfInstance, var string waypoint) {
+//	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+//	if (!Hlp_IsValidNPC (slf)) { return; };
+//
+//	var int wpPtr; wpPtr = SearchWaypointByName (waypoint);
+//	if (!wpPtr) { return; };
+//
+//	var zCWaypoint wp; wp = _^ (wpPtr);
+//	AI_TurnToPos (slf, _@ (wp.pos));
+//};
+
+/*
+ *	AI_TurnToVob
+ *	 - same as AI_TurnToNPC, but allows us to use vob / waypoint
+ */
+func void AI_TurnToVob (var int slfInstance, var string vobName) {
+	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+
+	if (vobPtr) {
+		AI_TurnToVobPtr (slfInstance, vobPtr);
+	} else {
+		var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+
+		if (wpPtr) {
+			var zCWaypoint wp; wp = _^ (wpPtr);
+			AI_TurnToPos (slfInstance, _@ (wp.pos));
+		};
+	};
 };
