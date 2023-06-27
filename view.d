@@ -115,8 +115,8 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 			l = _^(lp);
 			vt = _^(l.data);
 			//When I tried to center some views created by engine vsizex was set to PS_VMAX, psizex contained correct value (these views are confusing ...)
-			//width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
-			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
+			//width = Print_ToVirtual(Font_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
+			width = Print_ToVirtual(Font_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
 			//vt.posx = (PS_VMAX / 2) - (width / 2);
 			vt.posx = (PS_VMAX - width) / 2;
 			lp = l.next;
@@ -134,8 +134,8 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 		while(lp);
 			l = _^(lp);
 			vt = _^(l.data);
-			//width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
-			width = Print_ToVirtual(Print_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
+			//width = Print_ToVirtual(Font_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / v.vsizex;
+			width = Print_ToVirtual(Font_GetStringWidthPtr(vt.text, vt.font), PS_X) * PS_VMAX / Print_ToVirtual (v.psizex, PS_X);
 			//LeGo bug - subtraction of negative number is addition ... so we need to add negative number ...
 			//vt.posx = PS_VMAX - width - margin;
 			vt.posx = PS_VMAX - width + margin;
