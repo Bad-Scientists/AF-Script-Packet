@@ -55,6 +55,8 @@ strings.d
 utils.d
 files.d
 
+fonts.d
+
 keys.d
 vectors.d
 vobFunctions.d
