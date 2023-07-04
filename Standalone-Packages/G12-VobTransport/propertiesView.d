@@ -21,7 +21,7 @@ func void DisplayProperties__VobTransport () {
 	var int scaleF;
 
 	if (vobTransportMode != vobTransportMode_Idle) {
-		spaceWidth = Print_GetStringWidth (" ", vobTransportFontName);
+		spaceWidth = Font_GetStringWidth (" ", vobTransportFontName);
 		spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 	};
 

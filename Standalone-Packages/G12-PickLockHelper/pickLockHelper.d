@@ -57,7 +57,7 @@ func int PickLockHelper_GetPosX () {
 	//--- calculate if not specified
 	var int posX;
 	if (_pickLockHelper_PPosX == -1) {
-		//txt.posX = (PS_VMax - Print_ToVirtual(Print_GetStringWidth(text, font), PS_X)) / 2;
+		//txt.posX = (PS_VMax - Print_ToVirtual(Font_GetStringWidth(text, font), PS_X)) / 2;
 		posX = (PS_VMax - viewWidth) / 2;
 	} else {
 		posX = Print_ToVirtual (_pickLockHelper_PPosX, PS_X);
@@ -77,7 +77,7 @@ func int PickLockHelper_GetPosY () {
 	var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
 	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
 
-	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", _pickLockHelper_FontName);
+	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 	var int posY;
@@ -99,7 +99,7 @@ func int PickLockHelper_GetPosY () {
 };
 
 func void PickLockHelper_Show () {
-	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", _pickLockHelper_FontName);
+	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 	var int scaleF; scaleF = _getInterfaceScaling ();
@@ -149,7 +149,7 @@ func void PickLockHelper_Show () {
 		View_AddText (hpickLockHelper_LastKey, 00, 00, pickLockHelper_LastKey, _pickLockHelper_FontName);
 	};
 
-	posX += Print_ToVirtual (Print_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
+	posX += Print_ToVirtual (Font_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
 
 	View_Open (hpickLockHelper_LastKey);
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
@@ -189,11 +189,8 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 		pickLockHelper_CurrentCombination = "";
 	};
 
-//-- Update PickLockHelper view
-
-	if (!pickLockHelper_Visible) { return; };
-
-	var int spaceWidth; spaceWidth = Print_GetStringWidth (" ", _pickLockHelper_FontName);
+	//Update PickLockHelper view
+	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 	View_SetTextMarginAndFontColor (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, RGBA (255, 255, 255, 64), spaceWidth);
@@ -202,7 +199,7 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 	var int posX; posX = PickLockHelper_GetPosX ();
 	var int posY; posY = PickLockHelper_GetPosY ();
 
-	posX += Print_ToVirtual (Print_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
+	posX += Print_ToVirtual (Font_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
 
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
 

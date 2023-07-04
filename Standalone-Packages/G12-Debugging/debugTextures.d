@@ -30,7 +30,7 @@ func void DisplayTextureName__DebugTextures (var int posPtr, var string texts, v
 	repeat (i, linesCount); var int i;
 		text = STR_Split (texts, Print_LineSeperator, i);
 
-		var int vw; vw = Print_GetStringWidth (text, DEBUGTEXTURES_FONT);
+		var int vw; vw = Font_GetStringWidth (text, DEBUGTEXTURES_FONT);
 
 		if (vw > viewWidth) {
 			viewWidth = vw;

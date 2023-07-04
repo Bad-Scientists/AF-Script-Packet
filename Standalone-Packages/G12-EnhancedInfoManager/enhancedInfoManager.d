@@ -36,18 +36,18 @@
  */
 
 //-- Internal variables
-var string _InfoManagerDefaultDialogColorSelected;
-var string _InfoManagerDefaultColorDialogGrey;
+var int _InfoManagerDefaultDialogColorSelected;
+var int _InfoManagerDefaultColorDialogGrey;
 
-var string _InfoManagerDefaultFontDialogSelected;
-var string _InfoManagerDefaultFontDialogGrey;
+var int _InfoManagerDefaultFontDialogSelected;
+var int _InfoManagerDefaultFontDialogGrey;
 
-var string _InfoManagerDisabledDialogColorSelected;
-var string _InfoManagerDisabledColorDialogGrey;
+var int _InfoManagerDisabledDialogColorSelected;
+var int _InfoManagerDisabledColorDialogGrey;
 
 var int _InfoManagerDefaultDialogAlignment;
 
-var string _InfoManagerIndicatorColorDefault;
+var int _InfoManagerIndicatorColorDefault;
 var int _InfoManagerIndicatorAlpha;
 
 var string _InfoManagerSpinnerIndicatorString;
@@ -114,7 +114,11 @@ var int InfoManagerUpdateState;
 
 instance zCViewText2@ (zCViewText2);
 
-var int InfoManagerSpinnerIndicator;
+var int InfoManagerSpinnerIndicatorL;
+var int InfoManagerSpinnerIndicatorR;
+
+var int InfoManagerSpinnerIndicatorAniProgress;
+
 var int InfoManagerAnswerIndicator;
 
 var int InfoManagerDialogInstPtr[255];
@@ -148,94 +152,93 @@ func int EIM_GetInfoPtr (var int index) {
 	return MEM_ReadIntArray (_@ (InfoManagerDialogInstPtr), index);
 };
 
-/*
- *	If you want, you can add your own 'animation' here :)
- */
-func void InfoManagerSpinnerAnimate (var int animate) {
-	var int aniStep;
+func void InfoManagerSpinnerAnimate () {
+	var int spaceWidth;
+	var int spinnerWidthL;
+	var int spinnerWidthR;
 
-	if (aniStep < 0) { aniStep = 0; };
-	if (aniStep > 11) { aniStep = 0; };
+	const int MOVE_MAX_PIXELS = 15;
 
-	if (aniStep == 0) {
-		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
-	} else
-	if (aniStep == 1) {
-		_InfoManagerSpinnerIndicatorString = "  <-  ->   ";
-	} else
-	if (aniStep == 2) {
-		_InfoManagerSpinnerIndicatorString = " <-   ->   ";
-	} else
-	if (aniStep == 3) {
-		_InfoManagerSpinnerIndicatorString = "<-    ->   ";
-	} else
-	if (aniStep == 4) {
-		_InfoManagerSpinnerIndicatorString = " <-   ->   ";
-	} else
-	if (aniStep == 5) {
-		_InfoManagerSpinnerIndicatorString = "  <-  ->   ";
-	} else
-	if (aniStep == 6) {
-		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
-	} else
-	if (aniStep == 7) {
-		_InfoManagerSpinnerIndicatorString = "   <-  ->  ";
-	} else
-	if (aniStep == 8) {
-		_InfoManagerSpinnerIndicatorString = "   <-   -> ";
-	} else
-	if (aniStep == 9) {
-		_InfoManagerSpinnerIndicatorString = "   <-    ->";
-	} else
-	if (aniStep == 10) {
-		_InfoManagerSpinnerIndicatorString = "   <-   -> ";
-	} else
-	if (aniStep == 11) {
-		_InfoManagerSpinnerIndicatorString = "   <-  ->  ";
-	} else
-	if (aniStep == 12) {
-		_InfoManagerSpinnerIndicatorString = "   <- ->   ";
-	};
+	var zCViewText2 spinnedIndicatorL;
+	var zCViewText2 spinnedIndicatorR;
 
-	if (animate) { aniStep += 1; };
-};
+	if (!MEM_InformationMan.DlgChoice) { return; };
+	var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
 
-func void InfoManagerSpinnerAniFunction () {
-	InfoManagerSpinnerAnimate (TRUE);
+	//Animate spinner indicator
+	if (InfoManagerSpinnerIndicatorL)
+	&& (InfoManagerSpinnerIndicatorR)
+	{
+		//'Left' part
+		spinnedIndicatorL = _^ (InfoManagerSpinnerIndicatorL);
+		spinnedIndicatorL.text = "<--";
 
-	//If user exits dialogue with F8 with spinner saves/loads game then pointer to InfoManagerSpinnerIndicator is invalid
-	if (MEM_InformationMan.IsDone) {
-		InfoManagerSpinnerPossible = FALSE;
-	};
+		//'Right' part
+		spinnedIndicatorR = _^ (InfoManagerSpinnerIndicatorR);
+		spinnedIndicatorR.text = "-->";
 
-	//Remove if not required
-	if ((!InfoManagerSpinnerPossible) || (!InfoManagerSpinnerIndicator)) {
-		//FF_Remove (InfoManagerSpinnerAniFunction);
-	} else {
-		//Animate
-		var zCViewText2 txtIndicator;
-		if (InfoManagerSpinnerIndicator) {
-			txtIndicator = _^ (InfoManagerSpinnerIndicator);
+		//We don't need to run these all the time
+		const int init = 0;
 
-			//if (STR_Len (InfoManagerSpinnerNumber)) {
-			//	txtIndicator.text = InfoManagerSpinnerNumber;
-			//} else {
-				txtIndicator.text = _InfoManagerSpinnerIndicatorString;
-			//};
+		if (!init) {
+			spinnerWidthL = Font_GetStringWidthPtr (spinnedIndicatorL.text, spinnedIndicatorL.font);
+			spinnerWidthR = Font_GetStringWidthPtr (spinnedIndicatorR.text, spinnedIndicatorR.font);
 
-			//Adjust alignment of spinner indicator
-			var int textWidth;
+			spaceWidth = zCFont_GetWidth (spinnedIndicatorL.font, CtoB (" "));
 
-			if (!MEM_InformationMan.DlgChoice) { return; };
-			var zCViewDialogChoice dlg; dlg = _^ (MEM_InformationMan.DlgChoice);
+			init = 1;
+		};
 
-			textWidth = Print_GetStringWidthPtr (txtIndicator.text, txtIndicator.font);
+		if (InfoManagerSpinnerAlignment == ALIGN_LEFT)
+		{
+			spinnedIndicatorL.pixelPositionX = dlg.pixelSizeX - ((spinnerWidthL + MOVE_MAX_PIXELS) + (spaceWidth) + (spinnerWidthR + MOVE_MAX_PIXELS)) - dlg.offsetTextPixelX - dlg.sizeMargin_1[0];
+		} else
+		if (InfoManagerSpinnerAlignment == ALIGN_CENTER)
+		{
+			spinnedIndicatorL.pixelPositionX = dlg.sizeMargin_0[0] + (MOVE_MAX_PIXELS);
+		} else
+		{
+			spinnedIndicatorL.pixelPositionX = dlg.sizeMargin_0[0] + (MOVE_MAX_PIXELS);
+		};
 
-			if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-				txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
-			} else {
-				txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
-			};
+
+		//Adjust alignment of spinner indicator
+
+		if (InfoManagerSpinnerAlignment == ALIGN_LEFT)
+		{
+			spinnedIndicatorR.pixelPositionX = dlg.pixelSizeX - (spinnerWidthR + MOVE_MAX_PIXELS) - dlg.offsetTextPixelX - dlg.sizeMargin_1[0];
+		} else
+		if (InfoManagerSpinnerAlignment == ALIGN_CENTER)
+		{
+			spinnedIndicatorR.pixelPositionX = dlg.pixelSizeX - (spinnerWidthR + MOVE_MAX_PIXELS) - dlg.offsetTextPixelX - dlg.sizeMargin_1[0];
+		} else
+		{
+			spinnedIndicatorR.pixelPositionX = dlg.sizeMargin_0[0] + ((spinnerWidthL + MOVE_MAX_PIXELS) + (spaceWidth) + (MOVE_MAX_PIXELS));
+		};
+
+		var int movePixels; movePixels = InfoManagerSpinnerIndicatorAniProgress;
+
+		//Left part to left
+		if (movePixels < MOVE_MAX_PIXELS) {
+			spinnedIndicatorL.pixelPositionX -= movePixels;
+		} else
+
+		//Left part back
+		if (movePixels < MOVE_MAX_PIXELS * 2) {
+			spinnedIndicatorL.pixelPositionX -= ((MOVE_MAX_PIXELS * 2) - movePixels);
+		} else
+
+		//Right part to right
+		if (movePixels < MOVE_MAX_PIXELS * 3) {
+			spinnedIndicatorR.pixelPositionX += (movePixels - (MOVE_MAX_PIXELS * 2));
+		} else
+
+		//Right part back
+		if (movePixels < MOVE_MAX_PIXELS * 4) {
+			spinnedIndicatorR.pixelPositionX += ((MOVE_MAX_PIXELS * 4) - movePixels);
+		} else {
+			//Reset ani
+			InfoManagerSpinnerIndicatorAniProgress = 0;
 		};
 	};
 };
@@ -1424,7 +1427,12 @@ func void _hook_oCInformationManager_Update_EIM () {
 	var int loop;
 
 	var zCViewText2 txt;
-	var zCViewText2 txtIndicator;
+	var zCViewText2 tempTxt;
+
+	var zCViewText2 spinnedIndicatorL;
+	var zCViewText2 spinnedIndicatorR;
+
+	var zCViewText2 answerIndicator;
 
 	var int infoPtr;
 	//var int choicePtr;
@@ -1485,16 +1493,16 @@ MEM_InformationMan.LastMethod:
 	var int refreshOverlays; refreshOverlays = FALSE;
 	var int refreshOverlayColors; refreshOverlayColors = FALSE;
 
-	var int color;
-	var int colorSelected;
-
 	var int overlayChoice;
 
 	var string spinnerID;
 
 	//Default colors
-	var string dlgColor; dlgColor = _InfoManagerDefaultColorDialogGrey;
-	var string dlgColorSelected; dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
+	var int color;
+	var string hexColor;
+
+	var int dlgColor;
+	var int dlgColorSelected;
 
 	var int alignment; //alignment = _InfoManagerDefaultDialogAlignment;
 
@@ -1522,7 +1530,6 @@ MEM_InformationMan.LastMethod:
 
 	var int overlayIndex;
 	var int overlayPosX;
-	var int overlayShiftX;
 	var int overlayWidth;
 
 	var int flagDialogChoiceStartsWithOverlay;
@@ -1532,7 +1539,6 @@ MEM_InformationMan.LastMethod:
 	var int overlayAlignment;
 	var int overlayTab; overlayTab = 0;
 
-	var int textWidth;
 	var int defaultPosX;
 
 	var string dlgDescriptionClean;
@@ -1606,7 +1612,9 @@ MEM_InformationMan.LastMethod:
 		InfoManagerHighlightSelected = FALSE;
 
 		InfoManagerAnswerIndicator = 0;
-		InfoManagerSpinnerIndicator = 0;
+
+		InfoManagerSpinnerIndicatorL = 0;
+		InfoManagerSpinnerIndicatorR = 0;
 
 		overlayCount = 0;
 
@@ -1622,9 +1630,9 @@ MEM_InformationMan.LastMethod:
 			if (arr.array) {
 				i = dlg.Choices;
 				while (i < dlg.listTextLines_numInArray);
-					txtIndicator = _^ (MEM_ReadIntArray (arr.array, i));
-					txtIndicator.enabledTimer = TRUE;
-					txtIndicator.timer = floatnull;
+					txt = _^ (MEM_ReadIntArray (arr.array, i));
+					txt.enabledTimer = TRUE;
+					txt.timer = floatnull;
 					i += 1;
 				end;
 			};
@@ -1656,8 +1664,8 @@ MEM_InformationMan.LastMethod:
 					if (InfoManagerModeInfoLastChoiceSelected < dlg.choices) {
 						//Restore previous cursor position
 						dlg.ChoiceSelected = InfoManagerModeInfoLastChoiceSelected;
-						//Highlight selected - this will make sure ChoiceSelected is visible
-						zCViewDialogChoice_HighlightSelected ();
+						//Show selected choice
+						zCViewDialogChoice_ShowSelected ();
 						//Force auto-scrolling update
 						InfoManagerLastChoiceSelected = -1;
 					};
@@ -1685,7 +1693,7 @@ MEM_InformationMan.LastMethod:
 				horizontalScrolling = HSCROLL_IDLE;
 			};
 
-			timerHorizontalScrolling += MEM_Timer.frameTime;
+			//timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			//Reset cached dialog --> this will update dialog choice text
 			if (horizontalScrollingChoiceNumber >= 0 && horizontalScrollingChoiceNumber < DIALOG_MAX) {
@@ -1698,9 +1706,9 @@ MEM_InformationMan.LastMethod:
 		if (horizontalScrollingDisabled == HSCROLL_RESET) {
 			horizontalScrollingDisabled = HSCROLL_INIT;
 			timerHorizontalScrollingDisabled = 0;
-			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+			//timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 
-			//Reset cached dialog --> this will update dialog choice text
+			//Reset cached dialogue --> this will update dialog choice text
 
 			i = 0;
 			while (i < dlg.choices);
@@ -1733,6 +1741,9 @@ MEM_InformationMan.LastMethod:
 		var string dlgFont;
 		var string dlgFontSelected;
 
+		var int dlgFontPtr;
+		var int dlgFontSelectedPtr;
+
 		var string oldDescription;
 		var string dlgDescription;
 		var int descriptionAvailable;
@@ -1754,16 +1765,16 @@ MEM_InformationMan.LastMethod:
 			txt = _^ (MEM_ReadIntArray (arr.array, i));
 
 			//Get current fontame
-			if (STR_Len (_InfoManagerDefaultFontDialogGrey)) {
-				dlgFont = _InfoManagerDefaultFontDialogGrey;
+			if (_InfoManagerDefaultFontDialogGrey) {
+				dlgFontPtr = _InfoManagerDefaultFontDialogGrey;
 			} else {
-				dlgFont = Print_GetFontName (txt.font);
+				dlgFontPtr = txt.font;
 			};
 
-			if (STR_Len (_InfoManagerDefaultFontDialogSelected)) {
-				dlgFontSelected = _InfoManagerDefaultFontDialogSelected;
+			if (_InfoManagerDefaultFontDialogSelected) {
+				dlgFontSelectedPtr = _InfoManagerDefaultFontDialogSelected;
 			} else {
-				dlgFontSelected = dlgFont;
+				dlgFontSelectedPtr = dlgFontPtr;
 			};
 
 			dlgDescription = "";
@@ -1905,9 +1916,9 @@ MEM_InformationMan.LastMethod:
 							MEM_WriteIntArray (_@ (overlayListMapView), j, 0);
 							MEM_WriteStringArray (_@s (overlayID), j, "");
 
-							txtIndicator = _^ (overlayPtr);
-							txtIndicator.enabledTimer = TRUE;
-							txtIndicator.timer = floatnull;
+							tempTxt = _^ (overlayPtr);
+							tempTxt.enabledTimer = TRUE;
+							tempTxt.timer = floatnull;
 
 							refreshOverlayColors = TRUE;
 						};
@@ -1919,10 +1930,7 @@ MEM_InformationMan.LastMethod:
 
 				//Default values
 				dlgColor = _InfoManagerDefaultColorDialogGrey;
-				color = HEX2RGBA (dlgColor);
-
 				dlgColorSelected = _InfoManagerDefaultDialogColorSelected;
-				colorSelected = HEX2RGBA (dlgColorSelected);
 
 				alignment = _InfoManagerDefaultDialogAlignment;
 
@@ -2074,16 +2082,14 @@ MEM_InformationMan.LastMethod:
 						txt.pixelPositionX = defaultPosX;
 					} else
 					if (alignment == ALIGN_CENTER) {
-						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (Font_GetStringWidthPtr (dlgDescriptionClean, dlgFontPtr) / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 						if (txt.pixelPositionX < defaultPosX) {
 							txt.pixelPositionX = defaultPosX;
 						};
 					} else
 					if (alignment == ALIGN_RIGHT) {
-						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (dlgDescriptionClean, dlgFontPtr) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 						//posX cannot be < defaultPosX - otherwise dialog choice will disappear
 						if (txt.pixelPositionX < defaultPosX) {
@@ -2093,12 +2099,10 @@ MEM_InformationMan.LastMethod:
 
 					overlayPosX = txt.pixelPositionX;
 
-					if (STR_Len (overlayConcat) > 0)
+					if (STR_Len (overlayConcat))
 					&& (overlayIndex > 0)
 					{
-						//
-						overlayShiftX = STR_SplitCount (overlayConcat, " ");
-						overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
+						overlayPosX += Font_GetStringWidthPtr (overlayConcat, dlgFontPtr);
 					};
 
 					if ((index > -1) && (index2 > index) && (index3 > index2))
@@ -2148,11 +2152,11 @@ MEM_InformationMan.LastMethod:
 							dlgColor = _InfoManagerDisabledColorDialogGrey;
 							dlgColorSelected = _InfoManagerDisabledDialogColorSelected;
 
-							overlayColor = HEX2RGBA (_InfoManagerDisabledDialogColorSelected);
-							overlayColorSelected = HEX2RGBA (_InfoManagerDisabledColorDialogGrey);
+							overlayColor = _InfoManagerDisabledDialogColorSelected;
+							overlayColorSelected = _InfoManagerDisabledColorDialogGrey;
 						} else {
-							overlayColor = HEX2RGBA (_InfoManagerDefaultColorDialogGrey);
-							overlayColorSelected = HEX2RGBA (_InfoManagerDefaultDialogColorSelected);
+							overlayColor = _InfoManagerDefaultColorDialogGrey;
+							overlayColorSelected = _InfoManagerDefaultDialogColorSelected;
 						};
 
 						//--> Extract overlay format modifiers
@@ -2216,10 +2220,8 @@ MEM_InformationMan.LastMethod:
 							if (overlayAlignment == -1)
 							&& (flagDialogChoiceStartsWithOverlay == FALSE)
 							{
-								overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (s1));
-
-								overlayShiftX = STR_SplitCount (overlayConcat, " ");
-								overlayPosX += Print_GetStringWidth (overlayConcat, dlgFont) - overlayShiftX + 1;
+								overlayConcat = ConcatStrings (overlayConcat, Choice_RemoveAllModifiers (overlayDialog));
+								overlayPosX += Font_GetStringWidthPtr (overlayConcat, dlgFontPtr);
 							};
 						};
 
@@ -2227,14 +2229,16 @@ MEM_InformationMan.LastMethod:
 						index = STR_IndexOf (overlayFormat, "h@");
 
 						if (index > -1) {
-							overlayColor = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "h@"));
+							hexColor = Choice_ExtractModifier (_@s (overlayFormat), "h@");
+							overlayColor = HEX2RGBA (hexColor);
 						};
 
 						//Extract color selected
 						index = STR_IndexOf (overlayFormat, "hs@");
 
 						if (index > -1) {
-							overlayColorSelected = HEX2RGBA (Choice_ExtractModifier (_@s (overlayFormat), "hs@"));
+							hexColor = Choice_ExtractModifier (_@s (overlayFormat), "hs@");
+							overlayColorSelected = HEX2RGBA (hexColor);
 						};
 						//<--
 
@@ -2251,6 +2255,7 @@ MEM_InformationMan.LastMethod:
 
 								if (index > -1) {
 									dlgFont = Choice_ExtractModifier (_@s (overlayText), "f@");
+									dlgFontPtr = Print_GetFontPtr (dlgFont);
 								};
 
 								//Extract font selected name
@@ -2258,22 +2263,23 @@ MEM_InformationMan.LastMethod:
 
 								if (index > -1) {
 									dlgFontSelected = Choice_ExtractModifier (_@s (overlayText), "fs@");
+									dlgFontSelectedPtr = Print_GetFontPtr (dlgFontSelected);
 								};
 
 								//Extract color grayed
 								index = (STR_IndexOf (overlayText, "h@"));
 
 								if (index > -1) {
-									dlgColor = Choice_ExtractModifier (_@s (overlayText), "h@");
-									overlayColor = HEX2RGBA (dlgColor);
+									hexColor = Choice_ExtractModifier (_@s (overlayText), "h@");
+									overlayColor = HEX2RGBA (hexColor);
 								};
 
 								//Extract color selected
 								index = (STR_IndexOf (overlayText, "hs@"));
 
 								if (index > -1) {
-									dlgColorSelected = Choice_ExtractModifier (_@s (overlayText), "hs@");
-									overlayColorSelected = HEX2RGBA (dlgColorSelected);
+									hexColor = Choice_ExtractModifier (_@s (overlayText), "hs@");
+									overlayColorSelected = HEX2RGBA (hexColor);
 								};
 
 								//al@ align left
@@ -2343,8 +2349,7 @@ MEM_InformationMan.LastMethod:
 									} else
 									//align center
 									if (overlayAlignment == ALIGN_CENTER) {
-										textWidth = Print_GetStringWidth (overlayText, dlgFont);
-										overlayChoiceTxt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+										overlayChoiceTxt.pixelPositionX = (dlg.pixelSizeX / 2) - (Font_GetStringWidthPtr (overlayText, dlgFontPtr) / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 										if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
 											overlayChoiceTxt.pixelPositionX = defaultPosX;
@@ -2352,16 +2357,14 @@ MEM_InformationMan.LastMethod:
 									} else
 									//align right
 									if (overlayAlignment == ALIGN_RIGHT) {
-										textWidth = Print_GetStringWidth (overlayText, dlgFont);
-										overlayChoiceTxt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+										overlayChoiceTxt.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (overlayText, dlgFontPtr) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 										if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
 											overlayChoiceTxt.pixelPositionX = defaultPosX;
 										};
 									} else
 									if (overlayAlignment == ALIGN_TAB) {
-										textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
-										overlayChoiceTxt.pixelPositionX = defaultPosX + textWidth;
+										overlayChoiceTxt.pixelPositionX = defaultPosX + Font_GetStringWidthPtr (InfoManagerTabSize, dlgFontPtr) * overlayTab;
 									};
 								};
 
@@ -2395,50 +2398,50 @@ MEM_InformationMan.LastMethod:
 
 							//Create new zCViewText2 instance for overlay
 							overlayPtr = create (zCViewText2@);
-							txtIndicator = _^ (overlayPtr);
+							overlayChoiceTxt = _^ (overlayPtr);
 
-							txtIndicator.enabledColor = txt.enabledColor;
-							txtIndicator.font = txt.font;
+							overlayChoiceTxt.enabledColor = txt.enabledColor;
+							overlayChoiceTxt.font = txt.font;
 
-							txtIndicator.enabledBlend = txt.enabledBlend;
-							txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+							overlayChoiceTxt.enabledBlend = txt.enabledBlend;
+							overlayChoiceTxt.funcAlphaBlend = txt.funcAlphaBlend;
 
-							txtIndicator.text = overlayText;
+							//overlayChoiceTxt.text = overlayText;
+
+							overlayChoiceTxt.text = overlayText;
 
 							//In line with text
+
 							if (overlayAlignment == -1) {
-								txtIndicator.pixelPositionX = overlayPosX;
+								overlayChoiceTxt.pixelPositionX = overlayPosX;
 							} else
 							//align left
 							if (overlayAlignment == ALIGN_LEFT) {
-								txtIndicator.pixelPositionX = defaultPosX;
+								overlayChoiceTxt.pixelPositionX = defaultPosX;
 							} else
 							//align center
 							if (overlayAlignment == ALIGN_CENTER) {
-								textWidth = Print_GetStringWidth (overlayText, dlgFont);
-								txtIndicator.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+								overlayChoiceTxt.pixelPositionX = (dlg.pixelSizeX / 2) - (Font_GetStringWidthPtr (overlayText, dlgFontPtr) / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-								if (txtIndicator.pixelPositionX < defaultPosX) {
-									txtIndicator.pixelPositionX = defaultPosX;
+								if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
+									overlayChoiceTxt.pixelPositionX = defaultPosX;
 								};
 							} else
 							//align right
 							if (overlayAlignment == ALIGN_RIGHT) {
-								textWidth = Print_GetStringWidth (overlayText, dlgFont);
-								txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+								overlayChoiceTxt.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (overlayText, dlgFontPtr) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
-								if (txtIndicator.pixelPositionX < defaultPosX) {
-									txtIndicator.pixelPositionX = defaultPosX;
+								if (overlayChoiceTxt.pixelPositionX < defaultPosX) {
+									overlayChoiceTxt.pixelPositionX = defaultPosX;
 								};
 							} else
 							if (overlayAlignment == ALIGN_TAB) {
-								textWidth = Print_GetStringWidth (InfoManagerTabSize, dlgFont) * overlayTab;
-								txtIndicator.pixelPositionX = defaultPosX + textWidth;
+								overlayChoiceTxt.pixelPositionX = defaultPosX + Font_GetStringWidthPtr (InfoManagerTabSize, dlgFontPtr) * overlayTab;
 							};
 
 							//We will exploit this variable a little bit
-							txtIndicator.timer = nextAvailableOverlayIndex;
-							txtIndicator.enabledTimer = FALSE;
+							overlayChoiceTxt.timer = nextAvailableOverlayIndex;
+							overlayChoiceTxt.enabledTimer = FALSE;
 
 							//Insert indicator to dialog choices
 							MEM_ArrayInsert (_@ (dlg.listTextLines_array), overlayPtr);
@@ -2454,15 +2457,15 @@ MEM_InformationMan.LastMethod:
 							MEM_WriteIntArray (_@ (overlayListMapView), nextAvailableOverlayIndex, overlayPtr);
 
 							//-->
-							txtIndicator.pixelPositionY = txt.pixelPositionY;
+							overlayChoiceTxt.pixelPositionY = txt.pixelPositionY;
 
 							//Update color
 							if (i == dlg.ChoiceSelected) {
-								txtIndicator.color = overlayColorSelected;
-								txtIndicator.alpha = GetAlpha (overlayColorSelected);
+								overlayChoiceTxt.color = overlayColorSelected;
+								overlayChoiceTxt.alpha = GetAlpha (overlayColorSelected);
 							} else {
-								txtIndicator.color = overlayColor;
-								txtIndicator.alpha = GetAlpha (overlayColor);
+								overlayChoiceTxt.color = overlayColor;
+								overlayChoiceTxt.alpha = GetAlpha (overlayColor);
 							};
 							//<--
 
@@ -2548,6 +2551,7 @@ MEM_InformationMan.LastMethod:
 
 					if (index > -1) {
 						dlgFont = Choice_ExtractModifier (_@s (dlgDescription), "f@");
+						dlgFontPtr = Print_GetFontPtr (dlgFont);
 					};
 
 					//Extract font selected name
@@ -2555,20 +2559,23 @@ MEM_InformationMan.LastMethod:
 
 					if (index > -1) {
 						dlgFontSelected = Choice_ExtractModifier (_@s (dlgDescription), "fs@");
+						dlgFontSelectedPtr = Print_GetFontPtr (dlgFontSelected);
 					};
 
 					//Extract color grayed
 					index = STR_IndexOf (dlgDescription, "h@");
 
 					if (index > -1) {
-						dlgColor = Choice_ExtractModifier (_@s (dlgDescription), "h@");
+						hexColor = Choice_ExtractModifier (_@s (dlgDescription), "h@");
+						dlgColor = HEX2RGBA (hexColor);
 					};
 
 					//Extract color selected
 					index = STR_IndexOf (dlgDescription, "hs@");
 
 					if (index > -1) {
-						dlgColorSelected = Choice_ExtractModifier (_@s (dlgDescription), "hs@");
+						hexColor = Choice_ExtractModifier (_@s (dlgDescription), "hs@");
+						dlgColorSelected = HEX2RGBA (hexColor);
 					};
 
 					//al@ align left
@@ -2600,52 +2607,38 @@ MEM_InformationMan.LastMethod:
 						MEM_WriteStringArray (_@s (dialogSpinnerID), i, spinnerID);
 					};
 
-					//txtIndicator.pixelPositionX = dlg.pixelSizeX - txt.pixelPositionX - textWidth - dlg.offsetTextPixelX;
-					//
-
-					if (STR_Len (dlgColor) > 0) {
-						color = HEX2RGBA (dlgColor);
-					};
-
-					if (STR_Len (dlgColorSelected) > 0) {
-						colorSelected = HEX2RGBA (dlgColorSelected);
-					};
-
 					if (i == dlg.ChoiceSelected) {
-						if (STR_Len (dlgFontSelected) > 0) {
-							dlgFont = dlgFontSelected;
-						};
+						dlgFontPtr = dlgFontSelectedPtr;
 
 						//Can we go into answer mode? If yes replace description with current answer
 						//if (InfoManagerAnswerMode) {
 						//	dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
 						//};
 
-						txt.color = colorSelected;
-						txt.alpha = GetAlpha (colorSelected);
+						txt.color = dlgColorSelected;
+						txt.alpha = GetAlpha (dlgColorSelected);
 					} else {
-						txt.color = color;
-						txt.alpha = GetAlpha (color);
+						txt.color = dlgColor;
+						txt.alpha = GetAlpha (dlgColor);
 					};
 
 					//Replace dialog option text with 'cleared' dlgDescription
 					txt.text = dlgDescription;
 
 					//
+
 					if (alignment == ALIGN_LEFT) {
 						txt.pixelPositionX = defaultPosX;
 					} else
 					if (alignment == ALIGN_CENTER) {
-						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (textWidth / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = (dlg.pixelSizeX / 2) - (Font_GetStringWidthPtr (dlgDescriptionClean, dlgFontPtr) / 2) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 						if (txt.pixelPositionX < defaultPosX) {
 							txt.pixelPositionX = defaultPosX;
 						};
 					} else
 					if (alignment == ALIGN_RIGHT) {
-						textWidth = Print_GetStringWidth (dlgDescriptionClean, dlgFont);
-						txt.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						txt.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (dlgDescriptionClean, dlgFontPtr) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 
 						if (txt.pixelPositionX < defaultPosX) {
 							txt.pixelPositionX = defaultPosX;
@@ -2682,8 +2675,8 @@ MEM_InformationMan.LastMethod:
 
 				if (i < DIALOG_MAX) {
 					MEM_WriteIntArray (_@ (dialogProperties), i, properties);
-					MEM_WriteIntArray (_@ (dialogColor), i, color);
-					MEM_WriteIntArray (_@ (dialogColorSelected), i, colorSelected);
+					MEM_WriteIntArray (_@ (dialogColor), i, dlgColor);
+					MEM_WriteIntArray (_@ (dialogColorSelected), i, dlgColorSelected);
 
 					InfoManagerUpdateState = cIM_UpdateState_Changed;
 				};
@@ -2700,14 +2693,15 @@ MEM_InformationMan.LastMethod:
 				};
 
 				if (i < dlg.LineStart) {
-					dlg.offsetTextPixelY -= Print_GetFontHeight (dlgFont);
+					dlg.offsetTextPixelY -= zCFont_GetFontY (dlgFontPtr);
 				};
 
 				//Apply new font (or re-apply old one)
-				txt.font = Print_GetFontPtr (dlgFont);
+				//txt.font = Print_GetFontPtr (dlgFont);
+				txt.font = dlgFontPtr;
 
 				//
-				nextPosY += Print_GetFontHeight (dlgFont);
+				nextPosY += zCFont_GetFontY (dlgFontPtr);
 			};
 
 			i += 1;
@@ -2725,7 +2719,7 @@ MEM_InformationMan.LastMethod:
 			var int ColorSelected;		//zCOLOR //248
 			var int ColorGrayed;		//zCOLOR //252
 			*/
-			//Small optimization - recolor only visible dialog choices
+			//Small optimization - work only with visible dialogue choices
 			i = dlg.LineStart;
 
 			while (i < dlg.choices);
@@ -2745,21 +2739,18 @@ MEM_InformationMan.LastMethod:
 
 				MEM_Info (m);
 */
-				//Small optimization - recolor only visible dialog choices
+				//Small optimization - work only with visible dialogue choices
 				if (txt.pixelPositionY + dlg.offsetTextPixelY - dlg.sizeMargin_0[1] > dlg.pixelSizeY) {
 					break;
 				};
 
 				if (i == dlg.ChoiceSelected) {
-					colorSelected = MEM_ReadIntArray (_@ (dialogColorSelected), i);
-					txt.color = colorSelected;
-					txt.alpha = GetAlpha (colorSelected);
-
-					dlgFont = Print_GetFontName (txt.font);
-					textWidth = Print_GetStringWidth (txt.text, dlgFont);
+					color = MEM_ReadIntArray (_@ (dialogColorSelected), i);
+					txt.color = color;
+					txt.alpha = GetAlpha (color);
 
 					//Horizontal scrolling - if dialogue text > dialogue window
-					if (textWidth > dlg.pixelSizeX) {
+					if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlg.pixelSizeX - dlg.sizeMargin_1[0])) {
 						//Init scrolling
 						horizontalScrolling = HSCROLL_INIT;
 						timerHorizontalScrolling = 0;
@@ -2773,16 +2764,16 @@ MEM_InformationMan.LastMethod:
 
 					//Check disabled dialogues --> do we need to scroll any horizontal text?
 					properties = MEM_ReadIntArray (_@ (dialogProperties), i);
-					if (properties & dialogChoiceType_Disabled) {
-						dlgFont = Print_GetFontName (txt.font);
-						textWidth = Print_GetStringWidth (txt.text, dlgFont);
 
-						//Horizontal scrolling - if dialogue text > dialogue window
-						if (textWidth > dlg.pixelSizeX) {
-							//Init scrolling
-							horizontalScrollingDisabled = HSCROLL_INIT;
-							timerHorizontalScrollingDisabled = 0;
-							timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+					if (horizontalScrollingDisabled == HSCROLL_IDLE) {
+						if (properties & dialogChoiceType_Disabled) {
+							//Horizontal scrolling - if dialogue text > dialogue window
+							if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlg.pixelSizeX - dlg.sizeMargin_1[0])) {
+								//Init scrolling
+								horizontalScrollingDisabled = HSCROLL_INIT;
+								timerHorizontalScrollingDisabled = 0;
+								//timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
+							};
 						};
 					};
 				};
@@ -2802,23 +2793,23 @@ MEM_InformationMan.LastMethod:
 				overlayPtr = MEM_ReadIntArray (_@ (overlayListMapView), i);
 
 				if (overlayPtr) {
-					txtIndicator = _^ (overlayPtr);
-					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), txtIndicator.timer);
+					tempTxt = _^ (overlayPtr);
+					overlayChoice = MEM_ReadIntArray (_@ (overlayListMapChoice), tempTxt.timer);
 
 					if (overlayChoice < dlg.listTextLines_numInArray) {
 						//adjust posY
 						overlayChoiceTxt = _^ (MEM_ReadIntArray(arr.array, overlayChoice));
-						txtIndicator.pixelPositionY = overlayChoiceTxt.pixelPositionY;
+						tempTxt.pixelPositionY = overlayChoiceTxt.pixelPositionY;
 
 						//Update color
 						if (dlg.ChoiceSelected == overlayChoice) {
-							colorSelected = MEM_ReadIntArray (_@(overlayListColorSelected), txtIndicator.timer);
-							txtIndicator.color = colorSelected;
-							txtIndicator.alpha = GetAlpha (colorSelected);
+							color = MEM_ReadIntArray (_@(overlayListColorSelected), tempTxt.timer);
+							tempTxt.color = color;
+							tempTxt.alpha = GetAlpha (color);
 						} else {
-							color = MEM_ReadIntArray (_@(overlayListColor), txtIndicator.timer);
-							txtIndicator.color = color;
-							txtIndicator.alpha = GetAlpha (color);
+							color = MEM_ReadIntArray (_@(overlayListColor), tempTxt.timer);
+							tempTxt.color = color;
+							tempTxt.alpha = GetAlpha (color);
 						};
 					};
 				};
@@ -2866,68 +2857,75 @@ MEM_InformationMan.LastMethod:
 				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
 
 				if (!(properties & dialogChoiceType_IndicatorsOff)) {
-					//Add spinner indicator if it does not exist anymore
-					if (!InfoManagerSpinnerIndicator) {
+					//Create spinner indicators
+					if (!InfoManagerSpinnerIndicatorL) {
 
 						txt.enabledBlend = TRUE;
 						txt.funcAlphaBlend = _InfoManagerAlphaBlendFunc;
 
-						//Create new zCViewText2 instance for our indicator
-						InfoManagerSpinnerIndicator = create (zCViewText2@);
-						txtIndicator = _^ (InfoManagerSpinnerIndicator);
+						//Create 1st zCViewText2 instance for our indicator
+						InfoManagerSpinnerIndicatorL = create (zCViewText2@);
+						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicatorL);
 
-						txtIndicator.enabledColor = txt.enabledColor;
-						txtIndicator.font = txt.font;
-						txtIndicator.pixelPositionY = txt.pixelPositionY;
+						//Create 2nd zCViewText2 instance for our indicator
+						InfoManagerSpinnerIndicatorR = create (zCViewText2@);
+						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicatorR);
 
-						txtIndicator.enabledBlend = txt.enabledBlend;
-						txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-						txtIndicator.alpha = _InfoManagerIndicatorAlpha;
+						//'Animate' to update positions (non animated indicator will get it's position updated below
+						if (_InfoManagerSpinnerIndicatorAnimation) {
+							spinnedIndicatorL = _^ (InfoManagerSpinnerIndicatorL);
+							spinnedIndicatorL.font = txt.font;
 
-						//Insert indicator to dialog choices
-						MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerSpinnerIndicator);
+							spinnedIndicatorR = _^ (InfoManagerSpinnerIndicatorR);
+							spinnedIndicatorR.font = txt.font;
 
-						//if (_InfoManagerSpinnerIndicatorAnimation) {
-						//	FF_ApplyOnceExtGT (InfoManagerSpinnerAniFunction, 80, -1);
-						//	InfoManagerSpinnerAnimate (FALSE);
-						//};
+							InfoManagerSpinnerIndicatorAniProgress = 0;
+							InfoManagerSpinnerAnimate ();
+						};
+
+						timerSpinnerAnimation = TimerGT () + 10;
 					};
 
-					//
-					txtIndicator = _^ (InfoManagerSpinnerIndicator);
+					//Update properties
 
-					txtIndicator.text = _InfoManagerSpinnerIndicatorString;
-					txtIndicator.font = txt.font;
+					//'Left' part of spinner indicator
+					spinnedIndicatorL = _^ (InfoManagerSpinnerIndicatorL);
 
-					if (STR_Len (_InfoManagerIndicatorColorDefault)) {
-						color = HEX2RGBA (_InfoManagerIndicatorColorDefault);
-						txtIndicator.color = color;
-						txtIndicator.alpha = GetAlpha (color);
-					} else {
-						txtIndicator.color = txt.color;
-						txtIndicator.alpha = txt.alpha;
+					if (!_InfoManagerSpinnerIndicatorAnimation) {
+						spinnedIndicatorL.text = _InfoManagerSpinnerIndicatorString;
 					};
 
-					txtIndicator.pixelPositionY = txt.pixelPositionY;
+					spinnedIndicatorL.enabledColor = txt.enabledColor;
+					spinnedIndicatorL.font = txt.font;
 
-					//dlgFont = Print_GetFontName (txt.font);
-					//textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+					spinnedIndicatorL.enabledBlend = txt.enabledBlend;
+					spinnedIndicatorL.funcAlphaBlend = txt.funcAlphaBlend;
 
-					//if (alignment == ALIGN_LEFT) || (alignment == ALIGN_CENTER) {
-					//	txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
-					//};
+					spinnedIndicatorL.color = _InfoManagerIndicatorColorDefault;
+					spinnedIndicatorL.alpha = GetAlpha (_InfoManagerIndicatorColorDefault);
 
-					InfoManagerSpinnerAlignment = alignment;
+					spinnedIndicatorL.pixelPositionY = txt.pixelPositionY;
+
+					//'Right' part of spinner indicator
+					spinnedIndicatorR = _^ (InfoManagerSpinnerIndicatorR);
+
+					if (!_InfoManagerSpinnerIndicatorAnimation) {
+						//spinnedIndicatorR.text = _InfoManagerSpinnerIndicatorString;
+					};
+
+					spinnedIndicatorR.enabledColor = txt.enabledColor;
+					spinnedIndicatorR.font = txt.font;
+
+					spinnedIndicatorR.enabledBlend = txt.enabledBlend;
+					spinnedIndicatorR.funcAlphaBlend = txt.funcAlphaBlend;
+
+					spinnedIndicatorR.color = _InfoManagerIndicatorColorDefault;
+					spinnedIndicatorR.alpha = GetAlpha (_InfoManagerIndicatorColorDefault);
+
+					spinnedIndicatorR.pixelPositionY = txt.pixelPositionY;
 
 					//Initial alignment
-					dlgFont = Print_GetFontName (txtIndicator.font);
-					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
-
-					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
-					} else {
-						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
-					};
+					InfoManagerSpinnerAlignment = alignment;
 				};
 			};
 
@@ -2970,46 +2968,36 @@ MEM_InformationMan.LastMethod:
 
 							//Create new zCViewText2 instance for our indicator
 							InfoManagerAnswerIndicator = create (zCViewText2@);
-							txtIndicator = _^ (InfoManagerAnswerIndicator);
-
-							txtIndicator.enabledColor = txt.enabledColor;
-							txtIndicator.font = txt.font;
-							txtIndicator.pixelPositionY = txt.pixelPositionY;
-
-							txtIndicator.enabledBlend = txt.enabledBlend;
-							txtIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-							txtIndicator.alpha = _InfoManagerIndicatorAlpha;
-
-							txtIndicator.text = _InfoManagerAnswerIndicatorString;
+							answerIndicator = _^ (InfoManagerAnswerIndicator);
 
 							//Insert indicator to dialog choices
 							MEM_ArrayInsert (_@ (dlg.listTextLines_array), InfoManagerAnswerIndicator);
 						};
 
-						txtIndicator = _^ (InfoManagerAnswerIndicator);
-						txtIndicator.font = txt.font;
+						answerIndicator = _^ (InfoManagerAnswerIndicator);
+						answerIndicator.font = txt.font;
 
-						if (STR_Len (_InfoManagerIndicatorColorDefault)) {
-							color = HEX2RGBA (_InfoManagerIndicatorColorDefault);
-							txtIndicator.color = color;
-							txtIndicator.alpha = GetAlpha (color);
-						} else {
-							txtIndicator.color = txt.color;
-							txtIndicator.alpha = txt.alpha;
-						};
+						answerIndicator.enabledColor = txt.enabledColor;
 
-						txtIndicator.pixelPositionY = txt.pixelPositionY;
+						answerIndicator.enabledBlend = txt.enabledBlend;
+						answerIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+						//answerIndicator.alpha = _InfoManagerIndicatorAlpha;
+
+						answerIndicator.text = _InfoManagerAnswerIndicatorString;
+
+						answerIndicator.color = _InfoManagerIndicatorColorDefault;
+						answerIndicator.alpha = GetAlpha (_InfoManagerIndicatorColorDefault);
+
+						answerIndicator.pixelPositionY = txt.pixelPositionY;
 
 						InfoManagerAnswerAlignment = alignment;
 
 						//Initial alignment
-						dlgFont = Print_GetFontName (txtIndicator.font);
-						textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 						if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
-							txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+							answerIndicator.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (answerIndicator.text, answerIndicator.font) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 						} else {
-							txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
+							answerIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 						};
 					};
 				};
@@ -3025,22 +3013,28 @@ MEM_InformationMan.LastMethod:
 
 			//Remove if not required
 			if (!InfoManagerSpinnerPossible) {
-				if (InfoManagerSpinnerIndicator) {
+				if (InfoManagerSpinnerIndicatorL) {
 					//InfoManagerRefreshOverlays = cIM_RefreshOverlays;
 					InfoManagerHighlightSelected = TRUE;
 				};
 			};
 		};
 
-		//Horizontal auto-scrolling for dialog text
+//-- Horizontal auto-scrolling for selected dialogue choice
+
+		var int c;
+		var int charWidth;
+
+		var int pixelScrolling;
 
 		//First wait for a moment ...
 		if (horizontalScrolling == HSCROLL_INIT) {
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrolling >= 2000) {
-				timerHorizontalScrolling -= 2000;
+				timerHorizontalScrolling = 0;
 				horizontalScrolling = HSCROLL_SCROLL;
+				pixelScrolling = FALSE;
 			};
 		};
 
@@ -3048,22 +3042,41 @@ MEM_InformationMan.LastMethod:
 		if (horizontalScrolling == HSCROLL_SCROLL) {
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
-			if (timerHorizontalScrolling >= 90) {
-				timerHorizontalScrolling -= 90;
+			if ((timerHorizontalScrolling >= 90) && (!pixelScrolling)) {
+				timerHorizontalScrolling = 0;
 
 				//we cannot really change txt.pixelPositionX if txt.pixelPositionX < defaultPosX then dialogue choice wont render ...
 				//so the only option to scroll text is to trim it ...
 				txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
 
-				dlgFont = Print_GetFontName (txt.font);
-				textWidth = Print_GetStringWidth (txt.text, dlgFont);
-
 				//Double check size - shall we trim?
-				if (textWidth > dlg.pixelSizeX) {
+				if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlg.pixelSizeX - dlg.sizeMargin_1[0])) {
+					//Switch to pixel scrolling
+					c = CtoB (STR_Left (txt.text, 1));
+					charWidth = zCFont_GetWidth (txt.font, c);
+					txt.pixelPositionX += charWidth;
+					pixelScrolling = TRUE;
+
 					txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
 				} else {
 					//If text was scrolled completely ... wait
 					horizontalScrolling = HSCROLL_WAIT;
+				};
+			};
+
+			//Pixel scrolling
+			if (pixelScrolling) {
+				if (timerHorizontalScrolling >= 10) {
+					timerHorizontalScrolling = 0;
+
+					txt = _^ (MEM_ReadIntArray (arr.array, dlg.ChoiceSelected));
+
+					if (txt.pixelPositionX > dlg.sizeMargin_0[0]) {
+						txt.pixelPositionX -= 1;
+					} else {
+						pixelScrolling = FALSE;
+						timerHorizontalScrolling = 90;
+					};
 				};
 			};
 		};
@@ -3073,52 +3086,63 @@ MEM_InformationMan.LastMethod:
 			timerHorizontalScrolling += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrolling >= 4000) {
-				timerHorizontalScrolling -= 4000;
+				timerHorizontalScrolling = 0;
 				//This will force an update
 				horizontalScrolling = HSCROLL_RESET;
 			};
 		};
 
-		//Horizontal auto-scrolling for disabled dialog text
+//-- Horizontal auto-scrolling for disabled dialogue choices
+
+		var int pixelScrollingDisabled;
 
 		//First wait for a moment ...
 		if (horizontalScrollingDisabled == HSCROLL_INIT) {
 			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 
 			if (timerHorizontalScrollingDisabled >= 2000) {
-				timerHorizontalScrollingDisabled -= 2000;
+				timerHorizontalScrollingDisabled = 0;
 				horizontalScrollingDisabled = HSCROLL_SCROLL;
+				pixelScrollingDisabled = FALSE;
 			};
 		};
 
-		//Scroll text
+		//Scroll disabled text
 		if (horizontalScrollingDisabled == HSCROLL_SCROLL) {
 			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 
-			if (timerHorizontalScrollingDisabled >= 90) {
-				timerHorizontalScrollingDisabled -= 90;
+			//loop through all dialogues
+			var int wasSomethingScrolled;
+
+			if ((timerHorizontalScrollingDisabled >= 90) && (!pixelScrollingDisabled)) {
+				timerHorizontalScrollingDisabled = 0;
+
+				wasSomethingScrolled = FALSE;
 
 				//we cannot really change txt.pixelPositionX if txt.pixelPositionX < defaultPosX then dialogue choice wont render ...
 				//so the only option to scroll text is to trim it ...
 
-				//loop through all dialogues
-				var int wasSomethingScrolled; wasSomethingScrolled = FALSE;
-
-				//Small optimization - recolor only visible dialog choices
+				//Small optimization - work only with visible dialogue choices
 				i = dlg.LineStart;
-
 				while (i < dlg.choices);
+					txt = _^ (MEM_ReadIntArray (arr.array, i));
+
+					//Small optimization - work only with visible dialogue choices
+					if (txt.pixelPositionY + dlg.offsetTextPixelY - dlg.sizeMargin_0[1] > dlg.pixelSizeY) {
+						break;
+					};
 
 					properties = MEM_ReadIntArray (_@ (dialogProperties), i);
 					if (properties & dialogChoiceType_Disabled) {
 
-						txt = _^ (MEM_ReadIntArray (arr.array, i));
-
-						dlgFont = Print_GetFontName (txt.font);
-						textWidth = Print_GetStringWidth (txt.text, dlgFont);
-
 						//Double check size - shall we trim?
-						if (textWidth > dlg.pixelSizeX) {
+						if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlg.pixelSizeX - dlg.sizeMargin_1[0])) {
+							//Switch to pixel scrolling
+							c = CtoB (STR_Left (txt.text, 1));
+							charWidth = zCFont_GetWidth (txt.font, c);
+							txt.pixelPositionX += charWidth;
+							pixelScrollingDisabled = TRUE;
+
 							txt.text = mySTR_SubStr (txt.text, 1, STR_Len (txt.text) - 1);
 							wasSomethingScrolled = TRUE;
 						};
@@ -3132,48 +3156,83 @@ MEM_InformationMan.LastMethod:
 					horizontalScrollingDisabled = HSCROLL_WAIT;
 				};
 			};
+
+			//Pixel scrolling
+			if (pixelScrollingDisabled) {
+				if (timerHorizontalScrollingDisabled >= 10) {
+					timerHorizontalScrollingDisabled = 0;
+
+					wasSomethingScrolled = FALSE;
+
+					//Small optimization - work only with visible dialogue choices
+					i = dlg.LineStart;
+					while (i < dlg.choices);
+						txt = _^ (MEM_ReadIntArray (arr.array, i));
+
+						//Small optimization - work only with visible dialogue choices
+						if (txt.pixelPositionY + dlg.offsetTextPixelY - dlg.sizeMargin_0[1] > dlg.pixelSizeY) {
+							break;
+						};
+
+						properties = MEM_ReadIntArray (_@ (dialogProperties), i);
+						if (properties & dialogChoiceType_Disabled) {
+
+							if (txt.pixelPositionX > dlg.sizeMargin_0[0]) {
+								txt.pixelPositionX -= 1;
+								wasSomethingScrolled = TRUE;
+							};
+						};
+
+						i += 1;
+					end;
+
+					if (!wasSomethingScrolled) {
+						pixelScrollingDisabled = FALSE;
+						timerHorizontalScrollingDisabled = 90;
+					};
+				};
+			};
 		};
 
 		//Wait for a moment - and reset scrolling
 		if (horizontalScrollingDisabled == HSCROLL_WAIT) {
 			timerHorizontalScrollingDisabled += MEM_Timer.frameTime;
 
-			if (timerHorizontalScrollingDisabled >= 4000) {
-				timerHorizontalScrollingDisabled -= 4000;
-				//This will force an update
-				horizontalScrollingDisabled = HSCROLL_RESET;
+			//Only if we are not updating **selected** dialogue choice!
+			//Scrolling of selected dialogue choice has prio
+			if (horizontalScrolling != HSCROLL_SCROLL) {
+				if (timerHorizontalScrollingDisabled >= 4000) {
+					timerHorizontalScrollingDisabled = 0;
+					//This will force an update
+					horizontalScrollingDisabled = HSCROLL_RESET;
+				};
 			};
 		};
 
-		//--
+//--
 
 		if (InfoManagerSpinnerPossible) {
 			if (!_InfoManagerSpinnerIndicatorAnimation) {
-				if (InfoManagerSpinnerIndicator) {
-					txtIndicator = _^ (InfoManagerSpinnerIndicator);
-
-					//if (STR_Len (InfoManagerSpinnerNumber)) {
-					//	txtIndicator.text = InfoManagerSpinnerNumber;
-					//} else {
-						txtIndicator.text = _InfoManagerSpinnerIndicatorString;
-					//};
+				if (InfoManagerSpinnerIndicatorL) {
+					spinnedIndicatorL = _^ (InfoManagerSpinnerIndicatorL);
+					spinnedIndicatorL.text = _InfoManagerSpinnerIndicatorString;
 
 					//Adjust alignment of spinner indicator
-					dlgFont = Print_GetFontName (txtIndicator.font);
-					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
 
 					if (InfoManagerSpinnerAlignment == ALIGN_LEFT) || (InfoManagerSpinnerAlignment == ALIGN_CENTER) {
-						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						spinnedIndicatorL.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (spinnedIndicatorL.text, spinnedIndicatorL.font) - dlg.offsetTextPixelX - dlg.sizeMargin_1[0];
 					} else {
-						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
+						spinnedIndicatorL.pixelPositionX = dlg.sizeMargin_0[0];
 					};
 				};
 			} else {
 				//Animation implemented without FrameFunctions
 				timerSpinnerAnimation += MEM_Timer.frameTime;
-				if (timerSpinnerAnimation > 80) {
-					timerSpinnerAnimation -= 80;
-					InfoManagerSpinnerAniFunction ();
+				if (timerSpinnerAnimation > 10) {
+					timerSpinnerAnimation = 0;
+
+					InfoManagerSpinnerIndicatorAniProgress += 1;
+					InfoManagerSpinnerAnimate ();
 				};
 			};
 		};
@@ -3186,14 +3245,12 @@ MEM_InformationMan.LastMethod:
 				txt.text = dlgDescription;
 			} else {
 				if (InfoManagerAnswerIndicator) {
-					txtIndicator = _^ (InfoManagerAnswerIndicator);
-					dlgFont = Print_GetFontName (txtIndicator.font);
-					textWidth = Print_GetStringWidth (txtIndicator.text, dlgFont);
+					answerIndicator = _^ (InfoManagerAnswerIndicator);
 
 					if (InfoManagerAnswerAlignment == ALIGN_LEFT) || (InfoManagerAnswerAlignment == ALIGN_CENTER) {
-						txtIndicator.pixelPositionX = dlg.pixelSizeX - textWidth - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
+						answerIndicator.pixelPositionX = dlg.pixelSizeX - Font_GetStringWidthPtr (answerIndicator.text, answerIndicator.font) - dlg.offsetTextPixelX - dlg.sizeMargin_0[0];
 					} else {
-						txtIndicator.pixelPositionX = dlg.sizeMargin_0[0];
+						answerIndicator.pixelPositionX = dlg.sizeMargin_0[0];
 					};
 				};
 			};
@@ -3506,22 +3563,50 @@ func void _hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM () {
 
 func void G12_EnhancedInfoManager_Init () {
 	//Reset pointers
-	InfoManagerSpinnerIndicator = 0;
+	InfoManagerSpinnerIndicatorL = 0;
+	InfoManagerSpinnerIndicatorR = 0;
+
 	InfoManagerAnswerIndicator = 0;
 
 	//-- Load API values / init default values
-	_InfoManagerDefaultDialogColorSelected = API_GetSymbolStringValue ("INFOMANAGERDEFAULTDIALOGCOLORSELECTED", "FFFFFF");
-	_InfoManagerDefaultColorDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDEFAULTCOLORDIALOGGREY", "C8C8C8");
 
-	_InfoManagerDefaultFontDialogSelected = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGSELECTED", "");
-	_InfoManagerDefaultFontDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGGREY", "");
+	_InfoManagerDefaultDialogColorSelected = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDEFAULTDIALOGCOLORSELECTED", "FFFFFF");
+	_InfoManagerDefaultColorDialogGrey = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDEFAULTCOLORDIALOGGREY", "C8C8C8");
 
-	_InfoManagerDisabledDialogColorSelected = API_GetSymbolStringValue ("INFOMANAGERDISABLEDDIALOGCOLORSELECTED", "808080");
-	_InfoManagerDisabledColorDialogGrey = API_GetSymbolStringValue ("INFOMANAGERDISABLEDCOLORDIALOGGREY", "666666");
+	//--
+
+	var string fontName;
+	fontName = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGSELECTED", "");
+
+	if (STR_Len (fontName)) {
+		_InfoManagerDefaultFontDialogSelected = Print_GetFontPtr (fontName);
+	} else {
+		_InfoManagerDefaultFontDialogSelected = 0;
+	};
+
+	fontName = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGGREY", "");
+
+	if (STR_Len (fontName)) {
+		_InfoManagerDefaultFontDialogGrey = Print_GetFontPtr (fontName);
+	} else {
+		_InfoManagerDefaultFontDialogGrey = 0;
+	};
+
+	//--
+
+	_InfoManagerDisabledDialogColorSelected = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDISABLEDDIALOGCOLORSELECTED", "808080");
+	_InfoManagerDisabledColorDialogGrey = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDISABLEDCOLORDIALOGGREY", "666666");
+
+	//--
 
 	_InfoManagerDefaultDialogAlignment = API_GetSymbolIntValue ("INFOMANAGERDEFAULTDIALOGALIGNMENT", ALIGN_LEFT);
 
-	_InfoManagerIndicatorColorDefault = API_GetSymbolStringValue ("INFOMANAGERINDICATORCOLORDEFAULT", "C8C8C8");
+	//--
+
+	_InfoManagerIndicatorColorDefault = API_GetSymbolHEX2RGBAValue ("INFOMANAGERINDICATORCOLORDEFAULT", "C8C8C8");
+
+	//--
+
 	_InfoManagerIndicatorAlpha = API_GetSymbolIntValue ("INFOMANAGERINDICATORALPHA", 255);
 
 	_InfoManagerSpinnerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERSPINNERINDICATORSTRING", "<-- -->");
