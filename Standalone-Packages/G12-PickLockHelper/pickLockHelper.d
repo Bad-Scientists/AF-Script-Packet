@@ -25,6 +25,8 @@ var int _pickLockHelper_WidthPxl;
 //Constant tracking last mob
 const int pickLockHelper_LastMob = 0;
 
+var int pickLockHelper_Visible;
+
 //Last and Current PickLock combinations
 var string pickLockHelper_LastCombination;
 var string pickLockHelper_CurrentCombination;
@@ -153,6 +155,8 @@ func void PickLockHelper_Show () {
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
 	View_Resize (hpickLockHelper_LastKey, viewWidth, fontHeight);
 	View_SetTextMargin (hpickLockHelper_LastKey, pickLockHelper_LastKey, spaceWidth);
+
+	pickLockHelper_Visible = TRUE;
 };
 
 func void PickLockHelper_Hide () {
@@ -160,19 +164,28 @@ func void PickLockHelper_Hide () {
 	if (Hlp_IsValidHandle (hPickLockHelper_LastCombination)) { View_Close (hPickLockHelper_LastCombination); };
 	if (Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) { View_Close (hPickLockHelper_CurrentCombination); };
 	if (Hlp_IsValidHandle (hPickLockHelper_Frame)) { View_Close (hPickLockHelper_Frame); };
+
+	pickLockHelper_Visible = FALSE;
 };
 
-//G_PickLock (var int bSuccess, var int bBrokenOpen)
+//0x00681FF0 public: virtual void __thiscall oCMobLockable::Interact(class oCNpc *,int,int,int,int,int)
+func void _hook_oCMobLockable_Interact__PickLockHelper () {
+	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
-func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
+	var int npcPtr; npcPtr = MEM_ReadInt (ESP + 4);
+	if (!Hlp_Is_oCNpc (npcPtr)) { return; };
 
-	if (bSuccess) {
-		//Reset PickLockHelper string
-		if (bBrokenOpen) {
-			pickLockHelper_CurrentCombination = "";
-		};
-	} else {
-		//Reset PickLockHelper string
+	var oCNpc slf; slf = _^ (npcPtr);
+	if (!NPC_IsPlayer (slf)) { return; };
+
+	var oCMobLockable mob; mob = _^ (ECX);
+
+//-- Reset current combination
+
+	var int currCharCount; currCharCount = (mob.bitfield & oCMobLockable_bitfield_pickLockNr) >> 2;
+
+	//Reset current combination
+	if (currCharCount == 0) {
 		pickLockHelper_CurrentCombination = "";
 	};
 
@@ -191,16 +204,11 @@ func void _daedalusHook_G_PickLock (var int bSuccess, var int bBrokenOpen) {
 	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
 
 	View_SetTextMarginAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
-
-	//Continue with original function
-	PassArgumentI (bSuccess);
-	PassArgumentI (bBrokenOpen);
-	ContinueCall ();
 };
 
 func void _hook_oCMobLockable_PickLock__PickLockHelper () {
-	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
+	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 	var oCMobLockable mob; mob = _^ (ECX);
 
 	var int c; c = MEM_ReadInt (ESP + 8);
@@ -368,7 +376,13 @@ func void G12_PickLockHelper_Init () {
 		//Hook Len for G1 = 13, for G2A = 6
 		HookEngine (oCMobLockable__PickLock, MEMINT_SwitchG1G2 (13, 6), "_hook_oCMobLockable_PickLock__PickLockHelper");
 
-		HookDaedalusFunc (G_PickLock, _daedalusHook_G_PickLock);
+		//0x00681FF0 public: virtual void __thiscall oCMobLockable::Interact(class oCNpc *,int,int,int,int,int)
+		const int oCMobLockable__Interact_G1 = 6823920;
+
+		//0x00723CF0 public: virtual void __thiscall oCMobLockable::Interact(class oCNpc *,int,int,int,int,int)
+		const int oCMobLockable__Interact_G2 = 7486704;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCMobLockable__Interact_G1, oCMobLockable__Interact_G2), 7, "_hook_oCMobLockable_Interact__PickLockHelper");
 
 		HookEngine (oCMobInter__EndInteraction, 6, "_hook_oCMobInter_EndInteraction__PickLockHelper");
 		HookEngine (oCMobInter__StopInteraction, 6, "_hook_oCMobInter_StopInteraction__PickLockHelper");
