@@ -189,7 +189,10 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 		pickLockHelper_CurrentCombination = "";
 	};
 
-	//Update PickLockHelper view
+//-- Update PickLockHelper view
+
+	if (!pickLockHelper_Visible) { return; };
+
 	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
