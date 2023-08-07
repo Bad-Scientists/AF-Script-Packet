@@ -328,6 +328,22 @@ func void zCViewDialogChoice_HighlightSelected () {
 	};
 };
 
+func void zCViewDialogChoice_ShowSelected () {
+	//0x00759000 protected: void __fastcall zCViewDialogChoice::ShowSelected(void)
+	const int zCViewDialogChoice__ShowSelected_G1 = 7704576;
+
+	//0x0068F180 protected: void __fastcall zCViewDialogChoice::ShowSelected(void)
+	const int zCViewDialogChoice__ShowSelected_G2 = 6877568;
+
+	const int null = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (null), MEMINT_SwitchG1G2 (zCViewDialogChoice__ShowSelected_G1, zCViewDialogChoice__ShowSelected_G2));
+		call = CALL_End();
+	};
+};
+
 //?
 func void zCViewDialogChoice_BlitText () {
 	//0x00758E70 protected: virtual void __fastcall zCViewDialogChoice::BlitText(void)
