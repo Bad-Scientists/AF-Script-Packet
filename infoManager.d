@@ -984,6 +984,14 @@ func void oCInfo_AddChoice (var int infoPtr, var string s, var int funcID) {
 	//--> Therefore using my own method - I will create oCInfoChoice object and will add it to listChoices
 	var oCInfo info; info = _^ (infoPtr);
 	var int infoChoicePtr; infoChoicePtr = oCInfoChoice_Create (s, funcID);
+
+	//Create list - if it was not yet created
+	if (!info.listChoices_next) {
+		info.listChoices_next = List_Create (infoChoicePtr);
+		return;
+	};
+
+	//Otherwise add to the front
 	List_AddFront (info.listChoices_next, infoChoicePtr);
 };
 
