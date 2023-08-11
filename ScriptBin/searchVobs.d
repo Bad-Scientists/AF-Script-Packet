@@ -11,7 +11,7 @@
  *
  * Search vobs by different criteria
  *
- * - Requires Ikarus, objCheckInheritance.d, insertAnything.d
+ * - Requires Ikarus, insertAnything.d
  * - Compatible with Gothic 1 and Gothic 2
  *
  * The function argument vobListPtr may always be zero, or the pointer to a previously created array.
