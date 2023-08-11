@@ -16,7 +16,7 @@ func void _eventOpenDeadNPC (var int dummyVariable) {
 		};
 
 		if (symbID != -1) {
-			MEM_PushInstParam (slf);
+			MEM_PushInstParam (oth);
 
 			MEM_CallByID (symbID);
 			retVal = MEM_PopIntResult ();
