@@ -85,226 +85,6 @@ func void FocusBar_UpdateTexture () {
 	};
 };
 
-/*
- *	Dynamic position update
- */
-
-func void HealthBar_UpdatePosition () {
-	var int posX; var int posY;
-
-	//If modder didn't define their own values - use default position
-	if (_healthBar_PPosX == -1) {
-		//Virtual position (180 is default length)
-		posX = Print_ToVirtual (100, PS_X);
-	} else {
-		posX = Print_ToVirtual (_healthBar_PPosX, PS_X);
-	};
-
-	if (_healthBar_PPosY == -1) {
-		//Virtual position (20) is default height
-		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
-	} else {
-		posY = Print_ToVirtual (_healthBar_PPosY, PS_Y);
-	};
-
-	//Virtual pos
-	if (_healthBar_VPosX > -1) {
-		posX = _healthBar_VPosX;
-	};
-
-	if (_healthBar_VPosY > -1) {
-		posY = _healthBar_VPosY;
-	};
-
-	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
-	var int _healthBar_LastPosX;
-	var int _healthBar_LastPosY;
-
-	if ((posX != _healthBar_LastPosX) || (posY != _healthBar_LastPosY))
-	{
-		//Move bar
-		Bar_MoveTo (hHealthBar, posX, posY);
-
-		//Move bar preview
-		var zCView v1; v1 = View_Get (bHealthBar.v1);
-		var zCView v2; v2 = View_Get (vHealthPreview);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vHealthPreview, v1.vposX, v1.vposY);
-		};
-
-		//Move bar values
-		v1 = View_Get (bHealthBar.v1);
-		v2 = View_Get (vHealthBarValue);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vHealthBarValue, v1.vposX, v1.vposY);
-		};
-
-		_healthBar_LastPosX = posX;
-		_healthBar_LastPosY = posY;
-	};
-};
-
-func void ManaBar_UpdatePosition () {
-	var int posX; var int posY;
-
-	//If modder didn't define their own values - use default position
-	if (_manaBar_PPosX == -1) {
-		//Virtual position (180 is default length)
-		posX = PS_VMax - Print_ToVirtual (100, PS_X);
-	} else {
-		posX = Print_ToVirtual (_manaBar_PPosX, PS_X);
-	};
-
-	if (_manaBar_PPosY == -1) {
-		//Virtual position (20) is default height
-		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
-	} else {
-		posY = Print_ToVirtual (_manaBar_PPosY, PS_Y);
-	};
-
-	//Virtual pos
-	if (_manaBar_VPosX > -1) {
-		posX = _manaBar_VPosX;
-	};
-
-	if (_manaBar_VPosY > -1) {
-		posY = _manaBar_VPosY;
-	};
-
-	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
-	var int _manaBar_LastPosX;
-	var int _manaBar_LastPosY;
-
-	if ((posX != _manaBar_LastPosX) || (posY != _manaBar_LastPosY))
-	{
-		//Move bar
-		Bar_MoveTo (hManaBar, posX, posY);
-
-		//Move bar preview
-		var zCView v1; v1 = View_Get (bManaBar.v1);
-		var zCView v2; v2 = View_Get (vManaPreview);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vManaPreview, v1.vposX, v1.vposY);
-		};
-
-		//Move bar values
-		v1 = View_Get (bManaBar.v1);
-		v2 = View_Get (vManaBarValue);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vManaBarValue, v1.vposX, v1.vposY);
-		};
-
-		_manaBar_LastPosX = posX;
-		_manaBar_LastPosY = posY;
-	};
-};
-
-func void SwimBar_UpdatePosition () {
-	var int posX; var int posY;
-
-	//If modder didn't define their own values - use default position
-	if (_swimBar_PPosX == -1) {
-		//Virtual position (180 is default length)
-		posX = PS_VMax / 2;
-	} else {
-		posX = Print_ToVirtual (_swimBar_PPosX, PS_X);
-	};
-
-	if (_swimBar_PPosY == -1) {
-		//Virtual position (20) is default height
-		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
-	} else {
-		posY = Print_ToVirtual (_swimBar_PPosY, PS_Y);
-	};
-
-	if (_swimBar_VPosX > -1) {
-		posX = _swimBar_VPosX;
-	};
-
-	if (_swimBar_VPosY > -1) {
-		posY = _swimBar_VPosY;
-	};
-
-	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
-	var int _swimBar_LastPosX;
-	var int _swimBar_LastPosY;
-
-	if ((posX != _swimBar_LastPosX) || (posY != _swimBar_LastPosY))
-	{
-		//Move bar
-		Bar_MoveTo (hSwimBar, posX, posY);
-
-		//Move bar values
-		var zCView v1; v1 = View_Get (bSwimBar.v1);
-		var zCView v2; v2 = View_Get (vSwimBarValue);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vSwimBarValue, v1.vposX, v1.vposY);
-		};
-
-		_swimBar_LastPosX = posX;
-		_swimBar_LastPosY = posY;
-	};
-};
-
-func void FocusBar_UpdatePosition () {
-	var int posX; var int posY;
-
-	//If modder didn't define their own values - use default position
-	if (_focusBar_PPosX == -1) {
-		//Virtual position (180 is default length)
-		posX = PS_VMax / 2;
-	} else {
-		posX = Print_ToVirtual (_focusBar_PPosX, PS_X);
-	};
-
-	if (_focusBar_PPosY == -1) {
-		//Virtual position (20) is default height
-		posY = Print_ToVirtual (20, PS_Y);
-	} else {
-		posY = Print_ToVirtual (_focusBar_PPosY, PS_Y);
-	};
-
-	if (_focusBar_VPosX > -1) {
-		posX = _focusBar_VPosX;
-	};
-
-	if (_focusBar_VPosY > -1) {
-		posY = _focusBar_VPosY;
-	};
-
-	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
-	var int _focusBar_LastPosX;
-	var int _focusBar_LastPosY;
-
-	if ((posX != _focusBar_LastPosX) || (posY != _focusBar_LastPosY))
-	{
-		//Move bar
-		Bar_MoveTo (hFocusBar, posX, posY);
-
-		//Move bar values
-		var zCView v1; v1 = View_Get (bFocusBar.v1);
-		var zCView v2; v2 = View_Get (vFocusBarValue);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vFocusBarValue, v1.vposX, v1.vposY);
-		};
-
-		_focusBar_LastPosX = posX;
-		_focusBar_LastPosY = posY;
-	};
-};
-
 func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	//If this method returns true - then bar should be 100% visible
 	if (BarGetOnDesk (BarType_HealthBar, _healthBar_DisplayMethod)) {
@@ -319,7 +99,7 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 
 	//If we run out of display time - hide bar
 	if (!_healthBar_DisplayTime) {
-		Bar_Hide (hHealthBar);
+		BBar_Hide (hHealthBar);
 
 		FF_Remove (FrameFunction_FadeInOutHealthBar__BetterBars);
 		return;
@@ -329,7 +109,7 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (bHealthBar.hidden) {
 		//Show it only if allowed by game itself
 		if (_Bar_PlayerStatus ()) {
-			Bar_Show (hHealthBar);
+			BBar_Show (hHealthBar);
 		};
 	};
 
@@ -377,7 +157,7 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 
 	//If we run out of display time - hide bar
 	if (!_manaBar_DisplayTime) {
-		Bar_Hide (hManaBar);
+		BBar_Hide (hManaBar);
 
 		FF_Remove (FrameFunction_FadeInOutManaBar__BetterBars);
 		return;
@@ -387,7 +167,7 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	if (bManaBar.hidden) {
 		//Show it only if allowed by game itself
 		if (_Bar_PlayerStatus ()) {
-			Bar_Show (hManaBar);
+			BBar_Show (hManaBar);
 		};
 	};
 
@@ -614,22 +394,13 @@ func void FrameFunction_EachFrame__BetterBars ()
 					};
 				};
 
-				//Bar_Show (hHealthBar);
-				View_Open (bHealthBar.v0);
-				View_Open (bHealthBar.v1);
-				bHealthBar.hidden = FALSE;
-
-				HealthBar_UpdatePosition ();
-
-				//Open bar values view
-				View_Open (vHealthBarValue);
-				View_Resize (vHealthBarValue, bHealthBar.barW, -1);
+				BBar_Show (hHealthBar);
 
 				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				View_Top(bHealthBar.v0);
-				View_Top(vHealthPreview);
-				View_Top(bHealthBar.v1);
-				View_Top(vHealthBarValue);
+				//View_Top(bHealthBar.v0);
+				//View_Top(vHealthPreview);
+				//View_Top(bHealthBar.v1);
+				//View_Top(vHealthBarValue);
 
 				_healthBar_WasHidden = FALSE;
 			};
@@ -640,14 +411,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	|| ((_healthBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk))
 	{
 		if (!bHealthBar.hidden) {
-			//Bar_Hide (hHealthBar);
-
-			View_Close(bHealthBar.v0);
-			View_Close(bHealthBar.v1);
-			bHealthBar.hidden = TRUE;
-
-			View_Close (vHealthBarValue);
-			View_Close (vHealthPreview);
+			BBar_Hide (hHealthBar);
 		};
 	};
 
@@ -745,21 +509,13 @@ func void FrameFunction_EachFrame__BetterBars ()
 					};
 				};
 
-				//Bar_Show (hManaBar);
-				View_Open (bManaBar.v0);
-				View_Open (bManaBar.v1);
-				bManaBar.hidden = FALSE;
-
-				ManaBar_UpdatePosition ();
-
-				View_Open (vManaBarValue);
-				View_Resize (vManaBarValue, bManaBar.barW, -1);
+				BBar_Show (hManaBar);
 
 				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				View_Top(bManaBar.v0);
-				View_Top(vManaPreview);
-				View_Top(bManaBar.v1);
-				View_Top(vManaBarValue);
+				//View_Top(bManaBar.v0);
+				//View_Top(vManaPreview);
+				//View_Top(bManaBar.v1);
+				//View_Top(vManaBarValue);
 
 				_manaBar_WasHidden = FALSE;
 			};
@@ -770,14 +526,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	|| ((_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk))
 	{
 		if (!bManaBar.hidden) {
-			//Bar_Hide (hManaBar);
-
-			View_Close(bManaBar.v0);
-			View_Close(bManaBar.v1);
-			bManaBar.hidden = TRUE;
-
-			View_Close (vManaBarValue);
-			View_Close (vManaPreview);
+			BBar_Hide (hManaBar);
 		};
 	};
 
@@ -860,31 +609,18 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (swimBar.zCView_ondesk) {
 		if (_playerStatus) {
 			if ((bSwimBar.hidden) || ((!bSwimBar.hidden && _swimBar_WasHidden))) {
-				//Bar_Show (hSwimBar);
-				View_Open (bSwimBar.v0);
-				View_Open (bSwimBar.v1);
-				bSwimBar.hidden = FALSE;
-
-				hideSwimBar = FALSE;
-
-				SwimBar_UpdatePosition ();
-
-				View_Open (vSwimBarValue);
-				View_Resize (vSwimBarValue, bSwimBar.barW, -1);
+				BBar_Show (hSwimBar);
 
 				_swimBar_WasHidden = FALSE;
 			};
+
+			hideSwimBar = FALSE;
 		};
 	};
 
 	if (hideSwimBar) {
 		if (!bSwimBar.hidden) {
-			//Bar_Hide (hSwimBar);
-			View_Close(bSwimBar.v0);
-			View_Close(bSwimBar.v1);
-			bSwimBar.hidden = TRUE;
-
-			View_Close (vSwimBarValue);
+			BBar_Hide (hSwimBar);
 		};
 	};
 
@@ -924,15 +660,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (focusBar.zCView_ondesk) {
 		if (_playerStatus) {
 			if ((bFocusBar.hidden) || ((!bFocusBar.hidden) && (_focusBar_WasHidden))) {
-				//Bar_Show (hFocusBar);
-				View_Open (bFocusBar.v0);
-				View_Open (bFocusBar.v1);
-				bFocusBar.hidden = FALSE;
-
-				FocusBar_UpdatePosition ();
-
-				View_Open (vFocusBarValue);
-				View_Resize (vFocusBarValue, bFocusBar.barW, -1);
+				BBar_Show (hFocusBar);
 
 				_focusBar_WasHidden = FALSE;
 			};
@@ -943,12 +671,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 
 	if (hideFocusBar) {
 		if (!bFocusBar.hidden) {
-			//Bar_Hide (hFocusBar);
-			View_Close(bFocusBar.v0);
-			View_Close(bFocusBar.v1);
-			bFocusBar.hidden = TRUE;
-
-			View_Close (vFocusBarValue);
+			BBar_Hide (hFocusBar);
 		};
 	};
 
@@ -1069,7 +792,7 @@ func void G12_BetterBars_Init () {
 
 	//Custom setup from Gothic.ini
 	if (MEM_GothOptExists ("GAME", "healthBarDisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - always on
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
 		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "healthBarDisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
@@ -1083,18 +806,18 @@ func void G12_BetterBars_Init () {
 		};
 	};
 
-	if (MEM_GothOptExists ("GAME", "_manaBar_DisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - alwas on
-		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "_manaBar_DisplayMethod"));
+	if (MEM_GothOptExists ("GAME", "manaBarDisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
+		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "manaBarDisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "_manaBar_DisplayMethod")) {
-			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "_manaBar_DisplayMethod"));
-			MEM_SetGothOpt ("GAME", "_manaBar_DisplayMethod", IntToString (_manaBar_DisplayMethod));
+		if (MEM_ModOptExists ("GAME", "manaBarDisplayMethod")) {
+			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "manaBarDisplayMethod"));
+			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (_manaBar_DisplayMethod));
 		} else {
 			//Default
 			_manaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "_manaBar_DisplayMethod", IntToString (_manaBar_DisplayMethod));
+			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (_manaBar_DisplayMethod));
 		};
 	};
 
