@@ -228,7 +228,285 @@ func int Bar_CreatePreview (var int bHnd, var string textureName) {
 };
 
 /*
- *
+ *	Dynamic position update
+ */
+
+func void HealthBar_UpdatePosition () {
+	var int posX; var int posY;
+
+	//If modder didn't define their own values - use default position
+	if (_healthBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = Print_ToVirtual (100, PS_X);
+	} else {
+		posX = Print_ToVirtual (_healthBar_PPosX, PS_X);
+	};
+
+	if (_healthBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_healthBar_PPosY, PS_Y);
+	};
+
+	//Virtual pos
+	if (_healthBar_VPosX > -1) {
+		posX = _healthBar_VPosX;
+	};
+
+	if (_healthBar_VPosY > -1) {
+		posY = _healthBar_VPosY;
+	};
+
+	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
+	var int _healthBar_LastPosX;
+	var int _healthBar_LastPosY;
+
+	if ((posX != _healthBar_LastPosX) || (posY != _healthBar_LastPosY))
+	{
+		//Move bar
+		Bar_MoveTo (hHealthBar, posX, posY);
+
+		//Move bar preview
+		var zCView v1; v1 = View_Get (bHealthBar.v1);
+		var zCView v2; v2 = View_Get (vHealthPreview);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vHealthPreview, v1.vposX, v1.vposY);
+		};
+
+		//Move bar values
+		v1 = View_Get (bHealthBar.v1);
+		v2 = View_Get (vHealthBarValue);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vHealthBarValue, v1.vposX, v1.vposY);
+		};
+
+		_healthBar_LastPosX = posX;
+		_healthBar_LastPosY = posY;
+	};
+};
+
+func void ManaBar_UpdatePosition () {
+	var int posX; var int posY;
+
+	//If modder didn't define their own values - use default position
+	if (_manaBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax - Print_ToVirtual (100, PS_X);
+	} else {
+		posX = Print_ToVirtual (_manaBar_PPosX, PS_X);
+	};
+
+	if (_manaBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_manaBar_PPosY, PS_Y);
+	};
+
+	//Virtual pos
+	if (_manaBar_VPosX > -1) {
+		posX = _manaBar_VPosX;
+	};
+
+	if (_manaBar_VPosY > -1) {
+		posY = _manaBar_VPosY;
+	};
+
+	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
+	var int _manaBar_LastPosX;
+	var int _manaBar_LastPosY;
+
+	if ((posX != _manaBar_LastPosX) || (posY != _manaBar_LastPosY))
+	{
+		//Move bar
+		Bar_MoveTo (hManaBar, posX, posY);
+
+		//Move bar preview
+		var zCView v1; v1 = View_Get (bManaBar.v1);
+		var zCView v2; v2 = View_Get (vManaPreview);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vManaPreview, v1.vposX, v1.vposY);
+		};
+
+		//Move bar values
+		v1 = View_Get (bManaBar.v1);
+		v2 = View_Get (vManaBarValue);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vManaBarValue, v1.vposX, v1.vposY);
+		};
+
+		_manaBar_LastPosX = posX;
+		_manaBar_LastPosY = posY;
+	};
+};
+
+func void SwimBar_UpdatePosition () {
+	var int posX; var int posY;
+
+	//If modder didn't define their own values - use default position
+	if (_swimBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_swimBar_PPosX, PS_X);
+	};
+
+	if (_swimBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_swimBar_PPosY, PS_Y);
+	};
+
+	if (_swimBar_VPosX > -1) {
+		posX = _swimBar_VPosX;
+	};
+
+	if (_swimBar_VPosY > -1) {
+		posY = _swimBar_VPosY;
+	};
+
+	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
+	var int _swimBar_LastPosX;
+	var int _swimBar_LastPosY;
+
+	if ((posX != _swimBar_LastPosX) || (posY != _swimBar_LastPosY))
+	{
+		//Move bar
+		Bar_MoveTo (hSwimBar, posX, posY);
+
+		//Move bar values
+		var zCView v1; v1 = View_Get (bSwimBar.v1);
+		var zCView v2; v2 = View_Get (vSwimBarValue);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vSwimBarValue, v1.vposX, v1.vposY);
+		};
+
+		_swimBar_LastPosX = posX;
+		_swimBar_LastPosY = posY;
+	};
+};
+
+func void FocusBar_UpdatePosition () {
+	var int posX; var int posY;
+
+	//If modder didn't define their own values - use default position
+	if (_focusBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_focusBar_PPosX, PS_X);
+	};
+
+	if (_focusBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_focusBar_PPosY, PS_Y);
+	};
+
+	if (_focusBar_VPosX > -1) {
+		posX = _focusBar_VPosX;
+	};
+
+	if (_focusBar_VPosY > -1) {
+		posY = _focusBar_VPosY;
+	};
+
+	//Bar_MoveTo is extremely performance heavy - do not call if position didn't change
+	var int _focusBar_LastPosX;
+	var int _focusBar_LastPosY;
+
+	if ((posX != _focusBar_LastPosX) || (posY != _focusBar_LastPosY))
+	{
+		//Move bar
+		Bar_MoveTo (hFocusBar, posX, posY);
+
+		//Move bar values
+		var zCView v1; v1 = View_Get (bFocusBar.v1);
+		var zCView v2; v2 = View_Get (vFocusBarValue);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vFocusBarValue, v1.vposX, v1.vposY);
+		};
+
+		_focusBar_LastPosX = posX;
+		_focusBar_LastPosY = posY;
+	};
+};
+
+func void StaminaBar_UpdatePosition () {
+
+	var int posX; var int posY;
+
+	//If modder didn't define their own values - use default position
+	if (_PC_SprintModeBar_PPosX == -1) {
+		//Virtual position (180 is default length)
+		posX = PS_VMax / 2;
+	} else {
+		posX = Print_ToVirtual (_PC_SprintModeBar_PPosX, PS_X);
+	};
+
+	if (_PC_SprintModeBar_PPosY == -1) {
+		//Virtual position (20) is default height
+		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
+	} else {
+		posY = Print_ToVirtual (_PC_SprintModeBar_PPosY, PS_Y);
+	};
+
+	if (_PC_SprintModeBar_VPosX > -1) {
+		posX = _PC_SprintModeBar_VPosX;
+	};
+
+	if (_PC_SprintModeBar_VPosY > -1) {
+		posY = _PC_SprintModeBar_VPosY;
+	};
+
+	var int _staminaBar_LastPosX;
+	var int _staminaBar_LastPosY;
+
+	if ((posX != _staminaBar_LastPosX) || (posY != _staminaBar_LastPosY))
+	{
+		Bar_MoveTo (hStaminaBar, posX, posY);
+
+		//Move bar preview
+		//var zCView v1; v1 = View_Get (bStaminaBar.v1);
+		//var zCView v2; v2 = View_Get (vStaminaPreview);
+
+		//if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		//{
+		//	View_MoveTo (vStaminaPreview, v1.vposX, v1.vposY);
+		//};
+
+		//Move bar values
+		var zCView v1; v1 = View_Get (bStaminaBar.v1);
+		var zCView v2; v2 = View_Get (vStaminaBarValue);
+
+		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
+		{
+			View_MoveTo (vStaminaBarValue, v1.vposX, v1.vposY);
+		};
+
+		_staminaBar_LastPosX = posX;
+		_staminaBar_LastPosY = posY;
+	};
+};
+
+/*
+ *	BBar_SetAlpha
+ *	 - wrapper function that updates also additional views
  */
 func void BBar_SetAlpha (var int hBar, var int alpha) {
 	Bar_SetAlpha (hBar, alpha);
@@ -260,7 +538,8 @@ func void BBar_SetAlpha (var int hBar, var int alpha) {
 };
 
 /*
- *
+ *	BBar_SetAlphaBackAndBar
+ *	 - wrapper function that updates also additional views
  */
 func void BBar_SetAlphaBackAndBar (var int hBar, var int alphaBack, var int alphaBar) {
 	Bar_SetAlphaBackAndBar (hbar, alphaBack, alphaBar);
@@ -268,6 +547,112 @@ func void BBar_SetAlphaBackAndBar (var int hBar, var int alphaBack, var int alph
 	if (hBar == hStaminaBar) {
 		View_SetAlphaAll (vStaminaBarValue, alphaBack);
 		return;
+	};
+};
+
+/*
+ *	BBar_Hide
+ *	 - wrapper function that closes also additional views
+ */
+func void BBar_Hide (var int hBar) {
+	if (hbar == hHealthBar) {
+		View_Close(bHealthBar.v0);
+		View_Close(bHealthBar.v1);
+		bHealthBar.hidden = TRUE;
+
+		View_Close (vHealthBarValue);
+		View_Close (vHealthPreview);
+	};
+
+	if (hbar == hStaminaBar) {
+		View_Close(bStaminaBar.v0);
+		View_Close(bStaminaBar.v1);
+		bStaminaBar.hidden = TRUE;
+
+		View_Close (vStaminaBarValue);
+	};
+
+	if (hbar == hManaBar) {
+		View_Close(bManaBar.v0);
+		View_Close(bManaBar.v1);
+		bManaBar.hidden = TRUE;
+
+		View_Close (vManaBarValue);
+		View_Close (vManaPreview);
+	};
+
+	if (hbar == hSwimBar) {
+		View_Close(bSwimBar.v0);
+		View_Close(bSwimBar.v1);
+		bSwimBar.hidden = TRUE;
+
+		View_Close (vSwimBarValue);
+	};
+
+	if (hbar == hFocusBar) {
+		View_Close(bFocusBar.v0);
+		View_Close(bFocusBar.v1);
+		bFocusBar.hidden = TRUE;
+
+		View_Close (vFocusBarValue);
+	};
+};
+
+/*
+ *	BBar_Show
+ *	 - wrapper function that opens / re-arranges also additional views
+ */
+func void BBar_Show (var int hBar) {
+	if (hbar == hHealthBar) {
+		View_Open (bHealthBar.v0);
+		View_Top (vHealthPreview);
+		View_Open (bHealthBar.v1);
+		View_Open (vHealthBarValue);
+		bHealthBar.hidden = FALSE;
+
+		HealthBar_UpdatePosition ();
+		View_Resize (vHealthBarValue, bHealthBar.barW, -1);
+	};
+
+	if (hbar == hStaminaBar) {
+		View_Open (bStaminaBar.v0);
+		View_Open (bStaminaBar.v1);
+		View_Open (vStaminaBarValue);
+		bStaminaBar.hidden = FALSE;
+
+		StaminaBar_UpdatePosition ();
+		View_Resize (vStaminaBarValue, bStaminaBar.barW, -1);
+	};
+
+	if (hbar == hManaBar) {
+		View_Open (bManaBar.v0);
+		View_Top(vManaPreview);
+		View_Open (bManaBar.v1);
+		View_Open (vManaBarValue);
+		bManaBar.hidden = FALSE;
+
+		ManaBar_UpdatePosition ();
+		View_Resize (vManaBarValue, bManaBar.barW, -1);
+	};
+
+	if (hbar == hSwimBar) {
+		View_Open (bSwimBar.v0);
+		View_Open (bSwimBar.v1);
+		View_Open (vSwimBarValue);
+		bSwimBar.hidden = FALSE;
+
+		SwimBar_UpdatePosition ();
+		View_Resize (vSwimBarValue, bSwimBar.barW, -1);
+	};
+
+	if (hbar == hFocusBar) {
+		View_Open (bFocusBar.v0);
+		View_Open (bFocusBar.v1);
+		View_Open (vFocusBarValue);
+		bFocusBar.hidden = FALSE;
+
+		FocusBar_UpdatePosition ();
+		View_Resize (vFocusBarValue, bFocusBar.barW, -1);
 	};
 };
 
