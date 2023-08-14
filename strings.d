@@ -205,9 +205,7 @@ func string BtoC (var int i) {
 };
 
 func string STR_Left (var string s, var int count) {
-	var int len; len = STR_Len (s);
-
-	if (len < count) {
+	if (STR_Len (s) < count) {
 		return s;
 	};
 
@@ -240,9 +238,7 @@ func string STR_AddString (var string s, var string s1, var string separator) {
 		s = ConcatStrings (s, separator);
 	};
 
-	s = ConcatStrings (s, s1);
-
-	return s;
+	return ConcatStrings (s, s1);
 };
 
 /*
@@ -278,27 +274,15 @@ func int STR_IsNumeric (var string s) {
  *	ConcatStrings
  */
 func string Concat3Strings (var string s1, var string s2, var string s3) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	return s;
+	return ConcatStrings(ConcatStrings(s1, s2), s3));
 };
 
 func string Concat4Strings (var string s1, var string s2, var string s3, var string s4) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	s = ConcatStrings (s, s4);
-	return s;
+	return ConcatStrings(Concat3Strings(s1, s2, s3), s4);
 };
 
 func string Concat5Strings (var string s1, var string s2, var string s3, var string s4, var string s5) {
-	var string s;
-	s = ConcatStrings (s1, s2);
-	s = ConcatStrings (s, s3);
-	s = ConcatStrings (s, s4);
-	s = ConcatStrings (s, s5);
-	return s;
+	return ConcatStrings(Concat4Strings(s1, s2, s3, s4), s5);
 };
 
 /*
@@ -419,4 +403,283 @@ func int STR_WildMatch (var string s, var string pattern) {
 	};
 
 	return + (Hlp_StrCmp (s, pattern));
+};
+
+/*
+ *  STR_NotLeft
+ *   - Get substring by cutting `count` chars from left
+ */
+func string STR_NotLeft (var string s, var int count) {
+	var int len; len = STR_Len (s);
+
+	if (len <= count) {
+		return "";
+	};
+
+	return mySTR_SubStr (s, count, len - count);
+};
+ 
+/*
+ *  STR_NotRight
+ *   - Get substring by cutting `count` chars from right
+ */
+func string STR_NotRight (var string s, var int count) {
+	var int len; len = STR_Len (s);
+
+	if (len <= count) {
+		return "";
+	};
+
+	return mySTR_SubStr (s, 0, len - count);
+};
+
+/*
+ *  Ikarus equivalent of zParserExtender's `STR_format` function up to 4 %i and %s modifiers
+ */
+const string STR_format_CONST_S = "%s";
+const string STR_format_CONST_I = "%i";
+
+// One modifier functions
+// S
+func string STR_format_S(var string source, var string arg)
+{
+    return STR_ReplaceOnce(source, STR_format_CONST_S, arg);
+};
+
+// I
+func string STR_format_I(var string source, var int arg)
+{
+    var string arg_i; arg_i = IntToString(arg);
+    
+    return STR_ReplaceOnce(source, STR_format_CONST_I, arg_i);
+};
+
+
+// Two modifiers functions
+// SS
+func string STR_format_SS(var string source, var string arg1, var string arg2)
+{
+    var string s; s = STR_format_S(source, arg1);
+    
+    return STR_format_S(s, arg2);
+};
+
+// SI
+func string STR_format_SI(var string source, var string arg1, var int arg2)
+{
+    var string s; s = STR_format_S(source, arg1);
+    
+    return STR_format_I(s, arg2);
+};
+
+// IS
+func string STR_format_IS(var string source, var int arg1, var string arg2)
+{
+    var string s; s = STR_format_I(source, arg1);
+    
+    return STR_format_S(s, arg2);
+};
+
+// II
+func string STR_format_II(var string source, var int arg1, var int arg2)
+{
+    var string s; s = STR_format_I(source, arg1);
+    
+    return STR_format_I(s, arg2);
+};
+
+
+// Three modifiers functions
+// SSS
+func string STR_format_SSS(var string source, var string arg1, var string arg2, var string arg3)
+{
+    var string s; s = STR_format_SS(source, arg1, arg2);
+    
+    return STR_format_S(s, arg3);
+};
+
+// SSI
+func string STR_format_SSI(var string source, var string arg1, var string arg2, var int arg3)
+{
+    var string s; s = STR_format_SS(source, arg1, arg2);
+    
+    return STR_format_I(s, arg3);
+};
+
+// SIS
+func string STR_format_SIS(var string source, var string arg1, var int arg2, var string arg3)
+{
+    var string s; s = STR_format_SI(source, arg1, arg2);
+    
+    return STR_format_S(s, arg3);
+};
+
+// SII
+func string STR_format_SII(var string source, var string arg1, var int arg2, var int arg3)
+{
+    var string s; s = STR_format_SI(source, arg1, arg2);
+    
+    return STR_format_I(s, arg3);
+};
+
+// ISS
+func string STR_format_ISS(var string source, var int arg1, var string arg2, var string arg3)
+{
+    var string s; s = STR_format_IS(source, arg1, arg2);
+    
+    return STR_format_S(s, arg3);
+};
+
+// ISI
+func string STR_format_ISI(var string source, var int arg1, var string arg2, var int arg3)
+{
+    var string s; s = STR_format_IS(source, arg1, arg2);
+    
+    return STR_format_I(s, arg3);
+};
+
+// IIS
+func string STR_format_IIS(var string source, var int arg1, var int arg2, var string arg3)
+{
+    var string s; s = STR_format_II(source, arg1, arg2);
+    
+    return STR_format_S(s, arg3);
+};
+
+// III
+func string STR_format_III(var string source, var int arg1, var int arg2, var int arg3)
+{
+    var string s; s = STR_format_II(source, arg1, arg2);
+    
+    return STR_format_I(s, arg3);
+};
+
+
+// Four modifiers functions
+// SSSS
+func string STR_format_SSSS(var string source, var string arg1, var string arg2, var string arg3, var string arg4)
+{
+    var string s; s = STR_format_SSS(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// SSSI
+func string STR_format_SSSI(var string source, var string arg1, var string arg2, var string arg3, var int arg4)
+{
+    var string s; s = STR_format_SSS(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// SSIS
+func string STR_format_SSIS(var string source, var string arg1, var string arg2, var int arg3, var string arg4)
+{
+    var string s; s = STR_format_SSI(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// SSII
+func string STR_format_SSII(var string source, var string arg1, var string arg2, var int arg3, var int arg4)
+{
+    var string s; s = STR_format_SSI(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// SISS
+func string STR_format_SISS(var string source, var string arg1, var int arg2, var string arg3, var string arg4)
+{
+    var string s; s = STR_format_SIS(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// SISI
+func string STR_format_SISI(var string source, var string arg1, var int arg2, var string arg3, var int arg4)
+{
+    var string s; s = STR_format_SIS(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// SIIS
+func string STR_format_SIIS(var string source, var string arg1, var int arg2, var int arg3, var string arg4)
+{
+    var string s; s = STR_format_SII(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// SIII
+func string STR_format_SIII(var string source, var string arg1, var int arg2, var int arg3, var int arg4)
+{
+    var string s; s = STR_format_SII(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// ISSS
+func string STR_format_ISSS(var string source, var int arg1, var string arg2, var string arg3, var string arg4)
+{
+    var string s; s = STR_format_ISS(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// ISSI
+func string STR_format_ISSI(var string source, var int arg1, var string arg2, var string arg3, var int arg4)
+{
+    var string s; s = STR_format_ISS(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// ISIS
+func string STR_format_ISIS(var string source, var int arg1, var string arg2, var int arg3, var string arg4)
+{
+    var string s; s = STR_format_ISI(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// ISII
+func string STR_format_ISII(var string source, var int arg1, var string arg2, var int arg3, var int arg4)
+{
+    var string s; s = STR_format_ISI(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// IISS
+func string STR_format_IISS(var string source, var int arg1, var int arg2, var string arg3, var string arg4)
+{
+    var string s; s = STR_format_IIS(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// IISI
+func string STR_format_IISI(var string source, var int arg1, var int arg2, var string arg3, var int arg4)
+{
+    var string s; s = STR_format_IIS(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
+};
+
+// IIIS
+func string STR_format_IIIS(var string source, var int arg1, var int arg2, var int arg3, var string arg4)
+{
+    var string s; s = STR_format_III(source, arg1, arg2, arg3);
+    
+    return STR_format_S(s, arg4);
+};
+
+// IIII
+func string STR_format_IIII(var string source, var int arg1, var int arg2, var int arg3, var int arg4)
+{
+    var string s; s = STR_format_III(source, arg1, arg2, arg3);
+    
+    return STR_format_I(s, arg4);
 };
