@@ -877,19 +877,6 @@ func void InsertPileOfItems(var string itmInst, var int trf, var int am, var int
 
 
 /*
- * Set the focus name of a mob (see Text.d)
- */
-func int SetMobName(var int mobPtr, var string symbolicFocusName) {
-    if (Hlp_Is_oCMob(mobPtr)) {
-        var oCMob mob; mob = _^(mobPtr);
-        mob.name           = symbolicFocusName;
-        mob.focusNameIndex = MEM_GetSymbolIndex(symbolicFocusName);
-    };
-    return mobPtr;
-};
-
-
-/*
  * Set some miscellaneous properties of mobs
  */
 func void SetMobMisc(var int mobPtr, var string triggerTarget, var string useWithItem, var string onStateFuncName) {
