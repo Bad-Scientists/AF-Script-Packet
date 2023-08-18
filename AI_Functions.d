@@ -1217,6 +1217,9 @@ func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
  *	 - same as AI_TurnToNPC, but allows us to use vob / waypoint
  */
 func void AI_TurnToVob (var int slfInstance, var string vobName) {
+    var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+    
 	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
 
 	if (vobPtr) {
