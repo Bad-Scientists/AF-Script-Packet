@@ -3693,3 +3693,229 @@ func void G12_EnhancedInfoManager_Init () {
 		once = 1;
 	};
 };
+
+/*
+ *  G12_EnhancedInfoManager_Destructable_Init
+ *   - Another version of 'G12_EnhancedInfoManager_Init' with possibility to de-initialization.
+ *   By default, this should be used in 'ZS_Talk' function.
+ *   - Don't use 'G12_EnhancedInfoManager_Init', if you use that.
+ */
+var int EnhancedInfoManager_Hooked;
+var int oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_1;
+var int oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_2;
+var int oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_3;
+var int oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_4;
+var int oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_5;
+func void G12_EnhancedInfoManager_Destructable_Init () {
+	//Reset pointers
+	InfoManagerSpinnerIndicatorL = 0;
+	InfoManagerSpinnerIndicatorR = 0;
+
+	InfoManagerAnswerIndicator = 0;
+
+	//-- Load API values / init default values
+
+	_InfoManagerDefaultDialogColorSelected = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDEFAULTDIALOGCOLORSELECTED", "FFFFFF");
+	_InfoManagerDefaultColorDialogGrey = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDEFAULTCOLORDIALOGGREY", "C8C8C8");
+
+	//--
+
+	var string fontName;
+	fontName = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGSELECTED", "");
+
+	if (STR_Len (fontName)) {
+		_InfoManagerDefaultFontDialogSelected = Print_GetFontPtr (fontName);
+	} else {
+		_InfoManagerDefaultFontDialogSelected = 0;
+	};
+
+	fontName = API_GetSymbolStringValue ("INFOMANAGERDEFAULTFONTDIALOGGREY", "");
+
+	if (STR_Len (fontName)) {
+		_InfoManagerDefaultFontDialogGrey = Print_GetFontPtr (fontName);
+	} else {
+		_InfoManagerDefaultFontDialogGrey = 0;
+	};
+
+	//--
+
+	_InfoManagerDisabledDialogColorSelected = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDISABLEDDIALOGCOLORSELECTED", "808080");
+	_InfoManagerDisabledColorDialogGrey = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDISABLEDCOLORDIALOGGREY", "666666");
+
+	//--
+
+	_InfoManagerDefaultDialogAlignment = API_GetSymbolIntValue ("INFOMANAGERDEFAULTDIALOGALIGNMENT", ALIGN_LEFT);
+
+	//--
+
+	_InfoManagerIndicatorColorDefault = API_GetSymbolHEX2RGBAValue ("INFOMANAGERINDICATORCOLORDEFAULT", "C8C8C8");
+
+	//--
+
+	_InfoManagerIndicatorAlpha = API_GetSymbolIntValue ("INFOMANAGERINDICATORALPHA", 255);
+
+	_InfoManagerSpinnerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERSPINNERINDICATORSTRING", "<-- -->");
+	_InfoManagerAnswerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERANSWERINDICATORSTRING", "...");
+
+	_InfoManagerSpinnerIndicatorAnimation = API_GetSymbolIntValue ("INFOMANAGERSPINNERINDICATORANIMATION", 1);
+
+	_InfoManagerNumKeysControls = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSCONTROLS", 1);
+	_InfoManagerNumKeysNumbers = API_GetSymbolIntValue ("INFOMANAGERNUMKEYSNUMBERS", 0);
+
+	_InfoManagerAlphaBlendFunc = API_GetSymbolIntValue ("INFOMANAGERALPHABLENDFUNC", 3);
+
+	_InfoManagerRememberSelectedChoice = API_GetSymbolIntValue ("INFOMANAGERREMEMBERSELECTEDCHOICE", cIM_RememberSelectedChoice_Spinners);
+	//--
+
+	if (!EnhancedInfoManager_Hooked) {
+		HookEngine (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EIM");
+		HookEngine (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EIM");
+
+		HookEngine (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices_EIM");
+		HookEngine (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos_EIM");
+
+		//0x0072D0A0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G1 = 7524512;
+
+		//0x00661DB0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G2 = 6692272;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin_EIM");
+
+		//0x0072E360 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G1 = 7529312;
+
+		//0x006630D0 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G2 = 6697168;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit_EIM");
+
+		//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
+
+		//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G2 = 6878752;
+
+		HookEngine (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected_EIM");
+
+		//TODO: investigate potential performance improvement - if we would sort all infos by both .npc and .nr then we could in theory improve performance (infos without npc would have to be at the beginning of the list)
+		//0x006647E0 private: static int __cdecl oCInfoManager::CompareInfos(class oCInfo *,class oCInfo *)
+
+		//-- Item preview --
+
+		//G2A only
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			//This hook will override maxSlots to 1 slot
+			//0x00706B60 protected: virtual void __thiscall oCItemContainer::DrawCategory(void)
+			const int oCItemContainer__DrawCategory_G2 = 7367520;
+			HookEngine (oCItemContainer__DrawCategory_G2, 6, "_hook_oCItemContainer_DrawCategory_EIM");
+
+			//This hook makes sure DrawItemInfo renders at all (in G2A item info is not rendered if inventory has not enabled events - so we override it with item preview feature)
+			//00706e5f
+			const int oCItemContainer__DrawItemInfo_GetHandleEvent_G2 = 7368287;
+
+			var int ptr; ptr = oCItemContainer__DrawItemInfo_GetHandleEvent_G2;
+			MemoryProtectionOverride (ptr, 5);
+            oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_1 = MEM_ReadByte(ptr);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+            oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_2 = MEM_ReadByte(ptr);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+            oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_3 = MEM_ReadByte(ptr);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+            oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_4 = MEM_ReadByte(ptr);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+            oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_5 = MEM_ReadByte(ptr);
+			MEM_WriteByte (ptr, 144); ptr += 1;
+
+			HookEngine (oCItemContainer__DrawItemInfo_GetHandleEvent_G2, 5, "_hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM");
+		};
+
+		//This hook moves item info above dialogue choice box
+		//00667328
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G1 = 6714152;
+
+		//00706fee
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G2 = 7368686;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__DrawItemInfo_PreRenderItem_G1, oCItemContainer__DrawItemInfo_PreRenderItem_G2), 5, "_hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM");
+
+		EnhancedInfoManager_Hooked = 1;
+	};
+};
+
+/*
+ *  G12_EnhancedInfoManager_Destruct
+ *   - De-initialization of 'G12_EnhancedInfoManager_Destructable_Init' function.
+ *   This should be called in 'ZS_Talk_End'.
+ */
+func void G12_EnhancedInfoManager_Destruct () {
+	if (EnhancedInfoManager_Hooked) {
+		RemoveHook (zCViewDialogChoice__HandleEvent, 9, "_hook_zCViewDialogChoice_HandleEvent_EIM");
+		RemoveHook (oCInformationManager__Update, 5, "_hook_oCInformationManager_Update_EIM");
+
+		RemoveHook (oCInformationManager__CollectChoices, 5, "_hook_oCInformationManager_CollectChoices_EIM");
+		RemoveHook (oCInformationManager__CollectInfos, 7, "_hook_oCInformationManager_CollectInfos_EIM");
+
+		//0x0072D0A0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G1 = 7524512;
+
+		//0x00661DB0 protected: void __fastcall oCInformationManager::OnImportantBegin(void)
+		const int oCInformationManager__OnImportantBegin_G2 = 6692272;
+
+		RemoveHook (MEMINT_SwitchG1G2 (oCInformationManager__OnImportantBegin_G1, oCInformationManager__OnImportantBegin_G2), 6, "_hook_oCInformationManager_OnImportantBegin_EIM");
+
+		//0x0072E360 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G1 = 7529312;
+
+		//0x006630D0 protected: void __fastcall oCInformationManager::OnExit(void)
+		const int oCInformationManager__OnExit_G2 = 6697168;
+
+		RemoveHook (MEMINT_SwitchG1G2 (oCInformationManager__OnExit_G1, oCInformationManager__OnExit_G2), 6, "_hook_oCInformationManager_OnExit_EIM");
+
+		//0x007594A0 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G1 = 7705760;
+
+		//0x0068F620 protected: void __fastcall zCViewDialogChoice::HighlightSelected(void)
+		const int zCViewDialogChoice__HighlightSelected_G2 = 6878752;
+
+		RemoveHook (MEMINT_SwitchG1G2 (zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2), 9, "_hook_zCViewDialogChoice_HighlightSelected_EIM");
+
+		//TODO: investigate potential performance improvement - if we would sort all infos by both .npc and .nr then we could in theory improve performance (infos without npc would have to be at the beginning of the list)
+		//0x006647E0 private: static int __cdecl oCInfoManager::CompareInfos(class oCInfo *,class oCInfo *)
+
+		//-- Item preview --
+
+		//G2A only
+		if (MEMINT_SwitchG1G2 (0, 1)) {
+			//This hook will override maxSlots to 1 slot
+			//0x00706B60 protected: virtual void __thiscall oCItemContainer::DrawCategory(void)
+			const int oCItemContainer__DrawCategory_G2 = 7367520;
+			RemoveHook (oCItemContainer__DrawCategory_G2, 6, "_hook_oCItemContainer_DrawCategory_EIM");
+
+			//This hook makes sure DrawItemInfo renders at all (in G2A item info is not rendered if inventory has not enabled events - so we override it with item preview feature)
+			//00706e5f
+			const int oCItemContainer__DrawItemInfo_GetHandleEvent_G2 = 7368287;
+
+			var int ptr; ptr = oCItemContainer__DrawItemInfo_GetHandleEvent_G2;
+			MemoryProtectionOverride (ptr, 5);
+			MEM_WriteByte (ptr, oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_1); ptr += 1;
+			MEM_WriteByte (ptr, oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_2); ptr += 1;
+			MEM_WriteByte (ptr, oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_3); ptr += 1;
+			MEM_WriteByte (ptr, oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_4); ptr += 1;
+			MEM_WriteByte (ptr, oCItemContainer__DrawItemInfo_GetHandleEvent_G2_Byte_5); ptr += 1;
+
+			RemoveHook (oCItemContainer__DrawItemInfo_GetHandleEvent_G2, 5, "_hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM");
+		};
+
+		//This hook moves item info above dialogue choice box
+		//00667328
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G1 = 6714152;
+
+		//00706fee
+		const int oCItemContainer__DrawItemInfo_PreRenderItem_G2 = 7368686;
+
+		RemoveHook (MEMINT_SwitchG1G2 (oCItemContainer__DrawItemInfo_PreRenderItem_G1, oCItemContainer__DrawItemInfo_PreRenderItem_G2), 5, "_hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM");
+
+		EnhancedInfoManager_Hooked = 0;
+	};
+};

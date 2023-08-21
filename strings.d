@@ -274,7 +274,7 @@ func int STR_IsNumeric (var string s) {
  *	ConcatStrings
  */
 func string Concat3Strings (var string s1, var string s2, var string s3) {
-	return ConcatStrings(ConcatStrings(s1, s2), s3));
+	return ConcatStrings(ConcatStrings(s1, s2), s3);
 };
 
 func string Concat4Strings (var string s1, var string s2, var string s3, var string s4) {
