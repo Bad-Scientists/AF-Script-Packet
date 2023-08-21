@@ -81,3 +81,59 @@ func int Vob_GetWaterPoly (var int vobPtr) {
 	return spatialState.m_poWaterPoly;
 };
 
+//-- Wrapper functions for Npcs
+
+//float
+func int Npc_GetFeetY (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNpc (slf)) { return FLOATNULL; };
+	if (!slf.aniCtrl) { return FLOATNULL; };
+
+	return + zCAIPlayer_GetFeetY (slf.aniCtrl);
+};
+
+func int Npc_GetAboveFloor (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNpc (slf)) { return FLOATNULL; };
+	if (!slf.aniCtrl) { return FLOATNULL; };
+
+	return + zCAIPlayer_GetAboveFloor (slf.aniCtrl);
+};
+
+//float
+func int Npc_GetWaterY (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNpc (slf)) { return FLOATNULL; };
+	return + Vob_GetWaterY (_@ (slf));
+};
+
+//floor
+func int Npc_GetFloorY (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNpc (slf)) { return FLOATNULL; };
+	return + Vob_GetFloorY (_@ (slf));
+};
+
+//float
+func int Npc_GetHeadY (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNpc (slf)) { return FLOATNULL; };
+	return + zCAIPlayer_GetHeadY (slf.aniCtrl);
+};
+
+//float
+func int Npc_GetWaterDepthKnee (var int slfInstance) {
+	var int feetY; feetY = Npc_GetFeetY (hero);
+	var int waterY; waterY = Npc_GetWaterY (hero);
+
+	if (gf (waterY, feetY)) {
+		return + subF (waterY, feetY);
+	};
+
+	return FLOATNULL;
+};
