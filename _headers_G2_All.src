@@ -57,6 +57,7 @@ vectors.d
 vobFunctions.d
 
 vobFunctions.d
+spatialState.d
 
 ScriptBin\insertAnything.d
 ScriptBin\searchVobs.d

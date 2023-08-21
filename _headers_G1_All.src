@@ -42,6 +42,7 @@ EngineClasses_G1\TObjectRoutine.d
 
 EngineClasses_G1\zCConDat.d
 
+EngineClasses_G1\zTSpatialState.d
 ScriptBin\strings.d
 ScriptBin\convert.d
 
