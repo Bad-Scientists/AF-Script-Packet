@@ -62,6 +62,8 @@ keys.d
 vectors.d
 vobFunctions.d
 
+spatialState.d
+
 ScriptBin\insertAnything.d
 ScriptBin\searchVobs.d
 ScriptBin\removeoCVobSafe.d
