@@ -83,6 +83,9 @@ ObjectFactory\zCWaypoint.d
 
 ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
+
+ObjectFactory\oCSpell.d
+
 mobFunctions.d
 
 anims_engine.d
@@ -138,6 +141,8 @@ camera.d
 
 vobThrowing.d
 miscellaneous.d
+
+magic.d
 
 G2 NoTR emulation.d
 
