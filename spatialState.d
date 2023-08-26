@@ -128,8 +128,8 @@ func int Npc_GetHeadY (var int slfInstance) {
 
 //float
 func int Npc_GetWaterDepthKnee (var int slfInstance) {
-	var int feetY; feetY = Npc_GetFeetY (hero);
-	var int waterY; waterY = Npc_GetWaterY (hero);
+	var int feetY; feetY = Npc_GetFeetY (slfInstance);
+	var int waterY; waterY = Npc_GetWaterY (slfInstance);
 
 	if (gf (waterY, feetY)) {
 		return + subF (waterY, feetY);
