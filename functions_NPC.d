@@ -174,26 +174,35 @@ func string NPC_GetRoutineName (var int slfInstance) {
 	return CALL_RetValAszstring ();
 };
 
-func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
-	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+/*
+ *  Get routine name without prefix and suffix
+ */
+func string Npc_GetRoutineBaseName (var int slfInstance)
+{
+	var string rtnName; rtnName = NPC_GetRoutineName (slfInstance);
 
+	//Double-check just in case
+	if (STR_StartsWith (rtnName, "RTN_")) {
+		//Remove prefix
+		rtnName = STR_Right (rtnName, STR_Len (rtnName) - 4);
+	};
+
+	//Double-check just in case
+    var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	var string suffix; suffix = ConcatStrings ("_", IntToString (slf.ID));
+	if (STR_EndsWith (rtnName, suffix)) {
+		//Remove suffix
+		rtnName = STR_Left (rtnName, STR_Len (rtnName) - STR_Len (suffix));
+	};
+    
+    return rtnName;
+};
+
+func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	rtnName = STR_Upper (rtnName);
 
-	//RTN_ rtnName _ID
-	var string curRtnName; curRtnName = NPC_GetRoutineName (slf);
-
-	//Double-check just in case
-	if (STR_StartsWith (curRtnName, "RTN_")) {
-		//Remove prefix
-		curRtnName = STR_Right (curRtnName, STR_Len (curRtnName) - 4);
-	};
-
-	//Double-check just in case
-	var string suffix; suffix = ConcatStrings ("_", IntToString (slf.ID));
-	if (STR_EndsWith (curRtnName, suffix)) {
-		//Remove suffix
-		curRtnName = STR_Left (curRtnName, STR_Len (curRtnName) - STR_Len (suffix));
-	};
+	//RTN_ rtnName _ID    
+    var string curRtnName; curRtnName = Npc_GetRoutineBaseName(slfInstance);
 
 	//We will allow single wild-card '*'
 	var int indexWildcard;
