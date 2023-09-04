@@ -868,50 +868,6 @@ func void oCNpc_ClearEM (var int slfInstance) {
 	};
 };
 
-func void oCNpc_MakeSpellBook (var int slfInstance) {
-	//0x006B86A0 public: void __thiscall oCNpc::MakeSpellBook(void)
-	const int oCNpc__MakeSpellBook_G1 = 7046816;
-
-	//0x0075F040 public: void __thiscall oCNpc::MakeSpellBook(void)
-	const int oCNpc__MakeSpellBook_G2 = 7729216;
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__MakeSpellBook_G1, oCNpc__MakeSpellBook_G2));
-		call = CALL_End();
-	};
-};
-
-func int oCNpc_GetSpellBook (var int slfInstance) {
-	//0x0069B3C0 public: class oCMag_Book * __thiscall oCNpc::GetSpellBook(void)
-	const int oCNpc__GetSpellBook_G1 = 6927296;
-
-	//0x0073EA00 public: class oCMag_Book * __thiscall oCNpc::GetSpellBook(void)
-	const int oCNpc__GetSpellBook_G2 = 7596544;
-
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-
-	if (!Hlp_IsValidNPC (slf)) { return 0; };
-
-	var int retVal;
-	var int slfPtr; slfPtr = _@ (slf);
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo (_@ (retVal));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__GetSpellBook_G1, oCNpc__GetSpellBook_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
-};
-
 //0x00639840 private: virtual void __thiscall oCGame::SetAsPlayer(class zSTRING const &)
 //0x006C3D20 private: virtual void __thiscall oCGame::SetAsPlayer(class zSTRING const &)
 

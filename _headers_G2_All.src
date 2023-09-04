@@ -36,6 +36,8 @@ EngineClasses_G2\TObjectRoutine.d
 
 EngineClasses_G2\zCConDat.d
 
+EngineClasses_G2\zTSpatialState.d
+
 ScriptBin\strings.d
 ScriptBin\convert.d
 
@@ -57,6 +59,7 @@ vectors.d
 vobFunctions.d
 
 vobFunctions.d
+spatialState.d
 
 ScriptBin\insertAnything.d
 ScriptBin\searchVobs.d
@@ -80,6 +83,9 @@ ObjectFactory\zCWaypoint.d
 
 ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
+
+ObjectFactory\oCSpell.d
+
 mobFunctions.d
 
 anims_engine.d
@@ -135,6 +141,8 @@ camera.d
 
 vobThrowing.d
 miscellaneous.d
+
+magic.d
 
 G2 NoTR emulation.d
 

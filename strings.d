@@ -189,7 +189,7 @@ func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
  */
 func int CtoB (var string s) {
 	var int buf; buf = STR_toChar (s);
-	var int chr; chr = MEM_ReadInt (buf) & 255;
+	var int chr; chr = MEM_ReadByte (buf);
 	return chr;
 };
 

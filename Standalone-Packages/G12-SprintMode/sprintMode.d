@@ -186,66 +186,6 @@ func void DisableExhausted_SprintMode () {
 	PC_SprintModeBarFlashingTimer = 80;
 };
 
-/*
- * Dynamic position update
- */
-func void StaminaBar_UpdatePosition () {
-
-	var int posX; var int posY;
-
-	//If modder didn't define their own values - use default position
-	if (_PC_SprintModeBar_PPosX == -1) {
-		//Virtual position (180 is default length)
-		posX = PS_VMax / 2;
-	} else {
-		posX = Print_ToVirtual (_PC_SprintModeBar_PPosX, PS_X);
-	};
-
-	if (_PC_SprintModeBar_PPosY == -1) {
-		//Virtual position (20) is default height
-		posY = PS_VMax - Print_ToVirtual (20, PS_Y);
-	} else {
-		posY = Print_ToVirtual (_PC_SprintModeBar_PPosY, PS_Y);
-	};
-
-	if (_PC_SprintModeBar_VPosX > -1) {
-		posX = _PC_SprintModeBar_VPosX;
-	};
-
-	if (_PC_SprintModeBar_VPosY > -1) {
-		posY = _PC_SprintModeBar_VPosY;
-	};
-
-	var int _staminaBar_LastPosX;
-	var int _staminaBar_LastPosY;
-
-	if ((posX != _staminaBar_LastPosX) || (posY != _staminaBar_LastPosY))
-	{
-		Bar_MoveTo (hStaminaBar, posX, posY);
-
-		//Move bar preview
-		//var zCView v1; v1 = View_Get (bStaminaBar.v1);
-		//var zCView v2; v2 = View_Get (vStaminaPreview);
-
-		//if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		//{
-		//	View_MoveTo (vStaminaPreview, v1.vposX, v1.vposY);
-		//};
-
-		//Move bar values
-		var zCView v1; v1 = View_Get (bStaminaBar.v1);
-		var zCView v2; v2 = View_Get (vStaminaBarValue);
-
-		if ((v2.vposX != v1.vposX) || (v2.vposY != v1.vposY))
-		{
-			View_MoveTo (vStaminaBarValue, v1.vposX, v1.vposY);
-		};
-
-		_staminaBar_LastPosX = posX;
-		_staminaBar_LastPosY = posY;
-	};
-};
-
 func void FrameFunction__SprintMode () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
 	if (Npc_IsDead (hero)) { return; };
@@ -479,10 +419,7 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 
 	//If we run out of display time - hide bar
 	if (!_staminaBar_DisplayTime) {
-		//Bar_Hide (hStaminaBar);
-		View_Close(bStaminaBar.v0);
-		View_Close(bStaminaBar.v1);
-		bStaminaBar.hidden = TRUE;
+		BBar_Hide (hStaminaBar);
 
 		FF_Remove (FrameFunction_FadeInOutSprintBar__BetterBars);
 		return;
@@ -491,7 +428,7 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 	//Check - is bar visible? If not show it
 	if (bStaminaBar.hidden) {
 		if (_Bar_PlayerStatus ()) {
-			Bar_Show (hStaminaBar);
+			BBar_Show (hStaminaBar);
 		};
 	};
 
@@ -602,22 +539,13 @@ func void FrameFunction_EachFrame__SprintMode () {
 					};
 				};
 
-				//Bar_Show (hStaminaBar);
-				View_Open (bStaminaBar.v0);
-				View_Open (bStaminaBar.v1);
-				bStaminaBar.hidden = FALSE;
-
-				StaminaBar_UpdatePosition ();
-
-				//Open bar values view
-				View_Open (vStaminaBarValue);
-				View_Resize (vStaminaBarValue, bStaminaBar.barW, -1);
+				BBar_Show (hStaminaBar);
 
 				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				View_Top(bStaminaBar.v0);
+				//View_Top(bStaminaBar.v0);
 				//View_Top(vStaminaPreview);
-				View_Top(bStaminaBar.v1);
-				View_Top(vStaminaBarValue);
+				//View_Top(bStaminaBar.v1);
+				//View_Top(vStaminaBarValue);
 
 				_staminaBar_WasHidden = FALSE;
 			};
@@ -629,12 +557,7 @@ func void FrameFunction_EachFrame__SprintMode () {
 	{
 		if (_playerStatus) {
 			if (!bStaminaBar.hidden) {
-				//Bar_Hide (hStaminaBar);
-				View_Close(bStaminaBar.v0);
-				View_Close(bStaminaBar.v1);
-				bStaminaBar.hidden = TRUE;
-
-				View_Close (vStaminaBarValue);
+				BBar_Hide (hStaminaBar);
 			};
 		};
 	};
@@ -817,18 +740,18 @@ func void G12_SprintMode_Init () {
 	};
 
 	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("GAME", "_staminaBar_DisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - alwas on
-		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "_staminaBar_DisplayMethod"));
+	if (MEM_GothOptExists ("GAME", "sprintBarDisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
+		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "sprintBarDisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "_staminaBar_DisplayMethod")) {
-			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "_staminaBar_DisplayMethod"));
-			MEM_SetGothOpt ("GAME", "_staminaBar_DisplayMethod", IntToString (_staminaBar_DisplayMethod));
+		if (MEM_ModOptExists ("GAME", "sprintBarDisplayMethod")) {
+			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "sprintBarDisplayMethod"));
+			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (_staminaBar_DisplayMethod));
 		} else {
 			//Default
 			_staminaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "_staminaBar_DisplayMethod", IntToString (_staminaBar_DisplayMethod));
+			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (_staminaBar_DisplayMethod));
 		};
 	};
 };
