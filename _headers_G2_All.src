@@ -78,6 +78,7 @@ ObjectFactory\oCAICamera.d
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
 ObjectFactory\oCMsgWeapon.d
+ObjectFactory\oCMsgAttack.d
 
 ObjectFactory\zCWaypoint.d
 
