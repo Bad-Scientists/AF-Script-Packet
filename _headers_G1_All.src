@@ -4,6 +4,7 @@ engine_addresses_G1.d
 
 hlp_functions.d
 
+EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oInventory.d
 EngineClasses_G1\zEventMan.d
 EngineClasses_G1\zCCsCutscene.d
@@ -13,7 +14,6 @@ EngineClasses_G1\oSpell.d
 EngineClasses_G1\oNpcStates.d
 EngineClasses_G1\oNpc.d
 EngineClasses_G1\zCVisual.d
-EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oCDocumentManager.d
 EngineClasses_G1\oCViewDocument.d
 EngineClasses_G1\zPhysics.d
@@ -148,6 +148,7 @@ vobThrowing.d
 miscellaneous.d
 
 magic.d
+fight.d
 
 G2 NoTR emulation.d
 
