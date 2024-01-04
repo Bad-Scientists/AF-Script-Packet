@@ -666,6 +666,19 @@ func int GetSymbolIntValue (var int symbolIndex) {
 	return 0;
 };
 
+func void SetSymbolIntValue (var int symbolIndex, var int value) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+
+		if ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_INT)
+		|| ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_FLOAT) {
+			symb.content = value;
+		};
+	};
+};
+
 func string GetSymbolStringValue (var int symbolIndex) {
 	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
 
