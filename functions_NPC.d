@@ -200,7 +200,7 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	indexWildcard = STR_IndexOf (rtnName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
 
 		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
@@ -951,7 +951,7 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	indexWildcard = STR_IndexOf (stateName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
 
 		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
@@ -976,7 +976,7 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 	indexWildcard = STR_IndexOf (stateName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
 
 		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
