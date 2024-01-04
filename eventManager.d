@@ -1011,7 +1011,7 @@ func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 	};
 };
 
-func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
+func void zCEventManager_OnTrigger (var int eMgr, var int otherVobPtr, var int vobInstigatorPtr) {
 	//0x006DE760 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnTrigger_G1 = 7202656;
 
@@ -1019,20 +1019,17 @@ func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
 	const int zCEventManager__OnTrigger_G2 = 7895536;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!vobPtr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
+		CALL_PtrParam(_@(otherVobPtr));
+		CALL_PtrParam(_@(vobInstigatorPtr));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTrigger_G1, zCEventManager__OnTrigger_G2));
-
 		call = CALL_End();
 	};
 };
 
-func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
+func void zCEventManager_OnUnTrigger (var int eMgr, var int otherVobPtr, var int vobInstigatorPtr) {
 	//0x006DE820 public: virtual void __thiscall zCEventManager::OnUntrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnUnTrigger_G1 = 7202848;
 
@@ -1040,15 +1037,12 @@ func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
 	const int zCEventManager__OnUnTrigger_G2 = 7895728;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!vobPtr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
+		CALL_PtrParam(_@(otherVobPtr));
+		CALL_PtrParam(_@(vobInstigatorPtr));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUnTrigger_G1, zCEventManager__OnUnTrigger_G2));
-
 		call = CALL_End();
 	};
 };
@@ -1172,7 +1166,6 @@ func void zCEventManager_SetActive (var int eMgr, var int on) {
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(on));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__SetActive_G1, zCEventManager__SetActive_G2));
-
 		call = CALL_End();
 	};
 };
