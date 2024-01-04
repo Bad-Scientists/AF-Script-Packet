@@ -275,6 +275,10 @@ const int SEARCHVOBLIST_CANSEE = 1; //Checks if Npc can see object
 const int SEARCHVOBLIST_USEWAYNET = 2; //Uses waynet to calculate nearest object / if this flag is not used then functions uses 'air' distance
 const int SEARCHVOBLIST_CHECKPORTALROOMOWNER = 4; //Ignore objects that are in portal room owned by another Npc
 
+//Added for NPC_GetFreepoint
+const int SEARCHVOBLIST_IGNOREORDER = 8; //Do not search for nearest FP
+const int SEARCHVOBLIST_IGNORECURRENTFP = 16; //Ignore freepoint Npc is currently standing on
+
 /*
  *	Color values [G1 & G2A constants]
  */
