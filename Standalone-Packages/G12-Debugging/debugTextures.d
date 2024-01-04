@@ -52,9 +52,9 @@ func void DisplayTextureName__DebugTextures (var int posPtr, var string texts, v
 
 	//Update view
 
-	View_Open (hView__DebugTextures);
-	View_MoveTo (hView__DebugTextures, X - (viewWidth / 2), Y);
-	View_Resize (hView__DebugTextures, viewWidth, (fontHeight * linesCount) + linesCount);
+	View_Open_Safe (hView__DebugTextures);
+	View_MoveTo_Safe (hView__DebugTextures, X - (viewWidth / 2), Y);
+	View_Resize_Safe (hView__DebugTextures, viewWidth, (fontHeight * linesCount) + linesCount);
 
 	View_SetTextMargin (hView__DebugTextures, texts, 0);
 };
@@ -230,7 +230,7 @@ func void DebugTextures_Enable () {
 };
 
 func void DebugTextures_Disable () {
-	View_Close (hView__DebugTextures);
+	View_Close_Safe (hView__DebugTextures);
 
 	FF_Remove (FrameFunction__DebugTextures);
 };

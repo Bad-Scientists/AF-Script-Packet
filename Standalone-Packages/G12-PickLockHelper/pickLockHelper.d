@@ -120,18 +120,18 @@ func void PickLockHelper_Show () {
 		View_SetAlpha (hPickLockHelper_Frame, _pickLockHelper_Alpha);
 	};
 
-	View_Open (hPickLockHelper_Frame);
-	View_MoveTo (hPickLockHelper_Frame, posX, posY);
-	View_Resize (hPickLockHelper_Frame, viewWidth, fontHeight);
+	View_Open_Safe (hPickLockHelper_Frame);
+	View_MoveTo_Safe (hPickLockHelper_Frame, posX, posY);
+	View_Resize_Safe (hPickLockHelper_Frame, viewWidth, fontHeight);
 
 	if (!Hlp_IsValidHandle (hPickLockHelper_LastCombination)) {
 		hPickLockHelper_LastCombination = View_Create(posX, posY, posX + viewWidth, posY + fontHeight);
 		View_AddText (hPickLockHelper_LastCombination, 00, 00, pickLockHelper_LastCombination, _pickLockHelper_FontName);
 	};
 
-	View_Open (hPickLockHelper_LastCombination);
-	View_MoveTo (hPickLockHelper_LastCombination, posX, posY);
-	View_Resize (hPickLockHelper_LastCombination, viewWidth, fontHeight);
+	View_Open_Safe (hPickLockHelper_LastCombination);
+	View_MoveTo_Safe (hPickLockHelper_LastCombination, posX, posY);
+	View_Resize_Safe (hPickLockHelper_LastCombination, viewWidth, fontHeight);
 	View_SetTextMargin (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, spaceWidth);
 
 	if (!Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) {
@@ -139,9 +139,9 @@ func void PickLockHelper_Show () {
 		View_AddText (hPickLockHelper_CurrentCombination, 00, 00, pickLockHelper_CurrentCombination, _pickLockHelper_FontName);
 	};
 
-	View_Open (hPickLockHelper_CurrentCombination);
-	View_MoveTo (hPickLockHelper_CurrentCombination, posX, posY);
-	View_Resize (hPickLockHelper_CurrentCombination, viewWidth, fontHeight);
+	View_Open_Safe (hPickLockHelper_CurrentCombination);
+	View_MoveTo_Safe (hPickLockHelper_CurrentCombination, posX, posY);
+	View_Resize_Safe (hPickLockHelper_CurrentCombination, viewWidth, fontHeight);
 	View_SetTextMargin (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, spaceWidth);
 
 	if (!Hlp_IsValidHandle (hpickLockHelper_LastKey)) {
@@ -151,19 +151,19 @@ func void PickLockHelper_Show () {
 
 	posX += Print_ToVirtual (Font_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
 
-	View_Open (hpickLockHelper_LastKey);
-	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
-	View_Resize (hpickLockHelper_LastKey, viewWidth, fontHeight);
+	View_Open_Safe (hpickLockHelper_LastKey);
+	View_MoveTo_Safe (hpickLockHelper_LastKey, posX, posY);
+	View_Resize_Safe (hpickLockHelper_LastKey, viewWidth, fontHeight);
 	View_SetTextMargin (hpickLockHelper_LastKey, pickLockHelper_LastKey, spaceWidth);
 
 	pickLockHelper_Visible = TRUE;
 };
 
 func void PickLockHelper_Hide () {
-	if (Hlp_IsValidHandle (hpickLockHelper_LastKey)) { View_Close (hpickLockHelper_LastKey); };
-	if (Hlp_IsValidHandle (hPickLockHelper_LastCombination)) { View_Close (hPickLockHelper_LastCombination); };
-	if (Hlp_IsValidHandle (hPickLockHelper_CurrentCombination)) { View_Close (hPickLockHelper_CurrentCombination); };
-	if (Hlp_IsValidHandle (hPickLockHelper_Frame)) { View_Close (hPickLockHelper_Frame); };
+	View_Close_Safe (hpickLockHelper_LastKey);
+	View_Close_Safe (hPickLockHelper_LastCombination);
+	View_Close_Safe (hPickLockHelper_CurrentCombination);
+	View_Close_Safe (hPickLockHelper_Frame);
 
 	pickLockHelper_Visible = FALSE;
 };
@@ -204,7 +204,7 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 
 	posX += Print_ToVirtual (Font_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
 
-	View_MoveTo (hpickLockHelper_LastKey, posX, posY);
+	View_MoveTo_Safe (hpickLockHelper_LastKey, posX, posY);
 
 	View_SetTextMarginAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
 };
