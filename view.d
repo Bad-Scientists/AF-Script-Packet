@@ -486,6 +486,18 @@ func int View_IsOpen (var int hndl) {
 	return + ViewPtr_IsOpen (viewPtr);
 };
 
+func int ViewPtr_IsClosed (var int viewPtr) {
+	if (!viewPtr) { return FALSE; };
+	var zCView view; view = _^ (viewPtr);
+	return (view.isClosed | view.continueClose);
+};
+
+func int View_IsClosed (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return FALSE; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	return + ViewPtr_IsClosed (viewPtr);
+};
+
 func void ViewPtr_SetAlphaFunc (var int viewPtr, var int alphaFunc) {
 	if (!viewPtr) { return; };
 	var zCView view; view = _^ (viewPtr);
