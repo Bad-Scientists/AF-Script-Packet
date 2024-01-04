@@ -981,9 +981,7 @@ func void zCEventManager_OnTouch (var int eMgr, var int vobPtr) {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTouch_G1, zCEventManager__OnTouch_G2));
-
 		call = CALL_End();
 	};
 };
@@ -1001,9 +999,7 @@ func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUntouch_G1, zCEventManager__OnUntouch_G2));
-
 		call = CALL_End();
 	};
 };
