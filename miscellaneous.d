@@ -694,6 +694,18 @@ func string GetSymbolStringValue (var int symbolIndex) {
 	return "";
 };
 
+func void SetSymbolStringValue (var int symbolIndex, var string s) {
+	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
+
+	if (symbPtr) {
+		var zCPar_symbol symb; symb = _^ (symbPtr);
+
+		if ((symb.bitfield & zCPar_Symbol_bitfield_type) == zPAR_TYPE_STRING) {
+			MEM_WriteString(symb.content, s);
+		};
+	};
+};
+
 func string API_GetSymbolStringValue (var string symbolName, var string defaultValue) {
 	var int symbID; symbID = MEM_GetSymbolIndex (symbolName);
 
