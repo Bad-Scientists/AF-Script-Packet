@@ -29,13 +29,16 @@ func int zCEventMessage_GetSubType (var int eMsg) {
 
 	if (!Hlp_Is_zCEventMessage (eMsg)) { return -1; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
 		CALL__thiscall (_@ (eMsg), MEMINT_SwitchG1G2 (zCEventMessage__GetSubType_G1, zCEventMessage__GetSubType_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsInt ();
+	return + (retVal & 255);
 };
 
 //---
@@ -1227,10 +1230,6 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 
 	var int subType; subType = zCEventMessage_GetSubType (eMsg);
 	if (subType == -1) { return -1; };
-
-	//Convert to Unsigned short
-	subType = subType << 16;
-	subType = subType >> 16;
 
 	return subType;
 };
