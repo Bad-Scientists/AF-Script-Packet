@@ -793,12 +793,8 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
 	if (aniID == -1) { return ""; };
 
-	// getting animation ptr
-	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
-
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
-	//zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
@@ -841,11 +837,8 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
 	if (aniID == -1) { return ""; };
 
-	// getting animation ptr
-	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
-
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
