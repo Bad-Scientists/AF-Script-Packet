@@ -834,26 +834,3 @@ func void G12_InitDefaultBarFunctions () {
 		once = 1;
 	};
 };
-
-func void testBarAF () {
-	_healthBar_DisplayValues_AlphaFunc += 1;
-	_manaBar_DisplayValues_AlphaFunc += 1;
-	_focusBar_DisplayValues_AlphaFunc += 1;
-	_staminaBar_DisplayValues_AlphaFunc += 1;
-
-	if (_healthBar_DisplayValues_AlphaFunc > 7) {
-		_healthBar_DisplayValues_AlphaFunc = 0;
-		_manaBar_DisplayValues_AlphaFunc = 0;
-		_focusBar_DisplayValues_AlphaFunc = 0;
-		_staminaBar_DisplayValues_AlphaFunc = 0;
-	};
-
-	View_SetAlphaFunc (vHealthBarValue, _healthBar_DisplayValues_AlphaFunc);
-	View_SetAlphaFunc (vManaBarValue, _manaBar_DisplayValues_AlphaFunc);
-	View_SetAlphaFunc (vFocusBarValue, _focusBar_DisplayValues_AlphaFunc);
-	View_SetAlphaFunc (vStaminaBarValue, _staminaBar_DisplayValues_AlphaFunc);
-};
-
-func void testSBA () {
-	Bar_SetAlphaBackAndBar (hStaminaBar, -1, 128);
-};
