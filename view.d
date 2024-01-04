@@ -290,10 +290,13 @@ func void View_AlignText_Fixed (var int hndl, var int margin) {
 	ViewPtr_AlignText_Fixed (viewPtr, margin);
 };
 
+/*
+ *	ViewPtr_SetTextAndFontColor
+ */
 func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color) {
 	if (!viewPtr) { return; };
-
 	var zCView v; v = _^ (viewPtr);
+
 	var string fontName; fontName = Print_GetFontName (v.font);
 	var int fontHeight; fontHeight = Print_ToVirtual (Print_GetFontHeight (fontName), v.psizey);
 
@@ -314,6 +317,7 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 
 	var int i; i = 0;
 	var int flagListExtended; flagListExtended = FALSE;
+	var int flagTextsChanged; flagTextsChanged = FALSE;
 
 	if (list) {
 		l = _^ (list);
@@ -324,19 +328,22 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			if (list) {
 				//Update existing text view
 				l = _^ (list);
+
 				if (l.data) {
 					vt = _^ (l.data);
 
-					vt.text = text;
+					if (!Hlp_StrCmp (vt.text, text)) {
+						flagTextsChanged = TRUE;
+						vt.text = text;
+					};
 
 					if (color != -1) {
 						vt.color = color;
 						vt.colored = (color != -1);
 					};
 
-					var string vtFontName; vtFontName = Print_GetFontName (vt.font);
-					var int vtFontHeight; vtFontHeight = Print_ToVirtual (Print_GetFontHeight (vtFontName), v.psizey);
-
+					//Calc Y pos for next line
+					var int vtFontHeight; vtFontHeight = Print_ToVirtual (zCFont_GetFontY (vt.font), v.psizey);
 					vposY = vt.posY + vtFontHeight;
 				};
 
@@ -345,8 +352,8 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 				//Add new text view
 				ViewPtr_AddText (viewPtr, vposX, vposY, text, fontName, color);
 				vposY += fontHeight;
-
 				flagListExtended = TRUE;
+				flagTextsChanged = TRUE;
 			};
 
 			i += 1;
@@ -367,6 +374,8 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 			//end;
 
 			if (l.next) {
+				flagTextsChanged = TRUE;
+
 				//Dettach list
 				var int n; n = l.next;
 				l.next = 0;
@@ -379,9 +388,27 @@ func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var in
 	} else {
 		//Or add texts - if they were not added yet
 		ViewPtr_AddText (viewPtr, vposX, vposY, texts, fontName, color);
+		flagTextsChanged = TRUE;
 	};
 
-	ViewPtr_SetAlphaAll (viewPtr, v.alpha);
+	//-- Auto formatting
+	if (flagTextsChanged) {
+		if (v.intflags & VIEW_AUTO_ALPHA) {
+			ViewPtr_SetAlphaAll (viewPtr, v.alpha);
+		};
+
+		if (v.intflags & VIEW_AUTO_RESIZE) {
+			ViewPtr_AutoResize (viewPtr);
+		};
+
+		if (v.intflags & VIEW_TXT_HCENTER) {
+			ViewPtr_AlignText_Fixed (viewPtr, 0);
+		};
+
+		if (v.intflags & VIEW_TXT_VCENTER) {
+			ViewPtr_CenterTextLines (viewPtr);
+		};
+	};
 };
 
 func void ViewPtr_SetTextMarginAndFontColor (var int viewPtr, var string texts, var int color, var int margin) {
