@@ -203,8 +203,8 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 
 func void FrameFunction_FlashPreviewBars__BetterBars () {
 	if ((!_healthBar_PreviewVisible) && (!_manaBar_PreviewVisible)) {
-		View_SetAlpha (vHealthPreview, 255);
-		View_SetAlpha (vManaPreview, 255);
+		View_SetAlpha (hHealthPreviewView, 255);
+		View_SetAlpha (hManaPreviewView, 255);
 		FF_Remove (FrameFunction_FlashPreviewBars__BetterBars);
 		return;
 	};
@@ -227,7 +227,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		};
 
 		//
-		View_SetAlpha (vHealthPreview, _healthBar_PreviewAlpha);
+		View_SetAlpha (hHealthPreviewView, _healthBar_PreviewAlpha);
 	};
 
 	if ((_manaBar_PreviewVisible) && (_manaBar_PreviewEffect == BarPreviewEffect_FadeInOut)) {
@@ -248,7 +248,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 		};
 
 		//
-		View_SetAlpha (vManaPreview, _manaBar_PreviewAlpha);
+		View_SetAlpha (hManaPreviewView, _manaBar_PreviewAlpha);
 	};
 };
 
@@ -281,15 +281,6 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (PC_ItemPreviewHealth) {
 		if (_playerStatus) {
 			if ((!_healthBar_PreviewVisible) || (_healthBar_WasHidden)) {
-				//View_Open reinserts view to screen - essentially same as View_Top!
-				View_Open (vHealthPreview);
-
-				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				View_Top(bHealthBar.v0);
-				View_Top(vHealthPreview);
-				View_Top(bHealthBar.v1);
-				View_Top(vHealthBarValue);
-
 				if (!_healthBar_PreviewVisible) {
 					//Add frame function (16/1s)
 					FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
@@ -302,7 +293,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 		};
 	} else {
 		if (_healthBar_PreviewVisible) {
-			View_Close (vHealthPreview);
+			View_Close_Safe (hHealthPreviewView);
 			_healthBar_PreviewVisible = FALSE;
 		};
 	};
@@ -311,15 +302,6 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (PC_ItemPreviewMana) {
 		if (_playerStatus) {
 			if ((!_manaBar_PreviewVisible) || (_manaBar_WasHidden)) {
-				//View_Open reinserts view to screen - essentially same as View_Top!
-				View_Open (vManaPreview);
-
-				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				View_Top(bManaBar.v0);
-				View_Top(vManaPreview);
-				View_Top(bManaBar.v1);
-				View_Top(vManaBarValue);
-
 				if (!_manaBar_PreviewVisible) {
 					//Add frame function (8/1s)
 					FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
@@ -333,7 +315,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	} else {
 		if (_manaBar_PreviewVisible)
 		{
-			View_Close (vManaPreview);
+			View_Close_Safe (hManaPreviewView);
 			_manaBar_PreviewVisible = FALSE;
 		};
 	};
@@ -345,6 +327,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (hero.attribute [ATR_HITPOINTS_MAX] != _healthBar_LastMaxValue)
 	{
 		Bar_SetMax (hHealthBar, hero.attribute [ATR_HITPOINTS_MAX]);
+		Bar_SetValueSafe (hHealthBar, hero.attribute [ATR_HITPOINTS]);
 	};
 
 	if (hero.attribute [ATR_HITPOINTS] != _healthBar_LastValue)
@@ -365,7 +348,8 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if ((_healthBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!healthBarOnDesk) && (!_healthBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((_healthBar_ForceOnDesk) || (_healthBar_LastValue != hero.attribute [ATR_HITPOINTS]) || (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
+	if ((_healthBar_ForceOnDesk) || (_healthBar_LastValue != hero.attribute [ATR_HITPOINTS]) || (_healthBar_LastMaxValue != hero.attribute [ATR_HITPOINTS_MAX])
+	|| (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
 	{
 		//
 		if ((_healthBar_DisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
@@ -395,12 +379,6 @@ func void FrameFunction_EachFrame__BetterBars ()
 				};
 
 				BBar_Show (hHealthBar);
-
-				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				//View_Top(bHealthBar.v0);
-				//View_Top(vHealthPreview);
-				//View_Top(bHealthBar.v1);
-				//View_Top(vHealthBarValue);
 
 				_healthBar_WasHidden = FALSE;
 			};
@@ -439,9 +417,9 @@ func void FrameFunction_EachFrame__BetterBars ()
 			previewValue = 0;
 		};
 
-		View_Resize (vHealthPreview, (previewValue * bHealthBar.barW) / 1000, -1);
+		View_Resize_Safe (hHealthPreviewView, (previewValue * bHealthBar.barW) / 1000, -1);
 
-		//Bar_PreviewSetValue (hHealthBar, vHealthPreview, previewValueHealthBar);
+		//Bar_PreviewSetValue (hHealthBar, hHealthPreviewView, previewValueHealthBar);
 		previewValueHealthBarLast = previewValueHealthBar;
 	};
 
@@ -454,7 +432,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 			s = ConcatStrings (IntToString (hero.attribute [ATR_HITPOINTS]), s);
 			s = ConcatStrings (s, IntToString (hero.attribute [ATR_HITPOINTS_MAX]));
 
-			View_SetTextMarginAndFontColor (vHealthBarValue, s, _healthBar_DisplayValues_Color, 0);
+			View_SetTextMarginAndFontColor (hHealthBarValueView, s, _healthBar_DisplayValues_Color, 0);
 		};
 
 		_healthBar_LastValue = hero.attribute [ATR_HITPOINTS];
@@ -468,6 +446,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (hero.attribute [ATR_MANA_MAX] != _manaBar_LastMaxValue)
 	{
 		Bar_SetMax (hManaBar, hero.attribute [ATR_MANA_MAX]);
+		Bar_SetValueSafe (hManaBar, hero.attribute [ATR_MANA]);
 	};
 
 	if (hero.attribute [ATR_MANA] != _manaBar_LastValue)
@@ -481,7 +460,8 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if ((_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk) && (!_manaBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((_manaBar_ForceOnDesk) || (_manaBar_LastValue != hero.attribute [ATR_MANA])) {
+	if ((_manaBar_ForceOnDesk) || (_manaBar_LastValue != hero.attribute [ATR_MANA]) || (_manaBar_LastMaxValue != hero.attribute [ATR_MANA_MAX]))
+	{
 		//
 		if ((_manaBar_DisplayMethod != BarDisplay_AlwaysOn) && (!manaBarOnDesk)) {
 			if (_manaBar_DisplayMethod == BarDisplay_DynamicUpdate) {
@@ -510,12 +490,6 @@ func void FrameFunction_EachFrame__BetterBars ()
 				};
 
 				BBar_Show (hManaBar);
-
-				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				//View_Top(bManaBar.v0);
-				//View_Top(vManaPreview);
-				//View_Top(bManaBar.v1);
-				//View_Top(vManaBarValue);
 
 				_manaBar_WasHidden = FALSE;
 			};
@@ -553,9 +527,9 @@ func void FrameFunction_EachFrame__BetterBars ()
 			previewValue = 0;
 		};
 
-		View_Resize (vManaPreview, (previewValue * bManaBar.barW) / 1000, -1);
+		View_Resize_Safe (hManaPreviewView, (previewValue * bManaBar.barW) / 1000, -1);
 
-		//Bar_PreviewSetValue (hManaBar, vManaPreview, previewValueManaBar);
+		//Bar_PreviewSetValue (hManaBar, hManaPreviewView, previewValueManaBar);
 		previewValueManaBarLast = previewValueManaBar;
 	};
 
@@ -568,7 +542,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 			s = ConcatStrings (IntToString (hero.attribute [ATR_MANA]), s);
 			s = ConcatStrings (s, IntToString (hero.attribute [ATR_MANA_MAX]));
 
-			View_SetTextMarginAndFontColor (vManaBarValue, s, _manaBar_DisplayValues_Color, 0);
+			View_SetTextMarginAndFontColor (hManaBarValueView, s, _manaBar_DisplayValues_Color, 0);
 		};
 
 		_manaBar_LastValue = hero.attribute [ATR_MANA];
@@ -596,6 +570,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if (diveTime != _swimBar_LastMaxValue)
 	{
 		Bar_SetMax (hSwimBar, diveTime);
+		Bar_SetValueSafe (hSwimBar, diveCtr);
 	};
 
 	if (diveCtr != _swimBar_LastValue)
@@ -641,7 +616,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 				s = ConcatStrings (s, IntToString (diveT));
 			};
 
-			View_SetTextMarginAndFontColor (vSwimBarValue, s, _swimBar_DisplayValues_Color, 0);
+			View_SetTextMarginAndFontColor (hSwimBarValueView, s, _swimBar_DisplayValues_Color, 0);
 		};
 
 		_swimBar_LastValue = diveCtr;
@@ -681,6 +656,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 		if (npc.attribute [ATR_HITPOINTS_MAX] != _focusBar_LastMaxValue)
 		{
 			Bar_SetMax (hFocusBar, npc.attribute [ATR_HITPOINTS_MAX]);
+			Bar_SetValueSafe (hFocusBar, npc.attribute [ATR_HITPOINTS]);
 		};
 
 		if (npc.attribute [ATR_HITPOINTS] != _focusBar_LastValue)
@@ -695,7 +671,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 				s = ConcatStrings (IntToString (npc.attribute [ATR_HITPOINTS]), s);
 				s = ConcatStrings (s, IntToString (npc.attribute [ATR_HITPOINTS_MAX]));
 
-				View_SetTextMarginAndFontColor (vFocusBarValue, s, _focusBar_DisplayValues_Color, 0);
+				View_SetTextMarginAndFontColor (hFocusBarValueView, s, _focusBar_DisplayValues_Color, 0);
 			};
 
 			_focusBar_LastMaxValue = npc.attribute [ATR_HITPOINTS_MAX];
@@ -751,6 +727,9 @@ func void G12_BetterBars_Init () {
 	_healthBar_VPosX = API_GetSymbolIntValue ("HEALTHBAR_VPOSX", -1);
 	_healthBar_VPosY = API_GetSymbolIntValue ("HEALTHBAR_VPOSY", -1);
 
+	_healthBar_DisplayValueOffsetX = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYVALUEOFFSETX", 0);
+	_healthBar_DisplayValueOffsetY = API_GetSymbolIntValue ("HEALTHBAR_DISPLAYVALUEOFFSETY", -1);
+
 	_manaBar_DisplayMethod = API_GetSymbolIntValue ("MANABAR_DISPLAYMETHOD", BarDisplay_Standard);
 	_manaBar_PreviewEffect = API_GetSymbolIntValue ("MANABAR_PREVIEWEFFECT", BarPreviewEffect_FadeInOut);
 
@@ -764,6 +743,9 @@ func void G12_BetterBars_Init () {
 	_manaBar_VPosX = API_GetSymbolIntValue ("MANABAR_VPOSX", -1);
 	_manaBar_VPosY = API_GetSymbolIntValue ("MANABAR_VPOSY", -1);
 
+	_manaBar_DisplayValueOffsetX = API_GetSymbolIntValue ("MANABAR_DISPLAYVALUEOFFSETX", 0);
+	_manaBar_DisplayValueOffsetY = API_GetSymbolIntValue ("MANABAR_DISPLAYVALUEOFFSETY", -1);
+
 	_swimBar_DisplayValues = API_GetSymbolIntValue ("SWIMBAR_DISPLAYVALUES", 0);
 	_swimBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("SWIMBAR_VIEW_ALPHAFUNC", 2);
 	_swimBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("SWIMBAR_DISPLAYVALUES_COLOR", "FFFFFF");
@@ -774,6 +756,9 @@ func void G12_BetterBars_Init () {
 	_swimBar_VPosX = API_GetSymbolIntValue ("SWIMBAR_VPOSX", -1);
 	_swimBar_VPosY = API_GetSymbolIntValue ("SWIMBAR_VPOSY", -1);
 
+	_swimBar_DisplayValueOffsetX = API_GetSymbolIntValue ("SWIMBAR_DISPLAYVALUEOFFSETX", 0);
+	_swimBar_DisplayValueOffsetY = API_GetSymbolIntValue ("SWIMBAR_DISPLAYVALUEOFFSETY", -1);
+
 	_focusBar_DisplayValues = API_GetSymbolIntValue ("FOCUSBAR_DISPLAYVALUES", 0);
 	_focusBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("FOCUSBAR_VIEW_ALPHAFUNC", 2);
 	_focusBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("FOCUSBAR_DISPLAYVALUES_COLOR", "FFFFFF");
@@ -783,6 +768,9 @@ func void G12_BetterBars_Init () {
 
 	_focusBar_VPosX = API_GetSymbolIntValue ("FOCUSBAR_VPOSX", -1);
 	_focusBar_VPosY = API_GetSymbolIntValue ("FOCUSBAR_VPOSY", -1);
+
+	_focusBar_DisplayValueOffsetX = API_GetSymbolIntValue ("FOCUSBAR_DISPLAYVALUEOFFSETX", 0);
+	_focusBar_DisplayValueOffsetY = API_GetSymbolIntValue ("FOCUSBAR_DISPLAYVALUEOFFSETY", +1);
 
 	//--
 
@@ -836,18 +824,22 @@ func void G12_BetterBars_Init () {
 	};
 
 	bHealthBar = get (hHealthBar);
+	vHealthBarBackTexView = View_Get (bHealthBar.v0); //back texture
 
-	//vHealthPreview is View created by Bar_CreatePreview
-	if (!Hlp_IsValidHandle (vHealthPreview)) {
-		vHealthPreview = Bar_CreatePreview (hHealthBar, _tex_BarPreview_HealthBar);
-		View_SetAlpha (vHealthPreview, 255);
+	//hHealthPreviewView is View created by Bar_CreatePreview
+	if (!Hlp_IsValidHandle (hHealthPreviewView)) {
+		hHealthPreviewView = Bar_CreatePreview (hHealthBar, _tex_BarPreview_HealthBar);
+		View_SetAlpha (hHealthPreviewView, 255);
 	};
 
-	if (!Hlp_IsValidHandle (vHealthBarValue)) {
-		vHealthBarValue = Bar_CreatePreview (hHealthBar, "");
-		View_AddText (vHealthBarValue, 0, 0, "", _betterBars_Font);
-		View_SetAlphaFunc (vHealthBarValue, _healthBar_DisplayValues_AlphaFunc);
+	if (!Hlp_IsValidHandle (hHealthBarValueView)) {
+		hHealthBarValueView = Bar_CreatePreview (hHealthBar, "");
+		View_AddText (hHealthBarValueView, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (hHealthBarValueView, _healthBar_DisplayValues_AlphaFunc);
+		View_SetIntFlags (hHealthBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
+
+	vHealthBarValueView = View_Get (hHealthBarValueView);
 
 	//Create mana bar
 	if (!Hlp_IsValidHandle(hManaBar)) {
@@ -857,18 +849,22 @@ func void G12_BetterBars_Init () {
 	};
 
 	bManaBar = get (hManaBar);
+	vManaBarBackTexView = View_Get (bManaBar.v0); //back texture
 
-	//vHealthPreview is View created by Bar_CreatePreview
-	if (!Hlp_IsValidHandle (vManaPreview)) {
-		vManaPreview = Bar_CreatePreview (hManaBar, _tex_BarPreview_ManaBar);
-		View_SetAlpha (vManaPreview, 255);
+	//hHealthPreviewView is View created by Bar_CreatePreview
+	if (!Hlp_IsValidHandle (hManaPreviewView)) {
+		hManaPreviewView = Bar_CreatePreview (hManaBar, _tex_BarPreview_ManaBar);
+		View_SetAlpha (hManaPreviewView, 255);
 	};
 
-	if (!Hlp_IsValidHandle (vManaBarValue)) {
-		vManaBarValue = Bar_CreatePreview (hManaBar, "");
-		View_AddText (vManaBarValue, 0, 0, "", _betterBars_Font);
-		View_SetAlphaFunc (vManaBarValue, _manaBar_DisplayValues_AlphaFunc);
+	if (!Hlp_IsValidHandle (hManaBarValueView)) {
+		hManaBarValueView = Bar_CreatePreview (hManaBar, "");
+		View_AddText (hManaBarValueView, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (hManaBarValueView, _manaBar_DisplayValues_AlphaFunc);
+		View_SetIntFlags (hManaBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
+
+	vManaBarValueView = View_Get (hManaBarValueView);
 
 	//Create swim bar
 	if (!Hlp_IsValidHandle(hSwimBar)) {
@@ -878,12 +874,16 @@ func void G12_BetterBars_Init () {
 	};
 
 	bSwimBar = get (hSwimBar);
+	vSwimBarBackTexView = View_Get (bSwimBar.v0); //back texture
 
-	if (!Hlp_IsValidHandle (vSwimBarValue)) {
-		vSwimBarValue = Bar_CreatePreview (hSwimBar, "");
-		View_AddText (vSwimBarValue, 0, 0, "", _betterBars_Font);
-		View_SetAlphaFunc (vSwimBarValue, _focusBar_DisplayValues_AlphaFunc);
+	if (!Hlp_IsValidHandle (hSwimBarValueView)) {
+		hSwimBarValueView = Bar_CreatePreview (hSwimBar, "");
+		View_AddText (hSwimBarValueView, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (hSwimBarValueView, _focusBar_DisplayValues_AlphaFunc);
+		View_SetIntFlags (hSwimBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
+
+	vSwimBarValueView = View_Get (hSwimBarValueView);
 
 	//Create focus bar
 	if (!Hlp_IsValidHandle(hFocusBar)) {
@@ -893,12 +893,16 @@ func void G12_BetterBars_Init () {
 	};
 
 	bFocusBar = get (hFocusBar);
+	vFocusBarBackTexView = View_Get (bFocusBar.v0); //back texture
 
-	if (!Hlp_IsValidHandle (vFocusBarValue)) {
-		vFocusBarValue = Bar_CreatePreview (hFocusBar, "");
-		View_AddText (vFocusBarValue, 0, 0, "", _betterBars_Font);
-		View_SetAlphaFunc (vFocusBarValue, _focusBar_DisplayValues_AlphaFunc);
+	if (!Hlp_IsValidHandle (hFocusBarValueView)) {
+		hFocusBarValueView = Bar_CreatePreview (hFocusBar, "");
+		View_AddText (hFocusBarValueView, 0, 0, "", _betterBars_Font);
+		View_SetAlphaFunc (hFocusBarValueView, _focusBar_DisplayValues_AlphaFunc);
+		View_SetIntFlags (hFocusBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
+
+	vFocusBarValueView = View_Get (hFocusBarValueView);
 
 	//--
 

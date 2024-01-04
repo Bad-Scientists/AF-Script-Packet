@@ -541,12 +541,6 @@ func void FrameFunction_EachFrame__SprintMode () {
 
 				BBar_Show (hStaminaBar);
 
-				//Re-arrange views - first background texture view, second 'preview' view, then bar texture view and finally bar values
-				//View_Top(bStaminaBar.v0);
-				//View_Top(vStaminaPreview);
-				//View_Top(bStaminaBar.v1);
-				//View_Top(vStaminaBarValue);
-
 				_staminaBar_WasHidden = FALSE;
 			};
 		};
@@ -562,7 +556,7 @@ func void FrameFunction_EachFrame__SprintMode () {
 		};
 	};
 
-	//Bar_PreviewSetValue (hStaminaBar, vStaminaPreview, previewValueSprintBar);
+	//Bar_PreviewSetValue (hStaminaBar, hStaminaPreviewView, previewValueSprintBar);
 
 //-- Add Stamina bar values
 
@@ -594,7 +588,7 @@ func void FrameFunction_EachFrame__SprintMode () {
 				s = ConcatStrings (s, IntToString (PC_SprintModeStaminaMax));
 			};
 
-			View_SetTextMarginAndFontColor (vStaminaBarValue, s, _staminaBar_DisplayValues_Color, 0);
+			View_SetTextMarginAndFontColor (hStaminaBarValueView, s, _staminaBar_DisplayValues_Color, 0);
 		};
 
 		_staminaBar_LastValue = stamina;
@@ -632,6 +626,9 @@ func void G12_SprintMode_Init () {
 	_staminaBar_DisplayValues = API_GetSymbolIntValue ("SPRINTBAR_DISPLAYVALUES", 0);
 	_staminaBar_DisplayValues_AlphaFunc = API_GetSymbolIntValue ("SPRINTBAR_VIEW_ALPHAFUNC", 2);
 	_staminaBar_DisplayValues_Color = API_GetSymbolHEX2RGBAValue ("SPRINTBAR_DISPLAYVALUES_COLOR", "FFFFFF");
+
+	_staminaBar_DisplayValueOffsetX = API_GetSymbolIntValue ("SPRINTBAR_DISPLAYVALUEOFFSETX", 0);
+	_staminaBar_DisplayValueOffsetY = API_GetSymbolIntValue ("SPRINTBAR_DISPLAYVALUEOFFSETY", -1);
 
 	//--
 
@@ -690,12 +687,16 @@ func void G12_SprintMode_Init () {
 	};
 
 	bStaminaBar = get (hStaminaBar);
+	vStaminaBarBackTexView = View_Get (bStaminaBar.v0); //back texture
 
-	if (!Hlp_IsValidHandle (vStaminaBarValue)) {
-		vStaminaBarValue = Bar_CreatePreview (hStaminaBar, "");
-		View_AddText (vStaminaBarValue, 0, 0, "", _PC_SprintMode_Font);
-		View_SetAlphaFunc (vStaminaBarValue, _staminaBar_DisplayValues_AlphaFunc);
+	if (!Hlp_IsValidHandle (hStaminaBarValueView)) {
+		hStaminaBarValueView = Bar_CreatePreview (hStaminaBar, "");
+		View_AddText (hStaminaBarValueView, 0, 0, "", _PC_SprintMode_Font);
+		View_SetAlphaFunc (hStaminaBarValueView, _staminaBar_DisplayValues_AlphaFunc);
 	};
+
+	vStaminaBarValueView = View_Get (hStaminaBarValueView);
+	ViewPtr_SetIntFlags (_@ (vStaminaBarValueView), VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 
 	//Init Game key events
 	G12_GameHandleEvent_Init ();
