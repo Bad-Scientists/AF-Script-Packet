@@ -945,14 +945,13 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 	//Get target Npc current world position
 	Npc_GetCurrentWorldPos (npc, _@ (pos));
 
-	var zCVob vob; vob = Hlp_GetNPC (slf);
-
 	//Hard-update position
+	var zCVob vob; vob = Hlp_GetNPC (slf);
 	vob.trafoObjToWorld[3] = pos[0];
 	vob.trafoObjToWorld[7] = pos[1];
 	vob.trafoObjToWorld[11] = pos[2];
 
-	zCVob_PositionUpdated (_@ (slf));
+	zCVob_PositionUpdated (_@ (vob));
 
 	//oCNpc::Enable @ position (if not player - this will clear AI queue)
 	if (!Npc_IsPlayer (slf)) {
