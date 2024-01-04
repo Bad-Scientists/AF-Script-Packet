@@ -999,3 +999,138 @@ func void Info_AddChoiceByID (var int diaInstance, var string s, var int funcID)
 	var int infoPtr; infoPtr = oCInfoManager_GetInformation (diaInstance);
 	oCInfo_AddChoice (infoPtr, s, funcID);
 };
+
+/*
+ *	InfoManager_IsChoiceModeActive
+ *	 - wrapper function useful for spinners and cached string reset - only for super users :)
+ */
+func int InfoManager_IsChoiceModeActive () {
+	if (InfoManager_IsInChoiceMode ()) {
+		if (!Hlp_StrCmp (MEM_InformationMan.LastMethod, "OnChoiceBegin")) {
+			return TRUE;
+		};
+	};
+
+	return FALSE;
+};
+
+/*
+ *	Info_AssignNpc
+ *	 - assigns npc to info instance
+ */
+func void Info_AssignNpc (var int infoInstance, var int npcInstanceID) {
+	var int ptr; ptr = oCInfoManager_GetInformation (infoInstance);
+	if (!ptr) { return; };
+
+	var oCInfo info; info = _^ (ptr);
+	info.npc = npcInstanceID;
+};
+
+/*
+ *	Info_InjectChoices
+ *	 - allows me to inject choices into dialogues
+ *	 - this feature allows better quest modularity
+ */
+func void Info_InjectChoices (var int infoInstance) {
+	var int ptr; ptr = oCInfoManager_GetInformation (infoInstance);
+	if (!ptr) { return; };
+
+	//Override current dialogue instance pointer
+	MEM_InformationMan.Info = ptr;
+
+	var string injectName; injectName = GetSymbolName (infoInstance);
+	injectName = ConcatStrings ("IC_", injectName);
+	injectName = STR_Upper (injectName);
+
+	var string msg;
+	msg = "Info_InjectChoices - searching for dialogues starting with: ";
+	msg = ConcatStrings (msg, injectName);
+	MEM_Info (msg);
+
+	var int injected; injected = FALSE;
+
+	var oCInfo dlgInstance;
+	var zCListSort list;
+
+	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+
+	while (infoPtr);
+		list = _^ (infoPtr);
+
+		if (list.data) {
+			dlgInstance = _^ (list.data);
+			//if (dlgInstance.npc == info.npc) {
+				if (STR_StartsWith (STR_Upper (dlgInstance.name), injectName)) {
+					MEM_CallByID (dlgInstance.information);
+
+					injected = TRUE;
+					msg = ConcatStrings (" - found ", dlgInstance.name);
+					MEM_Info (msg);
+				};
+			//};
+		};
+
+		infoPtr = list.next;
+	end;
+
+	if (!injected) {
+		MEM_Info (" - no dialogue choices that could be injected found ...");
+	};
+};
+
+/*
+ *	Info_Injectable_GetChoiceCondition
+ *	 - allows me to check if underlying injectable choices will be injected
+ *	 - this feature allows better quest modularity
+ */
+func int Info_Injectable_GetChoiceCondition (var int infoInstance) {
+	var int ptr; ptr = oCInfoManager_GetInformation (infoInstance);
+	if (!ptr) { return FALSE; };
+
+	var string injectName; injectName = GetSymbolName (infoInstance);
+	injectName = ConcatStrings ("IC_", injectName);
+	injectName = STR_Upper (injectName);
+
+	var string msg;
+	msg = "Info_Injectable_GetChoiceCondition - searching for dialogues starting with: ";
+	msg = ConcatStrings (msg, injectName);
+	MEM_Info (msg);
+
+	var int retVal; retVal = 0;
+	var int isNonZero; isNonZero = FALSE;
+
+	var oCInfo dlgInstance;
+	var zCListSort list;
+
+	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+
+	while (infoPtr);
+		list = _^ (infoPtr);
+
+		if (list.data) {
+			dlgInstance = _^ (list.data);
+
+			//if (dlgInstance.npc == info.npc) {
+				if (STR_StartsWith (STR_Upper (dlgInstance.name), injectName)) {
+					MEM_CallByID (dlgInstance.conditions);
+					retVal = MEM_PopIntResult ();
+
+					if (retVal) {
+						isNonZero = TRUE;
+					};
+
+					msg = ConcatStrings (" - found ", dlgInstance.name);
+					MEM_Info (msg);
+				};
+			//};
+		};
+
+		infoPtr = list.next;
+	end;
+
+	if (!isNonZero) {
+		MEM_Info (" - no dialogue choices conditions that would return non-zero value found ...");
+	};
+
+	return + isNonZero;
+};
