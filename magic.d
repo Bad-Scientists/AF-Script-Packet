@@ -282,3 +282,25 @@ func int Npc_SpellTransformTo (var int slfInstance, var int instanceID) {
 	//Function returns FALSE if spell was casted properly - thus negate
 	return !oCSpell_CastSpecificSpell (spellPtr);
 };
+
+/*
+ *	oCVisualFX_SetSpellType
+ *	 - updates spell ID for vfx effect
+ */
+func void oCVisualFX_SetSpellType (var int vfxPtr, var int spellID) {
+	//0x00482750 public: virtual void __thiscall oCVisualFX::SetSpellType(int)
+	const int oCVisualFX__SetSpellType_G1 = 4728656;
+
+	//0x0048A170 public: virtual void __thiscall oCVisualFX::SetSpellType(int)
+	const int oCVisualFX__SetSpellType_G2 = 4759920;
+
+	if (!Hlp_Is_oCVisualFX (vfxPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (spellID));
+		CALL__thiscall (_@ (vfxPtr), MEMINT_SwitchG1G2 (oCVisualFX__SetSpellType_G1, oCVisualFX__SetSpellType_G2));
+		call = CALL_End();
+	};
+};
+
