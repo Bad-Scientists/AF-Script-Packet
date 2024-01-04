@@ -1317,6 +1317,26 @@ func int oCNpc_GetEquippedArmor (var int slfInstance) {
 	return + retVal;
 };
 
+func int Npc_HasItemInAnySlot (var int slfInstance, var int itemInstanceID) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	if (!Npc_GetInvItem (slf, itemInstanceID)) { return FALSE; };
+
+	repeat (i, slf.invSlot_numInArray); var int i;
+		var int slotPtr; slotPtr = MEM_ReadIntArray (slf.invSlot_array, i);
+
+		if (slotPtr) {
+			var TNpcSlot slot; slot = _^ (slotPtr);
+			if (slot.vob == _@ (item)) {
+				return TRUE;
+			};
+		};
+	end;
+
+	return FALSE;
+};
+
 /*
  *	TODO: test this one
  *    		npcInstance		NPC instance
