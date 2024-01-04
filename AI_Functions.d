@@ -971,7 +971,6 @@ func void AI_EquipItemPtr (var int slfInstance, var int vobPtr) {
 func void AI_UnequipMeleeWeapon (var int slfInstance) {
 	var int itemPtr; itemPtr = oCNpc_GetEquippedMeleeWeapon (slfInstance);
 	if (itemPtr) {
-		//Equipping equipped item will unequip it :)
 		AI_EquipItemPtr (slfInstance, itemPtr);
 	};
 };
@@ -982,7 +981,6 @@ func void AI_UnequipMeleeWeapon (var int slfInstance) {
 func void AI_UnequipRangedWeapon (var int slfInstance) {
 	var int itemPtr; itemPtr = oCNpc_GetEquippedRangedWeapon (slfInstance);
 	if (itemPtr) {
-		//Equipping equipped item will unequip it :)
 		AI_EquipItemPtr (slfInstance, itemPtr);
 	};
 };
@@ -1030,7 +1028,7 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 /*
  *	AI_ContinueState
  *	 - alternative for AI_ContinueRoutine, which also creates event messages: EV_STANDUP, EV_STOPLOOKAT, EV_STOPPOINTAT, EV_REMOVEWEAPON, EV_STARTSTATE
- *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogu to fight :)
+ *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogue to fight :)
  *	 - this one only creates EV_STARTSTATE
  */
 func void AI_ContinueState (var int slfInstance) {
@@ -1198,7 +1196,7 @@ func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
 func void AI_TurnToVob (var int slfInstance, var string vobName) {
     var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-    
+
 	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
 
 	if (vobPtr) {
