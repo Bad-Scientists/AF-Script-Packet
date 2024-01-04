@@ -899,6 +899,11 @@ func int NPC_IsAniActive_ByAniName (var int slfInstance, var string aniName) {
 	return +zCModel_IsAniActive_ByAniName (modelPtr, aniName);
 };
 
+func int NPC_IsAniActive_ByID (var int slfInstance, var int aniID) {
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	return +zCModel_IsAniActive_ByAniID (modelPtr, aniID);
+};
+
 /*
  * Get animation progress
  *
