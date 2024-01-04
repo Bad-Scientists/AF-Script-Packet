@@ -651,6 +651,30 @@ func void oCNpcContainer_CreateList (var int ptr) {
 
 //-- oCNpcInventory functions
 
+func int oCNpcInventory_GetNumItemsInCategory (var int ptr, var int invCat) {
+	//0x0066C4C0 public: int __thiscall oCNpcInventory::GetNumItemsInCategory(int)
+	const int oCNpcInventory__GetNumItemsInCategory_G1 = 6735040;
+
+	//0x0070C340 public: int __thiscall oCNpcInventory::GetNumItemsInCategory(void)
+	const int oCNpcInventory__GetNumItemsInCategory_G2 = 7390016;
+
+	if (!ptr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		if (MEMINT_SwitchG1G2 (1, 0)) {
+			CALL_IntParam (_@ (invCat));
+		};
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCNpcInventory__GetNumItemsInCategory_G1, oCNpcInventory__GetNumItemsInCategory_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 func int oCNpcInventory_GetCategory (var int ptr, var int itemPtr) {
 	//0x0066C430 public: int __thiscall oCNpcInventory::GetCategory(class oCItem *)
 	const int oCNpcInventory__GetCategory_G1 = 6734896;
