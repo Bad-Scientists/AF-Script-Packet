@@ -201,7 +201,7 @@ func void zCAICamera_SetVob (var int aiPtr, var int vobPtr) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (vobPtr);
+		CALL_PtrParam (_@ (vobPtr));
 		CALL__thiscall (_@ (aiPtr), MEMINT_SwitchG1G2 (zCAICamera__SetVob_G1, zCAICamera__SetVob_G2));
 		call = CALL_End();
 	};
