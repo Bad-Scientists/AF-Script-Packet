@@ -382,6 +382,28 @@ func int oCItemContainer_Insert (var int ptr, var int itemPtr) {
 	return +retVal;
 };
 
+func int oCItemContainer_IsEmpty (var int ptr) {
+	//0x00669750 public: virtual int __thiscall oCItemContainer::IsEmpty(void)
+	const int oCItemContainer__IsEmpty_G1 = 6723408;
+
+	//0x00709E10 public: virtual int __thiscall oCItemContainer::IsEmpty(void)
+	const int oCItemContainer__IsEmpty_G2 = 7380496;
+
+	//Hmmm, which one makes more sense in case pointer is invalid, is empty true or false? :)
+	if (!ptr) { return TRUE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCItemContainer__IsEmpty_G1, oCItemContainer__IsEmpty_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
 func void oCItemContainer_Remove (var int ptr, var int itemPtr) {
 	//0x00669320 public: virtual void __thiscall oCItemContainer::Remove(class oCItem *)
 	const int oCItemContainer__Remove_G1 = 6722336;
