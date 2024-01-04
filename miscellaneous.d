@@ -13,8 +13,8 @@ func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string o
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	if (!SearchVobsByClass ("oCMobInter", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("oCMobInter_SetupAllMobsByVisual: No oCMobInter objects found.");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 
@@ -54,8 +54,8 @@ func int oCMobContainer_SearchByPortalRoom (var string searchVisual, var string 
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	if (!SearchVobsByClass ("oCMobContainer", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("oCMobContainer_SearchByPortalRoom: No oCMobContainer objects found.");
+		MEM_ArrayFree (vobListPtr);
 		return 0;
 	};
 
@@ -596,11 +596,11 @@ func int zCVob_GetNearest_AtPos (var string className, var int fromPosPtr) {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	if (!SearchVobsByClass (className, vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		var string msg;
 		msg = ConcatStrings ("zCVob_GetNearest_AtPos: No ", className);
 		msg = ConcatStrings (msg, " objects found.");
 		MEM_Info (msg);
+		MEM_ArrayFree (vobListPtr);
 		return 0;
 	};
 
