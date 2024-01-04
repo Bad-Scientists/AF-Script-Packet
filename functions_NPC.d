@@ -1287,6 +1287,7 @@ func void Npc_BeamToKeepQueue (var int slfInstance, var string vobName) {
 /*
  *	Npc_HasAni
  *	 - function loops through EM and checks if aniName is in AI queue
+ *	 - function returns number of EM messages with specified aniName
  */
 func int Npc_HasAni (var int slfInstance, var string aniName) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
@@ -1298,6 +1299,7 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
 
 	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
 
 	//Loop through Event Messages
 	repeat (i, eventTotal); var int i;
@@ -1308,13 +1310,13 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 				var oCMsgConversation msg; msg = _^ (eMsg);
 
 				if (Hlp_StrCmp (msg.name, aniName)) {
-					return TRUE;
+					count += 1;
 				};
 			};
 		};
 	end;
 
-	return FALSE;
+	return count;
 };
 
 /*
