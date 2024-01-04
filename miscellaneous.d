@@ -861,37 +861,6 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 			MEM_CopyBytes (posPtr, targetPosPtr, 12);
 			MEM_Free (posPtr);
 		} else {
-			if (!state.aiStateDriven) {
-				//Update aiStateDriven - to kick in AI state
-				//state.aiStateDriven = 1;
-
-				//No AI state --> get current world pos
-				slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
-				slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
-				slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
-			};
-
-			//Use spawnPoint
-			if (STR_Len (slf.spawnPoint)) {
-				//Is this waypoint?
-				var int wpPtr; wpPtr = SearchWaypointByName (slf.spawnPoint);
-				if (wpPtr) {
-					var zCWaypoint wp; wp = _^ (wpPtr);
-					MEM_CopyBytes (_@ (wp.pos), _@ (slf.state_aiStatePosition), 12);
-				} else {
-					//Is this vob?
-					var int vobPtr; vobPtr = MEM_SearchVobByName (slf.spawnPoint);
-
-					if (vobPtr) {
-						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (slf.state_aiStatePosition))) {
-						};
-					};
-				};
-			};
-
-			//Update waypoint
-			Npc_InitAIStateDriven (slf, _@ (slf.state_aiStatePosition));
-
 			//Get AI state position
 			MEM_CopyBytes (_@ (slf.state_aiStatePosition), targetPosPtr, 12);
 		};
