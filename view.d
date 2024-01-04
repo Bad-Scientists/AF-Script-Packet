@@ -477,7 +477,7 @@ func int View_OnDesk (var int hndl) {
 func int ViewPtr_IsOpen (var int viewPtr) {
 	if (!viewPtr) { return FALSE; };
 	var zCView view; view = _^ (viewPtr);
-	return view.IsOpen;
+	return (view.IsOpen | view.continueOpen);
 };
 
 func int View_IsOpen (var int hndl) {
