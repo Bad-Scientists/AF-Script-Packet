@@ -35,6 +35,61 @@ func void View_SetIntFlags (var int hndl, var int intflags) {
 	ViewPtr_SetIntFlags (viewPtr, intflags);
 };
 
+/*
+ *	ViewPtr_AutoResize
+ */
+func void ViewPtr_AutoResize (var int viewPtr) {
+	if (!viewPtr) { return; };
+	var zCView v; v = _^ (viewPtr);
+
+	var zCList l;
+	var zCViewText vt;
+
+	//Loop through text lines - figure out overall sizeX & sizeY
+	var int psizeX; psizeX = 0;
+	var int psizeY; psizeY = 0;
+
+	var int width;
+
+	var int list; list = v.textLines_next;
+
+	while (list);
+		l = _^ (list);
+
+		if (l.data) {
+			vt = _^ (l.data);
+			psizeY += zCFont_GetFontY (vt.font);
+			width = Font_GetStringWidthPtr(vt.text, vt.font);
+
+			if (width > psizeX) {
+				psizeX = width;
+			};
+		};
+
+		list = l.next;
+	end;
+
+	if ((psizeX > v.psizeX) || (psizeY > v.psizeY)) {
+		if (psizeX < v.psizeX) { psizeX = v.psizeX; };
+		if (psizeY < v.psizeY) { psizeY = v.psizeY; };
+
+		psizeX = Print_ToVirtual (psizeX, PS_X);
+		psizeY = Print_ToVirtual (psizeY, PS_Y);
+
+		ViewPtr_Resize (viewPtr, psizeX, psizeY);
+	};
+};
+
+/*
+ *	View_AutoResize
+ */
+func void View_AutoResize (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+
+	ViewPtr_AutoResize (viewPtr);
+};
+
 func void zCView_Printwin (var int viewPtr, var string s) {
 	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
 	const int zCView__Printwin_G1 = 7343392;
