@@ -29,6 +29,28 @@ func void oCNpc_SetFocusVob (var int slfInstance, var int focusPtr) {
 /*
  *
  */
+func void oCNpc_SetEnemy (var int slfInstance, var int focusPtr) {
+	//0x00691A80 public: void __thiscall oCNpc::SetEnemy(class oCNpc *)
+	const int oCNpc__SetEnemy_G1 = 6888064;
+
+	//0x00734BC0 public: void __thiscall oCNpc::SetEnemy(class oCNpc *)
+	const int oCNpc__SetEnemy_G2 = 7556032;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(focusPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetEnemy_G1, oCNpc__SetEnemy_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *
+ */
 func void oCNpc_DropUnconscious (var int slfInstance, var int attackerInstance) {
 	//0x00692C10 public: void __thiscall oCNpc::DropUnconscious(float,class oCNpc *)
 	const int oCNpc__DropUnconscious_G1 = 6892560;
