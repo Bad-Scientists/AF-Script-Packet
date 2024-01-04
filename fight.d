@@ -176,6 +176,7 @@ func void AI_Attack_Ext (var int slfInstance, var int subType, var int combo) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
+	if (!slf.AniCtrl) { return; };
 	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (slf.AniCtrl);
 
 	//Default
