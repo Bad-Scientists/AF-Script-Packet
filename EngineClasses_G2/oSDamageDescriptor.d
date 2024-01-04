@@ -11,28 +11,29 @@
 	oEDamageIndex_MAX
 	} oEDamageIndex, oEProtectionIndex;
 */
+const int oEDamageDescFlag_Attacker = 1;
+const int oEDamageDescFlag_Npc = 2;
+const int oEDamageDescFlag_Inflictor = 4;
+const int oEDamageDescFlag_Weapon = 8;
+const int oEDamageDescFlag_VisualFX = 16;
+const int oEDamageDescFlag_SpellID = 32;
+const int oEDamageDescFlag_SpellLevel = 64;
+const int oEDamageDescFlag_DamageType = 128;
+const int oEDamageDescFlag_WeaponType = 256;
+const int oEDamageDescFlag_Damage = 512;
+const int oEDamageDescFlag_HitLocation = 1024;
+const int oEDamageDescFlag_FlyDirection = 2048;
+const int oEDamageDescFlag_OverlayActivate = 4096;
+const int oEDamageDescFlag_OverlayInterval = 8192;
+const int oEDamageDescFlag_OverlayDuration = 16384;
+const int oEDamageDescFlag_OverlayDamage = 32768;
 
-/*
-	typedef enum oEFlagsDamageDescriptor {
-	oEDamageDescFlag_Attacker        = 1,
-	oEDamageDescFlag_Npc             = 2,
-	oEDamageDescFlag_Inflictor       = 4,
-	oEDamageDescFlag_Weapon          = 8,
-	oEDamageDescFlag_VisualFX        = 16,
-	oEDamageDescFlag_SpellID         = 32,
-	oEDamageDescFlag_SpellLevel      = 64,
-	oEDamageDescFlag_DamageType      = 128,
-	oEDamageDescFlag_WeaponType      = 256,
-	oEDamageDescFlag_Damage          = 512,
-	oEDamageDescFlag_HitLocation     = 1024,
-	oEDamageDescFlag_FlyDirection    = 2048,
-	oEDamageDescFlag_OverlayActivate = 4096,
-	oEDamageDescFlag_OverlayInterval = 8192,
-	oEDamageDescFlag_OverlayDuration = 16384,
-	oEDamageDescFlag_OverlayDamage   = 32768,
-	oEDamageDescFlag_ForceDWORD      = 0xffffffff
-	} oEDescDamageFlags, oEFlagsDamageDesc;
-*/
+//const int oEDamageDescFlag_ForceDWORD			= 0xffffffff
+
+const int bitfield_oSDamageDescriptor_bOnce = 1;
+const int bitfield_oSDamageDescriptor_bFinished = 2;
+const int bitfield_oSDamageDescriptor_bIsDead = 4;
+const int bitfield_oSDamageDescriptor_bIsUnconscious = 8;
 
 class oSDamageDescriptor {
 	var int validFields; 		//0 unsigned long dwFieldsValid;
