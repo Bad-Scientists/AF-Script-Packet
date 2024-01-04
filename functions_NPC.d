@@ -940,6 +940,8 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
+	if (!STR_Len (stateName)) { return TRUE; };
+
 	stateName = STR_Upper (stateName);
 
 	//We will allow single wild-card '*'
