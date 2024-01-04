@@ -859,6 +859,9 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 	// advance anis
 	zCModel_AdvanceAnis (modelPtr);
 
+	// change ani frame to specified value
+	zCModelAniActive_SetActFrame (aniActivePtr, aniFrame);
+
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
 	mes = "Playing ani: ";
