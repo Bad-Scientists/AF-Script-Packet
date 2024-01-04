@@ -885,26 +885,6 @@ func void AI_MobSetIdealPosition (var int slfInstance) {
 };
 
 /*
- *	Same as AI_Function - but using EV_CALLSCRIPT ... do we need this? :thinking:
- *	Advantage - self is set to NPC, other is always player ...
- *	Disadvantage - we don't have any parameters here!
- */
-func void AI_CallFunc (var int slfInstance, var string funcName) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	//Create new message
-	funcName = STR_Upper (funcName);
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_CALLSCRIPT, funcName, 0, -1, "", "");
-
-	//Get Event Manager
-	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
-	//Add new msg to Event Manager
-	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
-};
-
-/*
  *	Same as AI_UseMob - but you can specify vob pointer
  */
 func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState) {
