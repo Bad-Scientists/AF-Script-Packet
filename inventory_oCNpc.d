@@ -1937,3 +1937,243 @@ func void Npc_InvSwitchToCategory (var int slfInstance, var int invCategory) {
 	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
 	oCNpcInventory_SwitchToCategory (npcInventoryPtr, invCategory);
 };
+
+func void oCNpc_AddItemEffects (var int slfInstance, var int itemPtr) {
+	//0x0068F640 public: void __thiscall oCNpc::AddItemEffects(class oCItem *)
+	const int oCNpc__AddItemEffects_G1 = 6878784;
+
+	//0x007320F0 public: void __thiscall oCNpc::AddItemEffects(class oCItem *)
+	const int oCNpc__AddItemEffects_G2 = 7545072;
+
+	if (!itemPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(itemPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__AddItemEffects_G1, oCNpc__AddItemEffects_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCNpc_RemoveItemEffects (var int slfInstance, var int itemPtr) {
+	//0x0068F7D0 public: void __thiscall oCNpc::RemoveItemEffects(class oCItem *)
+	const int oCNpc__RemoveItemEffects_G1 = 6879184;
+
+	//0x00732270 public: void __thiscall oCNpc::RemoveItemEffects(class oCItem *)
+	const int oCNpc__RemoveItemEffects_G2 = 7545456;
+
+	if (!itemPtr) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(itemPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2 (oCNpc__RemoveItemEffects_G1, oCNpc__RemoveItemEffects_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Npc_SimpleEquip
+ *	 - function adds all effect & calls on_equip function
+ */
+func void Npc_SimpleEquip (var int slfInstance, var int itemPtr) {
+	//Same for G1 & G2A
+	const int ITM_FLAG_ACTIVE = 1 << 30;
+
+	oCNpc_AddItemEffects (slfInstance, itemPtr);
+	oCItem_SetFlag (itemPtr, ITM_FLAG_ACTIVE);
+};
+
+/*
+ *	Npc_SimpleUnequip
+ *	 - function adds all effect & calls on_unequip function
+ */
+func void Npc_SimpleUnequip (var int slfInstance, var int itemPtr) {
+	//Same for G1 & G2A
+	const int ITM_FLAG_ACTIVE = 1 << 30;
+
+	oCNpc_RemoveItemEffects (slfInstance, itemPtr);
+	oCItem_ClearFlag (itemPtr, ITM_FLAG_ACTIVE);
+};
+
+/*
+ *	Npc_GetCountEquippedItemsByFlag
+ *	 - function returns number of equipped items with specific flags
+ */
+func int Npc_GetCountEquippedItemsByFlag (var int slfInstance, var int category, var int searchFlag) {
+	//Same for G1 & G2A
+	const int ITM_FLAG_ACTIVE = 1 << 30;
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
+
+	if (category == -1) { return 0; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	var oCItem itm;
+	var zCListSort list;
+
+	var int noOfCategories;
+	var int offset;
+	var int ptr;
+
+	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
+	if (GOTHIC_BASE_VERSION == 1) {
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
+		noOfCategories = INV_CAT_MAX;
+	} else {
+		offset = 1816;						// 0x0718 zCListSort<oCItem>*
+		noOfCategories = 1;
+	};
+
+	var int count; count = 0;
+
+	//Unpack inventory
+	oCNpcInventory_UnpackCategory (npcInventoryPtr, category);
+
+	//Loop through all items - count how many equipped items we already have
+	ptr = MEM_ReadInt (_@ (slf) + offset + (12 * category));
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (Hlp_Is_oCItem (list.data)) {
+			if (oCItem_HasFlag (list.data, searchFlag)) {
+				if (oCItem_HasFlag (list.data, ITM_FLAG_ACTIVE)) {
+					count += 1;
+				};
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return + count;
+};
+
+/*
+ *	Npc_GetCountEquippedItemsByInstance
+ *	 - function returns number of equipped items for specified instance
+ */
+func int Npc_GetCountEquippedItemsByInstance (var int slfInstance, var int category, var int itemInstanceID) {
+	//Same for G1 & G2A
+	const int ITM_FLAG_ACTIVE = 1 << 30;
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
+
+	if (category == -1) { return 0; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	var oCItem itm;
+	var zCListSort list;
+
+	var int noOfCategories;
+	var int offset;
+	var int ptr;
+
+	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
+	if (GOTHIC_BASE_VERSION == 1) {
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
+		noOfCategories = INV_CAT_MAX;
+	} else {
+		offset = 1816;						// 0x0718 zCListSort<oCItem>*
+		noOfCategories = 1;
+	};
+
+	var int count; count = 0;
+
+	//Unpack inventory
+	oCNpcInventory_UnpackCategory (npcInventoryPtr, category);
+
+	//Loop through all items - count how many equipped items we already have
+	ptr = MEM_ReadInt (_@ (slf) + offset + (12 * category));
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (Hlp_Is_oCItem (list.data)) {
+			itm = _^ (list.data);
+			if (Hlp_GetInstanceID (itm) == itemInstanceID) {
+				if (oCItem_HasFlag (list.data, ITM_FLAG_ACTIVE)) {
+					count += 1;
+				};
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return + count;
+};
+
+/*
+ *	Npc_GetEquippedItemPtrByFlag
+ *	 - function returns pointer to equipped item specified by flag
+ */
+func int Npc_GetEquippedItemPtrByFlag (var int slfInstance, var int category, var int searchFlag) {
+	//Same for G1 & G2A
+	const int ITM_FLAG_ACTIVE = 1 << 30;
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
+
+	if (category == -1) { return 0; };
+
+	var int npcInventoryPtr; npcInventoryPtr = _@ (slf.inventory2_vtbl);
+
+	var oCItem itm;
+	var zCListSort list;
+
+	var int noOfCategories;
+	var int offset;
+	var int ptr;
+
+	//G1/G2A compatibility --> we cannot use inventory2_inventory1_next / inventory2_inventory_next properties, but instead we have to read from inventory offsets
+	if (GOTHIC_BASE_VERSION == 1) {
+		offset = 1528;						// 0x05F8 zCListSort<oCItem>*
+		noOfCategories = INV_CAT_MAX;
+	} else {
+		offset = 1816;						// 0x0718 zCListSort<oCItem>*
+		noOfCategories = 1;
+	};
+
+	var int count; count = 0;
+
+	//Unpack inventory
+	oCNpcInventory_UnpackCategory (npcInventoryPtr, category);
+
+	//Loop through all items - and find equipped item
+	ptr = MEM_ReadInt (_@ (slf) + offset + (12 * category));
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (Hlp_Is_oCItem (list.data)) {
+			if (oCItem_HasFlag (list.data, searchFlag)) {
+				if (oCItem_HasFlag (list.data, ITM_FLAG_ACTIVE)) {
+					return list.data;
+				};
+			};
+		};
+
+		ptr = list.next;
+	end;
+
+	return 0;
+};
+
