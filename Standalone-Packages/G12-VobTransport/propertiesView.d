@@ -437,9 +437,9 @@ func void DisplayProperties__VobTransport () {
 				View_SetTexture (hVobTransportPropertiesViewFrame, vobTransportViewTexture);
 			};
 
-			View_Open (hVobTransportPropertiesViewFrame);
-			View_MoveTo (hVobTransportPropertiesViewFrame, posX, posY);
-			View_Resize (hVobTransportPropertiesViewFrame, viewWidth, vobTransportPropertiesView_Lines * fontHeight);
+			View_Open_Safe (hVobTransportPropertiesViewFrame);
+			View_MoveTo_Safe (hVobTransportPropertiesViewFrame, posX, posY);
+			View_Resize_Safe (hVobTransportPropertiesViewFrame, viewWidth, vobTransportPropertiesView_Lines * fontHeight);
 
 			//--- hVobTransportPropertiesViewHeader
 			if (!Hlp_IsValidHandle (hVobTransportPropertiesViewHeader)) {
@@ -447,9 +447,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportPropertiesViewHeader, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportPropertiesViewHeader);
-			View_MoveTo (hVobTransportPropertiesViewHeader, posX, posY);
-			View_Resize (hVobTransportPropertiesViewHeader, viewWidth, 1 * fontHeight);
+			View_Open_Safe (hVobTransportPropertiesViewHeader);
+			View_MoveTo_Safe (hVobTransportPropertiesViewHeader, posX, posY);
+			View_Resize_Safe (hVobTransportPropertiesViewHeader, viewWidth, 1 * fontHeight);
 
 			posY += fontHeight;
 
@@ -459,9 +459,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportPropertiesView, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportPropertiesView);
-			View_MoveTo (hVobTransportPropertiesView, posX, posY);
-			View_Resize (hVobTransportPropertiesView, viewWidth, vobTransportPropertiesView_Lines * fontHeight);
+			View_Open_Safe (hVobTransportPropertiesView);
+			View_MoveTo_Safe (hVobTransportPropertiesView, posX, posY);
+			View_Resize_Safe (hVobTransportPropertiesView, viewWidth, vobTransportPropertiesView_Lines * fontHeight);
 
 			vobTransportPropertiesViewVisible = TRUE;
 
@@ -543,9 +543,9 @@ func void DisplayProperties__VobTransport () {
 
 	} else {
 		if (vobTransportPropertiesViewVisible) {
-			if (Hlp_IsValidHandle (hVobTransportPropertiesView)) { View_Close (hVobTransportPropertiesView); };
-			if (Hlp_IsValidHandle (hVobTransportPropertiesViewHeader)) { View_Close (hVobTransportPropertiesViewHeader); };
-			if (Hlp_IsValidHandle (hVobTransportPropertiesViewFrame)) { View_Close (hVobTransportPropertiesViewFrame); };
+			View_Close_Safe (hVobTransportPropertiesView);
+			View_Close_Safe (hVobTransportPropertiesViewHeader);
+			View_Close_Safe (hVobTransportPropertiesViewFrame);
 
 			//lastVobTPtr = 0;
 			vobTransportPropertiesViewVisible = FALSE;
@@ -589,9 +589,9 @@ func void DisplayProperties__VobTransport () {
 				View_SetTexture (hVobTransportBuyVobViewFrame, vobTransportViewTexture);
 			};
 
-			View_Open (hVobTransportBuyVobViewFrame);
-			View_MoveTo (hVobTransportBuyVobViewFrame, posX, posY);
-			View_Resize (hVobTransportBuyVobViewFrame, viewWidth, vobTransportBuyVobView_Lines * fontHeight);
+			View_Open_Safe (hVobTransportBuyVobViewFrame);
+			View_MoveTo_Safe (hVobTransportBuyVobViewFrame, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobViewFrame, viewWidth, vobTransportBuyVobView_Lines * fontHeight);
 
 			posY += (spaceWidth);
 
@@ -601,9 +601,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Description, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Description);
-			View_MoveTo (hVobTransportBuyVobView_Description, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Description, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Description);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Description, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Description, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -613,9 +613,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Line1, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Line1);
-			View_MoveTo (hVobTransportBuyVobView_Line1, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Line1, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Line1);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Line1, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Line1, viewWidth, fontHeight);
 
 			//--- hVobTransportBuyVobView_Count1
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count1)) {
@@ -623,9 +623,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Count1, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Count1);
-			View_MoveTo (hVobTransportBuyVobView_Count1, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Count1, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Count1);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Count1, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Count1, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -635,9 +635,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Line2, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Line2);
-			View_MoveTo (hVobTransportBuyVobView_Line2, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Line2, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Line2);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Line2, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Line2, viewWidth, fontHeight);
 
 			//--- hVobTransportBuyVobView_Count2
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count2)) {
@@ -645,9 +645,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Count2, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Count2);
-			View_MoveTo (hVobTransportBuyVobView_Count2, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Count2, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Count2);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Count2, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Count2, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -657,9 +657,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Line3, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Line3);
-			View_MoveTo (hVobTransportBuyVobView_Line3, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Line3, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Line3);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Line3, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Line3, viewWidth, fontHeight);
 
 			//--- hVobTransportBuyVobView_Count3
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count3)) {
@@ -667,9 +667,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Count3, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Count3);
-			View_MoveTo (hVobTransportBuyVobView_Count3, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Count3, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Count3);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Count3, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Count3, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -679,9 +679,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Line4, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Line4);
-			View_MoveTo (hVobTransportBuyVobView_Line4, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Line4, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Line4);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Line4, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Line4, viewWidth, fontHeight);
 
 			//--- hVobTransportBuyVobView_Count4
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count4)) {
@@ -689,9 +689,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Count4, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Count4);
-			View_MoveTo (hVobTransportBuyVobView_Count4, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Count4, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Count4);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Count4, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Count4, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -701,9 +701,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Line5, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Line5);
-			View_MoveTo (hVobTransportBuyVobView_Line5, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Line5, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Line5);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Line5, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Line5, viewWidth, fontHeight);
 
 			//--- hVobTransportBuyVobView_Count5
 			if (!Hlp_IsValidHandle (hVobTransportBuyVobView_Count5)) {
@@ -711,9 +711,9 @@ func void DisplayProperties__VobTransport () {
 				View_AddText (hVobTransportBuyVobView_Count5, 00, 00, "", vobTransportFontName);
 			};
 
-			View_Open (hVobTransportBuyVobView_Count5);
-			View_MoveTo (hVobTransportBuyVobView_Count5, posX, posY);
-			View_Resize (hVobTransportBuyVobView_Count5, viewWidth, fontHeight);
+			View_Open_Safe (hVobTransportBuyVobView_Count5);
+			View_MoveTo_Safe (hVobTransportBuyVobView_Count5, posX, posY);
+			View_Resize_Safe (hVobTransportBuyVobView_Count5, viewWidth, fontHeight);
 
 			posY += (fontHeight);
 
@@ -740,21 +740,21 @@ func void DisplayProperties__VobTransport () {
 		View_SetTextMarginAndFontColor (hVobTransportBuyVobView_Count5, sVobTransportBuyVobView_Count5, colorVobTransportBuyVobView_Count5, - spaceWidth * 2);
 	} else {
 		if (vobTransportBuyVobViewVisible) {
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Description)) { View_Close (hVobTransportBuyVobView_Description); };
+			View_Close_Safe (hVobTransportBuyVobView_Description);
 
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Line1)) { View_Close (hVobTransportBuyVobView_Line1); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Line2)) { View_Close (hVobTransportBuyVobView_Line2); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Line4)) { View_Close (hVobTransportBuyVobView_Line3); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Line4)) { View_Close (hVobTransportBuyVobView_Line4); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Line5)) { View_Close (hVobTransportBuyVobView_Line5); };
+			View_Close_Safe (hVobTransportBuyVobView_Line1);
+			View_Close_Safe (hVobTransportBuyVobView_Line2);
+			View_Close_Safe (hVobTransportBuyVobView_Line3);
+			View_Close_Safe (hVobTransportBuyVobView_Line4);
+			View_Close_Safe (hVobTransportBuyVobView_Line5);
 
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Count1)) { View_Close (hVobTransportBuyVobView_Count1); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Count2)) { View_Close (hVobTransportBuyVobView_Count2); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Count3)) { View_Close (hVobTransportBuyVobView_Count3); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Count4)) { View_Close (hVobTransportBuyVobView_Count4); };
-			if (Hlp_IsValidHandle (hVobTransportBuyVobView_Count5)) { View_Close (hVobTransportBuyVobView_Count5); };
+			View_Close_Safe (hVobTransportBuyVobView_Count1);
+			View_Close_Safe (hVobTransportBuyVobView_Count2);
+			View_Close_Safe (hVobTransportBuyVobView_Count3);
+			View_Close_Safe (hVobTransportBuyVobView_Count4);
+			View_Close_Safe (hVobTransportBuyVobView_Count5);
 
-			if (Hlp_IsValidHandle (hVobTransportBuyVobViewFrame)) { View_Close (hVobTransportBuyVobViewFrame); };
+			View_Close_Safe (hVobTransportBuyVobViewFrame);
 
 			vobTransportBuyVobViewVisible = FALSE;
 		};
