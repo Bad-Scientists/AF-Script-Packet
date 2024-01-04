@@ -1384,3 +1384,139 @@ func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	};
 };
 
+func string Npc_GetInteractMobName (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	if (!Hlp_Is_oCMobInter (slf.interactMob)) { return ""; };
+
+	var oCMobInter mobInter; mobInter = _^ (slf.interactMob);
+	return mobInter._zCObject_objectName;
+};
+
+func int Npc_IsFlying (var int slfInstance) {
+	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	if (!modelPtr) { return FALSE; };
+	var zCModel model; model = _^ (modelPtr);
+
+	const int zCModel_bitfield_isFlying = 2;
+	return + (model.zCModel_bitfield & zCModel_bitfield_isFlying);
+};
+
+func void Npc_StopLookAt (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	var int count; count = NPC_EM_GetEventCount (slf);
+
+	//Delete all EV_LOOKAT messages from EM
+	repeat (i, count); var int i;
+		var int eventMessage; eventMessage = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eventMessage)) {
+			//TODO: can EV_WAITTILLEND wait for EV_LOOKAT message? (if it can - will it freeze AI?)
+			if (zCEventMessage_GetSubType (eventMessage) == EV_LOOKAT) {
+				//zCEventMessage_Delete (eventMessage);
+				zCEventManager_Delete (eMgr, eventMessage);
+				i -= 1;
+			};
+		};
+	end;
+
+	//We **have to remove** pointer - as message was certainly deleted by above loop
+	slf.lastLookMsg = 0;
+
+	//Stop look at animations
+	oCAniCtrl_Human_StopLookAtTarget (slf.aniCtrl);
+
+	//TODO: do we want to remove targetVob?
+	//oCAniCtrl_Human_SetLookAtTarget (slf.aniCtrl, 0);
+};
+
+func int Npc_IsControlled (var int slfInstance) {
+	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_CONTROLLED);
+};
+
+func int NPC_IsTransformed (var int slfInstance) {
+	return + oCNPC_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
+};
+
+/*
+ *	Npc_HasAnyOU
+ *	 - function loops through EM and checks if there are any EV_OUTPUT event messages in AI queue
+ */
+func int Npc_HasAnyOU (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			var int subType; subType = zCEventMessage_GetSubType (eMsg);
+			if (subType == EV_OUTPUT)
+			|| (subType == EV_OUTPUTSVM)
+			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			{
+				count += 1;
+			};
+		};
+	end;
+
+	return count;
+};
+
+/*
+ *	Npc_HasOU
+ *	 - function loops through EM and checks if there are any EV_OUTPUT event messages in AI queue
+ */
+func int Npc_HasOU (var int slfInstance, var int ou) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			var int subType; subType = zCEventMessage_GetSubType (eMsg);
+			if (subType == EV_OUTPUT)
+			|| (subType == EV_OUTPUTSVM)
+			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			{
+				var oCMsgConversation msg; msg = _^ (eMsg);
+
+				var string name; name = msg.name;
+
+				var int index; index = STR_IndexOf (name, ".");
+				if (index > -1) {
+					name = mySTR_SubStr (name, 0, index);
+				};
+
+				zSpy_Info (slf.Name);
+				zSpy_Info (name);
+
+				if (zCCSManager_LibValidateOU_ByName (name) == ou) {
+					return TRUE;
+				};
+			};
+		};
+	end;
+
+	return FALSE;
+};
