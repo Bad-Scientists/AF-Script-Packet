@@ -904,7 +904,7 @@ func void Npc_GetCurrentWorldPos (var int slfInstance, var int targetPosPtr) {
 
 /*
  *	Wld_EnableNpc
- *	 -
+ *	 - Enable Npc in the world on its current position
  */
 func void Wld_EnableNpc (var int slfInstance) {
 	var int pos[3];
@@ -914,6 +914,14 @@ func void Wld_EnableNpc (var int slfInstance) {
 
 	//oCNpc::Enable @ position
 	oCNpc_Enable (slfInstance, _@ (pos));
+
+	//Hard-update position (I am also using this function to change spawnPoint mid-game, for such cases I need to 'physically' update also Npcs position)
+	var zCVob vob; vob = Hlp_GetNPC (slfInstance);
+	vob.trafoObjToWorld[3] = pos[0];
+	vob.trafoObjToWorld[7] = pos[1];
+	vob.trafoObjToWorld[11] = pos[2];
+
+	zCVob_PositionUpdated (_@ (vob));
 };
 
 /*
