@@ -13,28 +13,7 @@ func void oCGame_TriggerChangeLevel (var string levelName, var string vobName) {
 
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
 		if (STR_Len (vobName)) {
-
-			//oCNpc_BeamTo (hero, vobName);
-			var int pos[3];
-
-			var int wpPtr; wpPtr = SearchWaypointByName (vobName);
-			if (wpPtr) {
-				var zCWaypoint wp; wp = _^ (wpPtr);
-				MEM_CopyBytes (_@ (wp.pos), _@ (pos), 12);
-			} else {
-				//Is this vob?
-				var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
-
-				if (vobPtr) {
-					if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
-					};
-				};
-			};
-			//Update hero's position
-			var zCVob vob; vob = Hlp_GetNPC (hero);
-			vob.trafoObjToWorld[3] = pos[0];
-			vob.trafoObjToWorld[7] = pos[1];
-			vob.trafoObjToWorld[11] = pos[2];
+			Npc_BeamToKeepQueue (hero, vobName);
 		};
 	} else {
 		CALL_zStringPtrParam (vobName);
