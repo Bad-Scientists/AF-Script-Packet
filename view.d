@@ -90,6 +90,60 @@ func void View_AutoResize (var int hndl) {
 	ViewPtr_AutoResize (viewPtr);
 };
 
+/*
+ *	Centers text lines vertically in view
+ */
+func void ViewPtr_CenterTextLines (var int viewPtr) {
+	if (!viewPtr) { return; };
+	var zCView v; v = _^ (viewPtr);
+
+	var zCList l;
+	var zCViewText vt;
+
+	//Loop through text lines - figure out overall sizeY
+	var int psizeY; psizeY = v.pposY;
+
+	var int list; list = v.textLines_next;
+
+	while (list);
+		l = _^ (list);
+
+		if (l.data) {
+			vt = _^ (l.data);
+			psizeY += zCFont_GetFontY (vt.font);
+		};
+
+		list = l.next;
+	end;
+
+	//Loop through text lines - update Y pos
+	var int pposY; pposY = (v.psizeY - psizeY) / 2;
+
+	list = v.textLines_next;
+
+	while (list);
+		l = _^ (list);
+
+		if (l.data) {
+			vt = _^ (l.data);
+			vt.posY = pposY;
+
+			pposY += zCFont_GetFontY (vt.font);
+		};
+
+		list = l.next;
+	end;
+};
+
+/*
+ *	View_CenterTextLines
+ */
+func void View_CenterTextLines (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_CenterTextLines (viewPtr);
+};
+
 func void zCView_Printwin (var int viewPtr, var string s) {
 	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
 	const int zCView__Printwin_G1 = 7343392;
