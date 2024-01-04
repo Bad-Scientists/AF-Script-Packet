@@ -956,15 +956,19 @@ func int zCVob_GetEM (var int vobPtr) {
 
 	if (!vobPtr) { return 0; };
 
-	var int f; f = false;
+	//TODO: do we want to create EM by default?
+	const int dontCreate = 0; //FALSE
+
+	var int retVal; retVal = 0;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(vobPtr), _@(f), MEMINT_SwitchG1G2 (zCVob__GetEM_G1, zCVob__GetEM_G2));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__fastcall(_@(vobPtr), _@(dontCreate), MEMINT_SwitchG1G2 (zCVob__GetEM_G1, zCVob__GetEM_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr ();
+	return + retVal;
 };
 
 /*
