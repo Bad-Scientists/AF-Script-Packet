@@ -298,6 +298,26 @@ func int oCNpc_DoExchangeTorch (var int slfInstance)
 	return CALL_RetValAsInt ();
 };
 
+func int oCNpc_HasTorch (var int slfInstance) {
+	//0x00697EC0 public: int __thiscall oCNpc::HasTorch(void)
+	const int oCNpc__HasTorch_G1 = 6913728;
+
+	//0x0073B2C0 public: int __thiscall oCNpc::HasTorch(void)
+	const int oCNpc__HasTorch_G2 = 7582400;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__HasTorch_G1, oCNpc__HasTorch_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+};
+
 
 /*
 const int FMODE_NONE = 0;
