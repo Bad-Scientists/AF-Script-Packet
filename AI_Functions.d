@@ -249,11 +249,10 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	var int fromWpPtr; fromWpPtr = SearchWaypointByName (fromWp);
 	var int toWpPtr; toWpPtr = SearchWaypointByName (toWp);
 
-	var int routePtr;
-	routePtr = zCWayNet_FindRoute_Waypoints (fromWpPtr, toWpPtr, 0);
+	var int routePtr; routePtr = zCWayNet_FindRoute_Waypoints (fromWpPtr, toWpPtr, 0);
+	var int distWaynet; distWaynet = zCRoute_GetLength (routePtr); //float
+	zCRoute_Delete (routePtr);
 
-	var int distWaynet;
-	distWaynet = zCRoute_GetLength (routePtr); //float
 	distWaynet = RoundF (distWaynet);
 
 	var int isTooFar; isTooFar = (distWaynet > distToVobTolerance);
