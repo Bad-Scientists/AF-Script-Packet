@@ -775,6 +775,23 @@ func void oCNpcInventory_UnpackCategory (var int npcInventoryPtr, var int invCat
 	};
 };
 
+func void oCNpc_UnpackInventory (var int slfInstance) {
+	//0x00670400 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
+	const int oCNpcInventory__UnpackAllItems_G1 = 6751232;
+
+	//0x00710030 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
+	const int oCNpcInventory__UnpackAllItems_G2 = 7405616;
+
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	if (!npcInventoryPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (npcInventoryPtr), MEMINT_SwitchG1G2 (oCNpcInventory__UnpackAllItems_G1, oCNpcInventory__UnpackAllItems_G2));
+		call = CALL_End();
+	};
+};
+
 func void oCNpcInventory_SetOwner (var int npcInventoryPtr, var int npcPtr) {
 	//0x0066C290 public: void __thiscall oCNpcInventory::SetOwner(class oCNpc *)
 	const int oCNpcInventory__SetOwner_G1 = 6734480;
@@ -1806,27 +1823,6 @@ func void Npc_UnequipRangedWeapon (var int slfInstance) {
 func void Npc_UnequipWeapons (var int slfInstance) {
 	Npc_UnequipMeleeWeapon (slfInstance);
 	Npc_UnequipRangedWeapon (slfInstance);
-};
-
-func void oCNpc_UnpackInventory (var int slfInstance) {
-	//0x00670400 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
-	//0x00710030 public: void __thiscall oCNpcInventory::UnpackAllItems(void)
-
-	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
-	if (!npcInventoryPtr) { return; };
-
-	if (MEMINT_SwitchG1G2 (1, 0)) {
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_WEAPON);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_ARMOR);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_RUNE);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_MAGIC);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_FOOD);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_POTION);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_DOC);
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, INV_MISC);
-	} else {
-		oCNpcInventory_UnpackCategory (npcInventoryPtr, 0);
-	};
 };
 
 func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
