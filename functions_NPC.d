@@ -1217,6 +1217,10 @@ func void Npc_EndCurrentState (var int slfInstance) {
 	};
 };
 
+/*
+ *	Npc_InitAIStateDriven
+ *	 - updates oCNpc.state_aiStatePosition to specified position and oCNpc.wp to nearest waypoint
+ */
 func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
 	//0x006C7350 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
 	const int oCNpc_States__InitAIStateDriven_G1 = 7107408;
