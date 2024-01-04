@@ -144,6 +144,9 @@ func void View_CenterTextLines (var int hndl) {
 	ViewPtr_CenterTextLines (viewPtr);
 };
 
+/*
+ *	zCView_Printwin
+ */
 func void zCView_Printwin (var int viewPtr, var string s) {
 	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
 	const int zCView__Printwin_G1 = 7343392;
@@ -158,7 +161,9 @@ func void zCView_Printwin (var int viewPtr, var string s) {
 	CALL__thiscall (viewPtr, MEMINT_SwitchG1G2 (zCView__Printwin_G1, zCView__Printwin_G2));
 };
 
-
+/*
+ *	zCView_SetPos
+ */
 func void zCView_SetPos (var int viewPtr, var int vposx, var int vposy) {
 	//0x006FDA10 public: void __thiscall zCView::SetPos(int,int)
 	const int zCView__SetPos_G1 = 7330320;
@@ -177,6 +182,9 @@ func void zCView_SetPos (var int viewPtr, var int vposx, var int vposy) {
 	};
 };
 
+/*
+ *	zCView_CheckTimedText
+ */
 func void zCView_CheckTimedText (var int viewPtr) {
 	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
 	const int zCView__CheckTimedText_G1 = 6753728;
@@ -193,6 +201,9 @@ func void zCView_CheckTimedText (var int viewPtr) {
 	};
 };
 
+/*
+ *	zCList_zCViewText_DeleteListDatas
+ */
 //Releases list.data
 //Deletes list.next
 func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
@@ -221,6 +232,9 @@ func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
 //LeGo-devs informed, for now I will use this method ... we can change it if needed later :)
 //https://forum.worldofplayers.de/forum/threads/1505251-Skriptpaket-LeGo-4/page27?p=27126692#post27126692
 
+/*
+ *	ViewPtr_DeleteText_Safe
+ */
 func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	if (!viewPtr) { return; };
 	var zCView v; v = _^ (viewPtr);
@@ -229,6 +243,9 @@ func void ViewPtr_DeleteText_Safe (var int viewPtr) {
 	zCList_zCViewText_DeleteListDatas (_@ (v.textLines_data));
 };
 
+/*
+ *	View_DeleteText_Safe
+ */
 func void View_DeleteText_Safe (var int hndl) {
 	if (!Hlp_IsValidHandle (hndl)) { return; };
 	var int viewPtr; viewPtr = getPtr (hndl);
@@ -236,11 +253,14 @@ func void View_DeleteText_Safe (var int hndl) {
 	ViewPtr_DeleteText_Safe (viewPtr);
 };
 
+/*
+ *	ViewPtr_AlignText_Fixed
+ */
 //TODO: remove and replace with ViewPtr_AlignText once it is fixed in LeGo
 func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	if (!viewPtr) { return; };
 
-	var zCView v;  v = _^ (viewPtr);
+	var zCView v; v = _^ (viewPtr);
 	var int lp; lp = v.textLines_next;
 	var zCList l;
 	var zCViewText vt;
