@@ -815,10 +815,10 @@ func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
 //--
 
 /*
- *	Npc_SetAIStatePos
- *	 - function sets aiStatePosition to current position in the world
+ *	Npc_SetAIStateToPos
+ *	 - function sets aiStatePosition to specified position
  */
-func void Npc_SetAIStatePos (var int slfInstance) {
+func void Npc_SetAIStateToPos (var int slfInstance, var int posPtr) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 
 	var int statePtr; statePtr = NPC_GetNPCState (slf);
@@ -830,10 +830,16 @@ func void Npc_SetAIStatePos (var int slfInstance) {
 	//Update aiStateDriven - to kick in ai state
 	state.aiStateDriven = 1;
 
-	//Update ai position
-	slf.state_aiStatePosition[0] = slf._zCVob_trafoObjToWorld[3];
-	slf.state_aiStatePosition[1] = slf._zCVob_trafoObjToWorld[7];
-	slf.state_aiStatePosition[2] = slf._zCVob_trafoObjToWorld[11];
+	//Update ai position - to desired position
+	MEM_CopyBytes (posPtr, _@ (slf.state_aiStatePosition[0]), 12);
+
+	//Update also spawn node position
+	var int spawnNodePtr; spawnNodePtr = oCSpawnManager_GetNodePtr (_@ (slf));
+
+	if (spawnNodePtr) {
+		var oSSpawnNode spawnNode; spawnNode = _^ (spawnNodePtr);
+		MEM_CopyBytes (posPtr, _@ (spawnNode.spawnPos[0]), 12);
+	};
 };
 
 /*
