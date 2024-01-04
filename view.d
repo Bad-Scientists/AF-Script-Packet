@@ -144,6 +144,15 @@ func void ViewPtr_AlignText_Fixed (var int viewPtr, var int margin) {
 	};
 };
 
+/*
+ *	View_AlignText_Fixed
+ */
+func void View_AlignText_Fixed (var int hndl, var int margin) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+	ViewPtr_AlignText_Fixed (viewPtr, margin);
+};
+
 func void ViewPtr_SetTextAndFontColor (var int viewPtr, var string texts, var int color) {
 	if (!viewPtr) { return; };
 
