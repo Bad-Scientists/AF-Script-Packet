@@ -8,6 +8,8 @@ EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oInventory.d
 EngineClasses_G1\zEventMan.d
 
+EngineClasses_G1\zCCSBlock.d
+
 EngineClasses_G1\zCViewDialog.d
 EngineClasses_G1\zModel.d
 EngineClasses_G1\oSpell.d
