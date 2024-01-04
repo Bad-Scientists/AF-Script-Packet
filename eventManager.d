@@ -1170,6 +1170,47 @@ func void zCEventManager_SetActive (var int eMgr, var int on) {
 	};
 };
 
+func void oCNpcMessage_SetInUse (var int eMsg, var int inUse) {
+	//0x006BBEA0 public: virtual void __thiscall oCNpcMessage::SetInUse(int)
+	const int oCNpcMessage__SetInUse_G1 = 7061152;
+
+	//0x00763110 public: virtual void __thiscall oCNpcMessage::SetInUse(int)
+	const int oCNpcMessage__SetInUse_G2 = 7745808;
+
+	if (!Hlp_Is_oCNpcMessage (eMsg)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(inUse));
+		CALL__thiscall(_@(eMsg), MEMINT_SwitchG1G2 (oCNpcMessage__SetInUse_G1, oCNpcMessage__SetInUse_G2));
+
+		call = CALL_End();
+	};
+};
+
+func int oCNpcMessage_IsInUse (var int eMsg) {
+	//0x006BBEC0 public: virtual int __thiscall oCNpcMessage::IsInUse(void)
+	const int oCNpcMessage__IsInUse_G1 = 7061184;
+
+	//0x00763130 public: virtual int __thiscall oCNpcMessage::IsInUse(void)
+	const int oCNpcMessage__IsInUse_G2 = 7745840;
+
+	if (!Hlp_Is_oCNpcMessage (eMsg)) { return FALSE; };
+
+	var int retVal; retVal = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		//CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall(_@(eMsg), MEMINT_SwitchG1G2 (oCNpcMessage__IsInUse_G1, oCNpcMessage__IsInUse_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+
+	return + retVal;
+};
+
 /*
 So this is class tree for all zCEventMessage sub-classes - I think that all functions that are figuring out event message type have to take this hierarchy into consideration.
 Thus rewriting all functions to check event message type from the bottom of the list to the top.
