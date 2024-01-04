@@ -144,6 +144,8 @@ vobThrowing.d
 miscellaneous.d
 
 magic.d
+
+blood.d
 fight.d
 
 G2 NoTR emulation.d
