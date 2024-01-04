@@ -209,7 +209,7 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	return + (Hlp_StrCmp (rtnName, curRtnName));
 };
 
-func string NPC_GetAIStateName (var int slfInstance) {
+func string NPC_GetStartAIStateName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
@@ -220,7 +220,6 @@ func string NPC_GetAIStateName (var int slfInstance) {
 	//var func startAIState;	//G2	0x0264 int
 
 	var int offset; offset = MEMINT_SwitchG1G2 (540, 612);
-
 	var int symbID; symbID = MEM_ReadInt (ptr + offset);
 
 	if (symbID > 0) && (symbID < currSymbolTableLength) {
