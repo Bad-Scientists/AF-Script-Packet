@@ -98,7 +98,7 @@ func void zCAIBase_Release (var int ai) {
  *	oCNpc_ActivateDialogCam
  *	 - activates dialogue camera between Npcs (overrides oCNpc.talkOther pointer)
  */
-func void oCNpc_ActivateDialogCam (var int slfInstance, var int othInstance, var int durationF) {
+func int oCNpc_ActivateDialogCam (var int slfInstance, var int othInstance, var int durationF) {
 	//0x006B2430 public: int __thiscall oCNpc::ActivateDialogCam(float)
 	const int oCNpc__ActivateDialogCam_G1 = 7021616;
 
@@ -106,14 +106,13 @@ func void oCNpc_ActivateDialogCam (var int slfInstance, var int othInstance, var
 	const int oCNpc__ActivateDialogCam_G2 = 7700784;
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNpc (slf)) { return; };
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
 
 	var oCNpc oth; oth = Hlp_GetNPC (othInstance);
-	if (!Hlp_IsValidNpc (oth)) { return; };
+	if (!Hlp_IsValidNpc (oth)) { return 0; };
 
 	var int retVal;
 	var int slfPtr; slfPtr = _@ (slf);
-
 	slf.talkOther = _@ (oth);
 
 	const int call = 0;
@@ -123,6 +122,8 @@ func void oCNpc_ActivateDialogCam (var int slfInstance, var int othInstance, var
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__ActivateDialogCam_G1, oCNpc__ActivateDialogCam_G2));
 		call = CALL_End();
 	};
+
+	return + retVal;
 };
 
 /*
