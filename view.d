@@ -7,6 +7,34 @@
  *	 View* functions - working with handles
  */
 
+//	AFSP 'internal' constants for view intflags
+//	 - engine is only using const int VIEW_I_TEXT = 1 << 0; //1
+//	 - we will add our own constants to allow automated & easier view formatting
+
+const int VIEW_AUTO_RESIZE			= 1 << 1; //2
+const int VIEW_AUTO_ALPHA			= 1 << 2; //4
+const int VIEW_TXT_VCENTER			= 1 << 3; //8
+const int VIEW_TXT_HCENTER			= 1 << 4; //16
+
+/*
+ *	ViewPtr_SetIntFlags
+ */
+func void ViewPtr_SetIntFlags (var int viewPtr, var int intflags) {
+	if (!viewPtr) { return; };
+	var zCView v; v = _^ (viewPtr);
+	v.intflags = v.intflags | intflags;
+};
+
+/*
+ *	View_SetIntFlags
+ */
+func void View_SetIntFlags (var int hndl, var int intflags) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	var int viewPtr; viewPtr = getPtr (hndl);
+
+	ViewPtr_SetIntFlags (viewPtr, intflags);
+};
+
 func void zCView_Printwin (var int viewPtr, var string s) {
 	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
 	const int zCView__Printwin_G1 = 7343392;
