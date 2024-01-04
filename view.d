@@ -530,6 +530,51 @@ func void View_SetAlphaFunc (var int hndl, var int alphaFunc) {
 	ViewPtr_SetAlphaFunc (viewPtr, alphaFunc);
 };
 
+//bruh ... LeGo does not have any safety checks
+func void ViewPtr_Close_Safe(var int viewPtr) {
+	if (!viewPtr) { return; };
+	ViewPtr_Close (viewPtr);
+};
+
+func void View_Close_Safe (var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	ViewPtr_Close_Safe (getPtr (hndl));
+};
+
+//--
+
+func void ViewPtr_Open_Safe (var int viewPtr) {
+	if (!viewPtr) { return; };
+	ViewPtr_Open (viewPtr);
+};
+
+func void View_Open_Safe(var int hndl) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	ViewPtr_Open_Safe (getPtr( hndl));
+};
+
+//--
+
+func void ViewPtr_MoveTo_Safe (var int viewPtr, var int x, var int y) {
+	if (!viewPtr) { return; };
+	ViewPtr_MoveTo (viewPtr, x, y);
+};
+
+func void View_MoveTo_Safe (var int hndl, var int x, var int y) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	View_MoveTo (hndl, x, y);
+};
+
+func void ViewPtr_Resize_Safe (var int viewPtr, var int x, var int y) {
+	if (!viewPtr) { return; };
+	ViewPtr_Resize (viewPtr, x, y);
+};
+
+func void View_Resize_Safe (var int hndl, var int x, var int y) {
+	if (!Hlp_IsValidHandle (hndl)) { return; };
+	View_Resize (hndl, x, y);
+};
+
 //-- engine stuff
 
 func int zCView_Noise_IsActive () {
