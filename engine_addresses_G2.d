@@ -405,3 +405,10 @@ func MEMINT_HelperClass Hlp_GetAliveNPC (var int slfInstanceID) {
 	MEM_PtrToInst (ptr);
 	MEM_AssignInstSuppressNullWarning = FALSE;
 };
+
+func void MEM_WriteNOP (var int addr, var int len) {
+	MemoryProtectionOverride (addr, len);
+	repeat (i, len); var int i;
+		MEM_WriteByte (addr + i, ASMINT_OP_nop);
+	end;
+};
