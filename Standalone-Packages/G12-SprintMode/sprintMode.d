@@ -56,6 +56,7 @@ var string _PC_SprintModeBar_Tex;
 var string _PC_SprintModeBar_Timed_Tex;
 
 var string _PC_SprintModeOverlayName;
+var string _PC_SprintModeTimedOverlayName;
 
 var int _PC_SprintMode_IgnoreWithOverlays_Count;
 const int _PC_SprintMode_IgnoreWithOverlays_Max = 255; //We probably don't need 255
@@ -73,8 +74,8 @@ func void _eventGameStateLoaded__SprintMode (var int state) {
 	//Restore time overlay effect on game load
 	if (state == Gamestate_Loaded) {
 		if (PC_SprintModePlayerHasTimedOverlay) {
-			if (!NPC_HasTimedOverlay (hero, _PC_SprintModeOverlayName)) {
-				Mdl_ApplyOverlayMdsTimed (hero, _PC_SprintModeOverlayName, PC_SprintModePlayerTimedOverlayTimer);
+			if (!NPC_HasTimedOverlay (hero, _PC_SprintModeTimedOverlayName)) {
+				Mdl_ApplyOverlayMdsTimed (hero, _PC_SprintModeTimedOverlayName, PC_SprintModePlayerTimedOverlayTimer);
 			};
 		};
 	};
@@ -218,7 +219,7 @@ func void FrameFunction__SprintMode () {
 	var int isJumping; isJumping = ((NPC_GetBodyState (hero) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)));
 
 	//Does player have timed overlay ?
-	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, _PC_SprintModeOverlayName);
+	PC_SprintModePlayerHasTimedOverlay = NPC_HasTimedOverlay (hero, _PC_SprintModeTimedOverlayName);
 
 	//If I remove overlay while jumping then players animation will 'stutter', that's why I can remove overlay only once player is not jumping
 	if (PC_SprintModeDisable) {
@@ -246,7 +247,7 @@ func void FrameFunction__SprintMode () {
 
 	//Remove duplicated timed overlays
 	if (PC_SprintModePlayerHasTimedOverlay) {
-		NPC_RemoveDuplicatedTimedOverlays (hero, _PC_SprintModeOverlayName, _PC_SprintModeTimedOverlayStacking);
+		NPC_RemoveDuplicatedTimedOverlays (hero, _PC_SprintModeTimedOverlayName, _PC_SprintModeTimedOverlayStacking);
 	};
 
 	//Option to disable consumption if needed
@@ -294,7 +295,7 @@ func void FrameFunction__SprintMode () {
 	//First time this is called player will most likely not have timed overlay - so set to 1 in order to 'reset' texture
 	if (PC_SprintModePlayerHasTimedOverlay) {
 		//Get timer value - this is current value
-		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, _PC_SprintModeOverlayName));
+		PC_SprintModePlayerTimedOverlayTimer = roundf (NPC_GetTimedOverlayTimer (hero, _PC_SprintModeTimedOverlayName));
 
 		//If PC_SprintModePlayerTimedOverlayDetected == FALSE then this is first time script detected timed overlay, get max value and adjust texture
 		if (!PC_SprintModePlayerTimedOverlayDetected)
@@ -302,7 +303,7 @@ func void FrameFunction__SprintMode () {
 		|| (PC_SprintModePlayerTimedOverlayTimer > PC_SprintModePlayerTimedOverlayTimerMax)
 		{
 			//Get timer value - first value will be considered max value
-			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, _PC_SprintModeOverlayName));
+			PC_SprintModePlayerTimedOverlayTimerMax = roundf (NPC_GetTimedOverlayTimer (hero, _PC_SprintModeTimedOverlayName));
 			PC_SprintModePlayerTimedOverlayDetected = TRUE;
 
 			Bar_SetBarTexture (hStaminaBar, _PC_SprintModeBar_Timed_Tex);
@@ -615,6 +616,7 @@ func void G12_SprintMode_Init () {
 	_PC_SprintModeBar_Timed_Tex = API_GetSymbolStringValue ("PC_SPRINTMODEBAR_TIMED_TEX", "BAR_SPRINTMODE_TIMEDOVERLAY.TGA");
 
 	_PC_SprintModeOverlayName = API_GetSymbolStringValue ("PC_SPRINTMODEOVERLAYNAME", "HUMANS_SPRINT.MDS");
+	_PC_SprintModeTimedOverlayName = API_GetSymbolStringValue ("PC_SPRINTMODETIMEDOVERLAYNAME", "HUMANS_SPRINT.MDS");
 
 	_PC_SprintMode_IgnoreWithOverlays_Count = API_GetSymbolIntValue ("PC_SPRINTMODE_IGNOREWITHOVERLAYS_COUNT", 0);
 
