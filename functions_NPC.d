@@ -230,6 +230,13 @@ func string NPC_GetStartAIStateName (var int slfInstance) {
 	return "";
 };
 
+func string NPC_GetCurrentAIStateName (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	return slf.state_curState_name;
+};
+
 func int NPC_IsInActiveVobList (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 
