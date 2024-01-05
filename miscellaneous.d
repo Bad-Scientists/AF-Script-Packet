@@ -963,6 +963,27 @@ func void Npc_SetAIStateToCurrentPos (var int slfInstance) {
 	};
 };
 
+func void Npc_SetAIStatePosToVobName (var int slfInstance, var string vobName) {
+	var int pos[3];
+
+	//Is this waypoint?
+	var int wpPtr; wpPtr = SearchWaypointByName (vobName);
+	if (wpPtr) {
+		var zCWaypoint wp; wp = _^ (wpPtr);
+		MEM_CopyBytes (_@ (wp.pos[0]), _@ (pos[0]), 12);
+	} else {
+		//Is this vob?
+		var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
+
+		if (vobPtr) {
+			if (zCVob_GetPositionWorldToPos (vobPtr, _@ (pos[0]))) {
+			};
+		};
+	};
+
+	Npc_SetAIStateToPos (slfInstance, _@ (pos[0]));
+};
+
 /*
  *	Npc_GetCurrentWorldPos
  *	 - function gets current world position of an Npc (either from Routine manager or using spawnPoint in case of aiStateDriven logic)
