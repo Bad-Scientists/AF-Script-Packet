@@ -19,12 +19,14 @@ func void zCWorld_RemoveVob (var int vobPtr) {
 
 	if (!vobPtr) { return; };
 
-	var int worldPtr;
-	//worldPtr = _@ (MEM_World);
-	worldPtr = MEM_Game._zCSession_world;
+	var int worldPtr; worldPtr = _@ (MEM_World);
 
-	CALL_PtrParam (vobPtr);
-	CALL__thiscall (worldPtr, MEMINT_SwitchG1G2 (oCWorld__RemoveVob_G1, oCWorld__RemoveVob_G2));
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (vobPtr));
+		CALL__thiscall (_@ (worldPtr), MEMINT_SwitchG1G2 (oCWorld__RemoveVob_G1, oCWorld__RemoveVob_G2));
+		call = CALL_End ();
+	};
 };
 
 /*
