@@ -1,5 +1,6 @@
 /*
 const int PC_PickLockSkillRequired = 0;	//Set to true if player should not be able to open chests with no skill
+const int PC_PickLockWithMasterKey = 0;	//Set to true if player should be able to open all locks with ItKe_MasterKey
 
 //Custom output units - feel free to translate to your own language :)
 func void Subtitles_EnhancedPickLocking () {
