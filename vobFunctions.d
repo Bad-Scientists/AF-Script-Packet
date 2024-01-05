@@ -174,13 +174,16 @@ func int zCVob_GetVisual (var int vobPtr) {
 
 	if (!vobPtr) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetVisual_G1, zCVob__GetVisual_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr ();
+	return + retVal;
 };
 
 /*
@@ -1676,13 +1679,16 @@ func int zCVob_GetHomeWorld (var int vobPtr) {
 
 	if (!vobPtr) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
 		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__GetHomeWorld_G1, zCVob__GetHomeWorld_G2));
 		call = CALL_End();
 	};
 
-	return Call_RetValAsPtr ();
+	return + retVal;
 };
 
 /*
