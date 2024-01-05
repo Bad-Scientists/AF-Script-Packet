@@ -1,18 +1,3 @@
-func void zERROR_SetFilterLevel (var int zErrorLevel) {
-	//0x008699D8 class zERROR zerr
-	const int zERROR__zerr_G1 = 8821208;
-	//0x008CDCD0 class zERROR zerr
-	const int zERROR__zerr_G2 = 9231568;
-
-	//0x00449680 public: void __thiscall zERROR::SetFilterLevel(int)
-	const int zERROR__SetFilterLevel_G1 = 4494976;
-	//0x0044DDA0 public: void __thiscall zERROR::SetFilterLevel(int)
-	const int zERROR__SetFilterLevel_G2 = 4513184;
-
-	CALL_IntParam (zErrorLevel);
-	CALL__thiscall (MEMINT_SwitchG1G2 (zERROR__zerr_G1, zERROR__zerr_G2), MEMINT_SwitchG1G2 (zERROR__SetFilterLevel_G1, zERROR__SetFilterLevel_G2));
-};
-
 //0x008699D8 class zERROR zerr
 
 //0x007D1834 const zERROR::`vftable'
@@ -64,6 +49,27 @@ func int zERROR_GetFilterLevel () {
 	};
 
 	return + retVal;
+};
+
+func void zERROR_SetFilterLevel (var int errorLevel) {
+	//0x008699D8 class zERROR zerr
+	const int zerr_G1 = 8821208;
+	//0x008CDCD0 class zERROR zerr
+	const int zerr_G2 = 9231568;
+
+	var int zerr; zerr = MEMINT_SwitchG1G2 (zerr_G1, zerr_G2);
+
+	//0x00449680 public: void __thiscall zERROR::SetFilterLevel(int)
+	const int zERROR__SetFilterLevel_G1 = 4494976;
+	//0x0044DDA0 public: void __thiscall zERROR::SetFilterLevel(int)
+	const int zERROR__SetFilterLevel_G2 = 4513184;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (errorLevel));
+		CALL__thiscall (_@ (zerr), MEMINT_SwitchG1G2 (zERROR__SetFilterLevel_G1, zERROR__SetFilterLevel_G2));
+		call = CALL_End();
+	};
 };
 
 func int zERROR_SearchForSpy () {
