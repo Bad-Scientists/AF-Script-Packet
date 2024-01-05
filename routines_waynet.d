@@ -664,8 +664,6 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 	var int nearestPtr; nearestPtr = 0;
 	var int nearestPtr2; nearestPtr2 = 0;
 
-	var int canSee;
-
 	//Get Npc position
 	var int fromPos[3];
 	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (fromPos))) { return 0; };
@@ -686,9 +684,9 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 		//(this function also checks if object is zCVobSpot)
 		if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
 			if (searchFlags & SEARCHVOBLIST_CANSEE) {
-				canSee = oCNPC_CanSee (slfInstance, vobPtr, 1);
-			} else {
-				canSee = TRUE;
+				if (!oCNPC_CanSee (slfInstance, vobPtr, 1)) {
+					continue;
+				};
 			};
 
 			//Check for portal room owner
@@ -699,60 +697,78 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
 					//If this portal is not owned by me - ignore - pretend we don't see it :)
 					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
-						canSee = FALSE;
+						continue;
 					};
 				};
 			};
 
-			if (canSee) {
-				if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
-					var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+			if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
+				var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
 
-					var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
-					var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
-
-					//Matching freePoint name
-					if (index1 > -1) {
-						//Find route from Npc to vob - get total distance if Npc travels by waynet
-						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
-							if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
-								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
-								dist = zCRoute_GetLength (routePtr); //float
-								dist = RoundF (dist);
-							};
-						} else {
-							dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+				//Ignore FP that Npc is currently standing on
+				if (searchFlags & SEARCHVOBLIST_IGNORECURRENTFP) {
+					if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
+						if (vobSpot.inUseVob == slfPtr) {
+							continue;
 						};
+					};
+				};
 
-						if ((dist <= distLimit) || (distLimit == -1)) {
-							if (!firstPtr) { firstPtr = vobPtr; };
+				var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
+				var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
 
-							if (dist < maxDist) {
-								nearestPtr = vobPtr;
-								maxDist = dist;
-							};
+				//Matching freePoint name
+				if (index1 > -1) {
+					//Find route from Npc to vob - get total distance if Npc travels by waynet
+					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist = zCRoute_GetLength (routePtr); //float
+							zCRoute_Delete (routePtr);
+
+							dist = RoundF (dist);
+						};
+					} else {
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+					};
+
+					if ((dist <= distLimit) || (distLimit == -1)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
 						};
 					};
 
-					//Matching freePoint name (not matching deprioritizeFreePoint)
-					if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
-
-						//Find route from Npc to vob - get total distance if Npc travels by waynet
-						if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
-							if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
-								routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
-								dist2 = zCRoute_GetLength (routePtr); //float
-								dist2 = RoundF (dist2);
-							};
-						} else {
-							dist2 = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+					//'Randomize' outcome - this way we won't be searching for nearest FP
+					if (searchFlags & SEARCHVOBLIST_IGNOREORDER) {
+						if (Hlp_Random (100) > 50) {
+							break;
 						};
+					};
+				};
 
-						if ((dist2 <= distLimit) || (distLimit == -1)) {
-							if (dist2 < maxDist2) {
-								nearestPtr2 = vobPtr;
-								maxDist2 = dist2;
-							};
+				//Matching freePoint name (not matching deprioritizeFreePoint)
+				if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
+
+					//Find route from Npc to vob - get total distance if Npc travels by waynet
+					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+							dist2 = zCRoute_GetLength (routePtr); //float
+							zCRoute_Delete (routePtr);
+
+							dist2 = RoundF (dist2);
+						};
+					} else {
+						dist2 = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+					};
+
+					if ((dist2 <= distLimit) || (distLimit == -1)) {
+						if (dist2 < maxDist2) {
+							nearestPtr2 = vobPtr;
+							maxDist2 = dist2;
 						};
 					};
 				};
@@ -769,7 +785,7 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 };
 
 /*
- *	Function returns freepoint which NPC is using
+ *	Function returns freepoint which NPC is standing on
  */
 func int NPC_GetCurrentFreepoint (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
@@ -793,10 +809,22 @@ func int NPC_GetCurrentFreepoint (var int slfInstance) {
 		vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (Hlp_Is_zCVobSpot (vobPtr)) {
-			//Seems like engine still returns true when NPC is standing on freepoint (also it updates freepoint if Npc is standing on it)
+			var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+
+			//Override inUseVob (if not used by anyone) - zCVobSpot_IsAvailable will update it if Npc is not intersecting with freepoint
+			var int markAsUsed; markAsUsed = FALSE;
+
+			if (!vobSpot.inUseVob) {
+				vobSpot.inUseVob = slfPtr;
+				markAsUsed = TRUE;
+			};
+
 			if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
-				var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
 				if (vobSpot.inUseVob == slfPtr) {
+					if (markAsUsed) {
+						zCVobSpot_MarkAsUsed (vobPtr, mkf (3000), slfPtr);
+					};
+
 					MEM_Free (arrPtr);
 					return vobPtr;
 				};
@@ -816,6 +844,16 @@ func string FP_GetFreePointName (var int vobSpotPtr) {
 
 	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
 	return vobSpot._zCObject_objectName;
+};
+
+/*
+ *	Function checks if Npc is standing on freepoint
+ */
+func int Npc_IsOnFreepoint (var int slfInstance, var string searchFreePointName) {
+	var int fp; fp = NPC_GetCurrentFreepoint (slfInstance);
+	var string fpName; fpName = FP_GetFreePointName (fp);
+
+	return (STR_IndexOf (fpName, searchFreePointName) >= 0);
 };
 
 /*
