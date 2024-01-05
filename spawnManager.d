@@ -205,7 +205,7 @@ func int oCSpawnManager_GetNodePtr (var int npcPtr) {
 	repeat (i, MEM_SpawnManager.spawnList_numInArray); var int i;
 		var int spawnNodePtr; spawnNodePtr = MEM_ReadIntArray (MEM_SpawnManager.spawnList_array, i);
 		if (spawnNodePtr) {
-			//NPC pointer is @ offset 0, we don't really need to converr pointer to oSSpawnNode object
+			//NPC pointer is @ offset 0, we don't really need to convert pointer to oSSpawnNode object
 
 			//var oSSpawnNode spawnNode; spawnNode = _^ (spawnNodePtr);
 			//if (npcPtr == spawnNode.npc) {

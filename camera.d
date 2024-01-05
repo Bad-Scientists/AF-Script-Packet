@@ -172,7 +172,6 @@ func int oCNpc_DeactivateDialogCam (var int slfInstance) {
 
 	var int retVal;
 	var int gamePtr; gamePtr = _@ (MEM_Game);
-
 	if (!gamePtr) { return 0; };
 
 	const int call = 0;

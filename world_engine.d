@@ -64,10 +64,10 @@ func int oCWorld_AddVobAsChild (var int vobPtr, var int parentPtr) {
 	var int worldPtr; worldPtr = MEM_Game._zCSession_world;
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(0);
+
 		CALL_PtrParam(_@(vobTreePtr));
 		CALL_PtrParam(_@(vobPtr));
-
-		CALL_PutRetValTo(0);
 
 		CALL__thiscall(_@(worldPtr), MEMINT_SwitchG1G2(oCWorld__AddVobAsChild_G1, oCWorld__AddVobAsChild_G2));
 		call = CALL_End();
