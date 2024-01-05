@@ -5,7 +5,7 @@ var int puppetMasterEnabled;
 var string puppetNode;
 var int puppetNodeIndex;
 
-var int puppetNodeVobPtr;
+const int puppetNodeVobPtr = 0;
 
 const int HUMAN_NODENAMES_MAX = 25;
 
@@ -98,13 +98,15 @@ instance DIA_PuppetMaster_Main (C_Info) {
 };
 
 //---
-func void DIA_PuppetMaster_UpdateNodePos_Hanlder (var string spinnerID) {
+func void DIA_PuppetMaster_UpdateNodePos_Handler (var string spinnerID) {
 	var string oldDescription;
 	var string oldDescription1;
 	var string oldDescription2;
 	var string oldDescription3;
 
-	if (!InfoManager_IsInChoiceMode ()) {
+	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
+
+	if (!isChoiceModeActive) {
 		oldDescription = "";
 		oldDescription1 = "";
 		oldDescription2 = "";
@@ -233,7 +235,9 @@ func void DIA_PuppetMaster_RotateNode_Handler (var string spinnerID) {
 	var string oldDescription2;
 	var string oldDescription3;
 
-	if (!InfoManager_IsInChoiceMode ()) {
+	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
+
+	if (!isChoiceModeActive) {
 		oldDescription = "";
 		oldDescription1 = "";
 		oldDescription2 = "";
@@ -352,9 +356,9 @@ func int DIA_PuppetMaster_Main_Condition () {
 	if (!puppetMasterEnabled) { return FALSE; };
 
 	//Execute here - to reset oldDescription, oldDescription2, oldDescription3 if we are not in choice mode!
-	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosX");
-	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosY");
-	DIA_PuppetMaster_UpdateNodePos_Hanlder ("UpdatePosZ");
+	DIA_PuppetMaster_UpdateNodePos_Handler ("UpdatePosX");
+	DIA_PuppetMaster_UpdateNodePos_Handler ("UpdatePosY");
+	DIA_PuppetMaster_UpdateNodePos_Handler ("UpdatePosZ");
 
 	DIA_PuppetMaster_RotateNode_Handler ("RotateNodeX");
 	DIA_PuppetMaster_RotateNode_Handler ("RotateNodeY");
@@ -363,7 +367,9 @@ func int DIA_PuppetMaster_Main_Condition () {
 	var string oldDescription1;
 
 	//Do not execute code below, if choices are not yet displayed :)
-	if (!InfoManager_IsInChoiceMode ()) {
+	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
+
+	if (!isChoiceModeActive) {
 		oldDescription1 = "";
 		return TRUE;
 	};
