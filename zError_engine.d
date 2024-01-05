@@ -92,9 +92,17 @@ func int zERROR_SearchForSpy () {
 };
 
 func void zSpy_Info (var string s) {
+	//Backup error level
 	var int errorLevel; errorLevel = zERROR_GetFilterLevel ();
-	zERROR_SetFilterLevel (1);
+	//Set error level to 1 (minimum)
+	if (errorLevel < 1) {
+		zERROR_SetFilterLevel (1);
+	};
+
 	MEM_Info (s);
-	//PrintS (s);
-	zERROR_SetFilterLevel (errorLevel);
+
+	//Restore error level
+	if (errorLevel < 1) {
+		zERROR_SetFilterLevel (errorLevel);
+	};
 };
