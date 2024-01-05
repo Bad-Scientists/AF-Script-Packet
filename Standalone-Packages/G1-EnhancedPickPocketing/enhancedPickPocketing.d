@@ -4,9 +4,8 @@
  *	 - improves vanilla pickpocketing in G1:
  *		- enables additional body states (vanilla BS_STAND, BS_ITEMINTERACT, patched also while Npc is sitting / using mobs: BS_SIT, BS_LIE, BS_MOBINTERACT, BS_MOBINTERACT_INTERRUPT)
  *		- adds extra functions for failed pickpocketing attempts (from which we can let player know why attempt failed)
- *			- EnhancedPickPocketing_EmptyInventory is called when inventory of victim is empty
  *			- EnhancedPickPocketing_TooFar is called when victim is too far
- *		- fixes behaviour for failed theft attempts (if Npc is too far / if it's inventory is empty) of which victim is **aware of**:
+ *		- fixes behaviour for failed theft attempts of which victim is **aware of**:
  *			- in vanilla nothing would happen, only T_DONTKNOW animation would play. Here we are calling oCNpc_StopTheft - this will send perception PERC_CATCHTHIEF to victim.
  *
  *	 - additionaly we allow player to insert items into victims inventory (vanilla allows only stealing)
@@ -95,7 +94,7 @@ func int Npc_BodyState_AwareOfTheft (var int npcInstance) {
 
 func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 /*
-	As I was unable to 'patch' engine function we have to create our own version
+	As I was unable to 'patch' engine function thus creating own version
 
 	//0x006BAD80 public: int __thiscall oCNpc::IsVictimAwareOfTheft(void)
 	const int oCNpc__IsVictimAwareOfTheft_G1 = 7056768;

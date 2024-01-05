@@ -177,8 +177,8 @@ func void FirePlace_AddFireDamageTriggers () {
 //	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
-			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No zCVob objects found.");
+			MEM_ArrayFree (vobListPtr);
 			return;
 		};
 //	};

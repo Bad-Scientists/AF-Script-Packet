@@ -62,8 +62,8 @@ func void CC_GotoZEN_Init () {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 
 	if (!SearchVobsByClass ("oCTriggerChangeLevel", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("CC_GotoZEN_Init: No oCTriggerChangeLevel objects found.");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 

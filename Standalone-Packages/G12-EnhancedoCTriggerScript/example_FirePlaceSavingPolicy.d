@@ -60,15 +60,15 @@ func void FirePlace_AddSavingPolicy () {
 	//Fill array with oCMobFire objects
 	if (MEMINT_SwitchG1G2 (1, 0)) {
 		if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
-			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No oCMobFire objects found.");
+			MEM_ArrayFree (vobListPtr);
 			return;
 		};
 	} else {
 		//Search by zCVisual or zCParticleFX does not work
 		if (!SearchVobsByClass ("zCVob", vobListPtr)) {
-			MEM_ArrayFree (vobListPtr);
 			MEM_Info ("No zCVob objects found.");
+			MEM_ArrayFree (vobListPtr);
 			return;
 		};
 	};
