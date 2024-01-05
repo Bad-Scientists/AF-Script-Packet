@@ -84,6 +84,9 @@ func void oCNpc_StartFadeAway (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNpc (slf)) { return; };
 
+	//Safety-net - always kill Npc
+	if (slf.attribute[ATR_HITPOINTS] > 0) { slf.attribute[ATR_HITPOINTS] = 0; };
+
 	//Drop inventory into the world
 	if (_fadeAway_DropInventory) {
 		Npc_DropInventory (slf, _fadeAway_ItemSlotName, _fadeAway_DontDropFlags, _fadeAway_DontDropMainFlag);
@@ -232,6 +235,7 @@ func void G12_FadeAway_Init () {
 
 	if (!once) {
 		//0x00615A50 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
+		//615B90
 		const int oCAIHuman__DoAI_IsDead_G1 = 6380432;
 
 		//0x0069BAB0 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
