@@ -132,6 +132,9 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 	var int stealnpcPtr; stealnpcPtr = MEM_ReadInt (stealnpc_addr_G1);
 	if (!stealnpcPtr) { return FALSE; };
 
+	//victim
+	var oCNpc slf; slf = _^ (stealnpcPtr);
+
 	var int retVal;
 
 //-- Dead - not aware of theft
@@ -170,34 +173,13 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 
 //-- Check if Npc detected thief (through perceptions, SENSE_SMELL will always detect thief if Npc is within npc.senses_range distance!)
 
-	//0x0069CE90 public: int __thiscall oCNpc::HasVobDetected(class zCVob *)
-	const int oCNpc__HasVobDetected_G1 = 6934160;
-
-	//0x007405B0 public: int __thiscall oCNpc::HasVobDetected(class zCVob *)
-	const int oCNpc__HasVobDetected_G2 = 7603632;
-
-	var int npcPtr; npcPtr = _@ (npc);
-
-	const int call3 = 0;
-	if (CALL_Begin(call3)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall(_@(stealnpcPtr), MEMINT_SwitchG1G2 (oCNpc__HasVobDetected_G1, oCNpc__HasVobDetected_G2));
-		call3 = CALL_End();
-	};
-
-	if (retVal) { return TRUE; };
+	if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
 
 //-- Check game mode - if we are in steal mode - check body state
 
-	//victim
-	var oCNpc slf; slf = _^ (stealnpcPtr);
-
 	var int gameMode; gameMode = oCNpc_Get_Game_Mode ();
 	if (gameMode == NPC_GAME_STEAL) {
-		if (Npc_BodyState_AwareOfTheft (slf)) {
-			return TRUE;
-		};
+		if (Npc_BodyState_AwareOfTheft (slf)) { return TRUE; };
 	};
 
 	return FALSE;
@@ -222,7 +204,7 @@ func void oCNpc_StopTheft (var int slfInstance, var int thiefPtr, var int victim
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (victimIsAware));
+		CALL_IntParam (_@ (victimIsAware));
 		CALL_PtrParam (_@ (thiefPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__StopTheft_G1, oCNpc__StopTheft_G2));
 		call = CALL_End();
@@ -318,8 +300,9 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 	var int containerPtr;
 	var oCItemContainer container;
 
+	var C_NPC owner;
+
 	var oCNpc npc;
-	var oCNpc owner;
 	var int npcInventoryPtr;
 
 	var int itemPtr;
@@ -391,7 +374,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
-								npcInventoryPtr = _@ (owner.inventory2_vtbl);
+								npc = Hlp_GetNpc (owner);
+								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 
 								//Insert item to NPCs inventory
 								itemPtr = oCNpcInventory_Insert (npcInventoryPtr, itemPtr);
@@ -414,7 +398,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 						if ((retVal) || (_enhancedPickPocketing_StealItemAnyway)) {
 							if (amount) {
 								//Remove item from NPCs inventory
-								npcInventoryPtr = _@ (owner.inventory2_vtbl);
+								npc = Hlp_GetNpc (owner);
+								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
 								//Insert item to players inventory
