@@ -561,8 +561,256 @@ func void Game_CheckObjectRoutines () {
 	zSpy_Info ("Game_CheckObjectRoutines <--");
 };
 
+/*
+ *	zCWaynet_CheckRoutes
+ *	 - all waypoints in the world should be connected via waynet
+ *	 - this function loops through all of them - and checks whether there is route available from one to another
+ */
+func void zCWaynet_CheckRoutes () {
+	var string msg;
+
+	zSpy_Info ("zCWaynet_CheckRoutes -->");
+
+	msg = oCWorld_GetWorldFilename ();
+	msg = ConcatStrings (" - world: ", msg);
+	zSpy_Info (msg);
+
+	var int susWaypoints; susWaypoints = 0;
+	var int issueCounter; issueCounter = 0;
+	var int susWaypointsListPtr; susWaypointsListPtr = MEM_ArrayCreate ();
+
+	//zCListSort
+	var int ptr; ptr = MEM_WayNet.wplist_next;
+	var int ptr2; ptr2 = MEM_WayNet.wplist_next;
+
+	var zCListSort list;
+	var zCListSort list2;
+
+	var zCWaypoint wp1;
+	var zCWaypoint wp2;
+	var zCWaypoint wp3;
+
+	var int routePtr;
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (list.data) {
+			wp1 = _^ (list.data);
+
+			while (ptr2);
+				list2 = _^ (ptr2);
+
+				if (list2.data) {
+					wp2 = _^ (list2.data);
+
+					routePtr = zCWayNet_FindRoute_Waypoints (_@ (wp1), _@ (wp2), 0);
+
+					if (!routePtr) {
+						//Insert 'orphan' waypoints to array
+						if (!MEM_StringArrayContains (susWaypointsListPtr, wp1.Name)) {
+							susWaypoints += 1;
+							MEM_StringArrayInsert (susWaypointsListPtr, wp1.Name);
+						};
+
+						//Insert 'orphan' waypoints to array
+						if (!MEM_StringArrayContains (susWaypointsListPtr, wp2.Name)) {
+							susWaypoints += 1;
+							MEM_StringArrayInsert (susWaypointsListPtr, wp2.Name);
+						};
+					};
+
+					zCRoute_Delete (routePtr);
+				};
+
+				ptr2 = list2.next;
+			end;
+		};
+
+		ptr = list.next;
+	end;
+
+	zCRoute_Delete (routePtr);
+
+	var int wpNamePtr;
+	var string wpName;
+
+	var int wpPtr;
+	var int wpPtr2;
+
+	var int i;
+	var int j;
+	var int k;
+
+	var int wayPtr;
+
+	if (susWaypoints) {
+		//identify closed waypoint loops
+		var zCArray wpList; wpList = _^ (susWaypointsListPtr);
+
+		var zCArray closedLoopList;
+
+		i = 0;
+
+		while (i < wpList.numInArray);
+			var int closedLoop;
+			var int closedLoopWaypointsListPtr;
+
+			closedLoop = FALSE;
+			closedLoopWaypointsListPtr = MEM_ArrayCreate ();
+
+			wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, i);
+			if (wpNamePtr) {
+				wpName = MEM_ReadString (wpNamePtr);
+				wpPtr = SearchWaypointByName (wpName);
+
+				if (wpPtr) {
+					closedLoopList = _^ (closedLoopWaypointsListPtr);
+
+					k = -1;
+					while (k < closedLoopList.numInArray);
+
+						j = 0;
+
+						while (j < wpList.numInArray);
+							if (j != i) {
+								wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, j);
+
+								if (wpNamePtr) {
+									wpName = MEM_ReadString (wpNamePtr);
+									wpPtr2 = SearchWaypointByName (wpName);
+
+									if (wpPtr2) {
+										wayPtr = zCWaypoint_HasWay (wpPtr, wpPtr2);
+
+										if (wayPtr) {
+											if (k == -1) {
+												wp1 = _^ (wpPtr);
+												if (!MEM_StringArrayContains (closedLoopWaypointsListPtr, wp1.Name)) {
+													MEM_StringArrayInsert (closedLoopWaypointsListPtr, wp1.Name);
+												};
+											};
+
+											wp2 = _^ (wpPtr2);
+
+											if (!MEM_StringArrayContains (closedLoopWaypointsListPtr, wp2.Name)) {
+												MEM_StringArrayInsert (closedLoopWaypointsListPtr, wp2.Name);
+											};
+
+											MEM_StringArrayRemoveIndex (susWaypointsListPtr, j);
+											j -= 1;
+
+											closedLoop = TRUE;
+										};
+									};
+								};
+							};
+
+							j += 1;
+						end;
+
+						k += 1;
+
+						if (closedLoop) {
+							if (k < closedLoopList.numInArray) {
+								wpNamePtr = MEM_ArrayRead (closedLoopWaypointsListPtr, k);
+								if (wpNamePtr) {
+									wpName = MEM_ReadString (wpNamePtr);
+									wpPtr = SearchWaypointByName (wpName);
+								};
+							};
+						};
+					end;
+				};
+			};
+
+			if (closedLoop) {
+				msg = " - closed waypoint loop found: ";
+
+				j = 0;
+				while (j < closedLoopList.numInArray);
+					wpNamePtr = MEM_ArrayRead (closedLoopWaypointsListPtr, j);
+
+					if (wpNamePtr) {
+						wpName = MEM_ReadString (wpNamePtr);
+
+						if (j > 0) {
+							msg = ConcatStrings (msg, ", ");
+						};
+
+						msg = ConcatStrings (msg, wpName);
+					};
+
+					j += 1;
+				end;
+
+				zSpy_Info (msg);
+				issueCounter += 1;
+
+				//restart loop completely (we were removing indexes left and right ...)
+				i = 0;
+			};
+
+			MEM_StringArrayFree (closedLoopWaypointsListPtr);
+
+			i += 1;
+		end;
+
+		//identify orphan waypoints
+		wpList = _^ (susWaypointsListPtr);
+
+		i = 0;
+		while (i < wpList.numInArray);
+			wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, i);
+
+			if (wpNamePtr) {
+				wpName = MEM_ReadString (wpNamePtr);
+				wpPtr = SearchWaypointByName (wpName);
+
+				//Double check if orphaned (we might have false positives from closed loop identification)
+				var int orphaned; orphaned = TRUE;
+
+				ptr = MEM_WayNet.wplist_next;
+				while (ptr);
+					list = _^ (ptr);
+
+					if (list.data) {
+						wpPtr2 = list.data;
+
+						if (zCWaypoint_HasWay (wpPtr, wpPtr2)) {
+							orphaned = FALSE;
+							break;
+						};
+					};
+
+					ptr = list.next;
+				end;
+
+				if (orphaned) {
+					msg = ConcatStrings (" - orphan waypoint found: ", wpName);
+					zSpy_Info (msg);
+
+					issueCounter += 1;
+				};
+
+			};
+
+			i += 1;
+		end;
+	};
+
+	if (!issueCounter) {
+		zSpy_Info (" - no problematic waypoints found.");
+	};
+
+	MEM_StringArrayFree (susWaypointsListPtr);
+
+	zSpy_Info ("zCWaynet_CheckRoutes <--");
+};
+
 func void Vobs_CheckProperties () {
 	Game_CheckObjectRoutines ();
 	oCMob_CheckProperties ();
 	zCTrigger_CheckProperties ();
+	zCWaynet_CheckRoutes ();
 };
