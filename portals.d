@@ -90,11 +90,12 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
 			if (i == 0) {
 				//Re-insert object
 				vobPtr = InsertObject ("zCVob", "", visualName, _@ (trafo), 0);
-				zCVob_SetBBox3DLocal (vobPtr, bboxPtr);
 			} else {
 				//Insert empty vob
 				vobPtr = InsertObject ("zCVob", "", "", _@ (trafo), 0);
 			};
+
+			zCVob_SetBBox3DLocal (vobPtr, bboxPtr);
 
 			const int call = 0;
 			if (CALL_Begin(call)) {
