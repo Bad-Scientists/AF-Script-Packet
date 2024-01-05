@@ -106,6 +106,7 @@ func int Font_GetStringWidthPtr (var string s, var int fontPtr) {
 	var int letterDist; letterDist = zCFont_GetLetterDistance (fontPtr);
 	var int spaceWidth; spaceWidth = zCFont_GetWidth (fontPtr, CtoB (" "));
 
+	//Recalc width
 	var int buf; buf = STR_toChar (s);
 
 	var int c;

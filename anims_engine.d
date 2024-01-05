@@ -527,6 +527,45 @@ func void zCModelAniActive_DoCombineAni(var int modelAniActivePtr, var int model
 	};
 };
 
+func int oCAniCtrl_Human_IsInCombo (var int aniCtrlPtr) {
+	//0x00628350 public: int __thiscall oCAniCtrl_Human::IsInCombo(void)
+	const int oCAniCtrl_Human__IsInCombo_G1 = 6456144;
+
+	//0x006B1430 public: int __thiscall oCAniCtrl_Human::IsInCombo(void)
+	const int oCAniCtrl_Human__IsInCombo_G2 = 7017520;
+
+	if (!aniCtrlPtr) { return FALSE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__IsInCombo_G1, oCAniCtrl_Human__IsInCombo_G2));
+		call = CALL_End ();
+	};
+
+	return + retVal;
+};
+
+func void oCAniCtrl_Human_SetLookAtTarget (var int aniCtrlPtr, var int targetVob) {
+	//0x0062CE10 public: void __thiscall oCAniCtrl_Human::SetLookAtTarget(class zCVob *)
+	const int oCAniCtrl_Human__SetLookAtTarget_G1 = 6475280;
+
+	//0x006B6490 public: void __thiscall oCAniCtrl_Human::SetLookAtTarget(class zCVob *)
+	const int oCAniCtrl_Human__SetLookAtTarget_G2 = 7038096;
+
+	//Safety check
+	if (!aniCtrlPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PtrParam (_@ (targetVob));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__SetLookAtTarget_G1, oCAniCtrl_Human__SetLookAtTarget_G2));
+		call = CALL_End ();
+	};
+};
+
 func void oCAniCtrl_Human_StopLookAtTarget (var int aniCtrlPtr) {
 	//0x0062CF70 public: void __thiscall oCAniCtrl_Human::StopLookAtTarget(void)
 	const int oCAniCtrl_Human__StopLookAtTarget_G1 = 6475632;
@@ -754,12 +793,8 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
 	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
 	if (aniID == -1) { return ""; };
 
-	// getting animation ptr
-	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
-
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
-	//zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
@@ -802,11 +837,8 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 	var int aniID; aniID = zCModel_GetAniIDFromAniName(modelPtr, aniName);
 	if (aniID == -1) { return ""; };
 
-	// getting animation ptr
-	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
-
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 
 	// get aniActivePtr of our, now running, animation
 	var int aniActivePtr; aniActivePtr = zCModel_GetActiveAni_ByAniID(modelPtr, aniID);
@@ -819,6 +851,9 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
 
 	// advance anis
 	zCModel_AdvanceAnis (modelPtr);
+
+	// change ani frame to specified value
+	zCModelAniActive_SetActFrame (aniActivePtr, aniFrame);
 
 	// This section returns string -> message (for console or zSpy output)
 	var string mes;
@@ -855,6 +890,11 @@ func void NPC_AdvanceAnis (var int slfInstance) {
 func int NPC_IsAniActive_ByAniName (var int slfInstance, var string aniName) {
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
 	return +zCModel_IsAniActive_ByAniName (modelPtr, aniName);
+};
+
+func int NPC_IsAniActive_ByID (var int slfInstance, var int aniID) {
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	return +zCModel_IsAniActive_ByAniID (modelPtr, aniID);
 };
 
 /*

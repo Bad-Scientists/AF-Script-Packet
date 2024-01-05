@@ -29,13 +29,16 @@ func int zCEventMessage_GetSubType (var int eMsg) {
 
 	if (!Hlp_Is_zCEventMessage (eMsg)) { return -1; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
 		CALL__thiscall (_@ (eMsg), MEMINT_SwitchG1G2 (zCEventMessage__GetSubType_G1, zCEventMessage__GetSubType_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsInt ();
+	return + (retVal & 255);
 };
 
 //---
@@ -953,15 +956,19 @@ func int zCVob_GetEM (var int vobPtr) {
 
 	if (!vobPtr) { return 0; };
 
-	var int f; f = false;
+	//TODO: do we want to create EM by default?
+	const int dontCreate = 0; //FALSE
+
+	var int retVal; retVal = 0;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(vobPtr), _@(f), MEMINT_SwitchG1G2 (zCVob__GetEM_G1, zCVob__GetEM_G2));
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__fastcall(_@(vobPtr), _@(dontCreate), MEMINT_SwitchG1G2 (zCVob__GetEM_G1, zCVob__GetEM_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr ();
+	return + retVal;
 };
 
 /*
@@ -981,9 +988,7 @@ func void zCEventManager_OnTouch (var int eMgr, var int vobPtr) {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTouch_G1, zCEventManager__OnTouch_G2));
-
 		call = CALL_End();
 	};
 };
@@ -1001,14 +1006,12 @@ func void zCEventManager_OnUntouch (var int eMgr, var int vobPtr) {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUntouch_G1, zCEventManager__OnUntouch_G2));
-
 		call = CALL_End();
 	};
 };
 
-func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
+func void zCEventManager_OnTrigger (var int eMgr, var int otherVobPtr, var int vobInstigatorPtr) {
 	//0x006DE760 public: virtual void __thiscall zCEventManager::OnTrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnTrigger_G1 = 7202656;
 
@@ -1016,20 +1019,17 @@ func void zCEventManager_OnTrigger (var int eMgr, var int vobPtr) {
 	const int zCEventManager__OnTrigger_G2 = 7895536;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!vobPtr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
+		CALL_PtrParam(_@(otherVobPtr));
+		CALL_PtrParam(_@(vobInstigatorPtr));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnTrigger_G1, zCEventManager__OnTrigger_G2));
-
 		call = CALL_End();
 	};
 };
 
-func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
+func void zCEventManager_OnUnTrigger (var int eMgr, var int otherVobPtr, var int vobInstigatorPtr) {
 	//0x006DE820 public: virtual void __thiscall zCEventManager::OnUntrigger(class zCVob *,class zCVob *)
 	const int zCEventManager__OnUnTrigger_G1 = 7202848;
 
@@ -1037,15 +1037,12 @@ func void zCEventManager_OnUnTrigger (var int eMgr, var int vobPtr) {
 	const int zCEventManager__OnUnTrigger_G2 = 7895728;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!vobPtr) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PtrParam(_@(vobPtr));
-		CALL_PutRetValTo(0);
+		CALL_PtrParam(_@(otherVobPtr));
+		CALL_PtrParam(_@(vobInstigatorPtr));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__OnUnTrigger_G1, zCEventManager__OnUnTrigger_G2));
-
 		call = CALL_End();
 	};
 };
@@ -1169,9 +1166,49 @@ func void zCEventManager_SetActive (var int eMgr, var int on) {
 	if (CALL_Begin(call)) {
 		CALL_PtrParam(_@(on));
 		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2 (zCEventManager__SetActive_G1, zCEventManager__SetActive_G2));
+		call = CALL_End();
+	};
+};
+
+func void oCNpcMessage_SetInUse (var int eMsg, var int inUse) {
+	//0x006BBEA0 public: virtual void __thiscall oCNpcMessage::SetInUse(int)
+	const int oCNpcMessage__SetInUse_G1 = 7061152;
+
+	//0x00763110 public: virtual void __thiscall oCNpcMessage::SetInUse(int)
+	const int oCNpcMessage__SetInUse_G2 = 7745808;
+
+	if (!Hlp_Is_oCNpcMessage (eMsg)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(inUse));
+		CALL__thiscall(_@(eMsg), MEMINT_SwitchG1G2 (oCNpcMessage__SetInUse_G1, oCNpcMessage__SetInUse_G2));
 
 		call = CALL_End();
 	};
+};
+
+func int oCNpcMessage_IsInUse (var int eMsg) {
+	//0x006BBEC0 public: virtual int __thiscall oCNpcMessage::IsInUse(void)
+	const int oCNpcMessage__IsInUse_G1 = 7061184;
+
+	//0x00763130 public: virtual int __thiscall oCNpcMessage::IsInUse(void)
+	const int oCNpcMessage__IsInUse_G2 = 7745840;
+
+	if (!Hlp_Is_oCNpcMessage (eMsg)) { return FALSE; };
+
+	var int retVal; retVal = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		//CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall(_@(eMsg), MEMINT_SwitchG1G2 (oCNpcMessage__IsInUse_G1, oCNpcMessage__IsInUse_G2));
+		call = CALL_End();
+	};
+
+	return CALL_RetValAsInt ();
+
+	return + retVal;
 };
 
 /*
@@ -1231,10 +1268,6 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 
 	var int subType; subType = zCEventMessage_GetSubType (eMsg);
 	if (subType == -1) { return -1; };
-
-	//Convert to Unsigned short
-	subType = subType << 16;
-	subType = subType >> 16;
 
 	return subType;
 };

@@ -58,7 +58,6 @@ keys.d
 vectors.d
 vobFunctions.d
 
-vobFunctions.d
 spatialState.d
 
 ScriptBin\insertAnything.d
@@ -87,10 +86,13 @@ ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
 
+zError_engine.d
+
 mobFunctions.d
 
 anims_engine.d
 
+ou.d
 infoManager.d
 
 eventManager.d
@@ -99,14 +101,13 @@ functions_oCMobInter_engine.d
 
 view.d
 
+functions_oCItem.d
 inventory_oCNPC.d
 
 functions_oCNpc_engine.d
 functions_NPC.d
 
 functions_PC.d
-
-functions_oCItem.d
 
 inventory_oCMob.d
 
@@ -121,8 +122,6 @@ world_engine.d
 game_engine.d
 
 portals.d
-
-zError_engine.d
 
 view.d
 

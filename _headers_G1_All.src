@@ -7,7 +7,9 @@ hlp_functions.d
 EngineClasses_G1\oSDamageDescriptor.d
 EngineClasses_G1\oInventory.d
 EngineClasses_G1\zEventMan.d
-EngineClasses_G1\zCCsCutscene.d
+
+EngineClasses_G1\zCCSBlock.d
+
 EngineClasses_G1\zCViewDialog.d
 EngineClasses_G1\zModel.d
 EngineClasses_G1\oSpell.d
@@ -90,9 +92,14 @@ ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
 
+zError_engine.d
+
 mobFunctions.d
 
 anims_engine.d
+
+ou.d
+infoManager.d
 
 eventManager.d
 
@@ -100,6 +107,7 @@ functions_oCMobInter_engine.d
 
 view.d
 
+functions_oCItem.d
 inventory_oCNPC.d
 
 functions_oCNPC_engine.d
@@ -113,8 +121,6 @@ game_Events_G12.d
 
 consoleCommands.d
 
-infoManager.d
-
 inventory_oCMob.d
 inventory_sorting_logic_G1.d
 
@@ -122,14 +128,10 @@ functions_oCNpc_engine.d
 functions_NPC.d
 functions_PC.d
 
-functions_oCItem.d
-
 world_engine.d
 game_engine.d
 
 portals.d
-
-zError_engine.d
 
 bars.d
 

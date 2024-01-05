@@ -69,14 +69,17 @@ func int oCItem_HasFlag (var int itemPtr, var int flag){
 
 	if (!itemPtr) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
 		CALL_IntParam (_@ (flag));
 		CALL__thiscall (_@ (itemPtr), MEMINT_SwitchG1G2(oCItem__HasFlag_G1, oCItem__HasFlag_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsInt();
+	return + retVal;
 };
 
 /*

@@ -282,3 +282,41 @@ func int Npc_SpellTransformTo (var int slfInstance, var int instanceID) {
 	//Function returns FALSE if spell was casted properly - thus negate
 	return !oCSpell_CastSpecificSpell (spellPtr);
 };
+
+/*
+ *	oCVisualFX_SetSpellType
+ *	 - updates spell ID for vfx effect
+ */
+func void oCVisualFX_SetSpellType (var int vfxPtr, var int spellID) {
+	//0x00482750 public: virtual void __thiscall oCVisualFX::SetSpellType(int)
+	const int oCVisualFX__SetSpellType_G1 = 4728656;
+
+	//0x0048A170 public: virtual void __thiscall oCVisualFX::SetSpellType(int)
+	const int oCVisualFX__SetSpellType_G2 = 4759920;
+
+	if (!Hlp_Is_oCVisualFX (vfxPtr)) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (spellID));
+		CALL__thiscall (_@ (vfxPtr), MEMINT_SwitchG1G2 (oCVisualFX__SetSpellType_G1, oCVisualFX__SetSpellType_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	Wld_PlayEffect_Ext
+ *	 - same as Wld_PlayEffect ... but it also setups spell ID! Thus B_AssessMagic will be called properly (in G2 NOTR) for Npc 'hit' by played effect
+ */
+func void Wld_PlayEffect_Ext (var string effectName, var int originPtr, var int targetPtr, var int effectLevel, var int damage, var int damageType, var int bIsProjectile, var int spellID) {
+	//Wld_PlayEffect requires instances, thus using pointers in order to be compatible with zCVobs and oCNpcs
+	var zCVob originVob; originVob = _^ (originPtr);
+	var zCVob targetVob; targetVob = _^ (targetPtr);
+
+	Wld_PlayEffect (effectName, originVob, targetVob, effectLevel, damage, damageType, bIsProjectile);
+
+	var zCTree newTreeNode; newTreeNode = _^ (MEM_World.globalVobTree_firstChild);
+	var int vfxPtr; vfxPtr = newTreeNode.data;
+
+	oCVisualFX_SetSpellType (vfxPtr, spellID);
+};

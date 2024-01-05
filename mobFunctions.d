@@ -165,7 +165,7 @@ func int oCMobInter_GetHitPoints (var int mobPtr) {
 	if (!Hlp_Is_oCMobInter (mobPtr)) { return 0; };
 
 	mob = _^ (mobPtr);
-	return (oCMob_bitfield_hitp & mob._oCMob_bitfield);
+	return (mob._oCMob_bitfield & oCMob_bitfield_hitp);
 };
 
 /*

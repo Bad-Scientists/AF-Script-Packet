@@ -185,16 +185,16 @@ func int STR_IndexOfFrom (var string str, var string tok, var int startFrom) {
 };
 
 /*
- *	Converts char to byte value, 'A' to 64, 'a' to 96
+ *	Converts char to byte value, 'A' to 65, 'a' to 97
  */
 func int CtoB (var string s) {
 	var int buf; buf = STR_toChar (s);
-	var int chr; chr = MEM_ReadByte (buf);
+	var int chr; chr = MEM_ReadInt (buf) & 255;
 	return chr;
 };
 
 /*
- *	Converts byte back to char, 96 to 'a', 64 to 'A'
+ *	Converts byte back to char, 97 to 'a', 65 to 'A'
  */
 func string BtoC (var int i) {
 	const int mem = 0;
@@ -274,15 +274,24 @@ func int STR_IsNumeric (var string s) {
  *	ConcatStrings
  */
 func string Concat3Strings (var string s1, var string s2, var string s3) {
-	return ConcatStrings(ConcatStrings(s1, s2), s3);
+	var string s; s = ConcatStrings (s1, s2);
+	s = ConcatStrings (s, s3);
+	return s;
 };
 
 func string Concat4Strings (var string s1, var string s2, var string s3, var string s4) {
-	return ConcatStrings(Concat3Strings(s1, s2, s3), s4);
+	var string s; s = ConcatStrings (s1, s2);
+	s = ConcatStrings (s, s3);
+	s = ConcatStrings (s, s4);
+	return s;
 };
 
 func string Concat5Strings (var string s1, var string s2, var string s3, var string s4, var string s5) {
-	return ConcatStrings(Concat4Strings(s1, s2, s3, s4), s5);
+	var string s; s = ConcatStrings (s1, s2);
+	s = ConcatStrings (s, s3);
+	s = ConcatStrings (s, s4);
+	s = ConcatStrings (s, s5);
+	return s;
 };
 
 /*
@@ -295,11 +304,9 @@ func void MEM_StringArrayFree (var int arrPtr) {
 	var zCArray arr; arr = _^ (arrPtr);
 
 	var int ptr;
-	var string t;
 
 	repeat (i, arr.numInArray); var int i;
 		ptr = MEM_ArrayRead (arrPtr, i);
-
 		MEM_Free (ptr);
 	end;
 
@@ -312,6 +319,17 @@ func void MEM_StringArrayInsert (var int arrPtr, var string s) {
 
 	MEM_ArrayInsert (arrPtr, ptr);
 };
+
+func void MEM_StringArrayRemoveIndex (var int arrPtr, var int index) {
+	if (!arrPtr) { return; };
+	var zCArray arr; arr = _^ (arrPtr);
+
+	var int ptr; ptr = MEM_ArrayRead (arrPtr, index);
+	MEM_Free (ptr);
+
+	MEM_ArrayRemoveIndex (arrPtr, index);
+};
+
 
 func int MEM_StringArrayContains (var int arrPtr, var string s) {
 	if (!arrPtr) { return FALSE; };
@@ -418,7 +436,7 @@ func string STR_NotLeft (var string s, var int count) {
 
 	return mySTR_SubStr (s, count, len - count);
 };
- 
+
 /*
  *  STR_NotRight
  *   - Get substring by cutting `count` chars from right
@@ -450,7 +468,7 @@ func string STR_format_S(var string source, var string arg)
 func string STR_format_I(var string source, var int arg)
 {
     var string arg_i; arg_i = IntToString(arg);
-    
+
     return STR_ReplaceOnce(source, STR_format_CONST_I, arg_i);
 };
 
@@ -460,7 +478,7 @@ func string STR_format_I(var string source, var int arg)
 func string STR_format_SS(var string source, var string arg1, var string arg2)
 {
     var string s; s = STR_format_S(source, arg1);
-    
+
     return STR_format_S(s, arg2);
 };
 
@@ -468,7 +486,7 @@ func string STR_format_SS(var string source, var string arg1, var string arg2)
 func string STR_format_SI(var string source, var string arg1, var int arg2)
 {
     var string s; s = STR_format_S(source, arg1);
-    
+
     return STR_format_I(s, arg2);
 };
 
@@ -476,7 +494,7 @@ func string STR_format_SI(var string source, var string arg1, var int arg2)
 func string STR_format_IS(var string source, var int arg1, var string arg2)
 {
     var string s; s = STR_format_I(source, arg1);
-    
+
     return STR_format_S(s, arg2);
 };
 
@@ -484,7 +502,7 @@ func string STR_format_IS(var string source, var int arg1, var string arg2)
 func string STR_format_II(var string source, var int arg1, var int arg2)
 {
     var string s; s = STR_format_I(source, arg1);
-    
+
     return STR_format_I(s, arg2);
 };
 
@@ -494,7 +512,7 @@ func string STR_format_II(var string source, var int arg1, var int arg2)
 func string STR_format_SSS(var string source, var string arg1, var string arg2, var string arg3)
 {
     var string s; s = STR_format_SS(source, arg1, arg2);
-    
+
     return STR_format_S(s, arg3);
 };
 
@@ -502,7 +520,7 @@ func string STR_format_SSS(var string source, var string arg1, var string arg2, 
 func string STR_format_SSI(var string source, var string arg1, var string arg2, var int arg3)
 {
     var string s; s = STR_format_SS(source, arg1, arg2);
-    
+
     return STR_format_I(s, arg3);
 };
 
@@ -510,7 +528,7 @@ func string STR_format_SSI(var string source, var string arg1, var string arg2, 
 func string STR_format_SIS(var string source, var string arg1, var int arg2, var string arg3)
 {
     var string s; s = STR_format_SI(source, arg1, arg2);
-    
+
     return STR_format_S(s, arg3);
 };
 
@@ -518,7 +536,7 @@ func string STR_format_SIS(var string source, var string arg1, var int arg2, var
 func string STR_format_SII(var string source, var string arg1, var int arg2, var int arg3)
 {
     var string s; s = STR_format_SI(source, arg1, arg2);
-    
+
     return STR_format_I(s, arg3);
 };
 
@@ -526,7 +544,7 @@ func string STR_format_SII(var string source, var string arg1, var int arg2, var
 func string STR_format_ISS(var string source, var int arg1, var string arg2, var string arg3)
 {
     var string s; s = STR_format_IS(source, arg1, arg2);
-    
+
     return STR_format_S(s, arg3);
 };
 
@@ -534,7 +552,7 @@ func string STR_format_ISS(var string source, var int arg1, var string arg2, var
 func string STR_format_ISI(var string source, var int arg1, var string arg2, var int arg3)
 {
     var string s; s = STR_format_IS(source, arg1, arg2);
-    
+
     return STR_format_I(s, arg3);
 };
 
@@ -542,7 +560,7 @@ func string STR_format_ISI(var string source, var int arg1, var string arg2, var
 func string STR_format_IIS(var string source, var int arg1, var int arg2, var string arg3)
 {
     var string s; s = STR_format_II(source, arg1, arg2);
-    
+
     return STR_format_S(s, arg3);
 };
 
@@ -550,7 +568,7 @@ func string STR_format_IIS(var string source, var int arg1, var int arg2, var st
 func string STR_format_III(var string source, var int arg1, var int arg2, var int arg3)
 {
     var string s; s = STR_format_II(source, arg1, arg2);
-    
+
     return STR_format_I(s, arg3);
 };
 
@@ -560,7 +578,7 @@ func string STR_format_III(var string source, var int arg1, var int arg2, var in
 func string STR_format_SSSS(var string source, var string arg1, var string arg2, var string arg3, var string arg4)
 {
     var string s; s = STR_format_SSS(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -568,7 +586,7 @@ func string STR_format_SSSS(var string source, var string arg1, var string arg2,
 func string STR_format_SSSI(var string source, var string arg1, var string arg2, var string arg3, var int arg4)
 {
     var string s; s = STR_format_SSS(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -576,7 +594,7 @@ func string STR_format_SSSI(var string source, var string arg1, var string arg2,
 func string STR_format_SSIS(var string source, var string arg1, var string arg2, var int arg3, var string arg4)
 {
     var string s; s = STR_format_SSI(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -584,7 +602,7 @@ func string STR_format_SSIS(var string source, var string arg1, var string arg2,
 func string STR_format_SSII(var string source, var string arg1, var string arg2, var int arg3, var int arg4)
 {
     var string s; s = STR_format_SSI(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -592,7 +610,7 @@ func string STR_format_SSII(var string source, var string arg1, var string arg2,
 func string STR_format_SISS(var string source, var string arg1, var int arg2, var string arg3, var string arg4)
 {
     var string s; s = STR_format_SIS(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -600,7 +618,7 @@ func string STR_format_SISS(var string source, var string arg1, var int arg2, va
 func string STR_format_SISI(var string source, var string arg1, var int arg2, var string arg3, var int arg4)
 {
     var string s; s = STR_format_SIS(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -608,7 +626,7 @@ func string STR_format_SISI(var string source, var string arg1, var int arg2, va
 func string STR_format_SIIS(var string source, var string arg1, var int arg2, var int arg3, var string arg4)
 {
     var string s; s = STR_format_SII(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -616,7 +634,7 @@ func string STR_format_SIIS(var string source, var string arg1, var int arg2, va
 func string STR_format_SIII(var string source, var string arg1, var int arg2, var int arg3, var int arg4)
 {
     var string s; s = STR_format_SII(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -624,7 +642,7 @@ func string STR_format_SIII(var string source, var string arg1, var int arg2, va
 func string STR_format_ISSS(var string source, var int arg1, var string arg2, var string arg3, var string arg4)
 {
     var string s; s = STR_format_ISS(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -632,7 +650,7 @@ func string STR_format_ISSS(var string source, var int arg1, var string arg2, va
 func string STR_format_ISSI(var string source, var int arg1, var string arg2, var string arg3, var int arg4)
 {
     var string s; s = STR_format_ISS(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -640,7 +658,7 @@ func string STR_format_ISSI(var string source, var int arg1, var string arg2, va
 func string STR_format_ISIS(var string source, var int arg1, var string arg2, var int arg3, var string arg4)
 {
     var string s; s = STR_format_ISI(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -648,7 +666,7 @@ func string STR_format_ISIS(var string source, var int arg1, var string arg2, va
 func string STR_format_ISII(var string source, var int arg1, var string arg2, var int arg3, var int arg4)
 {
     var string s; s = STR_format_ISI(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -656,7 +674,7 @@ func string STR_format_ISII(var string source, var int arg1, var string arg2, va
 func string STR_format_IISS(var string source, var int arg1, var int arg2, var string arg3, var string arg4)
 {
     var string s; s = STR_format_IIS(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -664,7 +682,7 @@ func string STR_format_IISS(var string source, var int arg1, var int arg2, var s
 func string STR_format_IISI(var string source, var int arg1, var int arg2, var string arg3, var int arg4)
 {
     var string s; s = STR_format_IIS(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
 };
 
@@ -672,7 +690,7 @@ func string STR_format_IISI(var string source, var int arg1, var int arg2, var s
 func string STR_format_IIIS(var string source, var int arg1, var int arg2, var int arg3, var string arg4)
 {
     var string s; s = STR_format_III(source, arg1, arg2, arg3);
-    
+
     return STR_format_S(s, arg4);
 };
 
@@ -680,6 +698,39 @@ func string STR_format_IIIS(var string source, var int arg1, var int arg2, var i
 func string STR_format_IIII(var string source, var int arg1, var int arg2, var int arg3, var int arg4)
 {
     var string s; s = STR_format_III(source, arg1, arg2, arg3);
-    
+
     return STR_format_I(s, arg4);
+};
+
+//--
+
+func int STR_Count (var string s, var string s1) {
+	var int len; len = STR_Len (s);
+	var int buf; buf = STR_toChar (s);
+
+	var int c; c = STR_toChar (s1);
+	c = MEM_ReadInt (c) & 255;
+
+	var int index; index = 0;
+
+	if (!len) { return 0; };
+
+	var int count; count = 0;
+
+	while (index < len);
+		var int chr; chr = MEM_ReadInt(buf + index) & 255;
+
+		if (c == chr) {
+			count += 1;
+		};
+
+		index += 1;
+	end;
+
+	return count;
+};
+
+func void testSCount () {
+	PrintS (IntToString (STR_Count ("Ahoj ako sa mas?", " ")));
+	PrintS (BtoC (97));
 };

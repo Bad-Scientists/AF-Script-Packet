@@ -318,19 +318,22 @@ func void SetFontColor (var int col) {
 	//0x007A9910 public: void __thiscall zCView::SetFontColor(struct zCOLOR const &)
 	const int zCView__SetFontColor_G2 = 8034576;
 
-	var int ptr; ptr = MEM_Alloc (4);
-	MEM_WriteInt (ptr, col);
+	const int colorPtr = 0;
+
+	if (!colorPtr) {
+		colorPtr = MEM_Alloc (4);
+	};
+
+	MEM_WriteInt (colorPtr, col);
 
 	var int screenPtr; screenPtr = MEM_ReadInt (screen_offset);
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (ptr));
+		CALL_PtrParam (_@ (colorPtr));
 		CALL__thiscall (_@ (screenPtr), MEMINT_SwitchG1G2 (zCView__SetFontColor_G1, zCView__SetFontColor_G2));
 		call = CALL_End();
 	};
-
-	MEM_Free (ptr);
 };
 
 func string GetSymbolName (var int symbolIndex) {
@@ -401,4 +404,11 @@ func MEMINT_HelperClass Hlp_GetAliveNPC (var int slfInstanceID) {
 	MEM_AssignInstSuppressNullWarning = TRUE;
 	MEM_PtrToInst (ptr);
 	MEM_AssignInstSuppressNullWarning = FALSE;
+};
+
+func void MEM_WriteNOP (var int addr, var int len) {
+	MemoryProtectionOverride (addr, len);
+	repeat (i, len); var int i;
+		MEM_WriteByte (addr + i, ASMINT_OP_nop);
+	end;
 };

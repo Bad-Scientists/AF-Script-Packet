@@ -200,7 +200,7 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	indexWildcard = STR_IndexOf (rtnName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
 
 		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
@@ -209,7 +209,7 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	return + (Hlp_StrCmp (rtnName, curRtnName));
 };
 
-func string NPC_GetAIStateName (var int slfInstance) {
+func string NPC_GetStartAIStateName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 
 	if (!Hlp_IsValidNPC (slf)) { return ""; };
@@ -220,7 +220,6 @@ func string NPC_GetAIStateName (var int slfInstance) {
 	//var func startAIState;	//G2	0x0264 int
 
 	var int offset; offset = MEMINT_SwitchG1G2 (540, 612);
-
 	var int symbID; symbID = MEM_ReadInt (ptr + offset);
 
 	if (symbID > 0) && (symbID < currSymbolTableLength) {
@@ -229,6 +228,13 @@ func string NPC_GetAIStateName (var int slfInstance) {
 	};
 
 	return "";
+};
+
+func string NPC_GetCurrentAIStateName (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	return slf.state_curState_name;
 };
 
 func int NPC_IsInActiveVobList (var int slfInstance) {
@@ -812,21 +818,15 @@ func int NPC_GetDistToPos (var int slfInstance, var int posPtr) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
 
-	//Backup soundPosition
 	var int pos[3];
-	MEM_CopyBytes (_@ (slf.soundPosition), _@ (pos[0]), 12);
+	pos[0] = slf._zCVob_trafoObjToWorld [03];
+	pos[1] = slf._zCVob_trafoObjToWorld [07];
+	pos[2] = slf._zCVob_trafoObjToWorld [11];
 
-	slf.soundPosition[0] = MEM_ReadIntArray (posPtr, 0);
-	slf.soundPosition[1] = MEM_ReadIntArray (posPtr, 1);
-	slf.soundPosition[2] = MEM_ReadIntArray (posPtr, 2);
+	var int dir[3];
+	SubVectors (_@ (dir), _@ (pos), posPtr);
 
-	//We will exploit this engine function to calculate
-	var int dist; dist = Snd_GetDistToSource (slf);
-
-	//Restore soundPosition
-	MEM_CopyBytes (_@ (pos[0]), _@ (slf.soundPosition), 12);
-
-	return dist;
+	return roundf (zVEC3_LengthApprox (_@ (dir)));
 };
 
 /*
@@ -835,18 +835,14 @@ func int NPC_GetDistToPos (var int slfInstance, var int posPtr) {
 func int NPC_GetDistToVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return -1; };
 
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return -1; };
-
 	var zCVob vob; vob = _^ (vobPtr);
 
 	var int pos[3];
-	//TrfToPos (_@(vob.trafoObjToWorld), _@ (pos));
-	MEM_WriteIntArray(_@ (pos), 0, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  3));
-	MEM_WriteIntArray(_@ (pos), 1, MEM_ReadIntArray(_@(vob.trafoObjToWorld),  7));
-	MEM_WriteIntArray(_@ (pos), 2, MEM_ReadIntArray(_@(vob.trafoObjToWorld), 11));
+	pos[0] = vob.trafoObjToWorld [03];
+	pos[1] = vob.trafoObjToWorld [07];
+	pos[2] = vob.trafoObjToWorld [11];
 
-	return + NPC_GetDistToPos (slf, _@ (pos));
+	return + NPC_GetDistToPos (slfInstance, _@ (pos));
 };
 
 func int NPC_GetShowAI (var int slfInstance) {
@@ -944,6 +940,8 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
 
+	if (!STR_Len (stateName)) { return TRUE; };
+
 	stateName = STR_Upper (stateName);
 
 	//We will allow single wild-card '*'
@@ -951,7 +949,7 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	indexWildcard = STR_IndexOf (stateName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
 
 		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
@@ -976,7 +974,7 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 	indexWildcard = STR_IndexOf (stateName, "*");
 
 	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard - 1);
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
 		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
 
 		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
@@ -1219,6 +1217,10 @@ func void Npc_EndCurrentState (var int slfInstance) {
 	};
 };
 
+/*
+ *	Npc_InitAIStateDriven
+ *	 - updates oCNpc.state_aiStatePosition to specified position and oCNpc.wp to nearest waypoint
+ */
 func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
 	//0x006C7350 public: void __thiscall oCNpc_States::InitAIStateDriven(class zVEC3 const &)
 	const int oCNpc_States__InitAIStateDriven_G1 = 7107408;
@@ -1289,6 +1291,7 @@ func void Npc_BeamToKeepQueue (var int slfInstance, var string vobName) {
 /*
  *	Npc_HasAni
  *	 - function loops through EM and checks if aniName is in AI queue
+ *	 - function returns number of EM messages with specified aniName
  */
 func int Npc_HasAni (var int slfInstance, var string aniName) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
@@ -1300,6 +1303,7 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
 
 	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
 
 	//Loop through Event Messages
 	repeat (i, eventTotal); var int i;
@@ -1310,13 +1314,13 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 				var oCMsgConversation msg; msg = _^ (eMsg);
 
 				if (Hlp_StrCmp (msg.name, aniName)) {
-					return TRUE;
+					count += 1;
 				};
 			};
 		};
 	end;
 
-	return FALSE;
+	return count;
 };
 
 /*
@@ -1380,3 +1384,139 @@ func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	};
 };
 
+func string Npc_GetInteractMobName (var int slfInstance) {
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return ""; };
+
+	if (!Hlp_Is_oCMobInter (slf.interactMob)) { return ""; };
+
+	var oCMobInter mobInter; mobInter = _^ (slf.interactMob);
+	return mobInter._zCObject_objectName;
+};
+
+func int Npc_IsFlying (var int slfInstance) {
+	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	if (!modelPtr) { return FALSE; };
+	var zCModel model; model = _^ (modelPtr);
+
+	const int zCModel_bitfield_isFlying = 2;
+	return + (model.zCModel_bitfield & zCModel_bitfield_isFlying);
+};
+
+func void Npc_StopLookAt (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	var int count; count = NPC_EM_GetEventCount (slf);
+
+	//Delete all EV_LOOKAT messages from EM
+	repeat (i, count); var int i;
+		var int eventMessage; eventMessage = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eventMessage)) {
+			//TODO: can EV_WAITTILLEND wait for EV_LOOKAT message? (if it can - will it freeze AI?)
+			if (zCEventMessage_GetSubType (eventMessage) == EV_LOOKAT) {
+				//zCEventMessage_Delete (eventMessage);
+				zCEventManager_Delete (eMgr, eventMessage);
+				i -= 1;
+			};
+		};
+	end;
+
+	//We **have to remove** pointer - as message was certainly deleted by above loop
+	slf.lastLookMsg = 0;
+
+	//Stop look at animations
+	oCAniCtrl_Human_StopLookAtTarget (slf.aniCtrl);
+
+	//TODO: do we want to remove targetVob?
+	//oCAniCtrl_Human_SetLookAtTarget (slf.aniCtrl, 0);
+};
+
+func int Npc_IsControlled (var int slfInstance) {
+	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_CONTROLLED);
+};
+
+func int NPC_IsTransformed (var int slfInstance) {
+	return + oCNPC_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
+};
+
+/*
+ *	Npc_HasAnyOU
+ *	 - function loops through EM and checks if there are any EV_OUTPUT event messages in AI queue
+ */
+func int Npc_HasAnyOU (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			var int subType; subType = zCEventMessage_GetSubType (eMsg);
+			if (subType == EV_OUTPUT)
+			|| (subType == EV_OUTPUTSVM)
+			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			{
+				count += 1;
+			};
+		};
+	end;
+
+	return count;
+};
+
+/*
+ *	Npc_HasOU
+ *	 - function loops through EM and checks if there are any EV_OUTPUT event messages in AI queue
+ */
+func int Npc_HasOU (var int slfInstance, var int ou) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!Hlp_Is_zCEventManager (eMgr)) { return FALSE; };
+
+	var int eventTotal; eventTotal = zCEventManager_GetNumMessages (eMgr);
+	var int count; count = 0;
+
+	//Loop through Event Messages
+	repeat (i, eventTotal); var int i;
+		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
+
+		if (Hlp_Is_oCMsgConversation (eMsg)) {
+			var int subType; subType = zCEventMessage_GetSubType (eMsg);
+			if (subType == EV_OUTPUT)
+			|| (subType == EV_OUTPUTSVM)
+			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			{
+				var oCMsgConversation msg; msg = _^ (eMsg);
+
+				var string name; name = msg.name;
+
+				var int index; index = STR_IndexOf (name, ".");
+				if (index > -1) {
+					name = mySTR_SubStr (name, 0, index);
+				};
+
+				zSpy_Info (slf.Name);
+				zSpy_Info (name);
+
+				if (zCCSManager_LibValidateOU_ByName (name) == ou) {
+					return TRUE;
+				};
+			};
+		};
+	end;
+
+	return FALSE;
+};

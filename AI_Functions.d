@@ -171,6 +171,45 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 };
 
 /*
+ *	AI_GotoPos_Ext
+ *	 - same as AI_GotoPos, but allows us to define maxTargetDist
+ */
+func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTargetDist) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!posPtr) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, "", 0, posPtr, mkf (0), 0);
+
+	//Init robust trace
+	oCNpc_RbtInit (slfInstance, posPtr, 0);
+
+	//Setup additional parameters for robust trace
+
+	//Define locally (G1 class def has different naming convention than the one in G2A ... values are same though)
+	const int oTRobustTrace_bitfield_exactPosition        = ((1 << 1) - 1) << 2;
+	const int oTRobustTrace_bitfield_standIfTargetReached = ((1 << 1) - 1) << 4;
+
+	//const int oCNpc_oTRobustTrace_bitfield_exactPosition        = ((1 << 1) - 1) << 2;
+	//const int oCNpc_oTRobustTrace_bitfield_standIfTargetReached = ((1 << 1) - 1) << 4;
+
+	slf.rbt_bitfield = slf.rbt_bitfield | oTRobustTrace_bitfield_standIfTargetReached;
+	slf.rbt_bitfield = slf.rbt_bitfield & ~ oTRobustTrace_bitfield_exactPosition;
+	slf.rbt_maxTargetDist = mkf (maxTargetDist * maxTargetDist);
+
+	//Set inUse
+	oCNpcMessage_SetInUse (eMsg, 1);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
  *	AI_GotoVobPtr_EvalWaynetUse
  *	 - function evaluates whether to use or not waynet system to navigate to vob (this way Npc should be behaving slightly more inteligent)
  *
@@ -249,11 +288,10 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	var int fromWpPtr; fromWpPtr = SearchWaypointByName (fromWp);
 	var int toWpPtr; toWpPtr = SearchWaypointByName (toWp);
 
-	var int routePtr;
-	routePtr = zCWayNet_FindRoute_Waypoints (fromWpPtr, toWpPtr, 0);
+	var int routePtr; routePtr = zCWayNet_FindRoute_Waypoints (fromWpPtr, toWpPtr, 0);
+	var int distWaynet; distWaynet = zCRoute_GetLength (routePtr); //float
+	zCRoute_Delete (routePtr);
 
-	var int distWaynet;
-	distWaynet = zCRoute_GetLength (routePtr); //float
 	distWaynet = RoundF (distWaynet);
 
 	var int isTooFar; isTooFar = (distWaynet > distToVobTolerance);
@@ -885,26 +923,6 @@ func void AI_MobSetIdealPosition (var int slfInstance) {
 };
 
 /*
- *	Same as AI_Function - but using EV_CALLSCRIPT ... do we need this? :thinking:
- *	Advantage - self is set to NPC, other is always player ...
- *	Disadvantage - we don't have any parameters here!
- */
-func void AI_CallFunc (var int slfInstance, var string funcName) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	//Create new message
-	funcName = STR_Upper (funcName);
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_CALLSCRIPT, funcName, 0, -1, "", "");
-
-	//Get Event Manager
-	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
-	//Add new msg to Event Manager
-	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
-};
-
-/*
  *	Same as AI_UseMob - but you can specify vob pointer
  */
 func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState) {
@@ -987,12 +1005,28 @@ func void AI_EquipItemPtr (var int slfInstance, var int vobPtr) {
 };
 
 /*
+ *	Allows item removal
+ */
+func void AI_DestroyInteractItem (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DESTROYINTERACTITEM, "", 0, 0, "", "");
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
  *	Unequips melee weapon using AI queue
  */
 func void AI_UnequipMeleeWeapon (var int slfInstance) {
 	var int itemPtr; itemPtr = oCNpc_GetEquippedMeleeWeapon (slfInstance);
 	if (itemPtr) {
-		//Equipping equipped item will unequip it :)
 		AI_EquipItemPtr (slfInstance, itemPtr);
 	};
 };
@@ -1003,7 +1037,6 @@ func void AI_UnequipMeleeWeapon (var int slfInstance) {
 func void AI_UnequipRangedWeapon (var int slfInstance) {
 	var int itemPtr; itemPtr = oCNpc_GetEquippedRangedWeapon (slfInstance);
 	if (itemPtr) {
-		//Equipping equipped item will unequip it :)
 		AI_EquipItemPtr (slfInstance, itemPtr);
 	};
 };
@@ -1029,6 +1062,16 @@ func void AI_DrawWeapon_Ext (var int slfInstance, var int targetMode, var int us
 };
 
 /*
+ *	Unequips armor using AI queue
+ */
+func void AI_UnequipArmorFromSlotName (var int slfInstance, var string slotName) {
+	var int itemPtr; itemPtr = oCNpc_GetSlotItem (slfInstance, slotName);
+	if (itemPtr) {
+		AI_EquipItemPtr (slfInstance, itemPtr);
+	};
+};
+
+/*
  *	AI_WhirlAroundToPos
  *	 - same as AI_WhirlAround, but allows us to use position
  */
@@ -1051,7 +1094,7 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 /*
  *	AI_ContinueState
  *	 - alternative for AI_ContinueRoutine, which also creates event messages: EV_STANDUP, EV_STOPLOOKAT, EV_STOPPOINTAT, EV_REMOVEWEAPON, EV_STARTSTATE
- *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogu to fight :)
+ *	 - I need this one for cutscene, where I don't want Npc to remove their weapons while switching from dialogue to fight :)
  *	 - this one only creates EV_STARTSTATE
  */
 func void AI_ContinueState (var int slfInstance) {
@@ -1188,7 +1231,7 @@ func void _AI_RemoveItemFromSlot (var string slotName) {
 	var int itemPtr; itemPtr = oCNpc_RemoveFromSlot_Fixed (self, slotName, 1, 1);
 	//var C_Item itm; itm = _^ (itemPtr);
 	//Wld_RemoveItem (itm);
-	RemoveoCVobSafe (itemPtr, 1);
+	RemoveoCVobSafe (itemPtr, 0);
 };
 
 func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
@@ -1219,7 +1262,7 @@ func void AI_RemoveItemFromSlot (var int slfInstance, var string slotName) {
 func void AI_TurnToVob (var int slfInstance, var string vobName) {
     var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-    
+
 	var int vobPtr; vobPtr = MEM_SearchVobByName (vobName);
 
 	if (vobPtr) {
@@ -1231,5 +1274,38 @@ func void AI_TurnToVob (var int slfInstance, var string vobName) {
 			var zCWaypoint wp; wp = _^ (wpPtr);
 			AI_TurnToPos (slfInstance, _@ (wp.pos));
 		};
+	};
+};
+
+func void _AI_DrawTorch () {
+	NPC_TorchSwitchOn (self);
+};
+
+func void AI_DrawTorch (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function (slf, _AI_DrawTorch);
+};
+
+func void _AI_RemoveTorch () {
+	NPC_TorchSwitchOff (self);
+};
+
+func void AI_RemoveTorch (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	AI_Function (slf, _AI_RemoveTorch);
+};
+
+func void AI_GotoNpc_Ext (var int slfInstance, var int othInstance, var int maxTargetDist) {
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
+	if (!Hlp_IsValidNPC (oth)) { return; };
+
+	var int pos[3];
+	if (zCVob_GetPositionWorldToPos (_@ (oth), _@ (pos))) {
+		AI_GotoPos_Ext (slf, _@ (pos), maxTargetDist);
 	};
 };

@@ -11,6 +11,40 @@ const int NPC_GAME_NORMAL = 0; //When player is taking item
 const int NPC_GAME_PLUNDER = 1; //When player is looting Npc
 const int NPC_GAME_STEAL = 2; //When player is stealing from Npc (in RM we won't have this situation)
 
+const string NPC_NODE_RIGHTHAND = "ZS_RIGHTHAND";
+const string NPC_NODE_LEFTHAND = "ZS_LEFTHAND";
+const string NPC_NODE_SWORD = "ZS_SWORD";
+const string NPC_NODE_LONGSWORD = "ZS_LONGSWORD";
+const string NPC_NODE_BOW = "ZS_BOW";
+const string NPC_NODE_CROSSBOW = "ZS_CROSSBOW";
+const string NPC_NODE_SHIELD = "ZS_SHIELD";
+const string NPC_NODE_HELMET = "ZS_HELMET";
+const string NPC_NODE_JAWS = "ZS_JAWS";
+const string NPC_NODE_TORSO = "ZS_TORSO";
+
+//fight mode
+const int NPC_WEAPON_NONE = 0;
+const int NPC_WEAPON_FIST = 1;
+const int NPC_WEAPON_DAG = 2;
+const int NPC_WEAPON_1HS = 3;
+const int NPC_WEAPON_2HS = 4;
+const int NPC_WEAPON_BOW = 5;
+const int NPC_WEAPON_CBOW = 6;
+const int NPC_WEAPON_MAG = 7;
+const int NPC_WEAPON_MAX = 8;
+
+//vob config
+const int zCONFIG_STATE_STAND = 0;
+const int zCONFIG_STATE_FLY = 1;
+const int zCONFIG_STATE_SLIDE = 2;
+const int zCONFIG_STATE_SWIM = 3;
+const int zCONFIG_STATE_DIVE = 4;
+
+//Light constants
+const int zVOBLIGHT_QUAL_HI = 0;
+const int zVOBLIGHT_QUAL_MID = 1;
+const int zVOBLIGHT_QUAL_FASTEST = 2;
+
 //Log constants
 const int LOG_STATUS_INVALID = -1;
 //const int LOG_DEFAULT = 0;
@@ -22,6 +56,9 @@ const int LOG_STATUS_INVALID = -1;
 const int LOG_SECTION_INVALID = -1;
 //const int LOG_MISSION = 0;
 //const int LOG_NOTE = 1;
+
+const int MAX_SAMPLES_POS = 50;
+const int MAX_SAMPLES_ROT = 100;
 
 const int MAX_CTRL_VOBS = 80;
 
@@ -43,6 +80,99 @@ const int zPLAYER_ROT_NONE = 1 << 14;
 const int zPLAYER_BEAMED = 1 << 15;
 //};
 
+//Body state modifiers
+/*
+//Already defined in Gothic
+const int BS_MOD_HIDDEN = 128;
+const int BS_MOD_DRUNK = 256;
+const int BS_MOD_NUTS = 512;
+const int BS_MOD_BURNING = 1024;
+const int BS_MOD_CONTROLLED = 2048;
+const int BS_MOD_TRANSFORMED = 4096;
+*/
+const int BS_MOD_CONTROLLING = 8192;
+
+/*
+ *	Camera modes
+ */
+
+/*
+G1
+0x00869F98 class zSTRING CamModMobLadder
+0x00869FAC class zSTRING CamModDialog
+0x00869FC4 class zSTRING CamModLookBack
+0x00869FDC class zSTRING CamModDeath
+0x00869FF0 class zSTRING CamModRangedShrt
+0x0086A004 class zSTRING CamModDive
+0x0086A018 class zSTRING CamModShoulder
+0x0086A02C class zSTRING CamModRanged
+0x0086A040 class zSTRING CamModInventory
+0x0086A054 class zSTRING CamModThrow
+0x0086A0E0 class zSTRING CamModJump
+0x0086A0F4 class zSTRING CamModJumpUp
+0x0086A108 class zSTRING CamModNormal
+0x0086A11C class zSTRING CamModLook
+0x0086A130 class zSTRING CamModFirstPerson
+0x0086A144 class zSTRING CamModMelee
+0x0086A158 class zSTRING CamModRun
+0x0086A16C class zSTRING CamModFocus
+0x0086A180 class zSTRING CamModMagic
+0x0086A194 class zSTRING CamModClimb
+0x0086A1A8 class zSTRING CamModSwim
+0x0086A1BC class zSTRING CamModMeleeMult
+
+G2A
+0x008CE868 class zSTRING CamModMobLadder
+0x008CE87C class zSTRING CamModDialog
+0x008CE894 class zSTRING CamModLookBack
+0x008CE8AC class zSTRING CamModDeath
+0x008CE8C0 class zSTRING CamModFall
+0x008CE8D4 class zSTRING CamModRangedShrt
+0x008CE8E8 class zSTRING CamModDive
+0x008CE8FC class zSTRING CamModShoulder
+0x008CE910 class zSTRING CamModRanged
+0x008CE924 class zSTRING CamModInventory
+0x008CE938 class zSTRING CamModThrow
+0x008CE9C8 class zSTRING CamModJump
+0x008CE9DC class zSTRING CamModJumpUp
+0x008CE9F0 class zSTRING CamModNormal
+0x008CEA04 class zSTRING CamModLook
+0x008CEA18 class zSTRING CamModFirstPerson
+0x008CEA2C class zSTRING CamModMelee
+0x008CEA40 class zSTRING CamModRun
+0x008CEA54 class zSTRING CamModFocus
+0x008CEA68 class zSTRING CamModMagic
+0x008CEA7C class zSTRING CamModClimb
+0x008CEA90 class zSTRING CamModSwim
+0x008CEAA4 class zSTRING CamModMeleeMult
+*/
+
+const string CAMMODMOBLADDER = "CAMMODMOBLADDER";
+const string CAMMODDIALOG = "CAMMODDIALOG";
+const string CAMMODLOOKBACK = "CAMMODLOOKBACK";
+const string CAMMODDEATH = "CAMMODDEATH";
+
+//G2A only
+const string CAMMODFALL = "CAMMODFALL";
+
+const string CAMMODRANGEDSHRT = "CAMMODRANGEDSHRT";
+const string CAMMODDIVE = "CAMMODDIVE";
+const string CAMMODSHOULDER = "CAMMODSHOULDER";
+const string CAMMODRANGED = "CAMMODRANGED";
+const string CAMMODINVENTORY = "CAMMODINVENTORY";
+const string CAMMODTHROW = "CAMMODTHROW";
+const string CAMMODJUMP = "CAMMODJUMP";
+const string CAMMODJUMPUP = "CAMMODJUMPUP";
+const string CAMMODNORMAL = "CAMMODNORMAL";
+const string CAMMODLOOK = "CAMMODLOOK";
+const string CAMMODFIRSTPERSON = "CAMMODFIRSTPERSON";
+const string CAMMODMELEE = "CAMMODMELEE";
+const string CAMMODRUN = "CAMMODRUN";
+const string CAMMODFOCUS = "CAMMODFOCUS";
+const string CAMMODMAGIC = "CAMMODMAGIC";
+const string CAMMODCLIMB = "CAMMODCLIMB";
+const string CAMMODSWIM = "CAMMODSWIM";
+const string CAMMODMELEEMULT = "CAMMODMELEEMULT";
 
 /*
  *	GFA has these constants defined globally - so in order to be compatible - we will not have them defined globally - only use them locally where we need them.
@@ -144,6 +274,10 @@ const int SEARCHVOBLIST_NOFILTERS = 0; //No special checks
 const int SEARCHVOBLIST_CANSEE = 1; //Checks if Npc can see object
 const int SEARCHVOBLIST_USEWAYNET = 2; //Uses waynet to calculate nearest object / if this flag is not used then functions uses 'air' distance
 const int SEARCHVOBLIST_CHECKPORTALROOMOWNER = 4; //Ignore objects that are in portal room owned by another Npc
+
+//Added for NPC_GetFreepoint
+const int SEARCHVOBLIST_IGNOREORDER = 8; //Do not search for nearest FP
+const int SEARCHVOBLIST_IGNORECURRENTFP = 16; //Ignore freepoint Npc is currently standing on
 
 /*
  *	Color values [G1 & G2A constants]

@@ -299,6 +299,16 @@ func int Hlp_Is_zCProgMeshProto (var int ptr) {
 	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCProgMeshProto__classDef_G1, zCProgMeshProto__classDef_G2));
 };
 
+func int Hlp_Is_zCVobLensFlare (var int ptr) {
+	//0x008D79B8 private: static class zCClassDef zCVobLensFlare::classDef
+	const int zCVobLensFlare__classDef_G1 = 9271736;
+
+	//0x009A3BB0 private: static class zCClassDef zCVobLensFlare::classDef
+	const int zCVobLensFlare__classDef_G2 = 10107824;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (zCVobLensFlare__classDef_G1, zCVobLensFlare__classDef_G2));
+};
+
 //G1
 //0x008CE9E0 private: static class zCClassDef zCSkyControler::classDef
 //0x008CEAD0 private: static class zCClassDef zCSkyControler_Mid::classDef
@@ -346,9 +356,7 @@ func int _zCVob_GetVisual (var int vobPtr) {
 
 	return CALL_RetValAsPtr ();
 };
-/*
- *
- */
+
 func int Hlp_Is_zCParticleFX (var int ptr) {
 	if (!ptr) { return FALSE; };
 	var int visualPtr; visualPtr = _zCVob_GetVisual (ptr);
@@ -644,4 +652,14 @@ func int Hlp_Is_zCSoundSystemDummy (var int snd) {
 
 	if (!snd) { return FALSE; };
 	return (MEM_ReadInt (snd) == (MEMINT_SwitchG1G2 (zCSoundSystemDummy_vtbl_G1, zCSoundSystemDummy_vtbl_G2)));
+};
+
+func int Hlp_Is_oCVisualFX (var int ptr) {
+	//0x00869E00 private: static class zCClassDef oCVisualFX::classDef
+	const int oCVisualFX__classDef_G1 = 8822272;
+
+	//0x008CE658 private: static class zCClassDef oCVisualFX::classDef
+	const int oCVisualFX__classDef_G2 = 9234008;
+
+	return MEM_CheckInheritance (ptr, MEMINT_SwitchG1G2 (oCVisualFX__classDef_G1, oCVisualFX__classDef_G2));
 };
