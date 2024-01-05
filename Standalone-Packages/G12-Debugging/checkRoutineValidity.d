@@ -25,30 +25,111 @@
  *	 - This should be used only for testing - it can take up to 10 minutes to check all routines.
  */
 
+func string oCRtnEntry_GetString (var int rtnPtr) {
+	if (!rtnPtr) { return ""; };
+	var oCRtnEntry rtn; rtn = _^ (rtnPtr);
+
+	var string s; s = "";
+
+	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.hour1, 2));
+	s = ConcatStrings (s, ":");
+	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.min1, 2));
+	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.hour2, 2));
+	s = ConcatStrings (s, ":");
+	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.min2, 2));
+	s = ConcatStrings (s, " ");
+
+	if (rtn.f_script > -1) {
+		s = ConcatStrings (s, GetSymbolName (rtn.f_script));
+	} else {
+		s = ConcatStrings (s, IntToString (rtn.f_script));
+	};
+
+	if (rtn.overlay) {
+		s = ConcatStrings (s, " (O)");
+	};
+
+	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, rtn.wpname);
+
+	if (rtn.npc) {
+		var oCNpc npc; npc = _^ (rtn.npc);
+		s = ConcatStrings (s, " ");
+		s = ConcatStrings (s, GetSymbolName (Hlp_GetInstanceID (npc)));
+	};
+
+	return s;
+};
+
 func void zSpy_Info_RtnList (var int rtnListPtr) {
+	if (!rtnListPtr) { return; };
+
 	var oCRtnEntry rtn;
 
 	var zCArray rtnList;
 	rtnList = _^ (rtnListPtr);
 
 	var string msg;
+	var string lastMsg;
+
+	var int startHour;
+	var int startMin;
+
+	var int lastEndHour;
+	var int lastEndMin;
+
+	msg = ConcatStrings ("   no of entries: ", IntToString (rtnList.numInArray));
+
+	zSpy_Info (msg);
 
 	repeat (i, rtnList.numInArray); var int i;
-		rtn = _^ (MEM_ArrayRead (rtnListPtr, i));
+		var int rtnPtr; rtnPtr = MEM_ArrayRead (rtnListPtr, i);
 
-		msg = "      ";
+		if (rtnPtr)
+		{
+			rtn = _^ (rtnPtr);
 
-		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.hour1, 2));
-		msg = ConcatStrings (msg, ":");
-		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.min1, 2));
-		msg = ConcatStrings (msg, " ");
-		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.hour2, 2));
-		msg = ConcatStrings (msg, ":");
-		msg = ConcatStrings (msg, STR_FormatLeadingZeros (rtn.min2, 2));
-		msg = ConcatStrings (msg, " ");
-		msg = ConcatStrings (msg, GetSymbolName (rtn.f_script));
+			msg = "      ";
+			msg = ConcatStrings (msg, oCRtnEntry_GetString (rtnPtr));
 
-		zSpy_Info (msg);
+			//No validation checks in case of overlays
+			if (!rtn.overlay)
+			{
+				if (i == 0) {
+					startHour = rtn.hour1;
+					startMin = rtn.min1;
+				};
+
+				//Check if last end time == start time
+				if (i > 0) {
+					if ((lastEndHour != rtn.hour1) || (lastEndMin != rtn.min1)) {
+						lastMsg = ConcatStrings (lastMsg, " -- gap/overlapping when compared with next routine entry");
+					};
+				};
+
+				if (i == (rtnList.numInArray - 1)) {
+					//Check if end time == start time
+					if ((startHour != rtn.hour2) || (startMin != rtn.min2)) {
+						msg = ConcatStrings (msg, " -- end time does not match routine start time");
+					};
+				};
+
+				lastEndHour = rtn.hour2;
+				lastEndMin = rtn.min2;
+			};
+
+			if (i == (rtnList.numInArray - 1)) {
+				zSpy_Info (lastMsg);
+				zSpy_Info (msg);
+			} else {
+				if (i > 0) {
+					zSpy_Info (lastMsg);
+				};
+			};
+
+			lastMsg = msg;
+		};
 	end;
 };
 
@@ -142,7 +223,7 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 
 						//If there is an overlay - then ignore this NPC
 						if (rtn2.overlay) {
-							zSpy_Info (" - overlay routine --> ignoring");
+							zSpy_Info (ConcatStrings (" - overlay routine --> ignoring npc ", npcInstanceName));
 							minsPerDay = 0;
 							continue;
 						};
