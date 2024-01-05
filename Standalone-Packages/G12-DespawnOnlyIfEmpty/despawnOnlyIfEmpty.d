@@ -1,22 +1,23 @@
 /*
  *	Super simple feature that will prevent dead bodies from despawning.
- *	 - we are replacing engine function oCNpc::HasMissionItem (this function is called when engine tries to despawn dead bodies) with our own version that returns TRUE whenever there is anything in the inventory of NPC
- *	 - I know, G2A has this already as an option that can be turned on in .ini ... but I like to have an option to do things from scripts :)
- *
- *	Warnings:
- *	 - since we are replacing engine function oCNpc::HasMissionItem - obviously it cannot be used anymore to check whether NPC has mission items ... use NPC_HasMissionItem instead!
- *	 - do not use with spawn time set to 0 - this will cause huge lag spikes if you have a lot of dead bodies in your world!
  */
 
 /*
  *	Simple feature preventing despawn of dead NPCs, if they have anything in their inventory
  */
-func void _hook_oCNpc_HasMissionItem () {
+func void _hook_oCSpawnManager_CheckInsertNpc_HasMissionItem () {
+	//ECX 0x007DDF34 const oCNpc::`vftable'
+
+	//0x0066D550 public: virtual int __thiscall oCNpcInventory::IsEmpty(void)
+
+	//ignoreArmor, ignoreActive
+	//0x0070D1A0 public: virtual int __thiscall oCNpcInventory::IsEmpty(int,int)
+
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNpc slf; slf = _^ (ECX);
 
-	if (!NPC_InventoryIsEmpty (slf, ITEM_ACTIVE_LEGO, 0, TRUE)) {
-		//Inventory is not empty - pretend that NPC has mission items ... this will prevent NPC from despawning
+	//If inventory is not empty - prevent despawn
+	if (!NPC_InventoryIsEmpty (slf, 0, 0, TRUE)) {
 		//Return TRUE
 		EAX = 1;
 		return;
@@ -29,14 +30,22 @@ func void _hook_oCNpc_HasMissionItem () {
 func void G12_DespawnOnlyIfEmpty_Init () {
 	const int once = 0;
 	if (!once) {
-		//0x006A4D90 public: int __thiscall oCNpc::HasMissionItem(void)
-		const int oCNpc__HasMissionItem_G1 = 6966672;
+		//0x006CFDE0 private: void __thiscall oCSpawnManager::CheckInsertNpc(void)
 
-		//0x00749110 public: int __thiscall oCNpc::HasMissionItem(void)
-		const int oCNpc__HasMissionItem_G2 = 7639312;
+		//006cfe3b
+		const int oCSpawnManager__CheckInsertNpc_HasMissionItem_G1 = 7142971;
 
-		//Replace engine function with our own version
-		ReplaceEngineFunc (MEMINT_SwitchG1G2 (oCNpc__HasMissionItem_G1, oCNpc__HasMissionItem_G2), 0, "_hook_oCNpc_HasMissionItem");
+		//00778227
+		const int oCSpawnManager__CheckInsertNpc_HasMissionItem_G2 = 7832103;
+
+		var int addr; addr = MEMINT_SwitchG1G2 (oCSpawnManager__CheckInsertNpc_HasMissionItem_G1, oCSpawnManager__CheckInsertNpc_HasMissionItem_G2);
+
+		MEM_WriteNOP (addr, 5);
+		HookEngine (addr, 5, "_hook_oCSpawnManager_CheckInsertNpc_HasMissionItem");
+
+		//const int spawnRemoveNpcOnlyIfEmpty_addr_G2 = 9153756;
+		//MemoryProtectionOverride(spawnRemoveNpcOnlyIfEmpty_addr_G2, 1);
+		//MEM_WriteByte (spawnRemoveNpcOnlyIfEmpty_addr_G2, 1);
 
 		once = 1;
 	};
