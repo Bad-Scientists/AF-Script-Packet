@@ -1,31 +1,3 @@
-//0x008699D8 class zERROR zerr
-
-//0x007D1834 const zERROR::`vftable'
-//0x004476B0 public: __thiscall zERROR::zERROR(void)
-//0x00447900 public: virtual void * __thiscall zERROR::`vector deleting destructor'(unsigned int)
-//0x00447920 public: void __thiscall zERROR::Init(class zSTRING)
-//0x00447FD0 public: virtual __thiscall zERROR::~zERROR(void)
-//0x004481D0 public: void __thiscall zERROR::SendToSpy(class zSTRING &)
-//0x00448240 public: int __thiscall zERROR::Report(enum zERROR_LEVEL,int,class zSTRING const &,signed char,unsigned int,int,char *,char *)
-//0x00448250 public: int __thiscall zERROR::Report(enum zERROR_TYPE,int,class zSTRING const &,signed char,unsigned int,int,char *,char *)
-//0x00448990 private: void __thiscall zERROR::BlockBegin(char *,int)
-//0x00448BE0 public: static void __cdecl zSTRING::operator delete(void *,char const *,char const *,int)
-//0x00448BF0 private: void __thiscall zERROR::BlockEnd(char *,int)
-//0x00448F90 public: void __thiscall zERROR::Separator(class zSTRING)
-//0x004491A0 public: void __thiscall zERROR::ShowSpy(int)
-//0x004492F0 public: int __thiscall zERROR::Message(class zSTRING const &)
-//0x00449330 public: int __thiscall zERROR::Warning(class zSTRING const &)
-//0x00449360 public: int __thiscall zERROR::Fatal(class zSTRING const &)
-//0x00449390 public: int __thiscall zERROR::Fault(class zSTRING const &)
-//0x004493C0 public: void __thiscall zERROR::SetFilterFlags(unsigned long)
-//0x004494E0 public: void __thiscall zERROR::SetFilterAuthors(class zSTRING)
-//0x00449680 public: void __thiscall zERROR::SetFilterLevel(int)
-//0x004497B0 public: void __thiscall zERROR::SetTarget(int)
-//0x00449A40 public: class zSTRING __thiscall zERROR::GetTargetDescription(void)
-//0x00449C60 public: class zSTRING __thiscall zERROR::GetFilterFlagDescription(void)
-//0x00449E60 public: class zSTRING __thiscall zERROR::GetFilterAuthors(void)
-//0x00449EB0 public: bool __thiscall zERROR::SearchForSpy(void)
-
 func int zERROR_GetFilterLevel () {
 	//0x008699D8 class zERROR zerr
 	const int zerr_G1 = 8821208;
