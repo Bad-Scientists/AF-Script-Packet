@@ -509,8 +509,6 @@ func void G1_EnhancedPickPocketing_Init () {
 
 	const int once = 0;
 	if (!once) {
-		var int i;
-		var int ptr;
 
 //-- Patch body states
 
@@ -533,32 +531,22 @@ func void G1_EnhancedPickPocketing_Init () {
 		//0x006BB350 public: int __thiscall oCNpc::OpenSteal(void)
 		//006BB4FA
 		const int oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 = 7058682;
-		MemoryProtectionOverride (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
-		ptr = oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1;
-		repeat (i, 5);
-			MEM_WriteByte (ptr, 144); //nop
-			ptr += 1;
-		end;
-
-		MEM_WriteByte (ptr, 133); ptr += 1; //85 C0 test eax, eax
-		MEM_WriteByte (ptr, 192); ptr += 1;
+		MEM_WriteNOP (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
 
 		HookEngine (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 5, "_hook_oCNpc_IsVictimAwareOfTheft_PatchBodyStates");
+
+		MEM_WriteByte (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 + 5, 133); //85 C0 test eax, eax
+		MEM_WriteByte (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 + 6, 192);
 
 		//0x006BAE10 public: void __thiscall oCNpc::CheckSpecialSituations(void)
 		//006BAEA3
 		const int oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 = 7057059;
-		MemoryProtectionOverride (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
-		ptr = oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1;
-		repeat (i, 5);
-			MEM_WriteByte (ptr, 144); //nop
-			ptr += 1;
-		end;
-
-		MEM_WriteByte (ptr, 133); ptr += 1; //85 C0 test eax, eax
-		MEM_WriteByte (ptr, 192); ptr += 1;
+		MEM_WriteNOP (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
 
 		HookEngine (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 5, "_hook_oCNpc_IsVictimAwareOfTheft_PatchBodyStates");
+
+		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 5, 133); //85 C0 test eax, eax
+		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 6, 192);
 
 //-- Additional hooks explaining why pickpocketing was not successfull + making sure Npc reacts to stealing
 
