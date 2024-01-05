@@ -569,6 +569,28 @@ func void NPC_FindRoute (var int slfInstance, var string fromWP, var string toWP
 };
 
 /*
+ *	zCRoute_Delete
+ *	 - *hacky* destructor - using oCNpc_SetRoute to delete route
+ */
+func void zCRoute_Delete (var int routePtr) {
+	if (!routePtr) { return; };
+	if (!Hlp_IsValidNPC (hero)) { return; };
+
+	var oCNpc slf; slf = Hlp_GetNpc (hero);
+
+	//Backup route
+	var int bRoute; bRoute = slf.route;
+	slf.route = 0;
+
+	//Setup new route and delete it
+	oCNpc_SetRoute (slf, routePtr);
+	oCNpc_SetRoute (slf, 0);
+
+	//Restore backed up route
+	slf.route = bRoute;
+};
+
+/*
  *	Function returns waypoint from last routine entry
  */
 func string NPC_GetLastRoutineWP (var int slfInstance) {
