@@ -1,9 +1,10 @@
 /*
  *	Super simple feature that adds number of topics to specific topic section in MENU_LOG
- *	Idea: Neocromicon
+ *	Credits: idea came from: Neocromicon
  */
 
-var int refreshTopicSectionCount;
+var int _refreshTopicSectionCount;
+var string _refreshTopicSectionSetup;
 
 func void Log_AddSectionCount (var string logMenuSectionName, var int count) {
 	var string s;
@@ -50,28 +51,43 @@ func void Log_AddSectionCount (var string logMenuSectionName, var int count) {
 //-- Frame function
 
 func void FF_LogMenuAddSectionCount () {
-	//Prevent redundant counting of topics - it's enough to get number updated whenever menu is opened
-	var int countRunning;
-	var int countSuccess;
-	var int countFailed;
-	var int countNotes;
-	var int countAchievements;
+	//MENU_ITEM_SEL_MISSIONS_ACT LOG_MISSION LOG_RUNNING|MENU_ITEM_SEL_MISSIONS_OLD LOG_MISSION LOG_SUCCESS
+	var int sectionCount; sectionCount = STR_SplitCount (_refreshTopicSectionSetup, "|");
 
-	if (refreshTopicSectionCount) {
-		countRunning = Log_GetNoOfTopics (LOG_MISSION, LOG_RUNNING);
-		countSuccess = Log_GetNoOfTopics (LOG_MISSION, LOG_SUCCESS);
-		countFailed = Log_GetNoOfTopics (LOG_MISSION, LOG_FAILED);
-		countNotes = Log_GetNoOfTopics (LOG_NOTE, -1);
-		countAchievements = Log_GetNoOfTopics (LOG_ACHIEVEMENT, -1);
+	repeat (i, sectionCount); var int i;
+		var string sectionSetup; sectionSetup = STR_Split (_refreshTopicSectionSetup, "|", i);
 
-		refreshTopicSectionCount = FALSE;
-	};
+		var int sectionOptionCount; sectionOptionCount = STR_SplitCount (sectionSetup, " ");
 
-	Log_AddSectionCount ("MENU_ITEM_SEL_MISSIONS_ACT", countRunning);
-	Log_AddSectionCount ("MENU_ITEM_SEL_MISSIONS_OLD", countSuccess);
-	Log_AddSectionCount ("MENU_ITEM_SEL_MISSIONS_FAILED", countFailed);
-	Log_AddSectionCount ("MENU_ITEM_SEL_LOG", countNotes);
-	Log_AddSectionCount ("MENU_ITEM_SEL_ACHIEVEMENTS", countAchievements);
+		var string s;
+
+		var string logMenuSectionName; logMenuSectionName = "";
+
+		var int logSection; logSection = -1;
+		var int logStatus; logStatus = -1;
+
+		if (sectionOptionCount > 0) {
+			logMenuSectionName = STR_Split (sectionSetup, " ", 0);
+		};
+
+		if (sectionOptionCount > 1) {
+			s = STR_Split (sectionSetup, " ", 1);
+			if (!Hlp_StrCmp (s, "-1")) {
+				logSection = API_GetSymbolIntValue (s, -1);
+			};
+		};
+
+		if (sectionOptionCount > 2) {
+			s = STR_Split (sectionSetup, " ", 2);
+			if (!Hlp_StrCmp (s, "-1")) {
+				logStatus = API_GetSymbolIntValue (s, -1);
+			};
+		};
+
+		//func int Log_GetNoOfTopics(var int logSection, var int logStatus) {
+		var int countTopics; countTopics = Log_GetNoOfTopics (logSection, logStatus);
+		Log_AddSectionCount (logMenuSectionName, countTopics);
+	end;
 };
 
 //-- Hooks - adding/removing frame function
@@ -90,7 +106,7 @@ func void _hook_zCMenu_Enter__LogMenuAddSectionCount () {
 	var zCMenu menu; menu = _^ (ECX);
 
 	if (Hlp_StrCmp (menu.name, "MENU_LOG")) {
-		refreshTopicSectionCount = TRUE;
+		_refreshTopicSectionCount = TRUE;
 		FF_ApplyOnceExt (FF_LogMenuAddSectionCount, 0, -1);
 	};
 };
@@ -99,6 +115,9 @@ func void _hook_zCMenu_Enter__LogMenuAddSectionCount () {
 
 func void G12_MenuLogAddSectionCount_Init () {
 	const int once = 0;
+
+	//-- Load API values / init default values
+	_refreshTopicSectionSetup = API_GetSymbolStringValue ("MENUADDSECTIONCOUNT_SETUP", "MENU_ITEM_SEL_MISSIONS_ACT LOG_MISSION LOG_RUNNING|MENU_ITEM_SEL_MISSIONS_OLD LOG_MISSION LOG_SUCCESS|MENU_ITEM_SEL_MISSIONS_FAILED LOG_MISSION LOG_FAILED|MENU_ITEM_SEL_LOG LOG_NOTE -1");
 
 	if (!once) {
 		//0x004CEB90 public: virtual void __thiscall zCMenu::Enter(void)
@@ -117,6 +136,7 @@ func void G12_MenuLogAddSectionCount_Init () {
 		const int zCMenu__Leave_G2 = 5093648;
 
 		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Leave_G1, zCMenu__Leave_G2), 9, "_hook_zCMenu_Leave__LogMenuAddSectionCount");
+
 		once = 1;
 	};
 };
