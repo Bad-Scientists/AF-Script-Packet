@@ -4,9 +4,8 @@
  *	 - improves vanilla pickpocketing in G1:
  *		- enables additional body states (vanilla BS_STAND, BS_ITEMINTERACT, patched also while Npc is sitting / using mobs: BS_SIT, BS_LIE, BS_MOBINTERACT, BS_MOBINTERACT_INTERRUPT)
  *		- adds extra functions for failed pickpocketing attempts (from which we can let player know why attempt failed)
- *			- EnhancedPickPocketing_EmptyInventory is called when inventory of victim is empty
  *			- EnhancedPickPocketing_TooFar is called when victim is too far
- *		- fixes behaviour for failed theft attempts (if Npc is too far / if it's inventory is empty) of which victim is **aware of**:
+ *		- fixes behaviour for failed theft attempts of which victim is **aware of**:
  *			- in vanilla nothing would happen, only T_DONTKNOW animation would play. Here we are calling oCNpc_StopTheft - this will send perception PERC_CATCHTHIEF to victim.
  *
  *	 - additionaly we allow player to insert items into victims inventory (vanilla allows only stealing)
@@ -95,7 +94,7 @@ func int Npc_BodyState_AwareOfTheft (var int npcInstance) {
 
 func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 /*
-	As I was unable to 'patch' engine function we have to create our own version
+	As I was unable to 'patch' engine function thus creating own version
 
 	//0x006BAD80 public: int __thiscall oCNpc::IsVictimAwareOfTheft(void)
 	const int oCNpc__IsVictimAwareOfTheft_G1 = 7056768;
@@ -131,6 +130,9 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 	const int stealnpc_addr_G1 = 9288744;
 	var int stealnpcPtr; stealnpcPtr = MEM_ReadInt (stealnpc_addr_G1);
 	if (!stealnpcPtr) { return FALSE; };
+
+	//victim
+	var oCNpc slf; slf = _^ (stealnpcPtr);
 
 	var int retVal;
 
@@ -170,34 +172,13 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 
 //-- Check if Npc detected thief (through perceptions, SENSE_SMELL will always detect thief if Npc is within npc.senses_range distance!)
 
-	//0x0069CE90 public: int __thiscall oCNpc::HasVobDetected(class zCVob *)
-	const int oCNpc__HasVobDetected_G1 = 6934160;
-
-	//0x007405B0 public: int __thiscall oCNpc::HasVobDetected(class zCVob *)
-	const int oCNpc__HasVobDetected_G2 = 7603632;
-
-	var int npcPtr; npcPtr = _@ (npc);
-
-	const int call3 = 0;
-	if (CALL_Begin(call3)) {
-		CALL_PutRetValTo(_@ (retVal));
-		CALL_PtrParam (_@ (npcPtr));
-		CALL__thiscall(_@(stealnpcPtr), MEMINT_SwitchG1G2 (oCNpc__HasVobDetected_G1, oCNpc__HasVobDetected_G2));
-		call3 = CALL_End();
-	};
-
-	if (retVal) { return TRUE; };
+	if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
 
 //-- Check game mode - if we are in steal mode - check body state
 
-	//victim
-	var oCNpc slf; slf = _^ (stealnpcPtr);
-
 	var int gameMode; gameMode = oCNpc_Get_Game_Mode ();
 	if (gameMode == NPC_GAME_STEAL) {
-		if (Npc_BodyState_AwareOfTheft (slf)) {
-			return TRUE;
-		};
+		if (Npc_BodyState_AwareOfTheft (slf)) { return TRUE; };
 	};
 
 	return FALSE;
@@ -222,7 +203,7 @@ func void oCNpc_StopTheft (var int slfInstance, var int thiefPtr, var int victim
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL_PtrParam (_@ (victimIsAware));
+		CALL_IntParam (_@ (victimIsAware));
 		CALL_PtrParam (_@ (thiefPtr));
 		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__StopTheft_G1, oCNpc__StopTheft_G2));
 		call = CALL_End();
@@ -248,7 +229,7 @@ func void _hook_oCNpc_OpenSteal_StealContainerIsEmpty () {
 	};
 
 	//Call API function
-	API_CallByString ("ENHANCEDPICKPOCETING_EMPTYINVENTORY");
+	API_CallByString ("EnhancedPickPocketing_EmptyInventory");
 };
 
 /*
@@ -282,7 +263,7 @@ func void _hook_oCNpc_OpenSteal_ConditionsFailed () {
 
 	if (gf (fDistToStealNpc, fFocusRange)) {
 		//Call API function
-		API_CallByString ("ENHANCEDPICKPOCETING_TOOFAR");
+		API_CallByString ("EnhancedPickPocketing_TooFar");
 
 		return;
 	};
@@ -318,8 +299,9 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 	var int containerPtr;
 	var oCItemContainer container;
 
+	var C_NPC owner;
+
 	var oCNpc npc;
-	var oCNpc owner;
 	var int npcInventoryPtr;
 
 	var int itemPtr;
@@ -364,7 +346,7 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 					const int symbID3 = 0;
 
 					if (!symbID3) {
-						symbID3 = MEM_FindParserSymbol ("ENHANCEDPICKPOCKETING_STEALITEMANYWAY");
+						symbID3 = MEM_FindParserSymbol ("EnhancedPickPocketing_DoStealItemAnyway");
 					};
 
 					//By default ... allow stealing 1 item at a time (TODO: do we want to allow stealing more at once?)
@@ -391,7 +373,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
-								npcInventoryPtr = _@ (owner.inventory2_vtbl);
+								npc = Hlp_GetNpc (owner);
+								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 
 								//Insert item to NPCs inventory
 								itemPtr = oCNpcInventory_Insert (npcInventoryPtr, itemPtr);
@@ -414,7 +397,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 						if ((retVal) || (_enhancedPickPocketing_StealItemAnyway)) {
 							if (amount) {
 								//Remove item from NPCs inventory
-								npcInventoryPtr = _@ (owner.inventory2_vtbl);
+								npc = Hlp_GetNpc (owner);
+								npcInventoryPtr = _@ (npc.inventory2_vtbl);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
 								//Insert item to players inventory
@@ -524,8 +508,6 @@ func void G1_EnhancedPickPocketing_Init () {
 
 	const int once = 0;
 	if (!once) {
-		var int i;
-		var int ptr;
 
 //-- Patch body states
 
@@ -548,38 +530,40 @@ func void G1_EnhancedPickPocketing_Init () {
 		//0x006BB350 public: int __thiscall oCNpc::OpenSteal(void)
 		//006BB4FA
 		const int oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 = 7058682;
-		MemoryProtectionOverride (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
-		ptr = oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1;
-		repeat (i, 5);
-			MEM_WriteByte (ptr, 144); //nop
-			ptr += 1;
-		end;
-
-		MEM_WriteByte (ptr, 133); ptr += 1; //85 C0 test eax, eax
-		MEM_WriteByte (ptr, 192); ptr += 1;
+		MEM_WriteNOP (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
 
 		HookEngine (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1, 5, "_hook_oCNpc_IsVictimAwareOfTheft_PatchBodyStates");
+
+		MEM_WriteByte (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 + 5, 133); //85 C0 test eax, eax
+		MEM_WriteByte (oCNpc__OpenSteal_IsVictimAwareOfTheft_CheckBodyStates_G1 + 6, 192);
 
 		//0x006BAE10 public: void __thiscall oCNpc::CheckSpecialSituations(void)
 		//006BAEA3
 		const int oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 = 7057059;
-		MemoryProtectionOverride (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
-		ptr = oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1;
-		repeat (i, 5);
-			MEM_WriteByte (ptr, 144); //nop
-			ptr += 1;
-		end;
-
-		MEM_WriteByte (ptr, 133); ptr += 1; //85 C0 test eax, eax
-		MEM_WriteByte (ptr, 192); ptr += 1;
+		MEM_WriteNOP (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 7);
 
 		HookEngine (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1, 5, "_hook_oCNpc_IsVictimAwareOfTheft_PatchBodyStates");
+
+		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 5, 133); //85 C0 test eax, eax
+		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 6, 192);
+
+//-- Open inventory even if it is empty (as we want to allow player to put items into victims inventory)
+
+		//006bb64e
+		const int oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 = 7059022;
+		MemoryProtectionOverride (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1, 3);
+
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 0, 233); //e9 da jmp LAB_006bb72d --> jump to open inventory instruction unconditionally
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 1, 218); //(006bb72d - 006bb64e - 5)
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 2, 0);
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 3, 0);
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 4, 0);
 
 //-- Additional hooks explaining why pickpocketing was not successfull + making sure Npc reacts to stealing
 
 		//006BB654
-		const int oCNpc__OpenSteal_StealContainerIsEmpty_G1 = 7059028;
-		HookEngine (oCNpc__OpenSteal_StealContainerIsEmpty_G1, 5, "_hook_oCNpc_OpenSteal_StealContainerIsEmpty");
+		//const int oCNpc__OpenSteal_StealContainerIsEmpty_G1 = 7059028;
+		//HookEngine (oCNpc__OpenSteal_StealContainerIsEmpty_G1, 5, "_hook_oCNpc_OpenSteal_StealContainerIsEmpty");
 
 		//006bb767
 		const int oCNpc__OpenSteal_Conditions_G1 = 7059303;

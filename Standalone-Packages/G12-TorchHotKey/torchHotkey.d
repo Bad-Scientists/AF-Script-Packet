@@ -52,8 +52,8 @@ func void FixBurningTorches__TorchHotKey () {
 
 	//Search by class oCItem
 	if (!SearchVobsByClass ("oCItem", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("No oCItem objects found.");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 
@@ -101,8 +101,8 @@ func void TorchesReSendTrigger__TorchHotKey () {
 
 	//Search by zCVisual or zCParticleFX does not work
 	if (!SearchVobsByClass ("oCMobFire", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		MEM_Info ("No oCMobFire objects found.");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 
@@ -121,7 +121,7 @@ func void TorchesReSendTrigger__TorchHotKey () {
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
 		if (MobIsTorch__TorchHotKey (vobPtr)) {
-			if (oCMobInter_GetHitPoints (vobPtr) == 11) {
+			if (oCMobInter_GetHitPoints (vobPtr) > 10) {
 				//Trigger vob - will lit fireplace
 				MEM_TriggerVob (vobPtr);
 			};
@@ -149,27 +149,30 @@ func void _eventMobStartStateChange__TorchHotKey (var int dummyVariable) {
 
 	//Is this torch ? is state changing from 0 to 1 ?
 	if (MobIsTorch__TorchHotKey (ECX)) && (fromState == 0) && (toState == 1) {
-		//Default value 10
+		//Default value is 10 ... increase every time we lit torch
 		var int hitp; hitp = oCMobInter_GetHitPoints (ECX);
-		if (hitp == 10) {
-			hitp += 1;
-			oCMobInter_SetHitPoints (ECX, hitp);
+		hitp += 1;
 
-			//I case of G2A I didn't test if this works at all
-			//Will leave here couple of additional details - that can be helpful in case of issues
-			if (zERROR_GetFilterLevel () > 0) {
-				var string msg;
-				var oCMob mob; mob = _^ (ECX);
+		if (hitp > oCMob_bitfield_hitp) {
+			hitp = oCMob_bitfield_hitp;
+		};
 
-				MEM_Info ("_eventMobStartStateChange__TorchHotKey");
+		oCMobInter_SetHitPoints (ECX, hitp);
 
-				msg = ConcatStrings ("name: ", mob.name);
-				MEM_Info (msg);
+		//I case of G2A I didn't test if this works at all
+		//Will leave here couple of additional details - that can be helpful in case of issues
+		if (zERROR_GetFilterLevel () > 0) {
+			var string msg;
+			var oCMob mob; mob = _^ (ECX);
 
-				msg = IntToString (mob.bitfield & oCMob_bitfield_hitp);
-				msg = ConcatStrings ("mob.bitfield & oCMob_bitfield_hitp: ", msg);
-				MEM_Info (msg);
-			};
+			MEM_Info ("_eventMobStartStateChange__TorchHotKey");
+
+			msg = ConcatStrings ("name: ", mob.name);
+			MEM_Info (msg);
+
+			msg = IntToString (mob.bitfield & oCMob_bitfield_hitp);
+			msg = ConcatStrings ("mob.bitfield & oCMob_bitfield_hitp: ", msg);
+			MEM_Info (msg);
 		};
 	};
 };

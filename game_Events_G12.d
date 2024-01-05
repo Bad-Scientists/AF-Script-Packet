@@ -647,9 +647,8 @@ func void G12_oCMobInterStartInterationEvent_Init () {
 
 var int PC_FocusVob;
 
-func void _hook_oCGame_UpdateStatus () {
+func void _hook_oCGame_GetFocusVob () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
-
 	var oCNpc her; her = Hlp_GetNPC (hero);
 
 	//Focus changed
@@ -671,7 +670,13 @@ func void G12_FocusChangeEvent_Init () {
 
 	const int once = 0;
 	if (!once) {
-		HookEngine(oCGame__UpdateStatus, 8, "_hook_oCGame_UpdateStatus");
+		//00639268
+		const int oCGame__GetFocusVob_G1 = 6525544;
+
+		//006C35A5
+		const int oCGame__GetFocusVob_G2 = 7091621;
+
+		HookEngine(MEMINT_SwitchG1G2 (oCGame__GetFocusVob_G1, oCGame__GetFocusVob_G2), MEMINT_SwitchG1G2 (5, 8), "_hook_oCGame_GetFocusVob");
 		once = 1;
 	};
 };

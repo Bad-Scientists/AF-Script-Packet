@@ -98,7 +98,6 @@ func int Mob_LockableGetLockStatus__Focus (var int vobPtr) {
 //This one is being called whenever there is anything in focus - constantly
 func void _hook_oCGame_UpdateStatus__Focus () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
-
 	var oCNpc her; her = Hlp_GetNPC (hero);
 
 	var oCMob mob;
@@ -256,7 +255,11 @@ func void G12_Focus_Init () {
 
 	const int once = 0;
 	if (!once) {
-		HookEngine(oCGame__UpdateStatus, 8, "_hook_oCGame_UpdateStatus__Focus");
+		const int oCGame__GetFocusVob_G1 = 6525544;
+
+		const int oCGame__GetFocusVob_G2 = 7091629;
+
+		HookEngine(MEMINT_SwitchG1G2 (oCGame__GetFocusVob_G1, oCGame__GetFocusVob_G2), MEMINT_SwitchG1G2 (5, 6), "_hook_oCGame_UpdateStatus__Focus");
 		once = 1;
 	};
 };

@@ -2,6 +2,7 @@
 var int PC_PickLockOutputVariation;
 
 var int _PC_PickLockSkillRequired;
+var int _PC_PickLockWithMasterKey;
 
 func void _hook_oCMobLockable_CanOpen () {
 	//Initial value
@@ -60,6 +61,16 @@ func void _hook_oCMobLockable_CanOpen () {
 		lockType = lockType | requiresSpecialKey;
 	};
 
+	if (_PC_PickLockWithMasterKey) {
+		var int playerHasMasterKey; playerHasMasterKey = NPC_HasItemInstanceName (slf, "ItKe_MasterKey");
+
+		if (playerHasMasterKey) {
+			//Open immediately with master key
+			mob.bitfield = mob.bitfield & ~ oCMobLockable_bitfield_locked;
+			lockType = 0;
+		};
+	};
+
 	//Recalculate skill level - based on dexterity
 	var int failRate; failRate = 100 - npc.attribute [ATR_DEXTERITY];
 
@@ -88,7 +99,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-			
+
 			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
 				AI_PlayAni (slf, "T_DONTKNOW");
 			};
@@ -178,9 +189,12 @@ func void G1_EnhancedPickLocking_Init () {
 	G12_GetActionKey_Init ();
 
 	_PC_PickLockSkillRequired = API_GetSymbolIntValue ("PC_PICKLOCKSKILLREQUIRED", FALSE);
+	_PC_PickLockWithMasterKey = API_GetSymbolIntValue ("PC_PICKLOCKWITHMASTERKEY", FALSE);
 
 	const int once = 0;
 	if (!once) {
+		//0x006827C0 public: int __thiscall oCMobLockable::CanOpen(class oCNpc *)
+
 		//HookEngine (oCMobLockable__CanOpen, 6, "_hook_oCMobLockable_CanOpen");
 		ReplaceEngineFunc (oCMobLockable__CanOpen, 1, "_hook_oCMobLockable_CanOpen");
 

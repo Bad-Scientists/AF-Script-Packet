@@ -55,14 +55,15 @@ func void oCMob_CheckProperties () {
 
 	//Case sensitive!
 	if (!SearchVobsByClass ("oCMOB", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		zSpy_Info (" - no oCMOB objects found.");
 		zSpy_Info ("oCMob_CheckProperties <--");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 
 	//List of already listed issues err msgs (to prevent duplicates)
 	var int errListPtr; errListPtr = MEM_ArrayCreate ();
+	var int keyListPtr; keyListPtr = MEM_ArrayCreate ();
 
 	var int vobPtr;
 	var zCArray vobList; vobList = _^ (vobListPtr);
@@ -75,7 +76,9 @@ func void oCMob_CheckProperties () {
 
 	issueCounter = 0;
 
-	repeat (i, vobList.numInArray);
+	i = 0;
+
+	while (i < vobList.numInArray);
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -161,7 +164,6 @@ func void oCMob_CheckProperties () {
 				if (!MEM_StringArrayContains (errListPtr, msg)) {
 					//Insert err msg to array
 					MEM_StringArrayInsert (errListPtr, msg);
-
 					zSpy_Info (msg);
 				};
 			};
@@ -172,10 +174,13 @@ func void oCMob_CheckProperties () {
 				oCMob_SetOwnerStr (vobPtr, ownerStr, ownerGuildStr);
 			};
 		};
+
+		i += 1;
 	end;
 
 	//It's nicer if we have 2 loops and output is split by object category
-	repeat (i, vobList.numInArray);
+	i = 0;
+	while (i < vobList.numInArray);
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -201,6 +206,28 @@ func void oCMob_CheckProperties () {
 			//Check if key is valid
 			if (STR_Len (mobLockable.keyInstance)) {
 				keyIsValid = MEM_FindParserSymbol (mobLockable.keyInstance);
+
+				//Get name
+				msg = ConcatStrings (" - oCMobLockable: '", mobLockable._oCMob_name);
+				msg = ConcatStrings (msg, "'");
+
+				//Get key
+				msg = ConcatStrings (msg, ", key: '");
+				msg = ConcatStrings (msg, mobLockable.keyInstance);
+				msg = ConcatStrings (msg, "'");
+
+				//Get picklock combination
+				msg = ConcatStrings (msg, ", pickLockStr: '");
+				msg = ConcatStrings (msg, mobLockable.pickLockStr);
+				msg = ConcatStrings (msg, "'");
+
+				msg = ConcatStrings (msg, Vob_GetPortalNameAndPosition (vobPtr));
+
+				//Report key requirements to zSpy log
+				if (!MEM_StringArrayContains (keyListPtr, msg)) {
+					//Insert err msg to array
+					MEM_StringArrayInsert (keyListPtr, msg);
+				};
 			};
 
 			if ((keyIsValid == -1) || (pickLockStrValid == FALSE)) {
@@ -235,13 +262,31 @@ func void oCMob_CheckProperties () {
 				if (!MEM_StringArrayContains (errListPtr, msg)) {
 					//Insert err msg to array
 					MEM_StringArrayInsert (errListPtr, msg);
-
 					zSpy_Info (msg);
 				};
 			};
 		};
+
+		i += 1;
 	end;
 
+	if (keyListPtr) {
+		zSpy_Info ("list all mobs with keys --> ");
+
+		var zCArray arr; arr = _^ (keyListPtr);
+
+		var int ptr;
+
+		repeat (i, arr.numInArray);
+			ptr = MEM_ArrayRead (keyListPtr, i);
+			msg = MEM_ReadString (ptr);
+			zSpy_Info (msg);
+		end;
+
+		zSpy_Info ("<-- list all mobs with keys");
+	};
+
+	MEM_StringArrayFree (keyListPtr);
 	MEM_StringArrayFree (errListPtr);
 	MEM_ArrayFree (vobListPtr);
 
@@ -269,9 +314,9 @@ func void zCTrigger_CheckProperties () {
 
 	//Case sensitive!
 	if (!SearchVobsByClass ("zCTrigger", vobListPtr)) {
-		MEM_ArrayFree (vobListPtr);
 		zSpy_Info (" - no zCTrigger objects found.");
 		zSpy_Info ("zCTrigger_CheckProperties <--");
+		MEM_ArrayFree (vobListPtr);
 		return;
 	};
 
@@ -287,7 +332,8 @@ func void zCTrigger_CheckProperties () {
 
 	var zCTrigger trigger;
 
-	repeat (i, vobList.numInArray);
+	i = 0;
+	while (i < vobList.numInArray);
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -328,7 +374,6 @@ func void zCTrigger_CheckProperties () {
 					if (!MEM_StringArrayContains (errListPtr, msg)) {
 						//Insert err msg to array
 						MEM_StringArrayInsert (errListPtr, msg);
-
 						zSpy_Info (msg);
 					};
 				};
@@ -344,7 +389,6 @@ func void zCTrigger_CheckProperties () {
 					if (!MEM_StringArrayContains (errListPtr, msg)) {
 						//Insert err msg to array
 						MEM_StringArrayInsert (errListPtr, msg);
-
 						zSpy_Info (msg);
 					};
 				};
@@ -379,11 +423,12 @@ func void zCTrigger_CheckProperties () {
 				if (!MEM_StringArrayContains (errListPtr, msg)) {
 					//Insert err msg to array
 					MEM_StringArrayInsert (errListPtr, msg);
-
 					zSpy_Info (msg);
 				};
 			};
 		};
+
+		i += 1;
 	end;
 
 	MEM_StringArrayFree (errListPtr);
@@ -394,6 +439,26 @@ func void zCTrigger_CheckProperties () {
 	};
 
 	zSpy_Info ("zCTrigger_CheckProperties <--");
+};
+
+func string ObjectRoutine_GetString (var int ptr) {
+	if (!ptr) { return ""; };
+
+	var TObjectRoutine oRtn; oRtn = _^ (ptr);
+
+	var string s;
+
+	s = oRtn.objName;
+	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_FormatLeadingZeros (oRtn.hour1, 2));
+	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_FormatLeadingZeros (oRtn.min1, 2));
+	s = ConcatStrings (s, " s");
+	s = ConcatStrings (s, IntToString (oRtn.stateNum));
+	s = ConcatStrings (s, " t");
+	s = ConcatStrings (s, IntToString (oRtn.type));
+
+	return s;
 };
 
 func void Game_CheckObjectRoutines () {
@@ -408,6 +473,8 @@ func void Game_CheckObjectRoutines () {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
 	if (!SearchVobsByClass ("oCMobInter", vobListPtr)) {
 		zSpy_Info (" - no oCMobInter objects found.");
+		MEM_ArrayFree (vobListPtr);
+		return;
 	};
 
 	var int vobPtr;
@@ -419,16 +486,65 @@ func void Game_CheckObjectRoutines () {
 	//List of all checked visuals
 	var int visListPtr; visListPtr = MEM_ArrayCreate ();
 
+	//List of all Wld_SetMobRoutine routines
+	var int mobRoutineSchemeDuplicatesPtr; mobRoutineSchemeDuplicatesPtr = MEM_ArrayCreate ();
+
 	var int i;
 	var int j;
 
-	var int ptr; ptr = MEM_Game.objRoutineList_next;
+	var int ptr;
+	var zCListSort l;
+	var TObjectRoutine oRtn;
+	var oCMobInter mobInter;
 
+	//zSpy_Info ("list all routines --> ");
+
+	//First get list of all scheme names updated by `Wld_SetMobRoutine` (type = 0)
+	ptr = MEM_Game.objRoutineList_next;
 	while (ptr);
-		var zCListSort l; l = _^ (ptr);
+		l = _^ (ptr);
 
 		if (l.data) {
-			var TObjectRoutine oRtn;
+			oRtn = _^ (l.data);
+
+			/*
+			Only for testing
+			msg = ObjectRoutine_GetString (l.data);
+			zSpy_Info (msg);
+			*/
+
+			//type 0 - all objects with **sceme** will be triggered
+			//type 1 - single object will be triggerer
+			if (oRtn.type == 0) {
+
+				//Identify duplicate entries
+				msg = ObjectRoutine_GetString (l.data);
+
+				if (!MEM_StringArrayContains (mobRoutineSchemeDuplicatesPtr, oRtn.objName)) {
+					//Insert scheme name to array
+					MEM_StringArrayInsert (mobRoutineSchemeDuplicatesPtr, msg);
+				} else {
+					msg = ConcatStrings (" - several Wld_SetMobRoutine routines: ", msg);
+
+					if (!MEM_StringArrayContains (errListPtr, msg)) {
+						//Insert err msg to array
+						MEM_StringArrayInsert (errListPtr, msg);
+						zSpy_Info (msg);
+					};
+				};
+			};
+		};
+
+		ptr = l.next;
+	end;
+
+	//zSpy_Info ("<-- list all routines");
+
+	ptr = MEM_Game.objRoutineList_next;
+	while (ptr);
+		l = _^ (ptr);
+
+		if (l.data) {
 			oRtn = _^ (l.data);
 
 			//type 0 - all objects with **sceme** will be triggered
@@ -436,27 +552,31 @@ func void Game_CheckObjectRoutines () {
 			if (oRtn.type == 0) {
 				var int flagMobFound; flagMobFound = FALSE;
 
-				repeat (i, vobList.numInArray);
+				i = 0;
+				while (i < vobList.numInArray);
 					vobPtr = MEM_ArrayRead (vobListPtr, i);
 
 					if (vobPtr) {
-						var oCMobInter mobInter; mobInter = _^ (vobPtr);
+						mobInter = _^ (vobPtr);
 
 						if (Hlp_StrCmp (mobInter.sceme, oRtn.objName)) {
 							flagMobFound = TRUE;
 							break;
 						};
 					};
+
+					i += 1;
 				end;
 
 				if (!flagMobFound) {
-					msg = ConcatStrings (" - no oCMobInter found with sceme name: ", oRtn.objName);
-					msg = ConcatStrings (msg, " --> Wld_SetMobRoutine is using sceme name to trigger objects.");
+					//Build string backwards
+					msg = ObjectRoutine_GetString (l.data);
+					msg = ConcatStrings (" --> Wld_SetMobRoutine is using sceme name to trigger objects. ", msg);
+					msg = ConcatStrings (" - no oCMobInter found with sceme name: ", msg);
 
 					if (!MEM_StringArrayContains (errListPtr, msg)) {
 						//Insert err msg to array
 						MEM_StringArrayInsert (errListPtr, msg);
-
 						zSpy_Info (msg);
 					};
 				};
@@ -467,33 +587,44 @@ func void Game_CheckObjectRoutines () {
 				var zCArray zarr; zarr = _^ (arr);
 
 				if (zarr.numInArray == 0) {
-					msg = ConcatStrings (" - object not found: ", oRtn.objName);
+					//Build string backwards
+					msg = ObjectRoutine_GetString (l.data);
+					msg = ConcatStrings (" - object not found: ", msg);
 
 					if (!MEM_StringArrayContains (errListPtr, msg)) {
 						//Insert err msg to array
 						MEM_StringArrayInsert (errListPtr, msg);
-
 						zSpy_Info (msg);
 					};
 				} else {
+					//Get first vobPtr
+					vobPtr = MEM_ArrayRead (arr, 0);
+
 					if (zarr.numInArray > 1) {
-						msg = ConcatStrings (" - multiple objects found (", IntToString (zarr.numInArray));
-						msg = ConcatStrings (msg, "): ");
-						msg = ConcatStrings (msg, oRtn.objName);
-						msg = ConcatStrings (msg, " --> Wld_SetObjectRoutine updates 1 object, you might have to rename duplicates.");
+						//Build string backwards
+						msg = ObjectRoutine_GetString (l.data);
+						msg = ConcatStrings (" --> Wld_SetObjectRoutine updates 1 object, you might have to rename duplicates. ", msg);
+						msg = ConcatStrings (") ", msg);
+						msg = ConcatStrings (IntToString (zarr.numInArray), msg);
+						msg = ConcatStrings (" - multiple objects found (", msg);
 
 						if (!MEM_StringArrayContains (errListPtr, msg)) {
 							//Insert err msg to array
 							MEM_StringArrayInsert (errListPtr, msg);
-
 							zSpy_Info (msg);
+
+							//List object details
+							j = 0;
+							while (j < zarr.numInArray);
+								vobPtr = MEM_ArrayRead (arr, j);
+								msg = ConcatStrings ("   - ", Vob_GetPortalNameAndPosition (vobPtr));
+								zSpy_Info (msg);
+								j += 1;
+							end;
 						};
 					};
 
 					//Check all oCMobInter objects - all objects with same visual should have object routines (maybe?!)
-
-					//Get first vobPtr
-					vobPtr = MEM_ArrayRead (arr, 0);
 					var string visualName; visualName = Vob_GetVisualName (vobPtr);
 
 					//If this is new visual ...
@@ -502,15 +633,18 @@ func void Game_CheckObjectRoutines () {
 						//Insert visual to array
 						MEM_StringArrayInsert (visListPtr, visualName);
 
-						repeat (i, vobList.numInArray);
+						i = 0;
+						while (i < vobList.numInArray);
 							vobPtr = MEM_ArrayRead (vobListPtr, i);
 
 							if (vobPtr) {
 								if (Hlp_StrCmp (visualName, Vob_GetVisualName (vobPtr))) {
 
+									var zCVob vob; vob = _^ (vobPtr);
+
 									var int flagObjRtnFound; flagObjRtnFound = FALSE;
 
-									//Loop again through all object routines (uh how performance heavy will this be?)
+									//Loop again through all object routines (uh oh, how performance heavy will this be?)
 									var int ptr2; ptr2 = MEM_Game.objRoutineList_next;
 									while (ptr2);
 										var zCListSort l2; l2 = _^ (ptr2);
@@ -518,8 +652,6 @@ func void Game_CheckObjectRoutines () {
 										if (l2.data) {
 											var TObjectRoutine oRtn2;
 											oRtn2 = _^ (l2.data);
-
-											var zCVob vob; vob = _^ (vobPtr);
 
 											if (Hlp_StrCmp (vob._zCObject_objectName, oRtn2.objName)) {
 												flagObjRtnFound = TRUE;
@@ -531,18 +663,21 @@ func void Game_CheckObjectRoutines () {
 									end;
 
 									if (!flagObjRtnFound) {
+										//Report potential problem
 										msg = ConcatStrings (" - (warning - potential issue) object does not have object routine: ", vob._zCObject_objectName);
-										msg = ConcatStrings (msg, " --> objects with same visual have object routines setup.");
+										msg = ConcatStrings (msg, " --> objects with same visual have object routines setup");
+										msg = ConcatStrings (msg, Vob_GetPortalNameAndPosition (vobPtr));
 
 										if (!MEM_StringArrayContains (errListPtr, msg)) {
 											//Insert err msg to array
 											MEM_StringArrayInsert (errListPtr, msg);
-
 											zSpy_Info (msg);
 										};
 									};
 								};
 							};
+
+							i += 1;
 						end;
 					};
 				};
@@ -554,6 +689,7 @@ func void Game_CheckObjectRoutines () {
 		ptr = l.next;
 	end;
 
+	MEM_StringArrayFree (mobRoutineSchemeDuplicatesPtr);
 	MEM_StringArrayFree (visListPtr);
 	MEM_StringArrayFree (errListPtr);
 	MEM_ArrayFree (vobListPtr);
@@ -561,8 +697,256 @@ func void Game_CheckObjectRoutines () {
 	zSpy_Info ("Game_CheckObjectRoutines <--");
 };
 
+/*
+ *	zCWaynet_CheckRoutes
+ *	 - all waypoints in the world should be connected via waynet
+ *	 - this function loops through all of them - and checks whether there is route available from one to another
+ */
+func void zCWaynet_CheckRoutes () {
+	var string msg;
+
+	zSpy_Info ("zCWaynet_CheckRoutes -->");
+
+	msg = oCWorld_GetWorldFilename ();
+	msg = ConcatStrings (" - world: ", msg);
+	zSpy_Info (msg);
+
+	var int susWaypoints; susWaypoints = 0;
+	var int issueCounter; issueCounter = 0;
+	var int susWaypointsListPtr; susWaypointsListPtr = MEM_ArrayCreate ();
+
+	//zCListSort
+	var int ptr; ptr = MEM_WayNet.wplist_next;
+	var int ptr2; ptr2 = MEM_WayNet.wplist_next;
+
+	var zCListSort list;
+	var zCListSort list2;
+
+	var zCWaypoint wp1;
+	var zCWaypoint wp2;
+	var zCWaypoint wp3;
+
+	var int routePtr;
+
+	while (ptr);
+		list = _^ (ptr);
+
+		if (list.data) {
+			wp1 = _^ (list.data);
+
+			while (ptr2);
+				list2 = _^ (ptr2);
+
+				if (list2.data) {
+					wp2 = _^ (list2.data);
+
+					routePtr = zCWayNet_FindRoute_Waypoints (_@ (wp1), _@ (wp2), 0);
+
+					if (!routePtr) {
+						//Insert 'orphan' waypoints to array
+						if (!MEM_StringArrayContains (susWaypointsListPtr, wp1.Name)) {
+							susWaypoints += 1;
+							MEM_StringArrayInsert (susWaypointsListPtr, wp1.Name);
+						};
+
+						//Insert 'orphan' waypoints to array
+						if (!MEM_StringArrayContains (susWaypointsListPtr, wp2.Name)) {
+							susWaypoints += 1;
+							MEM_StringArrayInsert (susWaypointsListPtr, wp2.Name);
+						};
+					};
+
+					zCRoute_Delete (routePtr);
+				};
+
+				ptr2 = list2.next;
+			end;
+		};
+
+		ptr = list.next;
+	end;
+
+	zCRoute_Delete (routePtr);
+
+	var int wpNamePtr;
+	var string wpName;
+
+	var int wpPtr;
+	var int wpPtr2;
+
+	var int i;
+	var int j;
+	var int k;
+
+	var int wayPtr;
+
+	if (susWaypoints) {
+		//identify closed waypoint loops
+		var zCArray wpList; wpList = _^ (susWaypointsListPtr);
+
+		var zCArray closedLoopList;
+
+		i = 0;
+
+		while (i < wpList.numInArray);
+			var int closedLoop;
+			var int closedLoopWaypointsListPtr;
+
+			closedLoop = FALSE;
+			closedLoopWaypointsListPtr = MEM_ArrayCreate ();
+
+			wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, i);
+			if (wpNamePtr) {
+				wpName = MEM_ReadString (wpNamePtr);
+				wpPtr = SearchWaypointByName (wpName);
+
+				if (wpPtr) {
+					closedLoopList = _^ (closedLoopWaypointsListPtr);
+
+					k = -1;
+					while (k < closedLoopList.numInArray);
+
+						j = 0;
+
+						while (j < wpList.numInArray);
+							if (j != i) {
+								wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, j);
+
+								if (wpNamePtr) {
+									wpName = MEM_ReadString (wpNamePtr);
+									wpPtr2 = SearchWaypointByName (wpName);
+
+									if (wpPtr2) {
+										wayPtr = zCWaypoint_HasWay (wpPtr, wpPtr2);
+
+										if (wayPtr) {
+											if (k == -1) {
+												wp1 = _^ (wpPtr);
+												if (!MEM_StringArrayContains (closedLoopWaypointsListPtr, wp1.Name)) {
+													MEM_StringArrayInsert (closedLoopWaypointsListPtr, wp1.Name);
+												};
+											};
+
+											wp2 = _^ (wpPtr2);
+
+											if (!MEM_StringArrayContains (closedLoopWaypointsListPtr, wp2.Name)) {
+												MEM_StringArrayInsert (closedLoopWaypointsListPtr, wp2.Name);
+											};
+
+											MEM_StringArrayRemoveIndex (susWaypointsListPtr, j);
+											j -= 1;
+
+											closedLoop = TRUE;
+										};
+									};
+								};
+							};
+
+							j += 1;
+						end;
+
+						k += 1;
+
+						if (closedLoop) {
+							if (k < closedLoopList.numInArray) {
+								wpNamePtr = MEM_ArrayRead (closedLoopWaypointsListPtr, k);
+								if (wpNamePtr) {
+									wpName = MEM_ReadString (wpNamePtr);
+									wpPtr = SearchWaypointByName (wpName);
+								};
+							};
+						};
+					end;
+				};
+			};
+
+			if (closedLoop) {
+				msg = " - closed waypoint loop found: ";
+
+				j = 0;
+				while (j < closedLoopList.numInArray);
+					wpNamePtr = MEM_ArrayRead (closedLoopWaypointsListPtr, j);
+
+					if (wpNamePtr) {
+						wpName = MEM_ReadString (wpNamePtr);
+
+						if (j > 0) {
+							msg = ConcatStrings (msg, ", ");
+						};
+
+						msg = ConcatStrings (msg, wpName);
+					};
+
+					j += 1;
+				end;
+
+				zSpy_Info (msg);
+				issueCounter += 1;
+
+				//restart loop completely (we were removing indexes left and right ...)
+				i = 0;
+			};
+
+			MEM_StringArrayFree (closedLoopWaypointsListPtr);
+
+			i += 1;
+		end;
+
+		//identify orphan waypoints
+		wpList = _^ (susWaypointsListPtr);
+
+		i = 0;
+		while (i < wpList.numInArray);
+			wpNamePtr = MEM_ArrayRead (susWaypointsListPtr, i);
+
+			if (wpNamePtr) {
+				wpName = MEM_ReadString (wpNamePtr);
+				wpPtr = SearchWaypointByName (wpName);
+
+				//Double check if orphaned (we might have false positives from closed loop identification)
+				var int orphaned; orphaned = TRUE;
+
+				ptr = MEM_WayNet.wplist_next;
+				while (ptr);
+					list = _^ (ptr);
+
+					if (list.data) {
+						wpPtr2 = list.data;
+
+						if (zCWaypoint_HasWay (wpPtr, wpPtr2)) {
+							orphaned = FALSE;
+							break;
+						};
+					};
+
+					ptr = list.next;
+				end;
+
+				if (orphaned) {
+					msg = ConcatStrings (" - orphan waypoint found: ", wpName);
+					zSpy_Info (msg);
+
+					issueCounter += 1;
+				};
+
+			};
+
+			i += 1;
+		end;
+	};
+
+	if (!issueCounter) {
+		zSpy_Info (" - no problematic waypoints found.");
+	};
+
+	MEM_StringArrayFree (susWaypointsListPtr);
+
+	zSpy_Info ("zCWaynet_CheckRoutes <--");
+};
+
 func void Vobs_CheckProperties () {
 	Game_CheckObjectRoutines ();
 	oCMob_CheckProperties ();
 	zCTrigger_CheckProperties ();
+	zCWaynet_CheckRoutes ();
 };

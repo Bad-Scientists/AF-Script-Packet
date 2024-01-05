@@ -7,6 +7,7 @@
 
 var int TestSuite_Active;
 var int TestSuite_DirectCall;
+var int TestSuite_ReportOnlyIssues;
 var int TestSuite_bErrorLevel;
 
 func void TestSuite_Init () {
@@ -74,7 +75,7 @@ func void TestSuite_EquipItem (var int slfInstance, var int itemInstance) {
 	//If Npc does not have item - create it and notify modder
 	if (!Npc_HasItems (slf, itemInstance)) {
 		var string msg;
-		msg = ConcatStrings ("TestSuite_EquipItem: npc '", slf.Name);
+		msg = ConcatStrings ("TestSuite_EquipItem - npc: '", slf.Name);
 		msg = ConcatStrings ("' didn't have item ", GetSymbolName (itemInstance));
 		MEM_Info (msg);
 
@@ -110,7 +111,7 @@ func void TestSuite_Exit_Dialog () {
 	} else {
 		const int once = 0;
 		if (!once) {
-			MEM_Info ("TestSuite_Exit_Dialog: method Hero_SetInvincible missing!");
+			MEM_Info ("TestSuite_Exit_Dialog - method Hero_SetInvincible missing!");
 			once = 1;
 		};
 	};
@@ -327,7 +328,7 @@ func void TestSuite_TeleportToNpc (var int npcInstance) {
 	} else {
 		const int once = 0;
 		if (!once) {
-			MEM_Info ("TestSuite_TeleportToNpc: method Hero_SetInvincible missing!");
+			MEM_Info ("TestSuite_TeleportToNpc - method Hero_SetInvincible missing!");
 			once = 1;
 		};
 	};
@@ -360,7 +361,7 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
     // Find instance symbol by instance name
     var int symbID; symbID = MEM_GetSymbolIndex(infoName);
     if (symbID < 0) || (symbID >= currSymbolTableLength) {
-        MEM_Info (ConcatStrings("TestSuite_ProcessInfo: symbol not found: ", infoName));
+        MEM_Info (ConcatStrings("TestSuite_ProcessInfo - symbol not found: ", infoName));
         return;
     };
 
@@ -371,11 +372,12 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
     // Verify that it is an instance
     if ((symb.bitfield & zCPar_Symbol_bitfield_type) != zPAR_TYPE_INSTANCE)
     || (!symb.offset) {
-        MEM_Info (ConcatStrings("TestSuite_ProcessInfo: symbol is not a C_Info instance: ", infoName));
+        MEM_Info (ConcatStrings("TestSuite_ProcessInfo - symbol is not a C_Info instance: ", infoName));
         return;
     };
 
     // Verify that it is a oCInfo instance
+	var int infoPtr; infoPtr = (symb.offset - oCInfo_C_INFO_Offset);
 
 	//0x007DCD8C const oCInfo::`vftable'
 	const int oCInfo___vftable_G1 = 8244620;
@@ -383,41 +385,45 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 	//0x0083C44C const oCInfo::`vftable'
 	const int oCInfo___vftable_G2 = 8635468;
 
-    if (MEM_ReadInt(symb.offset - oCInfo_C_INFO_Offset) != MEMINT_SwitchG1G2 (oCInfo___vftable_G1, oCInfo___vftable_G2)) {
-        MEM_Info (ConcatStrings("TestSuite_ProcessInfo: symbol is not an oCInfo instance: ", infoName));
+    if (MEM_ReadInt(infoPtr) != MEMINT_SwitchG1G2 (oCInfo___vftable_G1, oCInfo___vftable_G2)) {
+        MEM_Info (ConcatStrings("TestSuite_ProcessInfo - symbol is not an oCInfo instance: ", infoName));
         return;
     };
 
 //--
 
-	MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - processing:", infoQuery));
+	if (!TestSuite_ReportOnlyIssues) {
+		MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - processing: ", infoName));
+	};
 
 //-- get info
 
-    var oCInfo info; info = _^ (symb.offset - oCInfo_C_INFO_Offset);
+    var oCInfo info; info = _^ (infoPtr);
 
 //--
 
 	var C_NPC selfBackup; selfBackup = Hlp_GetNpc (self);
 	var C_NPC otherBackup; otherBackup = Hlp_GetNpc (other);
 
-	self = Hlp_GetNpc (info.npc);
+	var C_NPC slf;
+	var C_NPC oth;
 
-	if (!Hlp_IsValidNpc (self)) {
+	slf = Hlp_GetNpc (info.npc);
+
+	if (!Hlp_IsValidNpc (slf)) {
 		var string npcInstanceName; npcInstanceName = GetSymbolName (info.npc);
 		var string worldName; worldName = oCWorld_GetWorldFilename ();
 		var string s;
 
-		s = Concat3Strings ("TestSuite_ProcessInfo: world ", worldName, " ");
+		s = Concat3Strings ("TestSuite_ProcessInfo - world ", worldName, " ");
 		MEM_Info (Concat5Strings (s, "dialogue instance ", infoName, " npc is invalid: ", npcInstanceName));
 
 		var C_NPC diaMeatbug;
 
 		const int once = 0;
 		if (!once) {
-			MEM_Info (" - this might be caused by testing dialogue in different world (so Npc is not inserted in current world)");
+			MEM_Info (" - this might be caused by testing dialogue in different world (so Npc is not inserted in current world) or you forgot to insert Npc into the world - double check it :)");
 			MEM_Info (" - or maybe your test suite case is not properly structured - double-check it");
-			MEM_Info (" - or you indeed messed up and Npc was never inserted to the world - double-check it");
 			MEM_Info (" - in order to simulate dialogue properly script will spawn meatbug instead :) ...");
 			once = 1;
 		};
@@ -427,14 +433,18 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 			diaMeatbug = Hlp_GetNpc (self);
 		};
 
-		self = Hlp_GetNpc (diaMeatbug);
+		slf = Hlp_GetNpc (diaMeatbug);
 	};
 
-	other = Hlp_GetNpc (hero);
+	oth = Hlp_GetNpc (hero);
 
 //-- Override state - set to ZS_TALK
 
-	Npc_SetAIState (self, "ZS_TALK");
+	Npc_SetAIState (slf, "ZS_TALK");
+
+//-- Override info ptr (probably not required - but wont harm)
+
+	MEM_InformationMan.Info = infoPtr;
 
 //--
 
@@ -445,16 +455,16 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 		retVal = MEMINT_PopInt();
 
 		if (!retVal) {
-			MEM_Info (ConcatStrings ("TestSuite_ProcessInfo: condition unfulfilled: ", infoName));
+			MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - condition unfulfilled: ", GetSymbolName (info.conditions)));
 		};
 	} else {
-		MEM_Info (ConcatStrings ("TestSuite_ProcessInfo: condition function undefined: ", infoName));
+		MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - condition function undefined: ", infoName));
 	};
 
 	//If told already (and not permanent) - exit
 	if (info.told) {
 		if (!info.permanent) {
-			MEM_Info (ConcatStrings ("TestSuite_ProcessInfo: info already told: ", infoName));
+			MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - info already told: ", infoName));
 			return;
 		};
 	};
@@ -466,12 +476,16 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 //-- call .information function
 
 	if (info.information > -1) {
+		//Setup global variables
+		self = Hlp_GetNpc (slf);
+		other = Hlp_GetNpc (oth);
+
 		MEM_CallByID (info.information);
 	} else {
-		MEM_Info (ConcatStrings ("TestSuite_ProcessInfo: information function undefined: ", infoName));
+		MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - information function undefined: ", infoName));
 	};
 
-//-- call subsequemt choices (if specified by query)
+//-- call subsequent choices (if specified by query)
 
 	var int index; index = STR_IndexOf (infoQuery, ".");
 	if (index > -1) {
@@ -485,7 +499,15 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 			var string infoChoice; infoChoice = STR_Split (infoQuery, "|", i);
 			symbID = MEM_GetSymbolIndex(infoChoice);
 
+			if (!TestSuite_ReportOnlyIssues) {
+				MEM_Info (ConcatStrings ("TestSuite_ProcessInfo - sub: ", infoChoice));
+			};
+
 			if (symbID != -1) {
+				//Setup global variables
+				self = Hlp_GetNpc (slf);
+				other = Hlp_GetNpc (oth);
+
 				MEM_CallByID (symbID);
 			};
 		end;
@@ -493,9 +515,22 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 
 //-- clear AI queue (non-important stuff)
 
-	TestSuite_ClearEM (self);
-	TestSuite_ClearEM (other);
+	TestSuite_ClearEM (slf);
+	TestSuite_ClearEM (oth);
 
 	self = Hlp_GetNpc (selfBackup);
 	other = Hlp_GetNpc (otherBackup);
+};
+
+/*
+ *	TestSuite_Skip
+ *	 - function sets local variable function.once to 1
+ */
+func void TestSuite_Skip (var func f) {
+	var int ID; ID = MEM_GetFuncID (f);
+	var string s; s = GetSymbolName (ID);
+	s = ConcatStrings (s, ".");
+	s = ConcatStrings (s, "ONCE");
+	ID = MEM_GetSymbolIndex (s);
+	SetSymbolIntValue (ID, 1);
 };

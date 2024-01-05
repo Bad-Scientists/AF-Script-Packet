@@ -63,6 +63,12 @@ func void _hook_zCConsole_HandleEvent () {
 
 	if (key == KEY_NUMPADENTER) { key = KEY_RETURN; update = TRUE; };
 
+	if (key == KEY_BACKSLASH) {
+		console.instr = ConcatStrings (console.instr, BtoC (92));
+		zCConsole_Update ();
+		cancel = TRUE;
+	};
+
 	//Controls - up / down keys list through history
 	if ((key == KEY_UPARROW) || (key == KEY_INSERT)) {
 		historyIndex -= 1;
