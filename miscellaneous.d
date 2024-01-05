@@ -955,6 +955,14 @@ func void Npc_SetAIStateToPos (var int slfInstance, var int posPtr) {
 	};
 };
 
+func void Npc_SetAIStateToCurrentPos (var int slfInstance) {
+	var int pos[3];
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos[0]))) {
+		Npc_SetAIStateToPos (slf, _@ (pos[0]));
+	};
+};
+
 /*
  *	Npc_GetCurrentWorldPos
  *	 - function gets current world position of an Npc (either from Routine manager or using spawnPoint in case of aiStateDriven logic)
