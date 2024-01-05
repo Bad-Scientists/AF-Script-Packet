@@ -548,11 +548,23 @@ func void G1_EnhancedPickPocketing_Init () {
 		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 5, 133); //85 C0 test eax, eax
 		MEM_WriteByte (oCNpc__CheckSpecialSituations_IsVictimAwareOfTheft_CheckBodyStates_G1 + 6, 192);
 
+//-- Open inventory even if it is empty (as we want to allow player to put items into victims inventory)
+
+		//006bb64e
+		const int oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 = 7059022;
+		MemoryProtectionOverride (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1, 3);
+
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 0, 233); //e9 da jmp LAB_006bb72d --> jump to open inventory instruction unconditionally
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 1, 218); //(006bb72d - 006bb64e - 5)
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 2, 0);
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 3, 0);
+		MEM_WriteByte (oCNpc__OpenSteal_StealContainerIsEmpty_Cond_G1 + 4, 0);
+
 //-- Additional hooks explaining why pickpocketing was not successfull + making sure Npc reacts to stealing
 
 		//006BB654
-		const int oCNpc__OpenSteal_StealContainerIsEmpty_G1 = 7059028;
-		HookEngine (oCNpc__OpenSteal_StealContainerIsEmpty_G1, 5, "_hook_oCNpc_OpenSteal_StealContainerIsEmpty");
+		//const int oCNpc__OpenSteal_StealContainerIsEmpty_G1 = 7059028;
+		//HookEngine (oCNpc__OpenSteal_StealContainerIsEmpty_G1, 5, "_hook_oCNpc_OpenSteal_StealContainerIsEmpty");
 
 		//006bb767
 		const int oCNpc__OpenSteal_Conditions_G1 = 7059303;
