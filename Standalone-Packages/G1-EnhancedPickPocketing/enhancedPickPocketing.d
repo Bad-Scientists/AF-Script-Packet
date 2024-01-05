@@ -230,7 +230,7 @@ func void _hook_oCNpc_OpenSteal_StealContainerIsEmpty () {
 	};
 
 	//Call API function
-	API_CallByString ("ENHANCEDPICKPOCETING_EMPTYINVENTORY");
+	API_CallByString ("EnhancedPickPocketing_EmptyInventory");
 };
 
 /*
@@ -264,7 +264,7 @@ func void _hook_oCNpc_OpenSteal_ConditionsFailed () {
 
 	if (gf (fDistToStealNpc, fFocusRange)) {
 		//Call API function
-		API_CallByString ("ENHANCEDPICKPOCETING_TOOFAR");
+		API_CallByString ("EnhancedPickPocketing_TooFar");
 
 		return;
 	};
@@ -347,7 +347,7 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 					const int symbID3 = 0;
 
 					if (!symbID3) {
-						symbID3 = MEM_FindParserSymbol ("ENHANCEDPICKPOCKETING_STEALITEMANYWAY");
+						symbID3 = MEM_FindParserSymbol ("EnhancedPickPocketing_DoStealItemAnyway");
 					};
 
 					//By default ... allow stealing 1 item at a time (TODO: do we want to allow stealing more at once?)

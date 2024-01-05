@@ -34,6 +34,6 @@ func void EnhancedPickPocketing_TooFar () {
 	PrintScreen ("You're too far away!", -1, 45, ENHANCEDTRADING_FONT, _TIME_MESSAGE_LOGENTRY);
 };
 
-func void EnhancedPickPocketing_StealItemAnyway (var C_NPC npc, var int itemPtr) {
+func void EnhancedPickPocketing_DoStealItemAnyway (var C_NPC npc, var int itemPtr) {
 };
 */
