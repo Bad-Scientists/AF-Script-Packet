@@ -41,6 +41,24 @@ const int zCTrigger_bitfield_sendUntrigger     = ((1 << 1) - 1) << (8 + 2);		//1
 
 const int zCTrigger_bitfield_reactToOnContact	= ((1 << 1) - 1) << (8 + 4);		//4096
 
+func void zCTrigger_EnableCallEventFuncs (var string triggerName) {
+	var int vobPtr; vobPtr = MEM_SearchVobByName (triggerName);
+
+	if (Hlp_Is_oCTriggerScript (vobPtr)) {
+		var oCTriggerScript ts; ts = _^ (vobPtr);
+		ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_callEventFuncs;
+	};
+};
+
+func void zCTrigger_EnableOnContactEvent (var string triggerName) {
+	var int vobPtr; vobPtr = MEM_SearchVobByName (triggerName);
+
+	if (Hlp_Is_oCTriggerScript (vobPtr)) {
+		var oCTriggerScript ts; ts = _^ (vobPtr);
+		ts._zCTrigger_bitfield = ts._zCTrigger_bitfield | zCTrigger_bitfield_reactToOnContact;
+	};
+};
+
 func int zCTrigger_CanBeActivatedNow (var int trigger, var int vobPtr) {
 	//0x005E33B0 protected: virtual int __thiscall zCTrigger::CanBeActivatedNow(class zCVob *)
 	const int zCTrigger__CanBeActivatedNow_G1 = 6173616;
