@@ -33,6 +33,7 @@ EngineClasses_G1\oSSpawnNode.d
 EngineClasses_G1\zTSound3DParams.d
 EngineClasses_G1\zCActiveSnd.d
 EngineClasses_G1\zCSndFrame.d
+EngineClasses_G1\zCVobSound.d
 
 EngineClasses_G1\zCWay.d
 EngineClasses_G1\oSSpawnNode.d

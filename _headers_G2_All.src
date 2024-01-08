@@ -25,6 +25,7 @@ EngineClasses_G2\oCRtnManager.d
 EngineClasses_G2\zTSound3DParams.d
 EngineClasses_G2\zCActiveSnd.d
 EngineClasses_G2\zCSndFrame.d
+EngineClasses_G2\zCVobSound.d
 
 EngineClasses_G2\zCWay.d
 EngineClasses_G2\oSSpawnNode.d
