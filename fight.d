@@ -201,3 +201,24 @@ func void AI_Attack_Ext (var int slfInstance, var int subType, var int combo) {
 	//Add new msg to Event Manager
 	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
 };
+
+/*
+func void testComboFistFight () {
+	var oCNpc slf; slf = Hlp_GetNpc (PC_Thief);
+	Npc_ClearAIQueue (slf);
+	slf.enemy = _@ (hero);
+
+	FM_SetToFistMode (slf);
+	AI_Attack_Ext (slf, EV_ATTACKFORWARD, 2);
+};
+
+func void testComboFight () {
+	var oCNpc slf; slf = Hlp_GetNpc (PC_Thief);
+	Npc_ClearAIQueue (slf);
+	slf.enemy = _@ (hero);
+
+	AI_ReadyMeleeWeapon (slf);
+
+	AI_Attack_Ext (slf, EV_ATTACKFORWARD, 4);
+};
+*/
