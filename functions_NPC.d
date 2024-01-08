@@ -1240,6 +1240,30 @@ func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
 };
 
 /*
+ *	Npc_StartAIState
+ *	!updates global variable self!
+ */
+func int Npc_StartAIState(var int slfInstance, var string stateName, var int endOldState, var int timeBehaviour, var int timedF, var int isRtnState) {
+	//0x006C5350 public: int __thiscall oCNpc_States::StartAIState(class zSTRING const &,int,int,float,int)
+	const int oCNpc_States__StartAIState_G1 = 7099216;
+
+	//0x0076C700 public: int __thiscall oCNpc_States::StartAIState(class zSTRING const &,int,int,float,int)
+	const int oCNpc_States__StartAIState_G2 = 7784192;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return FALSE; };
+
+	CALL_IntParam (isRtnState);
+	CALL_FloatParam (timedF);
+	CALL_IntParam (timeBehaviour);
+	CALL_IntParam (endOldState);
+	CALL_zStringPtrParam (stateName);
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__StartAIState_G1, oCNpc_States__StartAIState_G2));
+
+	return CALL_RetValAsInt ();
+};
+
+/*
  *
  */
 func void NPC_SetSoundVobPtr (var int slfInstance, var int vobPtr) {
