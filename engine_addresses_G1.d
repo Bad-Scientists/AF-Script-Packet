@@ -21,13 +21,6 @@ const int MOUSE_BUTTON_RIGHT = 2052;
 //528        - Backward button
 
 /*
- *	Display time for subtitles (min / max time)
- */
-
-const int NPC_TALK_TIME_MIN = 8707632; //Default 1000 ms
-const int NPC_TALK_TIME_MAX = 8707636; //Default 8000 ms
-
-/*
  *	Trade sections
  */
 

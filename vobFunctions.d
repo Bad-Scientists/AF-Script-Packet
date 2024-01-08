@@ -1101,24 +1101,6 @@ func void zCVob_SetTrafo (var int vobPtr, var int trafoPtr) {
 };
 
 /*
- *	Created by Showdown & Lehona
- *	Original post: https://forum.worldofplayers.de/forum/threads/1299679-Skriptpaket-Ikarus-4/page11?p=24735929&viewfull=1#post24735929
- *	I just added G1 address
- */
-func void SetRainThroughVobs (var int bool) {
-	const int Raincheck_G1 = 6000805;
-	const int Raincheck_G2 = 6169210;
-
-	MemoryProtectionOverride (MEMINT_SwitchG1G2(Raincheck_G1, Raincheck_G2), 4);
-
-	if (!bool) {
-		MEM_WriteByte (MEMINT_SwitchG1G2 (Raincheck_G1, Raincheck_G2), 224);
-	} else {
-		MEM_WriteByte (MEMINT_SwitchG1G2 (Raincheck_G1, Raincheck_G2), 226);
-	};
-};
-
-/*
  *	Check if vob pointer is in active voblist array
  */
 func int VobPtr_IsInActiveVobList (var int vobPtr) {
