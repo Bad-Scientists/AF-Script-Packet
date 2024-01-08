@@ -809,6 +809,18 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 	return CALL_RetValAsPtr ();
 };
 
+func int Npc_GetNodePositionWorldToPos (var int slfInstance, var string nodeName, var int posPtr) {
+	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (slfInstance, nodeName);
+
+	if (nodePosPtr) {
+		CopyVector (nodePosPtr, posPtr);
+		MEM_Free (nodePosPtr);
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 /*
  *	NPC_GetDistToPos // int
  */
