@@ -42,7 +42,7 @@ func int zCModel_GetAniIdFromAniName (var int modelPtr, var string aniName) {
 	const int zCModel__GetAniIdFromAniName_G2 = 6365296;
 
 	// check
-	if (!modelPtr) { return 0; };
+	if (!modelPtr) { return -1; };
 	aniName = Str_Upper (aniName);
 
 	//CALL_zstringPtrParam cannot be used in recyclable call
