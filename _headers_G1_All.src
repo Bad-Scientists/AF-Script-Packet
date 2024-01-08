@@ -157,6 +157,9 @@ fight.d
 
 G2 NoTR emulation.d
 
+Patches\G1\*.d
+Patches\G12\*.d
+
 Standalone-Packages\G1-EverloomingBarrier\barrier.d
 
 Standalone-Packages\G12-EnablePlayerStates\enablePlayerStates.d
@@ -242,6 +245,9 @@ Standalone-Packages\G12-DespawnOnlyIfEmpty\despawnOnlyIfEmpty.d
 Standalone-Packages\G12-AddPerceptions\addPerceptions.d
 
 Standalone-Packages\G12-MoonPhases\moonPhases.d
+
+Standalone-Packages\G12-Trialogue\trialogue.d
+
 Standalone-Packages\G12-MenuLogAddSectionCount\menuLogAddSectionCount.d
 
 Standalone-Packages\G12-EquipControl\equipControl.d
