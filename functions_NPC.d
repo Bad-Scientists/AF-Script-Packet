@@ -23,9 +23,7 @@ func int NPC_GetWalkMode (var int slfInstance) {
 	const int oCAniCtrl_Human__GetWalkModeString_G2 = 6991424;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
-
 	if (!slf.AniCtrl) { return -1; };
 
 	CALL_RetValIszString();
@@ -34,9 +32,9 @@ func int NPC_GetWalkMode (var int slfInstance) {
 	var string result;
 	result = CALL_RetValAszstring ();
 
-	if (Hlp_StrCmp (result, "RUN"))		{ 	return NPC_RUN; 	} else
-	if (Hlp_StrCmp (result, "WALK"))	{ 	return NPC_WALK;	} else
-	if (Hlp_StrCmp (result, "SNEAK"))	{	return NPC_SNEAK;	} else
+	if (Hlp_StrCmp (result, "RUN"))		{ 	return NPC_RUN; 	};
+	if (Hlp_StrCmp (result, "WALK"))	{ 	return NPC_WALK;	};
+	if (Hlp_StrCmp (result, "SNEAK"))	{	return NPC_SNEAK;	};
 	if (Hlp_StrCmp (result, ""))		{	return NPC_INWATER;	};
 
 	return -1;
@@ -54,14 +52,21 @@ func int NPC_IsStanding (var int slfInstance) {
 	const int oCAniCtrl_Human__IsStanding_G2 = 7003872;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+	if (!slf.aniCtrl) { return FALSE; };
 
-	if (!slf.AniCtrl) { return FALSE; };
+	var int aniCtrlPtr; aniCtrlPtr = slf.aniCtrl;
 
-	CALL__thiscall(slf.AniCtrl, MEMINT_SwitchG1G2 (oCAniCtrl_Human__IsStanding_G1, oCAniCtrl_Human__IsStanding_G2));
+	var int retVal;
 
-	return CALL_RetValAsInt ();
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall(_@(aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__IsStanding_G1, oCAniCtrl_Human__IsStanding_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };
 
 func int NPC_IsWalking (var int slfInstance) {
@@ -809,6 +814,18 @@ func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {
 	return CALL_RetValAsPtr ();
 };
 
+func int Npc_GetNodePositionWorldToPos (var int slfInstance, var string nodeName, var int posPtr) {
+	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (slfInstance, nodeName);
+
+	if (nodePosPtr) {
+		CopyVector (nodePosPtr, posPtr);
+		MEM_Free (nodePosPtr);
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 /*
  *	NPC_GetDistToPos // int
  */
@@ -853,12 +870,21 @@ func int NPC_GetShowAI (var int slfInstance) {
 	const int oCAIHuman__GetShowAI_G2 = 6936704;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
+	if (!slf.human_ai) { return 0; };
 
-	CALL__thiscall (slf.human_ai, MEMINT_SwitchG1G2 (oCAIHuman__GetShowAI_G1, oCAIHuman__GetShowAI_G2));
+	var int human_aiPtr; human_aiPtr = slf.human_ai;
 
-	return CALL_RetValAsInt ();
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall(_@(human_aiPtr), MEMINT_SwitchG1G2 (oCAIHuman__GetShowAI_G1, oCAIHuman__GetShowAI_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
 };
 
 func void NPC_SetShowAI (var int slfInstance, var int enable) {
@@ -869,11 +895,17 @@ func void NPC_SetShowAI (var int slfInstance, var int enable) {
 	const int oCAIHuman__SetShowAI_G2 = 6936672;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-
 	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (!slf.human_ai) { return; };
 
-	CALL_IntParam (enable);
-	CALL__thiscall (slf.human_ai, MEMINT_SwitchG1G2 (oCAIHuman__SetShowAI_G1, oCAIHuman__SetShowAI_G2));
+	var int human_aiPtr; human_aiPtr = slf.human_ai;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@ (enable));
+		CALL__thiscall(_@(human_aiPtr), MEMINT_SwitchG1G2 (oCAIHuman__SetShowAI_G1, oCAIHuman__SetShowAI_G2));
+		call = CALL_End();
+	};
 };
 
 func void NPC_MobSetIdealPosition (var int slfInstance) {
@@ -1237,6 +1269,30 @@ func void Npc_InitAIStateDriven (var int slfInstance, var int posPtr) {
 		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__InitAIStateDriven_G1, oCNpc_States__InitAIStateDriven_G2));
 		call = CALL_End();
 	};
+};
+
+/*
+ *	Npc_StartAIState
+ *	!updates global variable self!
+ */
+func int Npc_StartAIState(var int slfInstance, var string stateName, var int endOldState, var int timeBehaviour, var int timedF, var int isRtnState) {
+	//0x006C5350 public: int __thiscall oCNpc_States::StartAIState(class zSTRING const &,int,int,float,int)
+	const int oCNpc_States__StartAIState_G1 = 7099216;
+
+	//0x0076C700 public: int __thiscall oCNpc_States::StartAIState(class zSTRING const &,int,int,float,int)
+	const int oCNpc_States__StartAIState_G2 = 7784192;
+
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return FALSE; };
+
+	CALL_IntParam (isRtnState);
+	CALL_FloatParam (timedF);
+	CALL_IntParam (timeBehaviour);
+	CALL_IntParam (endOldState);
+	CALL_zStringPtrParam (stateName);
+	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__StartAIState_G1, oCNpc_States__StartAIState_G2));
+
+	return CALL_RetValAsInt ();
 };
 
 /*

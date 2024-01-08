@@ -25,6 +25,7 @@ EngineClasses_G2\oCRtnManager.d
 EngineClasses_G2\zTSound3DParams.d
 EngineClasses_G2\zCActiveSnd.d
 EngineClasses_G2\zCSndFrame.d
+EngineClasses_G2\zCVobSound.d
 
 EngineClasses_G2\zCWay.d
 EngineClasses_G2\oSSpawnNode.d
@@ -37,6 +38,7 @@ EngineClasses_G2\TObjectRoutine.d
 EngineClasses_G2\zCConDat.d
 
 EngineClasses_G2\zTSpatialState.d
+EngineClasses_G2\zTConfig.d
 
 ScriptBin\strings.d
 ScriptBin\convert.d
@@ -201,6 +203,7 @@ Standalone-Packages\G12-Debugging\create.d
 Standalone-Packages\G12-Debugging\printPos.d
 Standalone-Packages\G12-Debugging\holdTime.d
 Standalone-Packages\G12-Debugging\puppetMaster.d
+Standalone-Packages\G12-Debugging\consoleHistory.d
 
 Standalone-Packages\G12-Debugging\vobsCheckProperties.d
 Standalone-Packages\G12-Debugging\testSuite.d

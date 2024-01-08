@@ -15,7 +15,7 @@ const int BAR_TEX_SPRINTMODE_TIMEDOVERLAY = 1;	//Bar texture for timed overlays 
 const string PC_SPRINTMODEBAR_TEX = "BAR_MISC.TGA";
 const string PC_SPRINTMODEBAR_TIMED_TEX = "BAR_SPRINTMODE_TIMEDOVERLAY.TGA";
 
-//Default spint mode overlay
+//Default sprint mode overlay
 const string PC_SPRINTMODEOVERLAYNAME = "HUMANS_SPRINT.MDS";
 const string PC_SPRINTMODETIMEDOVERLAYNAME = "HUMANS_SPRINT.MDS";
 

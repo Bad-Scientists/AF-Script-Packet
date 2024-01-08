@@ -682,94 +682,96 @@ func int NPC_GetFreepoint (var int slfInstance, var string freePoint, var string
 
 		//Seems like engine still returns true when NPC is standing on freepoint
 		//(this function also checks if object is zCVobSpot)
-		if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
-			if (searchFlags & SEARCHVOBLIST_CANSEE) {
-				if (!oCNPC_CanSee (slfInstance, vobPtr, 1)) {
+		if (!zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
+			continue;
+		};
+
+		if (searchFlags & SEARCHVOBLIST_CANSEE) {
+			if (!oCNPC_CanSee (slfInstance, vobPtr, 1)) {
+				continue;
+			};
+		};
+
+		//Check for portal room owner
+		if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
+			var string portalName; portalName = Vob_GetPortalName (vobPtr);
+
+			//If portal room is owned by Npc
+			if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
+				//If this portal is not owned by me - ignore - pretend we don't see it :)
+				if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
+					continue;
+				};
+			};
+		};
+
+		if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
+			var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+
+			//Ignore FP that Npc is currently standing on
+			if (searchFlags & SEARCHVOBLIST_IGNORECURRENTFP) {
+				if (vobSpot.inUseVob == slfPtr) {
 					continue;
 				};
 			};
 
-			//Check for portal room owner
-			if (searchFlags & SEARCHVOBLIST_CHECKPORTALROOMOWNER) {
-				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+			var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
+			var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
 
-				//If portal room is owned by Npc
-				if (Wld_PortalGetOwnerInstanceID (portalName) > -1) {
-					//If this portal is not owned by me - ignore - pretend we don't see it :)
-					if (!Wld_PortalIsOwnedByNPC (portalName, slf)) {
-						continue;
+			//Matching freePoint name
+			if (index1 > -1) {
+				//Find route from Npc to vob - get total distance if Npc travels by waynet
+				if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+					if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+						routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+						dist = zCRoute_GetLength (routePtr); //float
+						zCRoute_Delete (routePtr);
+
+						dist = RoundF (dist);
+					};
+				} else {
+					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+				};
+
+				if ((dist <= distLimit) || (distLimit == -1)) {
+					if (!firstPtr) { firstPtr = vobPtr; };
+
+					if (dist < maxDist) {
+						nearestPtr = vobPtr;
+						maxDist = dist;
 					};
 				};
+
+				//'Randomize' outcome - this way we won't be searching for nearest FP
+				/*
+				if (searchFlags & SEARCHVOBLIST_IGNOREORDER) {
+					if (Hlp_Random (100) > 50) {
+						break;
+					};
+				};
+				*/
 			};
 
-			if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
-				var zCVobSpot vobSpot; vobSpot = _^ (vobPtr);
+			//Matching freePoint name (not matching deprioritizeFreePoint)
+			if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
 
-				//Ignore FP that Npc is currently standing on
-				if (searchFlags & SEARCHVOBLIST_IGNORECURRENTFP) {
-					if (zCVobSpot_IsAvailable (vobPtr, slfPtr)) {
-						if (vobSpot.inUseVob == slfPtr) {
-							continue;
-						};
+				//Find route from Npc to vob - get total distance if Npc travels by waynet
+				if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+					if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+						routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+						dist2 = zCRoute_GetLength (routePtr); //float
+						zCRoute_Delete (routePtr);
+
+						dist2 = RoundF (dist2);
 					};
+				} else {
+					dist2 = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
 				};
 
-				var int index1; index1 = STR_IndexOf (vobSpot._zCObject_objectName, freePoint);
-				var int index2; index2 = STR_IndexOf (vobSpot._zCObject_objectName, deprioritizeFreePoint);
-
-				//Matching freePoint name
-				if (index1 > -1) {
-					//Find route from Npc to vob - get total distance if Npc travels by waynet
-					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
-						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
-							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
-							dist = zCRoute_GetLength (routePtr); //float
-							zCRoute_Delete (routePtr);
-
-							dist = RoundF (dist);
-						};
-					} else {
-						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
-					};
-
-					if ((dist <= distLimit) || (distLimit == -1)) {
-						if (!firstPtr) { firstPtr = vobPtr; };
-
-						if (dist < maxDist) {
-							nearestPtr = vobPtr;
-							maxDist = dist;
-						};
-					};
-
-					//'Randomize' outcome - this way we won't be searching for nearest FP
-					if (searchFlags & SEARCHVOBLIST_IGNOREORDER) {
-						if (Hlp_Random (100) > 50) {
-							break;
-						};
-					};
-				};
-
-				//Matching freePoint name (not matching deprioritizeFreePoint)
-				if ((index1 > -1) && (index2 == -1) && (STR_Len (deprioritizeFreePoint) > 0)) {
-
-					//Find route from Npc to vob - get total distance if Npc travels by waynet
-					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
-						if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
-							routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
-							dist2 = zCRoute_GetLength (routePtr); //float
-							zCRoute_Delete (routePtr);
-
-							dist2 = RoundF (dist2);
-						};
-					} else {
-						dist2 = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
-					};
-
-					if ((dist2 <= distLimit) || (distLimit == -1)) {
-						if (dist2 < maxDist2) {
-							nearestPtr2 = vobPtr;
-							maxDist2 = dist2;
-						};
+				if ((dist2 <= distLimit) || (distLimit == -1)) {
+					if (dist2 < maxDist2) {
+						nearestPtr2 = vobPtr;
+						maxDist2 = dist2;
 					};
 				};
 			};
@@ -1619,52 +1621,55 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchWay
 	repeat (i, vobList.numInArray);
 		vobPtr = MEM_ReadIntArray (vobList.array, i);
 
-		if (Hlp_Is_zCVobWaypoint (vobPtr)) {
-			var int wpPtr;
+		if (!Hlp_Is_zCVobWaypoint (vobPtr)) {
+			continue;
+		};
 
-			if (searchFlags & SEARCHVOBLIST_CANSEE) {
-				wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
-				canSee = zCWaypoint_CanSee (wpPtr, canSeeVobPtr);
-			} else {
-				canSee = TRUE;
+		var int wpPtr;
+
+		if (searchFlags & SEARCHVOBLIST_CANSEE) {
+			wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
+
+			if (!zCWaypoint_CanSee (wpPtr, canSeeVobPtr)) {
+				continue;
 			};
+		};
 
-			if (checkPortalName) {
-				var string portalName; portalName = Vob_GetPortalName (vobPtr);
+		if (checkPortalName) {
+			var string portalName; portalName = Vob_GetPortalName (vobPtr);
 
-				if (!Hlp_StrCmp (portalName, searchByPortalName)) {
-					canSee = FALSE;
-				};
+			if (!Hlp_StrCmp (portalName, searchByPortalName)) {
+				continue;
 			};
+		};
 
-			if (compareName) {
-				wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
-				var string waypointName; waypointName = zCWaypoint_GetName (wpPtr);
+		if (compareName) {
+			wpPtr = zCVobWaypoint_GetWaypoint (vobPtr);
+			var string waypointName; waypointName = zCWaypoint_GetName (wpPtr);
 
-				if (!STR_WildMatch (waypointName, searchWaypointName)) {
-					canSee = FALSE;
-				};
+			if (!STR_WildMatch (waypointName, searchWaypointName)) {
+				continue;
 			};
+		};
 
-			if (canSee) {
-				if (zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
-					var int verticalDist; verticalDist = RoundF (SubF (toPos[1], fromPos[1]));
+		if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos))) {
+			continue;
+		};
 
-					if ((abs (verticalDist) < verticalLimit) || (verticalLimit == -1)) {
-						var int dir[3];
-						SubVectors (_@ (dir), _@ (fromPos), _@ (toPos));
-						dist = zVEC3_LengthApprox (_@ (dir));
-						dist = RoundF (dist);
+		var int verticalDist; verticalDist = RoundF (SubF (toPos[1], fromPos[1]));
 
-						if ((dist <= distLimit) || (distLimit == -1)) {
-							if (!firstPtr) { firstPtr = vobPtr; };
+		if ((abs (verticalDist) < verticalLimit) || (verticalLimit == -1)) {
+			var int dir[3];
+			SubVectors (_@ (dir), _@ (fromPos), _@ (toPos));
+			dist = zVEC3_LengthApprox (_@ (dir));
+			dist = RoundF (dist);
 
-							if (dist < maxDist) {
-								nearestPtr = vobPtr;
-								maxDist = dist;
-							};
-						};
-					};
+			if ((dist <= distLimit) || (distLimit == -1)) {
+				if (!firstPtr) { firstPtr = vobPtr; };
+
+				if (dist < maxDist) {
+					nearestPtr = vobPtr;
+					maxDist = dist;
 				};
 			};
 		};

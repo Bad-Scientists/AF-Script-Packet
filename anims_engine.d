@@ -42,7 +42,7 @@ func int zCModel_GetAniIdFromAniName (var int modelPtr, var string aniName) {
 	const int zCModel__GetAniIdFromAniName_G2 = 6365296;
 
 	// check
-	if (!modelPtr) { return 0; };
+	if (!modelPtr) { return -1; };
 	aniName = Str_Upper (aniName);
 
 	//CALL_zstringPtrParam cannot be used in recyclable call
@@ -1002,4 +1002,10 @@ func void Npc_StartAni (var int slfInstance, var string aniName) {
 
 	// start animation to make it AniActive
 	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
+};
+
+func int Npc_GetAniIDFromAniName (var int slfInstance, var string aniName) {
+	// getting zCModel
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	return + zCModel_GetAniIDFromAniName(modelPtr, aniName);
 };
