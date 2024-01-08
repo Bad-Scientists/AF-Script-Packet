@@ -224,9 +224,6 @@ func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTarget
 func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 
-	//zSpy_Info ("--> AI_GotoVobPtr_EvalWaynetUse");
-
-
 	var int posNpc[3];
 	var int posVob[3];
 
@@ -260,6 +257,11 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	if (!STR_Len (fromWp)) {
 		//zSpy_Info ("... npc waypoint - can't see npc. Waynet might not be reliable.");
 		//zSpy_Info ("<--");
+		return;
+	};
+
+	//If nearest fromWp & toWp are one and the same - exit
+	if (Hlp_StrCmp (fromWp, toWp)) {
 		return;
 	};
 
@@ -475,15 +477,13 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 		//zSpy_Info ("... chasm detected!");
 	};
 
-	if ((!Hlp_StrCmp (fromWp, toWp)) || isTooFar || chasmDetected) {
-		//var string s; s = "... navigating using waynet, from: ";
-		//s = ConcatStrings (s, fromWp);
-		//s = ConcatStrings (s, " to: ");
-		//s = ConcatStrings (s, toWp);
-		//zSpy_Info (s);
+	//var string s; s = "... navigating using waynet, from: ";
+	//s = ConcatStrings (s, fromWp);
+	//s = ConcatStrings (s, " to: ");
+	//s = ConcatStrings (s, toWp);
+	//zSpy_Info (s);
 
-		AI_GotoWp (slf, toWp);
-	};
+	AI_GotoWp (slf, toWp);
 
 	//zSpy_Info ("<--");
 };
