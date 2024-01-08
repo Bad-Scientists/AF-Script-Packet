@@ -15,10 +15,7 @@ func int C_CanPlayerUseAIState (var string AIStateName) {
 	|| (Hlp_StrCmp (AIStateName, "ZS_MAGICBURN"))
 
 	// Additional - add as many as you need ...
-	|| (Hlp_StrCmp (AIStateName, "ZS_INVMANAGEMENT"))
-	|| (Hlp_StrCmp (AIStateName, "ZS_PICKPOCKETING"))
-	|| (Hlp_StrCmp (AIStateName, "ZS_TALK"))
-	|| (Hlp_StrCmp (AIStateName, "ZS_PLAYERTALK"))
+	|| (Hlp_StrCmp (AIStateName, "ZS_WHIRLWIND"))
 	{
 		return TRUE;
 	};
