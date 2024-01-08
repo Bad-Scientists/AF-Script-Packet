@@ -149,6 +149,8 @@ fight.d
 
 G2 NoTR emulation.d
 
+Patches\G12\*.d
+
 Standalone-Packages\G12-PreventLooting\preventLooting.d
 
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
@@ -219,5 +221,6 @@ Standalone-Packages\G12-AddPerceptions\addPerceptions.d
 Standalone-Packages\G12-MoonPhases\moonPhases.d
 
 Standalone-Packages\G12-EquipControl\equipControl.d
+Standalone-Packages\G12-Trialogue\trialogue.d
 
 Standalone-Packages\G12-MenuLogAddSectionCount\menuLogAddSectionCount
