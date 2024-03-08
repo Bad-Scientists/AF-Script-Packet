@@ -696,7 +696,10 @@ func void BBar_Show (var int hBar) {
 		View_Open_Safe (bHealthBar.v0);
 		View_Top (hHealthPreviewView);
 		View_Open_Safe (bHealthBar.v1);
-		View_Open_Safe (hHealthBarValueView);
+		if (_healthBar_DisplayValues)
+		{
+			View_Open_Safe (hHealthBarValueView);
+		};
 		bHealthBar.hidden = FALSE;
 
 		HealthBar_UpdatePosition ();
@@ -705,7 +708,10 @@ func void BBar_Show (var int hBar) {
 	if (hbar == hStaminaBar) {
 		View_Open_Safe (bStaminaBar.v0);
 		View_Open_Safe (bStaminaBar.v1);
-		View_Open_Safe (hStaminaBarValueView);
+		if (_staminaBar_DisplayValues)
+		{
+			View_Open_Safe (hStaminaBarValueView);
+		};
 		bStaminaBar.hidden = FALSE;
 
 		StaminaBar_UpdatePosition ();
@@ -715,7 +721,10 @@ func void BBar_Show (var int hBar) {
 		View_Open_Safe (bManaBar.v0);
 		View_Top(hManaPreviewView);
 		View_Open_Safe (bManaBar.v1);
-		View_Open_Safe (hManaBarValueView);
+		if (_manaBar_DisplayValues)
+		{
+			View_Open_Safe (hManaBarValueView);
+		};
 		bManaBar.hidden = FALSE;
 
 		ManaBar_UpdatePosition ();
@@ -724,7 +733,10 @@ func void BBar_Show (var int hBar) {
 	if (hbar == hSwimBar) {
 		View_Open_Safe (bSwimBar.v0);
 		View_Open_Safe (bSwimBar.v1);
-		View_Open_Safe (hSwimBarValueView);
+		if (_swimBar_DisplayValues)
+		{
+			View_Open_Safe (hSwimBarValueView);
+		};
 		bSwimBar.hidden = FALSE;
 
 		SwimBar_UpdatePosition ();
@@ -733,7 +745,10 @@ func void BBar_Show (var int hBar) {
 	if (hbar == hFocusBar) {
 		View_Open_Safe (bFocusBar.v0);
 		View_Open_Safe (bFocusBar.v1);
-		View_Open_Safe (hFocusBarValueView);
+		if (_focusBar_DisplayValues)
+		{
+			View_Open_Safe (hFocusBarValueView);
+		};
 		bFocusBar.hidden = FALSE;
 
 		FocusBar_UpdatePosition ();
