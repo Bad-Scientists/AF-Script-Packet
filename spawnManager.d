@@ -107,6 +107,7 @@ func int oCSpawnManager_GetInsertRange () {
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
+		CALL_RetValIsFloat ();
 		CALL_PutRetValTo (_@ (retVal));
 		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetInsertRange_G1, oCSpawnManager__GetInsertRange_G2));
 		call = CALL_End ();
@@ -147,6 +148,7 @@ func int oCSpawnManager_GetRemoveRange () {
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
+		CALL_RetValIsFloat ();
 		CALL_PutRetValTo (_@ (retVal));
 		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetRemoveRange_G1, oCSpawnManager__GetRemoveRange_G2));
 		call = CALL_End ();
@@ -187,6 +189,7 @@ func int oCSpawnManager_GetSpawnTime () {
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
+		CALL_RetValIsFloat ();
 		CALL_PutRetValTo (_@ (retVal));
 		CALL__cdecl (MEMINT_SwitchG1G2 (oCSpawnManager__GetSpawnTime_G1, oCSpawnManager__GetSpawnTime_G2));
 		call = CALL_End ();
