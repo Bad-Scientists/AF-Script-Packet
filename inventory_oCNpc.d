@@ -1582,6 +1582,11 @@ func int NPC_HasItemInstanceName (var int slfInstance, var string instanceName) 
 	return 0;
 };
 
+func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
+	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
+	return + oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
+};
+
 func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCat, var int flagsKeepItems, var int mainFlagsKeepItems) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
@@ -1594,6 +1599,18 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCat, var 
 	var int itemInstanceID;
 
 	while (amount > 0);
+
+		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (invCat > 0) {
+			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
+				continue;
+			};
+		};
+
 		itemInstanceID = Hlp_GetInstanceID (item);
 
 		//Do we want to remove this item?
@@ -1679,6 +1696,17 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 	var int itemInstanceID;
 
 	while (amount > 0);
+		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (invCat > 0) {
+			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
+				continue;
+			};
+		};
+
 		itemInstanceID = Hlp_GetInstanceID (item);
 
 		//Ignore equipped armor
@@ -1752,6 +1780,17 @@ func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCat) {
 
 	//Loop
 	while (amount > 0);
+		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (invCat > 0) {
+			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
+				continue;
+			};
+		};
+
 		oCNPC_UnequipItemPtr (slf, _@ (item));
 
 		itmSlot = itmSlot + 1;
@@ -1922,11 +1961,6 @@ func void Npc_UnequipRangedWeapon (var int slfInstance) {
 func void Npc_UnequipWeapons (var int slfInstance) {
 	Npc_UnequipMeleeWeapon (slfInstance);
 	Npc_UnequipRangedWeapon (slfInstance);
-};
-
-func int Npc_ItemGetCategory (var int slfInstance, var int itemPtr) {
-	var int npcInventoryPtr; npcInventoryPtr = Npc_GetNpcInventoryPtr (slfInstance);
-    return + oCNpcInventory_GetCategory (npcInventoryPtr, itemPtr);
 };
 
 /*
