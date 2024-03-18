@@ -257,9 +257,9 @@ func void G12_Focus_Init () {
 	if (!once) {
 		const int oCGame__GetFocusVob_G1 = 6525544;
 
-		const int oCGame__GetFocusVob_G2 = 7091629;
+		const int oCGame__GetFocusVob_G2 = 7091621;
 
-		HookEngine(MEMINT_SwitchG1G2 (oCGame__GetFocusVob_G1, oCGame__GetFocusVob_G2), MEMINT_SwitchG1G2 (5, 6), "_hook_oCGame_UpdateStatus__Focus");
+		HookEngine(MEMINT_SwitchG1G2 (oCGame__GetFocusVob_G1, oCGame__GetFocusVob_G2), MEMINT_SwitchG1G2 (5, 8), "_hook_oCGame_UpdateStatus__Focus");
 		once = 1;
 	};
 };

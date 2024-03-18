@@ -325,6 +325,11 @@ func void TestSuite_TeleportToNpc (var int npcInstance) {
 
 		//Invincible flag will be cleared from AI queue
 		AI_Function (hero, AIQ_ClearInvincible);
+
+		//Reset trialogue camera override pointer (bad things could happen if target is too far)
+		//Trialogue is usually properly ended with Trialogue_Finish, which resets pointer from AI queue ...
+		//However with testsuite cases we might uintentionally clear AI queues and bypass proper trialogue exit
+		AI_Function (hero, _Trialogue_Finish);
 	} else {
 		const int once = 0;
 		if (!once) {
