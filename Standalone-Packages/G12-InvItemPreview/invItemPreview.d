@@ -108,11 +108,18 @@ func void G12_InvItemPreview_Init () {
 		//HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__CheckSelectedItem_G1, oCItemContainer__CheckSelectedItem_G2), 5, "_hook_oCItemContainer_CheckSelectedItem");
 
 		//0x00667660 protected: virtual void __thiscall oCItemContainer::Draw(void)
-		const int oCItemContainer__Draw_G1 = 6714976;
-		//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
-		const int oCItemContainer__Draw_G2 = 7370416;
+		//const int oCItemContainer__Draw_G1 = 6714976;
 
-		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__Draw_G1, oCItemContainer__Draw_G2), 6, "_hook_oCItemContainer_Draw");
+		//0066768b
+		const int oCItemContainer__Draw_IsOpen_G1 = 6715019;
+
+		//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
+		//const int oCItemContainer__Draw_G2 = 7370416;
+
+		//007076df
+		const int oCItemContainer__Draw_IsOpen_G2 = 7370463;
+
+		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__Draw_IsOpen_G1, oCItemContainer__Draw_IsOpen_G2), MEMINT_SwitchG1G2(10, 6), "_hook_oCItemContainer_Draw");
 
 		once = 1;
 	};

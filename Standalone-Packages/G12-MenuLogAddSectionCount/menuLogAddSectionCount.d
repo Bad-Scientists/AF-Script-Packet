@@ -126,8 +126,8 @@ func void G12_MenuLogAddSectionCount_Init () {
 		//0x004DB780 public: virtual void __thiscall zCMenu::Enter(void)
 		const int zCMenu__Enter_G2 = 5093248;
 
-		//G1 7 G2 NoTR 6
-		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Enter_G1, zCMenu__Enter_G2), MEMINT_SwitchG1G2 (7, 6), "_hook_zCMenu_Enter__LogMenuAddSectionCount");
+		//G1 5 G2 NoTR 6
+		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Enter_G1, zCMenu__Enter_G2), MEMINT_SwitchG1G2 (5, 6), "_hook_zCMenu_Enter__LogMenuAddSectionCount");
 
 		//0x004CEBF0 public: virtual void __thiscall zCMenu::Leave(void)
 		const int zCMenu__Leave_G1 = 5041136;

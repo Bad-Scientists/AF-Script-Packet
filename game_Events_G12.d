@@ -441,7 +441,7 @@ func void G12_UnEquipItemEvent_Init () {
 	if (!once) {
 		//[UnEquip item events]
 		//HookLen G2A 6
-		HookEngine (oCNPC__UnEquipItem, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_UnEquipItem");
+		HookEngine (oCNPC__UnEquipItem, MEMINT_SwitchG1G2 (7 + 6, 6), "_hook_oCNPC_UnEquipItem");
 		once = 1;
 	};
 };
@@ -520,7 +520,7 @@ func void G12_OpenDeadNPCEvent_Init () {
 	if (!once) {
 		//[OpenDeadNPC events]
 		//HookLen G2A 6
-		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
+		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7 + 6, 6), "_hook_oCNPC_OpenDeadNPC");
 		once = 1;
 	};
 };
@@ -599,7 +599,7 @@ func void G12_GameHandleEvent_Init () {
 						//7327661	oCGame__HandleEvent_spellKeys
 						//7328820	oCGame__HandleEvent_dfltCase
 
-		HookEngine (MEMINT_SwitchG1G2(oCGame__HandleEvent_G1, oCGame__HandleEvent_G2), MEMINT_SwitchG1G2 (6, 7), "_hook_oCGame_HandleEvent");
+		HookEngine (MEMINT_SwitchG1G2(oCGame__HandleEvent_G1 + 6, oCGame__HandleEvent_G2), 7, "_hook_oCGame_HandleEvent");
 		once = 1;
 	};
 };
