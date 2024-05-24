@@ -101,7 +101,7 @@ func void ViewPtr_CenterTextLines (var int viewPtr) {
 	var zCViewText vt;
 
 	//Loop through text lines - figure out overall sizeY
-	var int psizeY; psizeY = v.pposY;
+	var int psizeY; psizeY = 0;
 
 	var int list; list = v.textLines_next;
 
@@ -117,7 +117,8 @@ func void ViewPtr_CenterTextLines (var int viewPtr) {
 	end;
 
 	//Loop through text lines - update Y pos
-	var int pposY; pposY = (v.psizeY - psizeY) / 2;
+	var int height; height = Print_ToVirtual(psizeY, PS_Y) * PS_VMAX / Print_ToVirtual (v.psizey, PS_Y);
+	var int pposY; pposY = (PS_VMAX - height) / 2;
 
 	list = v.textLines_next;
 
@@ -128,7 +129,9 @@ func void ViewPtr_CenterTextLines (var int viewPtr) {
 			vt = _^ (l.data);
 			vt.posY = pposY;
 
-			pposY += zCFont_GetFontY (vt.font);
+			//textLines_next.posY - virtual pos
+			var int vtFontHeight; vtFontHeight = Print_ToVirtual (zCFont_GetFontY (vt.font), v.psizey);
+			pposY += vtFontHeight;
 		};
 
 		list = l.next;
