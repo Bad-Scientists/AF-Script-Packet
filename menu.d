@@ -13,6 +13,7 @@
 func int Log_GetTopic (var string topicName) {
 	var zCList l;
 	var int list; list = oCLogManager_Ptr;
+	topicName = STR_Upper(topicName);
 
 	while (list);
 		l = _^ (list);
