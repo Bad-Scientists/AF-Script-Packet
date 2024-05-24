@@ -1,8 +1,8 @@
 /*
  *	Sprint mode
- *		- toggle 'keySprintModeToggleKey' key to enable/disable sprint mode
- *		- 'keySprintModeToggleKey' can be defined either in Gothic.ini file section [KEYS] or mod.ini file section [KEYS]. (master is Gothic.ini)
- *		- if 'keySprintModeToggleKey' is not defined then by default KEY_RSHIFT will be used for toggling
+ *		- toggle 'afsp.keySprintModeToggleKey' key to enable/disable sprint mode
+ *		- 'afsp.keySprintModeToggleKey' can be defined either in Gothic.ini file section [KEYS] or mod.ini file section [KEYS]. (master is Gothic.ini)
+ *		- if 'afsp.keySprintModeToggleKey' is not defined then by default KEY_RSHIFT will be used for toggling
  *
  *		- this feature adds stamina bar right underneath health bar, where it displays players stamina level
  *		- when player is exhausted sprint mode will disable with a cool down of 4 seconds
@@ -100,7 +100,7 @@ func void _eventGameHandleEvent__SprintMode (var int dummyVariable) {
 
 	//Activate sprint mode
 	//We have to check MEM_GetKey, MEM_GetSecondaryKey because of menu items (user can change keys during gameplay) (how much does this affect performance?)
-	if ((key == MEM_GetKey ("keySprintModeToggleKey")) || (key == MEM_GetSecondaryKey ("keySprintModeToggleKey"))) {
+	if ((key == MEM_GetKey ("afsp.keySprintModeToggleKey")) || (key == MEM_GetSecondaryKey ("afsp.keySprintModeToggleKey"))) {
 		//Toggle if not in cool down
 		if (!PC_SprintModeCooldown) {
 			PC_SprintModeSwitch = (!PC_SprintModeSwitch);
@@ -716,45 +716,58 @@ func void G12_SprintMode_Init () {
 	//onChgSetOptionSection   = "KEYS";
 
 	//Custom key from Gothic.ini
-	if (!MEM_GothOptExists ("KEYS", "keySprintModeToggleKey")) {
+	if (!MEM_GothOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
 		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("KEYS", "keySprintModeToggleKey")) {
+		if (!MEM_ModOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
 			//KEY_RSHIFT if not specified
-			MEM_SetKey ("keySprintModeToggleKey", KEY_RSHIFT);
+			MEM_SetKey ("afsp.keySprintModeToggleKey", KEY_RSHIFT);
 		} else {
 			//Update from mod .ini file
-			var string keyString; keyString = MEM_GetModOpt ("KEYS", "keySprintModeToggleKey");
-			MEM_SetKey ("keySprintModeToggleKey", MEM_GetKey (keyString));
+			var string keyString; keyString = MEM_GetModOpt ("KEYS", "afsp.keySprintModeToggleKey");
+			MEM_SetKey ("afsp.keySprintModeToggleKey", MEM_GetKey (keyString));
 		};
 	};
 
 	//Custom sprint mode overlay
-	if (!MEM_GothOptExists ("SPRINTMODE", "overlayName")) {
+	if (!MEM_GothOptExists ("AFSP", "sprintMode.overlayName")) {
 		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("SPRINTMODE", "overlayName")) {
+		if (!MEM_ModOptExists ("AFSP", "sprintMode.overlayName")) {
 			//Keep default constant
 		} else {
 			//Update from mod .ini file
-			_PC_SprintModeOverlayName = MEM_GetModOpt ("SPRINTMODE", "overlayName");
+			_PC_SprintModeOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.overlayName");
 		};
 	} else {
 		//Update from Gothic.ini
-		_PC_SprintModeOverlayName = MEM_GetGothOpt ("SPRINTMODE", "overlayName");
+		_PC_SprintModeOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.overlayName");
+	};
+
+	if (!MEM_GothOptExists ("AFSP", "sprintMode.timedOverlayName")) {
+		//Custom key from mod .ini file
+		if (!MEM_ModOptExists ("AFSP", "sprintMode.timedOverlayName")) {
+			//Keep default constant
+		} else {
+			//Update from mod .ini file
+			_PC_SprintModeTimedOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.timedOverlayName");
+		};
+	} else {
+		//Update from Gothic.ini
+		_PC_SprintModeTimedOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.timedOverlayName");
 	};
 
 	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("GAME", "sprintBarDisplayMethod")) {
+	if (MEM_GothOptExists ("AFSP", "sprintBar.DisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "sprintBarDisplayMethod"));
+		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "sprintBar.DisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "sprintBarDisplayMethod")) {
-			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "sprintBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (_staminaBar_DisplayMethod));
+		if (MEM_ModOptExists ("AFSP", "sprintBar.DisplayMethod")) {
+			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "sprintBar.DisplayMethod"));
+			MEM_SetGothOpt ("AFSP", "sprintBar.DisplayMethod", IntToString (_staminaBar_DisplayMethod));
 		} else {
 			//Default
 			_staminaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "sprintBarDisplayMethod", IntToString (_staminaBar_DisplayMethod));
+			MEM_SetGothOpt ("AFSP", "sprintBar.DisplayMethod", IntToString (_staminaBar_DisplayMethod));
 		};
 	};
 };

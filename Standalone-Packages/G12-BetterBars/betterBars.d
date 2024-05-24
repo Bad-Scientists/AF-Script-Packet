@@ -779,33 +779,33 @@ func void G12_BetterBars_Init () {
 	//--
 
 	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("GAME", "healthBarDisplayMethod")) {
+	if (MEM_GothOptExists ("AFSP", "healthBar.DisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "healthBarDisplayMethod"));
+		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "healthBar.DisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "healthBarDisplayMethod")) {
-			_healthBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "healthBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (_healthBar_DisplayMethod));
+		if (MEM_ModOptExists ("AFSP", "healthBar.DisplayMethod")) {
+			_healthBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "healthBar.DisplayMethod"));
+			MEM_SetGothOpt ("AFSP", "healthBar.DisplayMethod", IntToString (_healthBar_DisplayMethod));
 		} else {
 			//Default
 			_healthBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "healthBarDisplayMethod", IntToString (_healthBar_DisplayMethod));
+			MEM_SetGothOpt ("AFSP", "healthBar.DisplayMethod", IntToString (_healthBar_DisplayMethod));
 		};
 	};
 
-	if (MEM_GothOptExists ("GAME", "manaBarDisplayMethod")) {
+	if (MEM_GothOptExists ("AFSP", "manaBar.DisplayMethod")) {
 		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("GAME", "manaBarDisplayMethod"));
+		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "manaBar.DisplayMethod"));
 	} else {
 		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("GAME", "manaBarDisplayMethod")) {
-			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("GAME", "manaBarDisplayMethod"));
-			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (_manaBar_DisplayMethod));
+		if (MEM_ModOptExists ("AFSP", "manaBar.DisplayMethod")) {
+			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "manaBar.DisplayMethod"));
+			MEM_SetGothOpt ("AFSP", "manaBar.DisplayMethod", IntToString (_manaBar_DisplayMethod));
 		} else {
 			//Default
 			_manaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("GAME", "manaBarDisplayMethod", IntToString (_manaBar_DisplayMethod));
+			MEM_SetGothOpt ("AFSP", "manaBar.DisplayMethod", IntToString (_manaBar_DisplayMethod));
 		};
 	};
 

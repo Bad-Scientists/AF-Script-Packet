@@ -209,7 +209,7 @@ func void _eventGameHandleEvent__TorchHotKey (var int dummyVariable) {
 	if (!Hlp_IsValidNPC (hero)) { return; };
 	if (Npc_IsDead (hero)) { return; };
 
-	if ((key == MEM_GetKey ("keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("keyTorchToggleKey"))) {
+	if ((key == MEM_GetKey ("afsp.keyTorchToggleKey")) || (key == MEM_GetSecondaryKey ("afsp.keyTorchToggleKey"))) {
 		//Get Ctrl key status
 		var int ctrlKey; ctrlKey = MEM_GetKey ("keyAction");
 		var int ctrlSecondaryKey; ctrlSecondaryKey = MEM_GetSecondaryKey ("keyAction");
@@ -372,15 +372,15 @@ func void G12_TorchHotKey_Init () {
 	//Load controls from .ini files Gothic.ini is master, mod.ini is secondary
 
 	//Custom key from Gothic.ini
-	if (!MEM_GothOptExists ("KEYS", "keyTorchToggleKey")) {
+	if (!MEM_GothOptExists ("KEYS", "afsp.keyTorchToggleKey")) {
 		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("KEYS", "keyTorchToggleKey")) {
+		if (!MEM_ModOptExists ("KEYS", "afsp.keyTorchToggleKey")) {
 			//KEY_T if not specified
-			MEM_SetKey ("keyTorchToggleKey", KEY_T);
+			MEM_SetKey ("afsp.keyTorchToggleKey", KEY_T);
 		} else {
 			//Update from mod .ini file
-			var string keyString; keyString = MEM_GetModOpt ("KEYS", "keyTorchToggleKey");
-			MEM_SetKey ("keyTorchToggleKey", MEMINT_KeyStringToKey (keyString));
+			var string keyString; keyString = MEM_GetModOpt ("KEYS", "afsp.keyTorchToggleKey");
+			MEM_SetKey ("afsp.keyTorchToggleKey", MEMINT_KeyStringToKey (keyString));
 		};
 	};
 };
