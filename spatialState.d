@@ -74,9 +74,9 @@ func int Vob_GetConfig (var int vobPtr) {
 	return + (collObjectPtr + m_oConfig_offset);
 };
 
-//float
+//int
 func int zCAIPlayer_GetWaterLevel (var int aiPlayerPtr) {
-	if (!aiPlayerPtr) { return FLOATNULL; };
+	if (!aiPlayerPtr) { return 0; };
 	var zCAIPlayer aiPlayer; aiPlayer = _^ (aiPlayerPtr);
 	return aiPlayer.waterLevel;
 };
