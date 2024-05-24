@@ -161,7 +161,7 @@ func int Spell_GetSpellType (var int spellID) {
  *	oCMag_Book_Register
  *	 - registers spell
  */
-func int oCMag_Book_Register (var int magBookPtr, var int spellPtr, var int active) {
+func int oCMag_Book_Register (var int magBookPtr, var int spellNo, var int active) {
 	//0x0046F410 public: int __thiscall oCMag_Book::Register(int,int)
 	const int oCMag_Book__Register_G1 = 4650000;
 
@@ -176,7 +176,7 @@ func int oCMag_Book_Register (var int magBookPtr, var int spellPtr, var int acti
 	if (CALL_Begin(call)) {
 		CALL_PutRetValTo (_@ (retVal));
 		CALL_IntParam (_@ (active));
-		CALL_IntParam (_@ (spellPtr));
+		CALL_IntParam (_@ (spellNo));
 		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__Register_G1, oCMag_Book__Register_G2));
 		call = CALL_End();
 	};
