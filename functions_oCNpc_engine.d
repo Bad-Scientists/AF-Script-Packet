@@ -1310,3 +1310,92 @@ func int oCNpc_HasVobDetected (var int slfInstance, var int vobPtr) {
 
 	return +retVal;
 };
+
+func int oCNpc_StopFaceAni (var int slfInstance, var string faceAni) {
+	//0x00695730 public: int __thiscall oCNpc::StopFaceAni(class zSTRING const &)
+	const int oCNpc__StopFaceAni_G1 = 6903600;
+
+	//0x00738B50 public: int __thiscall oCNpc::StopFaceAni(class zSTRING const &)
+	const int oCNpc__StopFaceAni_G2 = 7572304;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+	var int slfPtr; slfPtr = _@ (slf);
+
+	CALL_zstringPtrParam (faceAni);
+	CALL__thiscall (slfPtr, MEMINT_SwitchG1G2 (oCNpc__StopFaceAni_G1, oCNpc__StopFaceAni_G2));
+
+	return CALL_RetValAsInt();
+};
+
+func int oCNpc_CanDrawWeapon (var int slfInstance) {
+	//0x0074B1F0 public: int __thiscall oCNpc::CanDrawWeapon(void)
+	const int oCNpc__CanDrawWeapon_G1 = 7647728;
+
+	//0x006805C0 public: int __thiscall oCNpc::CanDrawWeapon(void)
+	const int oCNpc__CanDrawWeapon_G2 = 6817216;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
+	var int slfPtr; slfPtr = _@ (slf);
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall(_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__CanDrawWeapon_G1, oCNpc__CanDrawWeapon_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	oCNpc_StopTheft
+ *	 - engine function closes steal inventory
+ *	 - if parameter victimIsAware is true then it also sends perception PERC_CATCHTHIEF to victim
+ */
+func void oCNpc_StopTheft (var int slfInstance, var int thiefPtr, var int victimIsAware) {
+	//0x006BAFD0 public: void __thiscall oCNpc::StopTheft(class oCNpc *,int)
+	const int oCNpc__StopTheft_G1 = 7057360;
+
+	//0x00762160 public: void __thiscall oCNpc::StopTheft(class oCNpc *,int)
+	const int oCNpc__StopTheft_G2 = 7741792;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (victimIsAware));
+		CALL_PtrParam (_@ (thiefPtr));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__StopTheft_G1, oCNpc__StopTheft_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCNpc_SetMovLock
+ */
+func void oCNpc_SetMovLock (var int slfInstance, var int on) {
+	//0x00694C50 public: void __thiscall oCNpc::SetMovLock(int)
+	const int oCNpc__SetMovLock_G1 = 6900816;
+
+	//0x007380B0 public: void __thiscall oCNpc::SetMovLock(int)
+	const int oCNpc__SetMovLock_G2 = 7569584;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam (_@ (on));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__SetMovLock_G1, oCNpc__SetMovLock_G2));
+		call = CALL_End();
+	};
+};
