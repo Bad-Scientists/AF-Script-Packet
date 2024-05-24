@@ -656,7 +656,7 @@ func void _hook_oCGame_GetFocusVob () {
 		PC_FocusVob = her.focus_vob;
 
 		if (_FocusChange_Event) {
-			Event_Execute (_FocusChange_Event, 0);
+			Event_Execute (_FocusChange_Event, PC_FocusVob);
 		};
 	};
 };
