@@ -513,7 +513,10 @@ func void zCVob_SetPhysicsEnabled (var int vobPtr, var int enabled) {
 };
 
 /*
- *
+ *	zCVob_SetSleeping
+ *	zVOB_SLEEPING = 0
+ *	zVOB_AWAKE = 1
+ *	zVOB_AWAKE_DOAI_ONLY = 2
  */
 func void zCVob_SetSleeping (var int vobPtr, var int sleepingMode) {
 	//0x005D7250 public: void __thiscall zCVob::SetSleeping(int)
@@ -641,12 +644,12 @@ func int Vob_IsMoving (var int vobPtr) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (vecPtr));
 		CALL__thiscall (_@ (vecPtr), MEMINT_SwitchG1G2 (zVEC3__NormalizeSafe_G1, zVEC3__NormalizeSafe_G2));
 		call = CALL_End();
 	};
 
-	MEM_CopyBytes (CALL_RetValAsPtr(), _@ (vec), 12);
-
+	MEM_CopyBytes (vecPtr, _@ (vec), 12);
 	MEM_Free (vecPtr);
 
 	return + (magVector (_@ (vec)));
@@ -785,9 +788,6 @@ func void Vob_PlayEffect (var string vobName, var string effectName)
 //0x005EF150 public: void __thiscall zCVob::SetHeadingWorld(class zVEC3 const &)
 
 //0x005EF640 public: void __thiscall zCVob::SetHeadingAtWorld(class zVEC3 const &)
-
-
-//0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
 
 func int zCVob_GetPositionWorld (var int vobPtr) {
 	//0x0051B3C0 public: class zVEC3 __thiscall zCVob::GetPositionWorld(void)const
@@ -1684,6 +1684,29 @@ func void zCVob_PositionUpdated (var int vobPtr) {
 	};
 };
 
+/*
+ *	zCVob_SetTrafoObjToWorld
+ */
+func void zCVob_SetTrafoObjToWorld (var int vobPtr, var int trafoPtr) {
+	//0x005EE760 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+	const int zCVob__SetTrafoObjToWorld_G1 = 6219616;
+
+	//0x0061BC80 public: void __thiscall zCVob::SetTrafoObjToWorld(class zMAT4 const &)
+	const int zCVob__SetTrafoObjToWorld_G2 = 6405248;
+
+	if (!trafoPtr) { return; };
+	if (!vobPtr) { return; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam (_@ (trafoPtr));
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__SetTrafoObjToWorld_G1, zCVob__SetTrafoObjToWorld_G2));
+		call = CALL_End();
+	};
+};
+
 func int zCVob_GetDistanceToVob2 (var int vobPtr, var int vobPtr2) {
 	//0x005EE530 public: float __thiscall zCVob::GetDistanceToVob2(class zCVob &)
 	const int zCVob__GetDistanceToVob2_G1 = 6219056;
@@ -1707,4 +1730,26 @@ func int zCVob_GetDistanceToVob2 (var int vobPtr, var int vobPtr2) {
 	};
 
 	return + retVal;
+};
+
+/*
+ *	bHintTrafoChanged G2 only
+ */
+func void zCVob_EndMovement (var int vobPtr, var int bHintTrafoChanged) {
+	//0x005F0B60 public: virtual void __thiscall zCVob::EndMovement(void)
+	const int zCVob__EndMovement_G1 = 6228832;
+
+	//0x0061E0D0 public: virtual void __thiscall zCVob::EndMovement(int)
+	const int zCVob__EndMovement_G2 = 6414544;
+
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		if (MEMINT_SwitchG1G2(0,1)) {
+			CALL_IntParam(_@(bHintTrafoChanged));
+		};
+		CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__EndMovement_G1, zCVob__EndMovement_G2));
+		call = CALL_End();
+	};
 };
