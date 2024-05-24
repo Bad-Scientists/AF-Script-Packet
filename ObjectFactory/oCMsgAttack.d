@@ -39,7 +39,7 @@ func int oCMsgAttack_Create (var int subType, var int targetVob, var int startFr
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
-		CALL_FloatParam (_@ (combo));
+		CALL_IntParam (_@ (combo));
 		CALL_IntParam (_@ (ani));
 		CALL_IntParam (_@ (subType));
 		CALL__thiscall (_@ (ptr), MEMINT_SwitchG1G2 (oCMsgAttack__oCMsgAttack2_G1, oCMsgAttack__oCMsgAttack2_G2));
