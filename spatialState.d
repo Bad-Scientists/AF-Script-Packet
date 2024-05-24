@@ -81,6 +81,28 @@ func int zCAIPlayer_GetWaterLevel (var int aiPlayerPtr) {
 	return aiPlayer.waterLevel;
 };
 
+//int
+func int oCAniCtrl_Human_GetWaterLevel (var int aniCtrlPtr) {
+	//0x0062F1D0 public: int __thiscall oCAniCtrl_Human::GetWaterLevel(void)
+	const int oCAniCtrl_Human__GetWaterLevel_G1 = 6484432;
+
+	//0x006B89D0 public: int __thiscall oCAniCtrl_Human::GetWaterLevel(void)
+	const int oCAniCtrl_Human__GetWaterLevel_G2 = 7047632;
+
+	if (!aniCtrlPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__GetWaterLevel_G1, oCAniCtrl_Human__GetWaterLevel_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 //float
 func int zCAIPlayer_GetFeetY (var int aiPlayerPtr) {
 	if (!aiPlayerPtr) { return FLOATNULL; };
@@ -163,6 +185,21 @@ func int Npc_GetConfig (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNpc (slf)) { return 0; };
 	return + Vob_GetConfig (_@ (slf));
+};
+
+//int
+/*
+ *	Npc_GetWaterLevel
+ *	0 - not in water
+ *	1 - knees in water
+ *	2 - swimming
+ */
+func int Npc_GetWaterLevel (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
+	if (!slf.aniCtrl) { return 0; };
+
+	return + oCAniCtrl_Human_GetWaterLevel (slf.aniCtrl);
 };
 
 //float
