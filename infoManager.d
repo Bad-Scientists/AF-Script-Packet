@@ -437,6 +437,8 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
 
+	if (!MEM_InformationMan.DlgChoice) { return; };
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL__fastcall (_@ (MEM_InformationMan.DlgChoice), _@ (index), MEMINT_SwitchG1G2 (zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
