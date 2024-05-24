@@ -22,6 +22,58 @@ func void oCNpc_MakeSpellBook (var int slfInstance) {
 };
 
 /*
+ *	oCMag_Book_DeRegister
+ *	 - deregisters spell from magbook
+ */
+func void oCMag_Book_DeRegister (var int magBookPtr, var int index) {
+	//0x0046F1C0 public: int __thiscall oCMag_Book::DeRegister(int)
+	const int oCMag_Book__DeRegister_G1 = 4649408;
+
+	//0x00475DA0 public: int __thiscall oCMag_Book::DeRegister(int)
+	const int oCMag_Book__DeRegister_G2 = 4677024;
+
+	if (!magBookPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(index));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__DeRegister_G1, oCMag_Book__DeRegister_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCNpc_DestroySpellBook
+ *	 - destroys magbook
+ */
+func void oCNpc_DestroySpellBook (var int slfInstance) {
+	//0x006B8730 public: void __thiscall oCNpc::DestroySpellBook(void)
+	const int oCNpc__DestroySpellBook_G1 = 7046960;
+
+	//0x0075F0C0 public: void __thiscall oCNpc::DestroySpellBook(void)
+	const int oCNpc__DestroySpellBook_G2 = 7729344;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	if (!slf.mag_book) { return; };
+
+	//Deregister all spells first
+	var oCMag_Book magBook; magBook = _^(slf.mag_book);
+	repeat(i, magBook.spellitems_numInArray); var int i;
+		oCMag_Book_DeRegister(slf.mag_book, i);
+	end;
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DestroySpellBook_G1, oCNpc__DestroySpellBook_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *	oCNpc_GetSpellBook
  *	 - returns magbook
  */
@@ -49,6 +101,46 @@ func int oCNpc_GetSpellBook (var int slfInstance) {
 };
 
 /*
+ *	oCMag_Book_SetShowHandSymbol
+ */
+func void oCMag_Book_SetShowHandSymbol (var int magBookPtr, var int show_handsymbol) {
+	//0x00472310 public: void __thiscall oCMag_Book::SetShowHandSymbol(int)
+	const int oCMag_Book__SetShowHandSymbol_G1 = 4662032;
+
+	//0x00478FD0 public: void __thiscall oCMag_Book::SetShowHandSymbol(int)
+	const int oCMag_Book__SetShowHandSymbol_G2 = 4689872;
+
+	if (!magBookPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(show_handsymbol));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__SetShowHandSymbol_G1, oCMag_Book__SetShowHandSymbol_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	oCMag_Book_DoPerFrame
+ */
+func void oCMag_Book_DoPerFrame (var int magBookPtr) {
+	//Do per frame
+	//0x00472670 public: void __thiscall oCMag_Book::DoPerFrame(void)
+	const int oCMag_Book__DoPerFrame_G1 = 4662896;
+
+	//0x00479330 public: void __thiscall oCMag_Book::DoPerFrame(void)
+	const int oCMag_Book__DoPerFrame_G2 = 4690736;
+
+	if (!magBookPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__DoPerFrame_G1, oCMag_Book__DoPerFrame_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *	oCMag_Book_GetSelectedSpell
  *	 - returns currently selected spell
  */
@@ -71,6 +163,95 @@ func int oCMag_Book_GetSelectedSpell (var int magBookPtr) {
 	};
 
 	return + retVal;
+};
+
+/*
+ *	oCMag_Book_GetSelectedSpellNr
+ */
+func int oCMag_Book_GetSelectedSpellNr (var int magBookPtr) {
+	//0x00470B10 public: int __thiscall oCMag_Book::GetSelectedSpellNr(void)
+	const int oCMag_Book__GetSelectedSpellNr_G1 = 4655888;
+
+	//0x004777D0 public: int __thiscall oCMag_Book::GetSelectedSpellNr(void)
+	const int oCMag_Book__GetSelectedSpellNr_G2 = 4683728;
+
+	if (!magBookPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__GetSelectedSpellNr_G1, oCMag_Book__GetSelectedSpellNr_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCSpell_GetSpellID
+ */
+func int oCSpell_GetSpellID (var int spellPtr) {
+	//0x0047E180 public: int __thiscall oCSpell::GetSpellID(void)
+	const int oCSpell__GetSpellID_G1 = 4710784;
+
+	//0x00486480 public: int __thiscall oCSpell::GetSpellID(void)
+	const int oCSpell__GetSpellID_G2 = 4744320;
+
+	if (!spellPtr) { return -1; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL__thiscall (_@ (spellPtr), MEMINT_SwitchG1G2 (oCSpell__GetSpellID_G1, oCSpell__GetSpellID_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCMag_Book_GetSelectedSpellID
+ */
+func int oCMag_Book_GetSelectedSpellID (var int magBookPtr) {
+	var int spellPtr; spellPtr = oCMag_Book_GetSelectedSpell(magBookPtr);
+	return + oCSpell_GetSpellID(spellPtr);
+};
+
+/*
+ *	oCMag_Book_GetSpell_ByIndex
+ */
+func int oCMag_Book_GetSpell_ByIndex (var int magBookPtr, var int index) {
+	//0x00472E00 public: class oCSpell * __thiscall oCMag_Book::GetSpell(int)
+	const int oCMag_Book__GetSpell_G1 = 4664832;
+
+	//0x00479BC0 public: class oCSpell * __thiscall oCMag_Book::GetSpell(int)
+	const int oCMag_Book__GetSpell_G2 = 4692928;
+
+	if (!magBookPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_IntParam(_@(index));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__GetSpell_G1, oCMag_Book__GetSpell_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCMag_Book_GetSpellID_ByIndex
+ */
+func int oCMag_Book_GetSpellID_ByIndex (var int magBookPtr, var int index) {
+	var int spellPtr; spellPtr = oCMag_Book_GetSpell_ByIndex(magBookPtr, index);
+	return + oCSpell_GetSpellID(spellPtr);
 };
 
 /*
@@ -213,6 +394,89 @@ func int oCMag_Book_RegisterByItemPtr (var int magBookPtr, var int itemPtr, var 
 };
 
 /*
+ *	oCMag_Book_RegisterBySpellPtr
+ *	 - registers spell using item pointer
+ */
+func int oCMag_Book_RegisterBySpellPtr (var int magBookPtr, var int spellPtr, var int active) {
+	//0x0046EED0 private: int __thiscall oCMag_Book::Register(class oCSpell *,int)
+	const int oCMag_Book__Register_G1 = 4648656;
+
+	//0x00475AD0 private: int __thiscall oCMag_Book::Register(class oCSpell *,int)
+	const int oCMag_Book__Register_G2 = 4676304;
+
+	if (!spellPtr) { return 0; };
+	if (!magBookPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_IntParam (_@ (active));
+		CALL_IntParam (_@ (spellPtr));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__Register_G1, oCMag_Book__Register_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCMag_Book_CreateNewSpell
+ *	 - returns magbook
+ */
+func int oCMag_Book_CreateNewSpell (var int magBookPtr, var int spellID) {
+	//0x0046F270 public: class oCSpell * __thiscall oCMag_Book::CreateNewSpell(int)
+	const int oCMag_Book__CreateNewSpell_G1 = 4649584;
+
+	//0x00475E50 public: class oCSpell * __thiscall oCMag_Book::CreateNewSpell(int)
+	const int oCMag_Book__CreateNewSpell_G2 = 4677200;
+
+	if (!magBookPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo (_@ (retVal));
+		CALL_IntParam(_@(spellID));
+		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__CreateNewSpell_G1, oCMag_Book__CreateNewSpell_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCMag_Book_RegisterByItemPtr_NoHotkey
+ *	 - registers spell using item pointer
+ *	 - this one is however not limited by available hotkeys - it will allow us to register to mag book as many spells as we want
+ */
+func int oCMag_Book_RegisterByItemPtr_NoHotkey (var int magBookPtr, var int itemPtr, var int active) {
+	if (!itemPtr) { return 0; };
+	if (!magBookPtr) { return 0; };
+
+	//Create spell
+	var oCItem itm; itm = _^(itemPtr);
+	var int spellPtr; spellPtr = oCMag_Book_CreateNewSpell(magBookPtr, itm.spell);
+
+	//Register spell
+	if (!oCMag_Book_RegisterBySpellPtr(magBookPtr, spellPtr, 1)) {
+		return FALSE;
+	};
+
+	//Insert item reference to array
+	var oCMag_Book magBook; magBook = _^(magBookPtr);
+	MEM_ArrayInsert(_@(magBook.spellitems_array), itemPtr);
+
+	//No hotkey
+	var oCSpell spell; spell = _^(spellPtr);
+	spell.keyNo = 0;
+
+	return TRUE;
+};
+
+/*
  *	oCNpc_GetMagBook
  *	 - returns oCMag_Book (creates one if it does not exist)
  */
@@ -249,6 +513,9 @@ func int oCSpell_CastSpecificSpell (var int spellPtr) {
 	return + retVal;
 };
 
+/*
+ *	Npc_SpellTransformTo
+ */
 func int Npc_SpellTransformTo (var int slfInstance, var int instanceID) {
 	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
@@ -281,6 +548,33 @@ func int Npc_SpellTransformTo (var int slfInstance, var int instanceID) {
 
 	//Function returns FALSE if spell was casted properly - thus negate
 	return !oCSpell_CastSpecificSpell (spellPtr);
+};
+
+/*
+ *	Npc_HasActiveSpellID
+ *	 - function checks if specified spellID is in activeSpells_next
+ */
+func int Npc_HasActiveSpellID (var int slfInstance, var int spellID) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
+
+	var int ptr; ptr = slf.activeSpells_next;
+
+	var zCList l;
+
+	while (ptr);
+		l = _^ (ptr);
+		if (l.data) {
+			var oCSpell spell; spell = _^ (l.data);
+			if (spell.spellID == spellID) {
+				return TRUE;
+			};
+		};
+
+		ptr = l.next;
+	end;
+
+	return FALSE;
 };
 
 /*
