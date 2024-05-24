@@ -692,7 +692,7 @@ func void G12_SprintMode_Init () {
 	vStaminaBarBackTexView = View_Get (bStaminaBar.v0); //back texture
 
 	if (!Hlp_IsValidHandle (hStaminaBarValueView)) {
-		hStaminaBarValueView = Bar_CreatePreview (hStaminaBar, "");
+		hStaminaBarValueView = Bar_CreateValuesView (hStaminaBar, "");
 		View_AddText (hStaminaBarValueView, 0, 0, "", _PC_SprintMode_Font);
 		View_SetAlphaFunc (hStaminaBarValueView, _staminaBar_DisplayValues_AlphaFunc);
 	};

@@ -53,6 +53,8 @@ var int hHealthBar; //handle for HP bar
 var int hHealthPreviewView; //handle for HP bar preview (view)
 var int hHealthBarValueView; //handle for HP bar values (view)
 
+var int _healthBar_PreviewVisible;
+
 var int _healthBar_DisplayValueOffsetX;
 var int _healthBar_DisplayValueOffsetY;
 
@@ -69,6 +71,8 @@ var int _healthBar_DisplayValues_AlphaFunc;
 var int hManaBar; //handle for Mana bar
 var int hManaPreviewView; //handle for Mana bar preview (view)
 var int hManaBarValueView; //handle for Mana bar values (view)
+
+var int _manaBar_PreviewVisible;
 
 var int _manaBar_DisplayValueOffsetX;
 var int _manaBar_DisplayValueOffsetY;
@@ -237,7 +241,7 @@ func void Bar_SetValueSafe (var int bar, var int val) {
 /*
  *	Creates View for bar preview
  */
-func int Bar_CreatePreview (var int bHnd, var string textureName) {
+func int Bar_CreatePreviewView (var int bHnd, var string textureName) {
 	if(!Hlp_IsValidHandle(bHnd)) { return 0; };
 
 	var int vHnd;
@@ -246,6 +250,26 @@ func int Bar_CreatePreview (var int bHnd, var string textureName) {
 	var zCView v; v = View_Get(b.v1);
 
 	vHnd = View_Create(v.vposx, v.vposy, v.vposx + b.barW, v.vposy + v.vsizey);
+
+	if (STR_Len (textureName)) {
+		View_SetTexture (vHnd, textureName);
+	};
+
+	return vHnd;
+};
+
+/*
+ *	Creates View for bar values
+ */
+func int Bar_CreateValuesView (var int bHnd, var string textureName) {
+	if(!Hlp_IsValidHandle(bHnd)) { return 0; };
+
+	var int vHnd;
+
+	var _bar b; b = get(bHnd);
+	var zCView v; v = View_Get(b.v0);
+
+	vHnd = View_Create(v.vposx, v.vposy, v.vposx + v.vsizex, v.vposy + v.vsizey);
 
 	if (STR_Len (textureName)) {
 		View_SetTexture (vHnd, textureName);
@@ -287,6 +311,9 @@ func void HealthBar_UpdatePosition () {
 
 	if ((posX != _healthBar_LastPosX) || (posY != _healthBar_LastPosY)) {
 		Bar_MoveTo (hHealthBar, posX, posY);
+
+		var zCView v; v = View_Get(bHealthBar.v1);
+		View_MoveTo_Safe (hHealthPreviewView, v.vposx, v.vposy);
 	};
 
 	//Move bar values
@@ -311,7 +338,7 @@ func void HealthBar_UpdatePosition () {
 	};
 
 	var int widthDiff; widthDiff = (vHealthBarValueView.psizeX - vHealthBarBackTexView.psizeX) / 2;
-	if (widthDiff > 0) {
+	if (widthDiff != 0) {
 		targetPosX -= Print_ToVirtual (widthDiff, PS_X);
 	};
 
@@ -352,6 +379,9 @@ func void ManaBar_UpdatePosition () {
 
 	if ((posX != _manaBar_LastPosX) || (posY != _manaBar_LastPosY)) {
 		Bar_MoveTo (hManaBar, posX, posY);
+
+		var zCView v; v = View_Get(bManaBar.v1);
+		View_MoveTo_Safe (hManaPreviewView, v.vposx, v.vposy);
 	};
 
 	//Move bar values
@@ -376,7 +406,7 @@ func void ManaBar_UpdatePosition () {
 	};
 
 	var int widthDiff; widthDiff = (vmanaBarValueView.psizeX - vmanaBarBackTexView.psizeX) / 2;
-	if (widthDiff > 0) {
+	if (widthDiff != 0) {
 		targetPosX -= Print_ToVirtual (widthDiff, PS_X);
 	};
 
@@ -441,7 +471,7 @@ func void SwimBar_UpdatePosition () {
 	};
 
 	var int widthDiff; widthDiff = (vSwimBarValueView.psizeX - vSwimBarBackTexView.psizeX) / 2;
-	if (widthDiff > 0) {
+	if (widthDiff != 0) {
 		targetPosX -= Print_ToVirtual (widthDiff, PS_X);
 	};
 
@@ -506,7 +536,7 @@ func void FocusBar_UpdatePosition () {
 	};
 
 	var int widthDiff; widthDiff = (vFocusBarValueView.psizeX - vFocusBarBackTexView.psizeX) / 2;
-	if (widthDiff > 0) {
+	if (widthDiff != 0) {
 		targetPosX -= Print_ToVirtual (widthDiff, PS_X);
 	};
 
@@ -571,7 +601,7 @@ func void StaminaBar_UpdatePosition () {
 	};
 
 	var int widthDiff; widthDiff = (vStaminaBarValueView.psizeX - vStaminaBarBackTexView.psizeX) / 2;
-	if (widthDiff > 0) {
+	if (widthDiff != 0) {
 		targetPosX -= Print_ToVirtual (widthDiff, PS_X);
 	};
 
@@ -694,63 +724,109 @@ func void BBar_Show (var int hBar) {
 
 	if (hbar == hHealthBar) {
 		View_Open_Safe (bHealthBar.v0);
-		View_Top (hHealthPreviewView);
+
+		if (_healthBar_PreviewVisible)
+		{
+			View_Open_Safe (hHealthPreviewView);
+		};
+
 		View_Open_Safe (bHealthBar.v1);
+
+		View_Top (bHealthBar.v0);
+
+		if (_healthBar_PreviewVisible)
+		{
+			View_Top (hHealthPreviewView);
+		};
+
+		View_Top (bHealthBar.v1);
 		if (_healthBar_DisplayValues)
 		{
 			View_Open_Safe (hHealthBarValueView);
+			View_Top (hHealthBarValueView);
 		};
-		bHealthBar.hidden = FALSE;
 
+		bHealthBar.hidden = FALSE;
 		HealthBar_UpdatePosition ();
 	};
 
 	if (hbar == hStaminaBar) {
 		View_Open_Safe (bStaminaBar.v0);
 		View_Open_Safe (bStaminaBar.v1);
+
+		View_Top (bStaminaBar.v0);
+		View_Top (bStaminaBar.v1);
+
 		if (_staminaBar_DisplayValues)
 		{
 			View_Open_Safe (hStaminaBarValueView);
+			View_Open_Safe (hStaminaBarValueView);
 		};
-		bStaminaBar.hidden = FALSE;
 
+		bStaminaBar.hidden = FALSE;
 		StaminaBar_UpdatePosition ();
 	};
 
 	if (hbar == hManaBar) {
 		View_Open_Safe (bManaBar.v0);
-		View_Top(hManaPreviewView);
+
+		if (_manaBar_PreviewVisible)
+		{
+			View_Open_Safe (hManaPreviewView);
+		};
+
 		View_Open_Safe (bManaBar.v1);
+
+		View_Top (bManaBar.v0);
+
+		if (_manaBar_PreviewVisible)
+		{
+			View_Top (hManaPreviewView);
+		};
+
+		View_Top (bManaBar.v1);
+
 		if (_manaBar_DisplayValues)
 		{
 			View_Open_Safe (hManaBarValueView);
+			View_Top (hManaBarValueView);
 		};
-		bManaBar.hidden = FALSE;
 
+		bManaBar.hidden = FALSE;
 		ManaBar_UpdatePosition ();
 	};
 
 	if (hbar == hSwimBar) {
 		View_Open_Safe (bSwimBar.v0);
 		View_Open_Safe (bSwimBar.v1);
+
+		View_Top (bSwimBar.v0);
+		View_Top (bSwimBar.v1);
+
 		if (_swimBar_DisplayValues)
 		{
 			View_Open_Safe (hSwimBarValueView);
+			View_Top (hSwimBarValueView);
 		};
-		bSwimBar.hidden = FALSE;
 
+		bSwimBar.hidden = FALSE;
 		SwimBar_UpdatePosition ();
 	};
 
 	if (hbar == hFocusBar) {
 		View_Open_Safe (bFocusBar.v0);
 		View_Open_Safe (bFocusBar.v1);
+
+		View_Top (bFocusBar.v0);
+		View_Top (bFocusBar.v1);
+
 		if (_focusBar_DisplayValues)
 		{
 			View_Open_Safe (hFocusBarValueView);
+			View_Top (hFocusBarValueView);
 		};
-		bFocusBar.hidden = FALSE;
 
+		bFocusBar.hidden = FALSE;
 		FocusBar_UpdatePosition ();
 	};
 };
