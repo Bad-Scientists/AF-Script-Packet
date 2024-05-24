@@ -1004,6 +1004,17 @@ func void Npc_StartAni (var int slfInstance, var string aniName) {
 	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 };
 
+func void Npc_StartAnis (var int slfInstance, var string aniName1, var string aniName2) {
+	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	if (!modelPtr) { return; };
+
+	var int aniID1; aniID1 = zCModel_GetAniIDFromAniName(modelPtr, aniName1);
+	var int aniID2; aniID2 = zCModel_GetAniIDFromAniName(modelPtr, aniName2);
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	oCAniCtrl_Human_StartAni (slf.aniCtrl, aniID1, aniID2);
+};
+
 func int Npc_GetAniIDFromAniName (var int slfInstance, var string aniName) {
 	// getting zCModel
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
