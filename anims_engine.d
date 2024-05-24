@@ -1001,7 +1001,7 @@ func void Npc_StartAni (var int slfInstance, var string aniName) {
 	//var int aniPtr; aniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
 
 	// start animation to make it AniActive
-	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_ISNEXTANI);
+	zCModel_StartAni_ByAniID (modelPtr, aniID, STARTANI_FORCE);
 };
 
 func int Npc_GetAniIDFromAniName (var int slfInstance, var string aniName) {
