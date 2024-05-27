@@ -601,9 +601,104 @@ func void FrameFunction_EachFrame__SprintMode () {
 	};
 };
 
-func void G12_SprintMode_Init () {
+func void SaveIniOptions__SprintMode() {
+	MEM_SetGothOpt ("AFSP", "sprintBar.DisplayMethod", IntToString (_staminaBar_DisplayMethod));
+	MEM_SetGothOpt ("AFSP", "sprintBar.DisplayValues", IntToString (_staminaBar_DisplayValues));
+};
 
+func void ReloadIniOptions__SprintMode() {
+	//Load controls from .ini files Gothic.ini is master, mod.ini is secondary
+	//onChgSetOption          = "keySprintModeToggleKey";
+	//onChgSetOptionSection   = "KEYS";
+
+	//Custom key from Gothic.ini
+	if (!MEM_GothOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
+		//Custom key from mod .ini file
+		if (!MEM_ModOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
+			//KEY_RSHIFT if not specified
+			MEM_SetKey ("afsp.keySprintModeToggleKey", KEY_RSHIFT);
+		} else {
+			//Update from mod .ini file
+			var string keyString; keyString = MEM_GetModOpt ("KEYS", "afsp.keySprintModeToggleKey");
+			MEM_SetKey ("afsp.keySprintModeToggleKey", MEM_GetKey (keyString));
+		};
+	};
+
+	//Custom sprint mode overlay
+	if (!MEM_GothOptExists ("AFSP", "sprintMode.overlayName")) {
+		//Custom key from mod .ini file
+		if (!MEM_ModOptExists ("AFSP", "sprintMode.overlayName")) {
+			//Keep default constant
+		} else {
+			//Update from mod .ini file
+			_PC_SprintModeOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.overlayName");
+		};
+	} else {
+		//Update from Gothic.ini
+		_PC_SprintModeOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.overlayName");
+	};
+
+	if (!MEM_GothOptExists ("AFSP", "sprintMode.timedOverlayName")) {
+		//Custom key from mod .ini file
+		if (!MEM_ModOptExists ("AFSP", "sprintMode.timedOverlayName")) {
+			//Keep default constant
+		} else {
+			//Update from mod .ini file
+			_PC_SprintModeTimedOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.timedOverlayName");
+		};
+	} else {
+		//Update from Gothic.ini
+		_PC_SprintModeTimedOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.timedOverlayName");
+	};
+
+	//Custom setup from Gothic.ini
+
+	//** Display methods **
+
+	if (MEM_GothOptExists ("AFSP", "sprintBar.DisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
+		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "sprintBar.DisplayMethod"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "sprintBar.DisplayMethod")) {
+			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "sprintBar.DisplayMethod"));
+		} else {
+			//Default
+			_staminaBar_DisplayMethod = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	 //** Display values **
+
+	if (MEM_GothOptExists ("AFSP", "sprintBar.DisplayValues")) {
+		//0 - no, 1 - yes
+		_staminaBar_DisplayValues = STR_ToInt (MEM_GetGothOpt ("AFSP", "sprintBar.DisplayValues"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "sprintBar.DisplayValues")) {
+			_staminaBar_DisplayValues = STR_ToInt (MEM_GetModOpt ("AFSP", "sprintBar.DisplayValues"));
+		} else {
+			//Default
+			_staminaBar_DisplayValues = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	SaveIniOptions__SprintMode();
+};
+
+func void _event_MenuLeave__SprintMode(var int eventType) {
+	if (!ECX) { return; };
+	var zCMenu menu; menu = _^ (ECX);
+
+	if (Hlp_StrCmp (menu.name, "MENU_MAIN")) {
+		ReloadIniOptions__SprintMode();
+	};
+};
+
+func void G12_SprintMode_Init () {
 	G12_InitDefaultBarFunctions ();
+
+	G12_MenuEvent_Init();
 
 	//-- Load API values / init default values
 	_PC_SprintModeBar_PPosX = API_GetSymbolIntValue ("PC_SPRINTMODEBAR_PPOSX", -1);
@@ -711,63 +806,13 @@ func void G12_SprintMode_Init () {
 		Gamestate_AddListener (_eventGameStateLoaded__SprintMode);
 	};
 
-	//Load controls from .ini files Gothic.ini is master, mod.ini is secondary
-	//onChgSetOption          = "keySprintModeToggleKey";
-	//onChgSetOptionSection   = "KEYS";
+	//--
 
-	//Custom key from Gothic.ini
-	if (!MEM_GothOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
-		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("KEYS", "afsp.keySprintModeToggleKey")) {
-			//KEY_RSHIFT if not specified
-			MEM_SetKey ("afsp.keySprintModeToggleKey", KEY_RSHIFT);
-		} else {
-			//Update from mod .ini file
-			var string keyString; keyString = MEM_GetModOpt ("KEYS", "afsp.keySprintModeToggleKey");
-			MEM_SetKey ("afsp.keySprintModeToggleKey", MEM_GetKey (keyString));
-		};
-	};
+	//Add listeners for closing menu - will reload options
+	MenuLeaveEvent_AddListener(_event_MenuLeave__SprintMode);
 
-	//Custom sprint mode overlay
-	if (!MEM_GothOptExists ("AFSP", "sprintMode.overlayName")) {
-		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("AFSP", "sprintMode.overlayName")) {
-			//Keep default constant
-		} else {
-			//Update from mod .ini file
-			_PC_SprintModeOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.overlayName");
-		};
-	} else {
-		//Update from Gothic.ini
-		_PC_SprintModeOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.overlayName");
-	};
+	//Reload options explicitly
+	ReloadIniOptions__SprintMode();
 
-	if (!MEM_GothOptExists ("AFSP", "sprintMode.timedOverlayName")) {
-		//Custom key from mod .ini file
-		if (!MEM_ModOptExists ("AFSP", "sprintMode.timedOverlayName")) {
-			//Keep default constant
-		} else {
-			//Update from mod .ini file
-			_PC_SprintModeTimedOverlayName = MEM_GetModOpt ("AFSP", "sprintMode.timedOverlayName");
-		};
-	} else {
-		//Update from Gothic.ini
-		_PC_SprintModeTimedOverlayName = MEM_GetGothOpt ("AFSP", "sprintMode.timedOverlayName");
-	};
-
-	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("AFSP", "sprintBar.DisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_staminaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "sprintBar.DisplayMethod"));
-	} else {
-		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("AFSP", "sprintBar.DisplayMethod")) {
-			_staminaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "sprintBar.DisplayMethod"));
-			MEM_SetGothOpt ("AFSP", "sprintBar.DisplayMethod", IntToString (_staminaBar_DisplayMethod));
-		} else {
-			//Default
-			_staminaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("AFSP", "sprintBar.DisplayMethod", IntToString (_staminaBar_DisplayMethod));
-		};
-	};
+	//--
 };

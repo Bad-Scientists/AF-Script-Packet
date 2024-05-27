@@ -701,9 +701,118 @@ func void FrameFunction_EachFrame__BetterBars ()
 	focusBar.zCView_vposy = 8192 * 2;
 };
 
+func void SaveIniOptions__BetterBars () {
+	MEM_SetGothOpt ("AFSP", "healthBar.DisplayMethod", IntToString (_healthBar_DisplayMethod));
+	MEM_SetGothOpt ("AFSP", "manaBar.DisplayMethod", IntToString (_manaBar_DisplayMethod));
+
+	MEM_SetGothOpt ("AFSP", "healthBar.DisplayValues", IntToString (_manaBar_DisplayValues));
+	MEM_SetGothOpt ("AFSP", "manaBar.DisplayValues", IntToString (_manaBar_DisplayValues));
+	MEM_SetGothOpt ("AFSP", "swimBar.DisplayValues", IntToString (_swimBar_DisplayValues));
+	MEM_SetGothOpt ("AFSP", "focusBar.DisplayValues", IntToString (_focusBar_DisplayValues));
+};
+
+func void ReloadIniOptions__BetterBars () {
+	//Custom setup from Gothic.ini
+
+	//** Display methods **
+
+	if (MEM_GothOptExists ("AFSP", "healthBar.DisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
+		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "healthBar.DisplayMethod"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "healthBar.DisplayMethod")) {
+			_healthBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "healthBar.DisplayMethod"));
+		} else {
+			//Default
+			_healthBar_DisplayMethod = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	if (MEM_GothOptExists ("AFSP", "manaBar.DisplayMethod")) {
+		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
+		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "manaBar.DisplayMethod"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "manaBar.DisplayMethod")) {
+			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "manaBar.DisplayMethod"));
+		} else {
+			//Default
+			_manaBar_DisplayMethod = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	 //** Display values **
+
+	if (MEM_GothOptExists ("AFSP", "healthBar.DisplayValues")) {
+		//0 - no, 1 - yes
+		_healthBar_DisplayValues = STR_ToInt (MEM_GetGothOpt ("AFSP", "healthBar.DisplayValues"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "healthBar.DisplayValues")) {
+			_healthBar_DisplayValues = STR_ToInt (MEM_GetModOpt ("AFSP", "healthBar.DisplayValues"));
+		} else {
+			//Default
+			_healthBar_DisplayValues = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	if (MEM_GothOptExists ("AFSP", "manaBar.DisplayValues")) {
+		//0 - no, 1 - yes
+		_manaBar_DisplayValues = STR_ToInt (MEM_GetGothOpt ("AFSP", "manaBar.DisplayValues"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "manaBar.DisplayValues")) {
+			_manaBar_DisplayValues = STR_ToInt (MEM_GetModOpt ("AFSP", "manaBar.DisplayValues"));
+		} else {
+			//Default
+			_manaBar_DisplayValues = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	if (MEM_GothOptExists ("AFSP", "swimBar.DisplayValues")) {
+		//0 - no, 1 - yes
+		_swimBar_DisplayValues = STR_ToInt (MEM_GetGothOpt ("AFSP", "swimBar.DisplayValues"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "swimBar.DisplayValues")) {
+			_swimBar_DisplayValues = STR_ToInt (MEM_GetModOpt ("AFSP", "swimBar.DisplayValues"));
+		} else {
+			//Default
+			_swimBar_DisplayValues = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	if (MEM_GothOptExists ("AFSP", "focusBar.DisplayValues")) {
+		//0 - no, 1 - yes
+		_focusBar_DisplayValues = STR_ToInt (MEM_GetGothOpt ("AFSP", "focusBar.DisplayValues"));
+	} else {
+		//Custom setup from mod .ini file
+		if (MEM_ModOptExists ("AFSP", "focusBar.DisplayValues")) {
+			_focusBar_DisplayValues = STR_ToInt (MEM_GetModOpt ("AFSP", "focusBar.DisplayValues"));
+		} else {
+			//Default
+			_focusBar_DisplayValues = BarDisplay_DynamicUpdate;
+		};
+	};
+
+	SaveIniOptions__BetterBars();
+};
+
+func void _event_MenuLeave__BetterBars (var int eventType) {
+	if (!ECX) { return; };
+	var zCMenu menu; menu = _^ (ECX);
+
+	if (Hlp_StrCmp (menu.name, "MENU_MAIN")) {
+		ReloadIniOptions__BetterBars();
+	};
+};
+
 func void G12_BetterBars_Init () {
 	G12_InvItemPreview_Init ();
 	G12_InitDefaultBarFunctions ();
+
+	G12_MenuEvent_Init();
 
 	//-- Load API values / init default values
 
@@ -776,36 +885,11 @@ func void G12_BetterBars_Init () {
 
 	//--
 
-	//Custom setup from Gothic.ini
-	if (MEM_GothOptExists ("AFSP", "healthBar.DisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_healthBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "healthBar.DisplayMethod"));
-	} else {
-		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("AFSP", "healthBar.DisplayMethod")) {
-			_healthBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "healthBar.DisplayMethod"));
-			MEM_SetGothOpt ("AFSP", "healthBar.DisplayMethod", IntToString (_healthBar_DisplayMethod));
-		} else {
-			//Default
-			_healthBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("AFSP", "healthBar.DisplayMethod", IntToString (_healthBar_DisplayMethod));
-		};
-	};
+	//Add listeners for closing menu - will reload options
+	MenuLeaveEvent_AddListener(_event_MenuLeave__BetterBars);
 
-	if (MEM_GothOptExists ("AFSP", "manaBar.DisplayMethod")) {
-		//0 - standard, 1 - dynamic update, 2 - always on, 3 only in inventory
-		_manaBar_DisplayMethod = STR_ToInt (MEM_GetGothOpt ("AFSP", "manaBar.DisplayMethod"));
-	} else {
-		//Custom setup from mod .ini file
-		if (MEM_ModOptExists ("AFSP", "manaBar.DisplayMethod")) {
-			_manaBar_DisplayMethod = STR_ToInt (MEM_GetModOpt ("AFSP", "manaBar.DisplayMethod"));
-			MEM_SetGothOpt ("AFSP", "manaBar.DisplayMethod", IntToString (_manaBar_DisplayMethod));
-		} else {
-			//Default
-			_manaBar_DisplayMethod = BarDisplay_DynamicUpdate;
-			MEM_SetGothOpt ("AFSP", "manaBar.DisplayMethod", IntToString (_manaBar_DisplayMethod));
-		};
-	};
+	//Reload options explicitly
+	ReloadIniOptions__BetterBars();
 
 	//--
 
