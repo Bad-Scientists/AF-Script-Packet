@@ -187,7 +187,7 @@ func void DisableExhausted_SprintMode () {
 	PC_SprintModeBarFlashingTimer = 80;
 };
 
-func void FrameFunction__SprintMode () {
+func void FF_WalkCycle__SprintMode () {
 	if (!Hlp_IsValidNPC (hero)) { return; };
 	if (Npc_IsDead (hero)) { return; };
 
@@ -340,7 +340,7 @@ func void FrameFunction__SprintMode () {
 	};
 };
 
-func void FrameFunction_FlashBar__SprintMode () {
+func void FF_FlashBar__SprintMode () {
 	//Flash stamina bar if in cool down
 	if (PC_SprintModeCooldown) {
 		if (PC_SprintModeBarFlashingFadeOut) {
@@ -406,7 +406,7 @@ func void FrameFunction_FlashBar__SprintMode () {
 /*
  *	Better-bars display method
  */
-func void FrameFunction_FadeInOutSprintBar__BetterBars () {
+func void FF_FadeInOutSprintBar__BetterBars () {
 	//If this method returns true - then bar should be 100% visible
 	if (BarGetOnDesk (BarType_SprintBar, _staminaBar_DisplayMethod)) {
 		BBar_SetAlphaBackAndBar (hStaminaBar, 255, PC_SprintModeBarAlpha);
@@ -422,7 +422,7 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 	if (!_staminaBar_DisplayTime) {
 		BBar_Hide (hStaminaBar);
 
-		FF_Remove (FrameFunction_FadeInOutSprintBar__BetterBars);
+		FF_Remove (FF_FadeInOutSprintBar__BetterBars);
 		return;
 	};
 
@@ -471,7 +471,7 @@ func void FrameFunction_FadeInOutSprintBar__BetterBars () {
 	};
 };
 
-func void FrameFunction_EachFrame__SprintMode () {
+func void FF_SprintMode () {
 
 	var string s;
 	var int _staminaBar_LastValue;
@@ -523,7 +523,7 @@ func void FrameFunction_EachFrame__SprintMode () {
 			_staminaBar_DisplayTime = 80;
 		};
 
-		FF_ApplyOnceExtGT (FrameFunction_FadeInOutSprintBar__BetterBars, 60, -1);
+		FF_ApplyOnceExtGT (FF_FadeInOutSprintBar__BetterBars, 60, -1);
 	};
 
 	if ((_staminaBar_DisplayMethod == BarDisplay_AlwaysOn) || (sprintBarOnDesk) || (_staminaBar_DisplayTime))
@@ -766,9 +766,9 @@ func void G12_SprintMode_Init () {
 	//--
 
 	//Add frame function (8/1s)
-	FF_ApplyOnceExtGT (FrameFunction__SprintMode, 125, -1);
-	FF_ApplyOnceExtGT (FrameFunction_FlashBar__SprintMode, 60, -1);
-	FF_ApplyOnceExtGT (FrameFunction_EachFrame__SprintMode, 0, -1);
+	FF_ApplyOnceExtGT (FF_WalkCycle__SprintMode, 125, -1);
+	FF_ApplyOnceExtGT (FF_FlashBar__SprintMode, 60, -1);
+	FF_ApplyOnceExtGT (FF_SprintMode, 0, -1);
 
 	//Create stamina bar
 	if (!Hlp_IsValidHandle(hStaminaBar)) {

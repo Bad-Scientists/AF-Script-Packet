@@ -25,6 +25,27 @@ const int BarPreviewEffect_None = 0; //Default no effect (preferred by Auronen)
 const int BarPreviewEffect_FadeInOut = 1; //Fade in / out (you should definitelly use this one :) )
 
 /*
+ *	Bar display states
+ *
+ *	BarDisplayState_FadingIn (alpha ++) --> BarDisplayState_Displayed
+ *	BarDisplayState_Displayed (alpha 255) --> BarDisplayState_FadingOut (if dynamic, otherwise states in this state)
+ *	BarDisplayState_FadingOut (alpha --) --> BarDisplayState_Hidden
+ *	BarDisplayState_Hidden (alpha 0)
+ *
+ *	BarDisplayState_StartFlashing --> BarDisplayState_IsFlashing - will reset flash counter
+ *	BarDisplayState_IsFlashing (alpha +-) --> BarDisplayState_WasFlashing
+ *	BarDisplayState_WasFlashing --> BarDisplayState_Displayed - will activate FF_FadeInOut* function
+ */
+const int BarDisplayState_FadingIn = 0;
+const int BarDisplayState_Displayed = 1;
+const int BarDisplayState_FadingOut = 2;
+const int BarDisplayState_Hidden = 3;
+
+const int BarDisplayState_StartFlashing = 4;
+const int BarDisplayState_IsFlashing = 5;
+const int BarDisplayState_WasFlashing = 6;
+
+/*
  *	Internal variables
  */
 
@@ -150,12 +171,14 @@ func int BarGetOnDesk (var int barType, var int displayMethod) {
 	var oCViewStatusBar manaBar; manaBar = _^ (MEM_Game.manaBar);
 
 	//Display only in inventory
-	if ((displayMethod == BarDisplay_OnlyInInventory) && (!BarDisplay_InventoryOpened)) {
-		return FALSE;
+	if (displayMethod == BarDisplay_OnlyInInventory) {
+		return BarDisplay_InventoryOpened;
 	};
 
 	//Dipslay method - always on
-	if (displayMethod == BarDisplay_AlwaysOn) { return TRUE; };
+	if (displayMethod == BarDisplay_AlwaysOn) {
+		return TRUE;
+	};
 
 	//Health bar
 	if (barType == BarType_HealthBar)
@@ -215,38 +238,38 @@ func void Bar_SetAlphaBackAndBar (var int hBar, var int alphaBack, var int alpha
 /*
  *	Checks if LeGo bar is visible
  */
-func int Bar_IsVisible (var int bar) {
-	if(!Hlp_IsValidHandle(bar)) { return FALSE; };
-	var _bar b; b = get(bar);
+func int Bar_IsVisible (var int hBar) {
+	if(!Hlp_IsValidHandle(hBar)) { return FALSE; };
+	var _bar b; b = get(hBar);
 	return !b.hidden;
 };
 
 /*
  *	Sets bar value (safely, LeGo does not have safety check for bar max value - which might cause division by 0 error and crash the game)
  */
-func void Bar_SetValueSafe (var int bar, var int val) {
-	if (!Hlp_IsValidHandle(bar)) { return; };
+func void Bar_SetValueSafe (var int hBar, var int val) {
+	if (!Hlp_IsValidHandle(hBar)) { return; };
 
-	var _bar b; b = get(bar);
+	var _bar b; b = get(hBar);
 
 	if (val < 0) { val = 0; };
 
 	if ((val) && (b.valMax)) {
-		Bar_SetPromille(bar, (val * 1000) / b.valMax);
+		Bar_SetPromille(hBar, (val * 1000) / b.valMax);
 	} else {
-		Bar_SetPromille(bar, 0);
+		Bar_SetPromille(hBar, 0);
 	};
 };
 
 /*
  *	Creates View for bar preview
  */
-func int Bar_CreatePreviewView (var int bHnd, var string textureName) {
-	if(!Hlp_IsValidHandle(bHnd)) { return 0; };
+func int Bar_CreatePreviewView (var int hBar, var string textureName) {
+	if(!Hlp_IsValidHandle(hBar)) { return 0; };
 
 	var int vHnd;
 
-	var _bar b; b = get(bHnd);
+	var _bar b; b = get(hBar);
 	var zCView v; v = View_Get(b.v1);
 
 	vHnd = View_Create(v.vposx, v.vposy, v.vposx + b.barW, v.vposy + v.vsizey);
@@ -261,12 +284,12 @@ func int Bar_CreatePreviewView (var int bHnd, var string textureName) {
 /*
  *	Creates View for bar values
  */
-func int Bar_CreateValuesView (var int bHnd, var string textureName) {
-	if(!Hlp_IsValidHandle(bHnd)) { return 0; };
+func int Bar_CreateValuesView (var int hBar, var string textureName) {
+	if(!Hlp_IsValidHandle(hBar)) { return 0; };
 
 	var int vHnd;
 
-	var _bar b; b = get(bHnd);
+	var _bar b; b = get(hBar);
 	var zCView v; v = View_Get(b.v0);
 
 	vHnd = View_Create(v.vposx, v.vposy, v.vposx + v.vsizex, v.vposy + v.vsizey);

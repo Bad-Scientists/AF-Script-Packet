@@ -23,15 +23,18 @@ var int _healthBar_DisplayWhenHurt_Percentage;
 //--
 
 var int _healthBar_PreviewAlpha;
-var int _healthBar_DisplayTime;
 var int _healthBar_PreviewFlashingFadeOut;
+
+var int _healthBar_DisplayTime;
+var int _healthBar_DisplayState;
 
 //--
 
 var int _manaBar_PreviewAlpha;
-var int _manaBar_DisplayTime;
 var int _manaBar_PreviewFlashingFadeOut;
 
+var int _manaBar_DisplayTime;
+var int _manaBar_DisplayState;
 //--
 
 var int _healthBar_PPosX;
@@ -79,7 +82,14 @@ func void FocusBar_UpdateTexture () {
 	};
 };
 
-func void FrameFunction_FadeInOutHealthBar__BetterBars () {
+func void FF_FadeInOutHealthBar__BetterBars () {
+	//Don't execute if flashing
+	if (_healthBar_DisplayState == BarDisplayState_StartFlashing)
+	|| (_healthBar_DisplayState == BarDisplayState_IsFlashing)
+	{
+		return;
+	};
+
 	//If this method returns true - then bar should be 100% visible
 	if (BarGetOnDesk (BarType_HealthBar, _healthBar_DisplayMethod)) {
 		BBar_SetAlpha (hHealthBar, 255);
@@ -95,7 +105,7 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	if (!_healthBar_DisplayTime) {
 		BBar_Hide (hHealthBar);
 
-		FF_Remove (FrameFunction_FadeInOutHealthBar__BetterBars);
+		FF_Remove (FF_FadeInOutHealthBar__BetterBars);
 		return;
 	};
 
@@ -137,7 +147,14 @@ func void FrameFunction_FadeInOutHealthBar__BetterBars () {
 	};
 };
 
-func void FrameFunction_FadeInOutManaBar__BetterBars () {
+func void FF_FadeInOutManaBar__BetterBars () {
+	//Don't execute if flashing
+	if (_manaBar_DisplayState == BarDisplayState_StartFlashing)
+	|| (_manaBar_DisplayState == BarDisplayState_IsFlashing)
+	{
+		return;
+	};
+
 	//If this method returns true - then bar should be 100% visible
 	if (BarGetOnDesk (BarType_ManaBar, _manaBar_DisplayMethod)) {
 		BBar_SetAlpha (hManaBar, 255);
@@ -153,7 +170,7 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	if (!_manaBar_DisplayTime) {
 		BBar_Hide (hManaBar);
 
-		FF_Remove (FrameFunction_FadeInOutManaBar__BetterBars);
+		FF_Remove (FF_FadeInOutManaBar__BetterBars);
 		return;
 	};
 
@@ -195,11 +212,11 @@ func void FrameFunction_FadeInOutManaBar__BetterBars () {
 	};
 };
 
-func void FrameFunction_FlashPreviewBars__BetterBars () {
+func void FF_FlashPreviewBars__BetterBars () {
 	if ((!_healthBar_PreviewVisible) && (!_manaBar_PreviewVisible)) {
 		View_SetAlpha (hHealthPreviewView, 255);
 		View_SetAlpha (hManaPreviewView, 255);
-		FF_Remove (FrameFunction_FlashPreviewBars__BetterBars);
+		FF_Remove (FF_FlashPreviewBars__BetterBars);
 		return;
 	};
 
@@ -246,7 +263,7 @@ func void FrameFunction_FlashPreviewBars__BetterBars () {
 	};
 };
 
-func void FrameFunction_EachFrame__BetterBars ()
+func void FF_BetterBars ()
 {
 	var int _healthBar_LastValue;
 	var int _healthBar_LastMaxValue;
@@ -276,7 +293,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 		if (_playerStatus) {
 			if ((!_healthBar_PreviewVisible) || (_healthBar_WasHidden)) {
 				//Add frame function (16/1s)
-				FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
+				FF_ApplyOnceExtGT (FF_FlashPreviewBars__BetterBars, 60, -1);
 
 				_healthBar_PreviewAlpha = 255;
 				_healthBar_PreviewFlashingFadeOut = TRUE;
@@ -299,7 +316,7 @@ func void FrameFunction_EachFrame__BetterBars ()
 		if (_playerStatus) {
 			if ((!_manaBar_PreviewVisible) || (_manaBar_WasHidden)) {
 				//Add frame function (8/1s)
-				FF_ApplyOnceExtGT (FrameFunction_FlashPreviewBars__BetterBars, 60, -1);
+				FF_ApplyOnceExtGT (FF_FlashPreviewBars__BetterBars, 60, -1);
 
 				_manaBar_PreviewVisible = TRUE;
 				_manaBar_PreviewAlpha = 255;
@@ -347,7 +364,9 @@ func void FrameFunction_EachFrame__BetterBars ()
 		//... don't do anything :)
 	} else
 	if ((_healthBar_ForceOnDesk) || (_healthBar_LastValue != hero.attribute [ATR_HITPOINTS]) || (_healthBar_LastMaxValue != hero.attribute [ATR_HITPOINTS_MAX])
-	|| (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0)))
+	|| (oCGame_GetHeroStatus ()) || (!Npc_IsInFightMode (hero, FMODE_NONE)) || ((hurtPercentage <= _healthBar_DisplayWhenHurt_Percentage) && (_healthBar_DisplayWhenHurt_Percentage > 0))
+	|| (_healthBar_DisplayState == BarDisplayState_WasFlashing)
+	)
 	{
 		//
 		if ((_healthBar_DisplayMethod != BarDisplay_AlwaysOn) && (!healthBarOnDesk)) {
@@ -362,7 +381,11 @@ func void FrameFunction_EachFrame__BetterBars ()
 			_healthBar_DisplayTime = 80;
 		};
 
-		FF_ApplyOnceExtGT (FrameFunction_FadeInOutHealthBar__BetterBars, 60, -1);
+		if (_healthBar_DisplayState == BarDisplayState_WasFlashing) {
+			_healthBar_DisplayState = BarDisplayState_Displayed;
+		};
+
+		FF_ApplyOnceExtGT (FF_FadeInOutHealthBar__BetterBars, 60, -1);
 	};
 
 	if ((_healthBar_DisplayMethod == BarDisplay_AlwaysOn) || (healthBarOnDesk) || (_healthBar_DisplayTime)) {
@@ -458,7 +481,9 @@ func void FrameFunction_EachFrame__BetterBars ()
 	if ((_manaBar_DisplayMethod == BarDisplay_OnlyInInventory) && (!manaBarOnDesk) && (!_manaBar_ForceOnDesk)) {
 		//... don't do anything :)
 	} else
-	if ((_manaBar_ForceOnDesk) || (_manaBar_LastValue != hero.attribute [ATR_MANA]) || (_manaBar_LastMaxValue != hero.attribute [ATR_MANA_MAX]))
+	if ((_manaBar_ForceOnDesk) || (_manaBar_LastValue != hero.attribute [ATR_MANA]) || (_manaBar_LastMaxValue != hero.attribute [ATR_MANA_MAX])
+	|| (_manaBar_DisplayState == BarDisplayState_WasFlashing)
+	)
 	{
 		//
 		if ((_manaBar_DisplayMethod != BarDisplay_AlwaysOn) && (!manaBarOnDesk)) {
@@ -473,7 +498,11 @@ func void FrameFunction_EachFrame__BetterBars ()
 			_manaBar_DisplayTime = 80;
 		};
 
-		FF_ApplyOnceExtGT (FrameFunction_FadeInOutManaBar__BetterBars, 60, -1);
+		if (_manaBar_DisplayState == BarDisplayState_WasFlashing) {
+			_manaBar_DisplayState = BarDisplayState_Displayed;
+		};
+
+		FF_ApplyOnceExtGT (FF_FadeInOutManaBar__BetterBars, 60, -1);
 	};
 
 	if ((_manaBar_DisplayMethod == BarDisplay_AlwaysOn) || (manaBarOnDesk) || (_manaBar_DisplayTime)) {
@@ -799,6 +828,143 @@ func void ReloadIniOptions__BetterBars () {
 	SaveIniOptions__BetterBars();
 };
 
+/*
+ *	Functions allowing bar flashing
+ */
+func void FF_FlashHealthBar__BetterBars () {
+	//If bar is hidden - show it
+	if (bHealthBar.hidden) {
+		if (_Bar_PlayerStatus ()) {
+			BBar_Show(bHealthBar);
+		};
+	};
+
+	var int fadeOut;
+	var int fadeOutCounter;
+	var int alpha;
+
+	//Initialize
+	if (fadeOutCounter == 0) {
+		alpha = 255;
+		fadeOut = TRUE;
+		fadeOutCounter = 1;
+	} else
+	if (fadeOutCounter > 0) {
+		if (_healthBar_DisplayState == BarDisplayState_StartFlashing) {
+			fadeOutCounter = 1;
+		};
+	};
+
+	_healthBar_DisplayState = BarDisplayState_IsFlashing;
+
+	if (fadeOut) {
+		alpha -= 64;
+
+		if (alpha < 0) {
+			alpha = 0;
+			fadeOut = (!fadeOut);
+		};
+	} else {
+		alpha += 64;
+
+		if (alpha > 255) {
+			alpha = 255;
+			fadeOut = (!fadeOut);
+			fadeOutCounter += 1;
+		};
+	};
+
+	BBar_SetAlpha (hhealthBar, alpha);
+
+	//Remove FF after 3 flashes
+	if (fadeOutCounter >= 3) {
+		fadeOutCounter = 0;
+
+		//Leave visible
+		alpha = 255;
+		BBar_SetAlpha (hhealthBar, alpha);
+
+		_healthBar_DisplayState = BarDisplayState_WasFlashing;
+
+		FF_Remove(FF_FlashHealthBar__BetterBars);
+	};
+};
+
+func void FF_FlashManaBar__BetterBars () {
+	//If bar is hidden - show it
+	if (bManaBar.hidden) {
+		if (_Bar_PlayerStatus ()) {
+			BBar_Show(bManaBar);
+		};
+	};
+
+	var int fadeOut;
+	var int fadeOutCounter;
+	var int alpha;
+
+	//Initialize
+	if (fadeOutCounter == 0) {
+		alpha = 255;
+		fadeOut = TRUE;
+		fadeOutCounter = 1;
+	} else
+	if (fadeOutCounter > 0) {
+		if (_manaBar_DisplayState == BarDisplayState_StartFlashing) {
+			fadeOutCounter = 1;
+		};
+	};
+
+	_manaBar_DisplayState = BarDisplayState_IsFlashing;
+
+	if (fadeOut) {
+		alpha -= 64;
+
+		if (alpha < 0) {
+			alpha = 0;
+			fadeOut = (!fadeOut);
+		};
+	} else {
+		alpha += 64;
+
+		if (alpha > 255) {
+			alpha = 255;
+			fadeOut = (!fadeOut);
+			fadeOutCounter += 1;
+		};
+	};
+
+	BBar_SetAlpha (hManaBar, alpha);
+
+	//Remove FF after 3 flashes
+	if (fadeOutCounter >= 3) {
+		fadeOutCounter = 0;
+
+		//Leave visible
+		alpha = 255;
+		BBar_SetAlpha (hManaBar, alpha);
+
+		_manaBar_DisplayState = BarDisplayState_WasFlashing;
+
+		FF_Remove(FF_FlashManaBar__BetterBars);
+	};
+};
+
+func void HealthBar_FlashBar() {
+	_healthBar_DisplayTime = 80;
+	_healthBar_DisplayState = BarDisplayState_StartFlashing;
+
+	//Add frame function (16/1s)
+	FF_ApplyOnceExtGT (FF_FlashHealthBar__BetterBars, 60, -1);
+};
+
+func void ManaBar_FlashBar() {
+	_manaBar_DisplayTime = 80;
+	_manaBar_DisplayState = BarDisplayState_StartFlashing;
+
+	//Add frame function (16/1s)
+	FF_ApplyOnceExtGT (FF_FlashManaBar__BetterBars, 60, -1);
+};
+
 func void _event_MenuLeave__BetterBars (var int eventType) {
 	if (!ECX) { return; };
 	var zCMenu menu; menu = _^ (ECX);
@@ -988,5 +1154,5 @@ func void G12_BetterBars_Init () {
 
 	//--
 
-	FF_ApplyOnceExtGT (FrameFunction_EachFrame__BetterBars, 0, -1);
+	FF_ApplyOnceExtGT (FF_BetterBars, 0, -1);
 };
