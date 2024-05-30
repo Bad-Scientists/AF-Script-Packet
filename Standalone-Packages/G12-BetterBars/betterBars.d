@@ -73,7 +73,7 @@ func void HealthBar_UpdateTexture () {
 };
 
 func void FocusBar_UpdateTexture () {
-	if (Hlp_IsValidHandle (hHealthBar)) {
+	if (Hlp_IsValidHandle (hFocusBar)) {
 		var oCViewStatusBar focusBar; focusBar = _^ (MEM_Game.focusBar);
 		Bar_SetBarTexture (hFocusBar, focusBar.texValue);
 	};
