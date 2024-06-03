@@ -29,6 +29,8 @@ EngineClasses_G1\oCRtnManager.d
 EngineClasses_G1\oCVisualFX.d
 EngineClasses_G1\oSSpawnNode.d
 
+EngineClasses_G1\oCMagFrontier.d
+
 //Sound
 EngineClasses_G1\zTSound3DParams.d
 EngineClasses_G1\zCActiveSnd.d
@@ -47,6 +49,7 @@ EngineClasses_G1\zCConDat.d
 
 EngineClasses_G1\zTSpatialState.d
 EngineClasses_G1\zTConfig.d
+
 ScriptBin\strings.d
 ScriptBin\convert.d
 
@@ -63,6 +66,8 @@ files.d
 fonts.d
 
 keys.d
+input.d
+
 vectors.d
 vobFunctions.d
 
@@ -81,17 +86,13 @@ ObjectFactory\oCAIVobMoveTorch.d
 ObjectFactory\oCAIDrop.d
 ObjectFactory\oCAIArrow.d
 ObjectFactory\oCAICamera.d
-
 ObjectFactory\oCMsgMovement.d
 ObjectFactory\oCMsgManipulate.d
 ObjectFactory\oCMsgWeapon.d
 ObjectFactory\oCMsgAttack.d
-
 ObjectFactory\zCWaypoint.d
-
 ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
-
 ObjectFactory\oCSpell.d
 
 zError_engine.d
@@ -256,3 +257,5 @@ Standalone-Packages\G12-MenuLogAddSectionCount\menuLogAddSectionCount.d
 Standalone-Packages\G12-EquipControl\equipControl.d
 
 Standalone-Packages\G1-EnhancedPickPocketing\enhancedPickPocketing.d
+
+Standalone-Packages\G12-MultiTeleport\multiTeleport.d
