@@ -40,6 +40,8 @@ EngineClasses_G2\zCConDat.d
 EngineClasses_G2\zTSpatialState.d
 EngineClasses_G2\zTConfig.d
 
+EngineClasses_G1\oCMagFrontier.d
+
 ScriptBin\strings.d
 ScriptBin\convert.d
 

@@ -29,8 +29,6 @@ EngineClasses_G1\oCRtnManager.d
 EngineClasses_G1\oCVisualFX.d
 EngineClasses_G1\oSSpawnNode.d
 
-EngineClasses_G1\oCMagFrontier.d
-
 //Sound
 EngineClasses_G1\zTSound3DParams.d
 EngineClasses_G1\zCActiveSnd.d
@@ -49,6 +47,8 @@ EngineClasses_G1\zCConDat.d
 
 EngineClasses_G1\zTSpatialState.d
 EngineClasses_G1\zTConfig.d
+
+EngineClasses_G1\oCMagFrontier.d
 
 ScriptBin\strings.d
 ScriptBin\convert.d
