@@ -3530,7 +3530,7 @@ func void _hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM () {
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PutRetValTo(_@(retVal));
-		CALL__thiscall(ECX, zCInputCallback__GetEnableHandleEvent_G2);
+		CALL__thiscall(_@(ECX), zCInputCallback__GetEnableHandleEvent_G2);
 		call = CALL_End();
 	};
 
