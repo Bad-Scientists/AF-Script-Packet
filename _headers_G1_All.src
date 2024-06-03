@@ -115,6 +115,7 @@ inventory_oCNPC.d
 functions_oCNPC_engine.d
 functions_NPC.d
 
+parser.d
 console.d
 interface.d
 

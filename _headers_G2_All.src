@@ -113,6 +113,7 @@ functions_PC.d
 
 inventory_oCMob.d
 
+parser.d
 console.d
 interface.d
 

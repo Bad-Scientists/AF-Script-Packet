@@ -115,7 +115,68 @@ func void oCRtnManager_RemoveEntry (var int rtnEntryPtr) {
 };
 
 /*
- *
+ *	oCNpc_InitRoutines
+ */
+func void oCNpc_InitRoutine (var int slfInstance) {
+	//0x006C66D0 public: void __thiscall oCNpc_States::InitRoutine(void)
+	const int oCNpc_States__InitRoutine_G1 = 7104208;
+
+	//0x0076DC10 public: void __thiscall oCNpc_States::InitRoutine(void)
+	const int oCNpc_States__InitRoutine_G2 = 7789584;
+
+	var int statePtr; statePtr = Npc_GetNpcState(slfInstance);
+	if (!statePtr) { return; };
+
+	var oCNpc_States state; state = _^ (statePtr);
+	if (!state.hasRoutine) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall (_@ (statePtr), MEMINT_SwitchG1G2 (oCNpc_States__InitRoutine_G1, oCNpc_States__InitRoutine_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	oCRtnManager_CreateWayBoxes
+ */
+func void oCRtnManager_CreateWayBoxes (var int npcPtr) {
+	//0x006CE8B0 public: void __thiscall oCRtnManager::CreateWayBoxes(class oCNpc *)
+	const int oCRtnManager__CreateWayBoxes_G1 = 7137456;
+
+	//0x00776960 public: void __thiscall oCRtnManager::CreateWayBoxes(class oCNpc *)
+	const int oCRtnManager__CreateWayBoxes_G2 = 7825760;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		var int rtnManPtr; rtnManPtr = MEMINT_SwitchG1G2 (MEMINT_RtnMan_Address_G1, MEMINT_RtnMan_Address_G2);
+		CALL_PtrParam (_@ (npcPtr));
+		CALL__thiscall (_@ (rtnManPtr), MEMINT_SwitchG1G2 (oCRtnManager__CreateWayBoxes_G1, oCRtnManager__CreateWayBoxes_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	oCRtnManager_UpdateSingleRoutine
+ */
+func void oCRtnManager_UpdateSingleRoutine (var int npcPtr) {
+	//0x006CD240 public: void __thiscall oCRtnManager::UpdateSingleRoutine(class oCNpc *)
+	const int oCRtnManager__UpdateSingleRoutine_G1 = 7131712;
+
+	//0x00775080 public: void __thiscall oCRtnManager::UpdateSingleRoutine(class oCNpc *)
+	const int oCRtnManager__UpdateSingleRoutine_G2 = 7819392;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		var int rtnManPtr; rtnManPtr = MEMINT_SwitchG1G2 (MEMINT_RtnMan_Address_G1, MEMINT_RtnMan_Address_G2);
+		CALL_PtrParam (_@ (npcPtr));
+		CALL__thiscall (_@ (rtnManPtr), MEMINT_SwitchG1G2 (oCRtnManager__UpdateSingleRoutine_G1, oCRtnManager__UpdateSingleRoutine_G2));
+		call = CALL_End ();
+	};
+};
+
+/*
+ *	oCRtnManager_RemoveRoutine
  */
 func void oCRtnManager_RemoveRoutine (var int npcPtr) {
 	//0x006CE0C0 public: void __thiscall oCRtnManager::RemoveRoutine(class oCNpc *)
@@ -133,6 +194,9 @@ func void oCRtnManager_RemoveRoutine (var int npcPtr) {
 	};
 };
 
+/*
+ *	oCRtnManager_FindRoutine
+ */
 func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnBeforePtr, var int rtnNowPtr) {
 	//0x006CD720 public: int __thiscall oCRtnManager::FindRoutine(class oCNpc *,class oCRtnEntry * &,class oCRtnEntry * &)
 	const int oCRtnManager__FindRoutine_G1 = 7132960;
@@ -171,6 +235,9 @@ func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnBeforePtr, va
 	return + retVal;
 };
 
+/*
+ *	oCRtnManager_GetRoutinePos
+ */
 func int oCRtnManager_GetRoutinePos (var int slfInstance) {
 	//0x006CD970 public: class zVEC3 __thiscall oCRtnManager::GetRoutinePos(class oCNpc *)
 	const int oCRtnManager__GetRoutinePos_G1 = 7133552;
@@ -189,6 +256,9 @@ func int oCRtnManager_GetRoutinePos (var int slfInstance) {
 	return CALL_RetValAsPtr ();
 };
 
+/*
+ *	oCRtnManager_RemoveAllRoutines
+ */
 func void oCRtnManager_RemoveAllRoutines () {
 	MEM_RtnMan_Init ();
 
@@ -207,6 +277,9 @@ func void oCRtnManager_RemoveAllRoutines () {
 	end;
 };
 
+/*
+ *	oCRtnManager_GetNpcRoutines
+ */
 func int oCRtnManager_GetNpcRoutines (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return 0; };
@@ -234,6 +307,53 @@ func int oCRtnManager_GetNpcRoutines (var int slfInstance) {
 	end;
 
 	return rtnArrayPtr;
+};
+
+/*
+ *	Npc_IsInRtnStateName
+ */
+func int Npc_IsInRtnStateName (var int slfInstance, var string stateName) {
+	stateName = STR_Upper (stateName);
+
+	var string rtnStateName; rtnStateName = "";
+
+	//Get all routines
+	var int rtnArrayPtr; rtnArrayPtr = oCRtnManager_GetNpcRoutines (slfInstance);
+
+	var zCArray rtnList; rtnList = _^ (rtnArrayPtr);
+
+	repeat (i, rtnList.numInArray); var int i;
+		var int rtnPtr; rtnPtr = MEM_ArrayRead (rtnArrayPtr, i);
+
+		if (rtnPtr) {
+			var oCRtnEntry rtn; rtn = _^ (rtnPtr);
+
+			//If time matches ...
+			if (Wld_IsTime (rtn.hour1, rtn.min1, rtn.hour2, rtn.min2)) {
+				//Check if state matches
+				if (rtn.f_script) {
+					rtnStateName = GetSymbolName (rtn.f_script);
+				};
+
+				break;
+			};
+		};
+	end;
+
+	MEM_ArrayFree (rtnArrayPtr);
+
+	//We will allow single wild-card '*'
+	var int indexWildcard;
+	indexWildcard = STR_IndexOf (stateName, "*");
+
+	if (indexWildcard > -1) {
+		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
+		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
+
+		return + (STR_StartsWith (rtnStateName, s1) && STR_EndsWith (rtnStateName, s2));
+	};
+
+	return + (Hlp_StrCmp (rtnStateName, stateName));
 };
 
 /*
@@ -324,6 +444,9 @@ func void zCRoute_InitWayNode (var int rt) {
 	};
 };
 
+/*
+ *	zCWayNet_FindRoute_Positions
+ */
 func int zCWayNet_FindRoute_Positions (var int fromPosPtr, var int toPosPtr, var int vobPtr) {
 	//0x007068D0 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zVEC3 const &,class zCVob const *)
 	const int zCWayNet__FindRoute_G1 = 7366864;
@@ -353,6 +476,9 @@ func int zCWayNet_FindRoute_Positions (var int fromPosPtr, var int toPosPtr, var
 	return +retVal;
 };
 
+/*
+ *	zCWayNet_FindRoute_PosToWp
+ */
 func int zCWayNet_FindRoute_PosToWp (var int fromPosPtr, var int toWaypointPtr, var int vobPtr) {
 	//0x00706960 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zVEC3 const &,class zCWaypoint *,class zCVob const *)
 	const int zCWayNet__FindRoute_G1 = 7367008;
@@ -382,6 +508,9 @@ func int zCWayNet_FindRoute_PosToWp (var int fromPosPtr, var int toWaypointPtr, 
 	return +retVal;
 };
 
+/*
+ *	zCWayNet_FindRoute_Waypoints
+ */
 func int zCWayNet_FindRoute_Waypoints (var int fromWaypointPtr, var int toWaypointPtr, var int vobPtr) {
 	//0x00706A40 public: class zCRoute * __thiscall zCWayNet::FindRoute(class zCWaypoint *,class zCWaypoint *,class zCVob const *)
 	const int zCWayNet__FindRoute_G1 = 7367232;
@@ -608,6 +737,8 @@ func string NPC_GetLastRoutineWP (var int slfInstance) {
 	// state.weaponmode_routine
 
 	// state.aiStateDriven
+
+	//TODO: don't like this!
 
 //
 
@@ -1382,7 +1513,6 @@ func int WP_GetDistToPos (var string waypointName, var int posPtr) {
 	if (!wpPtr) { return FLOATNULL; };
 
 	var zCWaypoint wp; wp = _^ (wpPtr);
-
 	return + Pos_GetDistToPos (_@ (wp.pos), posPtr);
 };
 
@@ -1694,6 +1824,16 @@ func int zCWaypoint_GetByPosAndPortalRoom (var int fromPosPtr, var string search
 func string WP_GetByPosAndPortalRoom (var int fromPosPtr, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int canSeeVobPtr, var int range, var int distLimit, var int verticalLimit) {
 	var int wpPtr; wpPtr = zCWaypoint_GetByPosAndPortalRoom (fromPosPtr, searchWaypointName, searchByPortalName, searchFlags, canSeeVobPtr, range, distLimit, verticalLimit);
 	return zCWaypoint_GetName (wpPtr);
+};
+
+/*
+ *	WP_ToPos
+ */
+func void WP_ToPos(var string wpName, var int posPtr) {
+	var int wpPtr; wpPtr = SearchWaypointByName(wpName);
+	if (!wpPtr) { return; };
+	var zCWaypoint wp; wp = _^ (wpPtr);
+	MEM_CopyBytes(_@ (wp.pos[0]), posPtr, 12);
 };
 
 /*

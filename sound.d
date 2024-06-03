@@ -266,9 +266,7 @@ func void zCActiveSnd_UpdateSoundsByFrame (var int sndFramePtr) {
 func void zTSound3DParams_SetDefaults (var int ptrParams) {
 	//Default params
 	var zTSound3DParams params;
-
 	if (!ptrParams) { return; };
-
 	params = _^ (ptrParams);
 
 	const int zSND_RADIUS_DEFAULT	= -1;
@@ -290,7 +288,24 @@ func void zTSound3DParams_SetDefaults (var int ptrParams) {
  *	Returns sound handle
  */
 func int zCSndSys_MSS_PlaySound3D (var int soundPtr, var int vobPtr) {
-	var zTSound3DParams params; zTSound3DParams_SetDefaults (_@ (params));
+	var zTSound3DParams params;
+
+	//This does not work
+	//zTSound3DParams_SetDefaults (_@ (params));
+
+	const int zSND_RADIUS_DEFAULT	= -1;
+	const int zSND_PITCH_DEFAULT	= -999999;
+
+	//SetDefaults
+	params.obstruction		= 0;
+	params.volume			= 1;
+	params.radius			= mkf (zSND_RADIUS_DEFAULT);
+	params.loopType			= zSND_LOOPING_DEFAULT;
+	params.coneAngleDeg		= 0;
+	params.reverbLevel		= 1;
+	params.isAmbient3D		= FALSE;
+	params.pitchOffset		= mkf(zSND_PITCH_DEFAULT);
+
 	return +zCSndSys_MSS_PlaySound3D_Ext (soundPtr, vobPtr, 0, _@ (params));
 };
 

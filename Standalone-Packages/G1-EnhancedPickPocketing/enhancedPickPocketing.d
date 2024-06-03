@@ -185,32 +185,6 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 };
 
 /*
- *	oCNpc_StopTheft
- *	 - engine function closes steal inventory
- *	 - if parameter victimIsAware is true then it also sends perception PERC_CATCHTHIEF to victim
- */
-func void oCNpc_StopTheft (var int slfInstance, var int thiefPtr, var int victimIsAware) {
-	//0x006BAFD0 public: void __thiscall oCNpc::StopTheft(class oCNpc *,int)
-	const int oCNpc__StopTheft_G1 = 7057360;
-
-	//0x00762160 public: void __thiscall oCNpc::StopTheft(class oCNpc *,int)
-	const int oCNpc__StopTheft_G2 = 7741792;
-
-	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return; };
-
-	var int slfPtr; slfPtr = _@ (slf);
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_IntParam (_@ (victimIsAware));
-		CALL_PtrParam (_@ (thiefPtr));
-		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__StopTheft_G1, oCNpc__StopTheft_G2));
-		call = CALL_End();
-	};
-};
-
-/*
  *	Hook called when steal container is empty
  */
 func void _hook_oCNpc_OpenSteal_StealContainerIsEmpty () {

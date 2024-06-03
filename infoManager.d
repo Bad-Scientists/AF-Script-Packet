@@ -13,8 +13,11 @@ func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int in
 	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
 	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam (_@ (index));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL_PtrParam (_@ (othPtr));
@@ -22,7 +25,7 @@ func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int in
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr();
+	return + retVal;
 };
 
 func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
@@ -41,8 +44,11 @@ func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var in
 	var int slfPtr; slfPtr = _@ (slf);
 	var int othPtr; othPtr = _@ (oth);
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam (_@ (index));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL_PtrParam (_@ (othPtr));
@@ -50,7 +56,7 @@ func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var in
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr();
+	return + retVal;
 };
 
 /*
@@ -68,8 +74,11 @@ func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr,
 	if (!Hlp_Is_oCNpc (slfPtr)) { return 0; };
 	if (!Hlp_Is_oCNpc (othPtr)) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam (_@ (index));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL_PtrParam (_@ (othPtr));
@@ -77,7 +86,7 @@ func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr,
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr();
+	return + retVal;
 };
 
 func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
@@ -96,8 +105,11 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
 	var int slfPtr; slfPtr = _@ (slf);
 	var int othPtr; othPtr = _@ (oth);
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam (_@ (index));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL_PtrParam (_@ (othPtr));
@@ -105,7 +117,7 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr();
+	return + retVal;
 };
 
 /*
@@ -127,15 +139,18 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	var int slfPtr; slfPtr = _@ (slf);
 	var int othPtr; othPtr = _@ (oth);
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL_PtrParam (_@ (othPtr));
 		CALL__thiscall (_@ (MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoCount_G1, oCInfoManager__GetInfoCount_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsInt();
+	return + retVal;
 };
 
 /*
@@ -421,6 +436,8 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
+
+	if (!MEM_InformationMan.DlgChoice) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {

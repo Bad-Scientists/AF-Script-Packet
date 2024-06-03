@@ -201,7 +201,6 @@ func void InfoManagerSpinnerAnimate () {
 			spinnedIndicatorL.pixelPositionX = dlg.sizeMargin_0[0] + (MOVE_MAX_PIXELS);
 		};
 
-
 		//Adjust alignment of spinner indicator
 
 		if (InfoManagerSpinnerAlignment == ALIGN_LEFT)
@@ -3526,8 +3525,14 @@ func void _hook_oCItemContainer_DrawItemInfo_GetHandleEvent_EIM () {
 	//0x007A5560 public: int __thiscall zCInputCallback::GetEnableHandleEvent(void)
 	const int zCInputCallback__GetEnableHandleEvent_G2 = 8017248;
 
-	CALL__thiscall (ECX, zCInputCallback__GetEnableHandleEvent_G2);
-	var int retVal; retVal = CALL_RetValAsInt ();
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall(ECX, zCInputCallback__GetEnableHandleEvent_G2);
+		call = CALL_End();
+	};
 
 	EAX = 0;
 

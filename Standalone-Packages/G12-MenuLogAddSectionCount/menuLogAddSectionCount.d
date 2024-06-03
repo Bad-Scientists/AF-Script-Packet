@@ -92,7 +92,7 @@ func void FF_LogMenuAddSectionCount () {
 
 //-- Hooks - adding/removing frame function
 
-func void _hook_zCMenu_Leave__LogMenuAddSectionCount () {
+func void _event_MenuLeave__MenuLogAddSectionCount (var int eventType) {
 	if (!ECX) { return; };
 	var zCMenu menu; menu = _^ (ECX);
 
@@ -101,7 +101,7 @@ func void _hook_zCMenu_Leave__LogMenuAddSectionCount () {
 	};
 };
 
-func void _hook_zCMenu_Enter__LogMenuAddSectionCount () {
+func void _event_MenuEnter__MenuLogAddSectionCount (var int eventType) {
 	if (!ECX) { return; };
 	var zCMenu menu; menu = _^ (ECX);
 
@@ -114,29 +114,11 @@ func void _hook_zCMenu_Enter__LogMenuAddSectionCount () {
 //-- Init
 
 func void G12_MenuLogAddSectionCount_Init () {
-	const int once = 0;
-
 	//-- Load API values / init default values
 	_refreshTopicSectionSetup = API_GetSymbolStringValue ("MENUADDSECTIONCOUNT_SETUP", "MENU_ITEM_SEL_MISSIONS_ACT LOG_MISSION LOG_RUNNING|MENU_ITEM_SEL_MISSIONS_OLD LOG_MISSION LOG_SUCCESS|MENU_ITEM_SEL_MISSIONS_FAILED LOG_MISSION LOG_FAILED|MENU_ITEM_SEL_LOG LOG_NOTE -1");
 
-	if (!once) {
-		//0x004CEB90 public: virtual void __thiscall zCMenu::Enter(void)
-		const int zCMenu__Enter_G1 = 5041040;
+	G12_MenuEvent_Init();
 
-		//0x004DB780 public: virtual void __thiscall zCMenu::Enter(void)
-		const int zCMenu__Enter_G2 = 5093248;
-
-		//G1 7 G2 NoTR 6
-		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Enter_G1, zCMenu__Enter_G2), MEMINT_SwitchG1G2 (7, 6), "_hook_zCMenu_Enter__LogMenuAddSectionCount");
-
-		//0x004CEBF0 public: virtual void __thiscall zCMenu::Leave(void)
-		const int zCMenu__Leave_G1 = 5041136;
-
-		//0x004DB910 public: virtual void __thiscall zCMenu::Leave(void)
-		const int zCMenu__Leave_G2 = 5093648;
-
-		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Leave_G1, zCMenu__Leave_G2), 9, "_hook_zCMenu_Leave__LogMenuAddSectionCount");
-
-		once = 1;
-	};
+	MenuEnterEvent_AddListener(_event_MenuEnter__MenuLogAddSectionCount);
+	MenuLeaveEvent_AddListener(_event_MenuLeave__MenuLogAddSectionCount);
 };

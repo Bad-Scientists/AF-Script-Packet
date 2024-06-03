@@ -24,6 +24,10 @@ var int _MobStartInteraction_Event;
 var int _FocusChange_Event;
 var int _OpenLockable_Event;
 
+var int _MenuEnter_Event;
+var int _MenuLeave_Event;
+var int _MenuHandleEvent_Event;
+
 func void OpenInventoryEvent_AddListener (var func f) {
 	Event_AddOnce (_OpenInventory_Event, f);
 };
@@ -150,6 +154,30 @@ func void OpenLockableEvent_AddListener (var func f) {
 
 func void OpenLockableEvent_RemoveListener (var func f) {
 	Event_Remove (_OpenLockable_Event, f);
+};
+
+func void MenuEnterEvent_AddListener (var func f) {
+	Event_AddOnce (_MenuEnter_Event, f);
+};
+
+func void MenuEnterEvent_RemoveListener (var func f) {
+	Event_Remove (_MenuEnter_Event, f);
+};
+
+func void MenuLeaveEvent_AddListener (var func f) {
+	Event_AddOnce (_MenuLeave_Event, f);
+};
+
+func void MenuLeaveEvent_RemoveListener (var func f) {
+	Event_Remove (_MenuLeave_Event, f);
+};
+
+func void MenuHandleEventEvent_AddListener (var func f) {
+	Event_AddOnce (_MenuHandleEvent_Event, f);
+};
+
+func void MenuHandleEventEvent_RemoveListener (var func f) {
+	Event_Remove (_MenuHandleEvent_Event, f);
 };
 
 /*
@@ -441,7 +469,7 @@ func void G12_UnEquipItemEvent_Init () {
 	if (!once) {
 		//[UnEquip item events]
 		//HookLen G2A 6
-		HookEngine (oCNPC__UnEquipItem, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_UnEquipItem");
+		HookEngine (oCNPC__UnEquipItem, MEMINT_SwitchG1G2 (7 + 6, 6), "_hook_oCNPC_UnEquipItem");
 		once = 1;
 	};
 };
@@ -520,7 +548,7 @@ func void G12_OpenDeadNPCEvent_Init () {
 	if (!once) {
 		//[OpenDeadNPC events]
 		//HookLen G2A 6
-		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
+		HookEngine (oCNPC__OpenDeadNPC, MEMINT_SwitchG1G2 (7 + 6, 6), "_hook_oCNPC_OpenDeadNPC");
 		once = 1;
 	};
 };
@@ -599,7 +627,7 @@ func void G12_GameHandleEvent_Init () {
 						//7327661	oCGame__HandleEvent_spellKeys
 						//7328820	oCGame__HandleEvent_dfltCase
 
-		HookEngine (MEMINT_SwitchG1G2(oCGame__HandleEvent_G1, oCGame__HandleEvent_G2), MEMINT_SwitchG1G2 (6, 7), "_hook_oCGame_HandleEvent");
+		HookEngine (MEMINT_SwitchG1G2(oCGame__HandleEvent_G1 + 6, oCGame__HandleEvent_G2), 7, "_hook_oCGame_HandleEvent");
 		once = 1;
 	};
 };
@@ -656,7 +684,7 @@ func void _hook_oCGame_GetFocusVob () {
 		PC_FocusVob = her.focus_vob;
 
 		if (_FocusChange_Event) {
-			Event_Execute (_FocusChange_Event, 0);
+			Event_Execute (_FocusChange_Event, PC_FocusVob);
 		};
 	};
 };
@@ -778,6 +806,75 @@ func void G12_OpenLockableEvent_Init () {
 	};
 };
 
+/*
+ *	Menu-related events
+ */
+
+func void _hook_zCMenu_Enter__GameEvent () {
+	if (_MenuEnter_Event) {
+		Event_Execute (_MenuEnter_Event, 0);
+	};
+};
+
+func void _hook_zCMenu_Leave__GameEvent () {
+	if (_MenuLeave_Event) {
+		Event_Execute (_MenuLeave_Event, 0);
+	};
+};
+
+func void _hook_zCMenu_HandleEvent__GameEvent () {
+	var int key; key = MEM_ReadInt (ESP + 4);
+	var int cancel; cancel = FALSE;
+
+	if (_MenuHandleEvent_Event) {
+		Event_Execute (_MenuHandleEvent_Event, key);
+	};
+};
+
+func void G12_MenuEvent_Init () {
+	if (!_MenuEnter_Event) {
+		_MenuEnter_Event = Event_Create ();
+	};
+
+	if (!_MenuLeave_Event) {
+		_MenuLeave_Event = Event_Create ();
+	};
+
+	if (!_MenuHandleEvent_Event) {
+		_MenuHandleEvent_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x004CEB90 public: virtual void __thiscall zCMenu::Enter(void)
+		const int zCMenu__Enter_G1 = 5041040;
+
+		//0x004DB780 public: virtual void __thiscall zCMenu::Enter(void)
+		const int zCMenu__Enter_G2 = 5093248;
+
+		//G1 5 G2 NoTR 6
+		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Enter_G1, zCMenu__Enter_G2), MEMINT_SwitchG1G2 (5, 6), "_hook_zCMenu_Enter__GameEvent");
+
+		//0x004CEBF0 public: virtual void __thiscall zCMenu::Leave(void)
+		const int zCMenu__Leave_G1 = 5041136;
+
+		//0x004DB910 public: virtual void __thiscall zCMenu::Leave(void)
+		const int zCMenu__Leave_G2 = 5093648;
+
+		HookEngine (MEMINT_SwitchG1G2 (zCMenu__Leave_G1, zCMenu__Leave_G2), 9, "_hook_zCMenu_Leave__GameEvent");
+
+		//0x004CEE10 public: virtual int __thiscall zCMenu::HandleEvent(int)
+		const int zCMenu__HandleEvent_G1 = 5041680;
+
+		//0x004DBB70 public: virtual int __thiscall zCMenu::HandleEvent(int)
+		const int zCMenu__HandleEvent_G2 = 5094256;
+
+		HookEngine (MEMINT_SwitchG1G2 (zCMenu__HandleEvent_G1, zCMenu__HandleEvent_G2), 5, "_hook_zCMenu_HandleEvent__GameEvent");
+
+		once = 1;
+	};
+};
+
 func void G12_GameEvents_Init () {
 	G12_OpenInventoryEvent_Init ();
 	G12_CloseInventoryEvent_Init ();
@@ -794,4 +891,5 @@ func void G12_GameEvents_Init () {
 	G12_oCMobInterStartInterationEvent_Init ();
 	G12_FocusChangeEvent_Init ();
 	G12_OpenLockableEvent_Init ();
+	G12_MenuEvent_Init ();
 };

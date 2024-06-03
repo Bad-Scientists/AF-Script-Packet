@@ -193,30 +193,6 @@ func int zCConsole_GetType (var string command) {
 };
 
 /*
- *	zCParser_AutoCompletion
- *	 - default automcompletion used by console (reading symbol table)
- */
-func int zCParser_AutoCompletion (var int parserPtr, var int wordPtr) {
-	//0x006EB440 public: int __thiscall zCParser::AutoCompletion(class zSTRING &)
-	const int zCParser__AutoCompletion_G1 = 7255104;
-
-	//0x00794950 public: int __thiscall zCParser::AutoCompletion(class zSTRING &)
-	const int zCParser__AutoCompletion_G2 = 7948624;
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo (_@ (retVal));
-		CALL_PtrParam(_@(wordPtr));
-		CALL__thiscall(_@(parserPtr), MEMINT_SwitchG1G2 (zCParser__AutoCompletion_G1, zCParser__AutoCompletion_G2));
-		call = CALL_End();
-	};
-
-	return +retVal;
-};
-
-/*
  *	WayNet_AutoCompletion
  *	 - waypoint AutoCompletion
  */

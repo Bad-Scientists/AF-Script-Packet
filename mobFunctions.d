@@ -152,6 +152,11 @@ func void MOB_SetLock (var string mobName, var string keyInstance, var string pi
 	};
 };
 
+func void MOB_SetOwnerStr (var string mobName, var string ownerStr, var string ownerGuildStr) {
+	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
+	oCMob_SetOwnerStr (mobPtr, ownerStr, ownerGuildStr);
+};
+
 func void MOB_SetOnStateFuncName (var string mobName, var string onStateFuncName) {
 	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
 	oCMobInter_SetOnStateFuncName (mobPtr, onStateFuncName);
