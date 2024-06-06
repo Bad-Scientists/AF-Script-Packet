@@ -1586,34 +1586,3 @@ func int Npc_BarrierIsWarning(var int slfInstance) {
 
 	return (slf.magFrontier_bitfield & oCMagFrontier_bitfield_isWarning);
 };
-
-/*
- *
- */
-func int Npc_DrawWeapon1 (var int slfInstance, var int targetMode, var int useFist, var int showMagicCircle) {
-	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
-	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
-	if (!slf.aniCtrl) { return FALSE; };
-
-	//0x006294A0 public: int __thiscall oCAniCtrl_Human::DrawWeapon1(int,int,int)
-	const int oCAniCtrl_Human__DrawWeapon1_G1 = 6460576;
-
-	//0x006B2610 public: int __thiscall oCAniCtrl_Human::DrawWeapon1(int,int,int)
-	const int oCAniCtrl_Human__DrawWeapon1_G2 = 7022096;
-
-	var int retVal;
-
-	var int aniCtrlPtr; aniCtrlPtr = slf.aniCtrl;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(retVal));
-		CALL_IntParam(_@(showMagicCircle));
-		CALL_IntParam(_@(useFist));
-		CALL_IntParam(_@(targetMode));
-		CALL__thiscall (_@(aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__DrawWeapon1_G1, oCAniCtrl_Human__DrawWeapon1_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
-};
