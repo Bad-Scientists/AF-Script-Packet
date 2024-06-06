@@ -250,6 +250,12 @@ class oCMsgDamage {
 
 const int sizeof_oCMsgWeapon		= 80;
 
+const int bitfield_oCMsgWeapon_DuringRun = 1;
+const int bitfield_oCMsgWeapon_InitDone = 2;
+const int bitfield_oCMsgWeapon_FirstTime = 4;
+const int bitfield_oCMsgWeapon_UseFist = 8;
+const int bitfield_oCMsgWeapon_ShowMagicCircle = 16;
+
 class oCMsgWeapon {
 	//public zCObject
 	var int _vtbl;			//0
