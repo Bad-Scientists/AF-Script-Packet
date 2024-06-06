@@ -143,18 +143,50 @@ func void _hook_oCNpc_DoSpellBook__MultiTeleport () {
 	//Do engine stuff
 	oCMag_Book_DoPerFrame(_multiTeleportMagBook);
 
-	//Do not destroy spell book if in NPC_WEAPON_MAG
-	if (oCNpc_GetWeaponMode(npc) == NPC_WEAPON_MAG) {
+	//Exit if still active
+	if (_multiTeleportModeActive) {
 		return;
 	};
 
 	var oCMag_Book magBook; magBook = _^ (_multiTeleportMagBook);
+
 	if (magBook.open) {
-		//If spell book should be inactive - close it
-		if (!_multiTeleportModeActive) {
+		//If not closing already - close
+		if (magBook.action != 3) {
 			DoCloseMagBook__MultiTeleport();
 		};
-	} else {
+	} else
+	{
+		//Exit if still in NPC_WEAPON_MAG
+		var oCNpc her; her = Hlp_GetNpc(npc);
+		if(her.aniCtrl) {
+			const int WMODE_CHOOSE = 2;
+			const int ANI_ACTION_CHOOSEWEAPON = 7;
+
+			var oCAniCtrl_Human aniCtrl; aniCtrl = _^(her.aniCtrl);
+
+			//If weapon is removed while *running* then wmode_selected, changeweapon and wmode have all three incorrect values ... (basically an engine bug?)
+			//wmode_selected is therefore not 100% reliable as it remains wmode_selected == NPC_WEAPON_MAG
+			//the only workaround which seems to be working for now is to check if we are still in action mode ANI_ACTION_CHOOSEWEAPON
+			//if no then it means we shall use oCNpc_GetWeaponMode(npc) instead of wmode_selected
+
+			var int wm; wm = aniCtrl.wmode_selected;
+
+			if ((aniCtrl.wmode_selected == NPC_WEAPON_MAG) && (aniCtrl.changeweapon) && (aniCtrl.wmode == WMODE_CHOOSE) && (oCNpc_GetWeaponMode(npc) == NPC_WEAPON_NONE))
+			{
+				if (aniCtrl.actionMode != ANI_ACTION_CHOOSEWEAPON)
+				{
+					wm = NPC_WEAPON_NONE;
+				};
+			};
+
+			if (wm == NPC_WEAPON_MAG) {
+				return;
+			};
+		};
+
+		//Destroy if closed
+
 		//If spell book closed - destroy it
 		npc.mag_book = _multiTeleportMagBook;
 		oCNpc_DestroySpellBook(npc);
@@ -189,7 +221,7 @@ func void _eventGameHandleEvent__MultiTeleport (var int key) {
 		//Cancel multi-teleport mode
 		_multiTeleportModeActive = FALSE;
 
-		//If in NPC_WEAPON_MAG - exit and do not cancel input
+		//If in NPC_WEAPON_MAG - exit and do not cancel input - engine will unready spell
 		if (oCNpc_GetWeaponMode(hero) == NPC_WEAPON_MAG) {
 			return;
 		};
@@ -205,8 +237,8 @@ func void _eventGameHandleEvent__MultiTeleport (var int key) {
 	//If player can't draw weapon - exit
 	if (!oCNpc_CanDrawWeapon(hero)) { return; };
 
-	//If already in NPC_WEAPON_MAG - exit
-	if (oCNpc_GetWeaponMode(hero) == NPC_WEAPON_MAG) { return; };
+	//If already in any weapon mode - exit
+	if (oCNpc_GetWeaponMode(hero) != NPC_WEAPON_NONE) { return; };
 
 	//If walking - exit
 	if (Npc_IsWalking(hero)) { return; };
@@ -290,7 +322,7 @@ func void _eventGameHandleEvent__MultiTeleport (var int key) {
 	//zCVob_EndMovement(_@(hero), FALSE);
 
 	//Draw NPC_WEAPON_MAG and show spell circle
-	retVal = Npc_DrawWeapon1(hero, NPC_WEAPON_MAG, 0, 1);
+	AI_DrawWeapon1(hero, NPC_WEAPON_MAG, 0, 1);
 
 	_multiTeleportModeActive = TRUE;
 

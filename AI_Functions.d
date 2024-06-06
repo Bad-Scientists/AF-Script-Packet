@@ -1062,6 +1062,28 @@ func void AI_DrawWeapon_Ext (var int slfInstance, var int targetMode, var int us
 };
 
 /*
+ *
+ */
+func void AI_DrawWeapon1 (var int slfInstance, var int targetMode, var int useFist, var int showMagicCircle) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgWeapon_Create (EV_DRAWWEAPON1, targetMode, useFist);
+
+	if (showMagicCircle) {
+		var oCMsgWeapon msg; msg = _^(eMsg);
+		msg.bitfield_oCMsgWeapon = msg.bitfield_oCMsgWeapon | bitfield_oCMsgWeapon_ShowMagicCircle;
+	};
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage (eMgr, eMsg, _@ (slf));
+};
+
+/*
  *	Unequips armor using AI queue
  */
 func void AI_UnequipArmorFromSlotName (var int slfInstance, var string slotName) {
