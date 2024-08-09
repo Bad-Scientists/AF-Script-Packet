@@ -732,35 +732,6 @@ func string NPC_GetLastRoutineWP (var int slfInstance) {
 	//If rtnBefore == rtnNow - then return blank string
 	if (state.rtnBefore == state.rtnNow) { return ""; };
 
-	// Unused engine variables
-	// state.walkmode_routine
-	// state.weaponmode_routine
-
-	// state.aiStateDriven
-
-	//TODO: don't like this!
-
-//
-
-	if (state.rntChangeCount == 0) {
-		state.walkmode_routine = TRUE;
-	};
-
-	if (state.walkmode_routine) {
-		if (Hlp_Is_oCNpc (state.npc)) {
-			var oCNpc slf; slf = _^ (state.npc);
-			if (Hlp_StrCmp (Npc_GetNearestWP (slf), slf.wpName)) {
-				state.walkmode_routine = FALSE;
-			};
-		} else {
-			state.walkmode_routine = FALSE;
-		};
-	};
-
-	if (state.walkmode_routine) {
-		return "";
-	};
-
 	var int rtnEntryPtr; rtnEntryPtr = state.rtnBefore;
 	if (!rtnEntryPtr) { return ""; };
 
