@@ -244,7 +244,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr, var int sectionTrade) {
 		const int symbID1 = 0;
 
 		if (!symbID1) {
-			symbID1 = MEM_FindParserSymbol ("C_Npc_GetSellMultiplierF");
+			symbID1 = MEM_FindParserSymbol ("C_NPC_GETSELLMULTIPLIERF");
 		};
 
 		if (symbID1 != -1) {
@@ -263,7 +263,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr, var int sectionTrade) {
 		const int symbID2 = 0;
 
 		if (!symbID2) {
-			symbID2 = MEM_FindParserSymbol ("C_Npc_GetBuyMultiplierF");
+			symbID2 = MEM_FindParserSymbol ("C_NPC_GETBUYMULTIPLIERF");
 		};
 
 		if (symbID2 != -1) {
