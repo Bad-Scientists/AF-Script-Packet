@@ -1394,7 +1394,6 @@ func string eMsg_MD_GetSubTypeString (var int eMsg) {
 
 	if (Hlp_Is_zCEventMessage (eMsg)) {
 		return zCEventMessage_MD_GetSubTypeString (eMsg, subType);
-		return "";
 	};
 
 	//---

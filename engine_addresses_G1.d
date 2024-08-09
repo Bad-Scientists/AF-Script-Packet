@@ -73,13 +73,6 @@ const int inventory2_inventory7_Compare = 6731216;	//66B5D0	InventorySortDoc	INV
 const int inventory2_inventory8_Compare = 6731648;	//66B780	InventorySortOther	INV_MISC
 
 /*
- *	Barrier - ever looming threat
- */
-
-//0x006307C0 public: int __thiscall oCBarrier::Render(struct zTRenderContext &,int,int)
-const int oCBarrier__Render = 6490048;
-
-/*
  *	Enhanced InfoManager
  */
 

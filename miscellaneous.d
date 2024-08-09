@@ -182,6 +182,22 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 			};
 		};
 
+		if (Hlp_Is_oCMobLockable(vobPtr)) {
+			var oCMobLockable mobLockable;
+			if (searchFlags & SEARCHVOBLIST_ONLYLOCKED) {
+				mobLockable = _^(vobPtr);
+				if ((mobLockable.bitfield & oCMobLockable_bitfield_locked) != oCMobLockable_bitfield_locked) {
+					continue;
+				};
+			};
+			if (searchFlags & SEARCHVOBLIST_ONLYUNLOCKED) {
+				mobLockable = _^(vobPtr);
+				if ((mobLockable.bitfield & oCMobLockable_bitfield_locked) == oCMobLockable_bitfield_locked) {
+					continue;
+				};
+			};
+		};
+
 		if (searchFlags & SEARCHVOBLIST_CANSEE) {
 			//if (!oCNpc_CanSee (slfInstance, vobPtr, 1)) {
 			if (!oCNpc_FreeLineOfSight (slfInstance, vobPtr)) {
@@ -906,22 +922,22 @@ func int zCRenderer_GetAlphaBlendFunc (var int ptr) {
  *	 - converts 3D coordinates in the world to screen coordinates
  */
 func void Pos_ToScreenXYF (var int posPtr, var int ptrXF, var int ptrYF) {
+	var int pos[3]; MEM_CopyBytes(posPtr, _@(pos), 12);
+	if (!pos[2]) { return; }; //Division by 0 safetycheck!
 
 	var int activeCam; activeCam = zCCamera_Get_activeCam ();
-	zCCamera_Activate (activeCam);
-
+	//zCCamera_Activate (activeCam);
 	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
-
 	zCCamera_ProjectF (activeCam, posPtr, ptrXF, ptrYF);
 };
 
 func void Pos_ToScreenXY (var int posPtr, var int ptrX, var int ptrY) {
+	var int pos[3]; MEM_CopyBytes(posPtr, _@(pos), 12);
+	if (!pos[2]) { return; }; //Division by 0 safetycheck!
 
 	var int activeCam; activeCam = zCCamera_Get_activeCam ();
-	zCCamera_Activate (activeCam);
-
+	//zCCamera_Activate (activeCam);
 	zMAT4_Mul_zVEC3 (_@ (MEM_Camera.camMatrix), posPtr, posPtr);
-
 	zCCamera_Project (activeCam, posPtr, ptrX, ptrY);
 };
 

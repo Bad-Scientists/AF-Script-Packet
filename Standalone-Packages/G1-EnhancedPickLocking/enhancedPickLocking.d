@@ -3,6 +3,7 @@ var int PC_PickLockOutputVariation;
 
 var int _PC_PickLockSkillRequired;
 var int _PC_PickLockWithMasterKey;
+var int _PC_PickLockMinimalFailRate;
 
 func void _hook_oCMobLockable_CanOpen () {
 	//Initial value
@@ -75,8 +76,8 @@ func void _hook_oCMobLockable_CanOpen () {
 	var int failRate; failRate = 100 - npc.attribute [ATR_DEXTERITY];
 
 	//Default 10% chance to break PickLock (even if dexterity > 90)
-	if (failRate < 10) {
-		failRate = 10;
+	if (failRate < _PC_PickLockMinimalFailRate) {
+		failRate = _PC_PickLockMinimalFailRate;
 	};
 
 	Npc_SetTalentValue (npc, NPC_TALENT_PICKLOCK, failRate);
@@ -94,12 +95,11 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID);
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-
 			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
 				AI_PlayAni (slf, "T_DONTKNOW");
 			};
@@ -114,7 +114,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID2 != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID2);
 			};
 
@@ -135,7 +135,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID3 != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID3);
 			};
 
@@ -158,7 +158,7 @@ func void _hook_oCMobLockable_CanOpen () {
 				};
 
 				if (symbID4 != -1) {
-					MEM_PushInstParam (slf);
+					MEM_PushInstParam(npc);
 					MEM_CallByID (symbID4);
 				};
 			} else {
@@ -169,7 +169,7 @@ func void _hook_oCMobLockable_CanOpen () {
 				};
 
 				if (symbID5 != -1) {
-					MEM_PushInstParam (slf);
+					MEM_PushInstParam(npc);
 					MEM_CallByID (symbID5);
 				};
 			};
@@ -190,6 +190,7 @@ func void G1_EnhancedPickLocking_Init () {
 
 	_PC_PickLockSkillRequired = API_GetSymbolIntValue ("PC_PICKLOCKSKILLREQUIRED", FALSE);
 	_PC_PickLockWithMasterKey = API_GetSymbolIntValue ("PC_PICKLOCKWITHMASTERKEY", FALSE);
+	_PC_PickLockMinimalFailRate = API_GetSymbolIntValue ("PC_PICKLOCKMINIMALFAILRATE", FALSE);
 
 	const int once = 0;
 	if (!once) {

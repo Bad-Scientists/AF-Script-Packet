@@ -583,6 +583,33 @@ func void oCAniCtrl_Human_StopLookAtTarget (var int aniCtrlPtr) {
 	};
 };
 
+/*
+ *	oCAniCtrl_Human_InterpolateCombineAni
+ */
+func int oCAniCtrl_Human_InterpolateCombineAni(var int aniCtrlPtr, var int fX, var int fY, var int aniID) {
+	//0x0062CB50 public: int __thiscall oCAniCtrl_Human::InterpolateCombineAni(float,float,int)
+	const int oCAniCtrl_Human__InterpolateCombineAni_G1 = 6474576;
+
+	//0x006B6170 public: int __thiscall oCAniCtrl_Human::InterpolateCombineAni(float,float,int)
+	const int oCAniCtrl_Human__InterpolateCombineAni_G2 = 7037296;
+
+	if (!aniCtrlPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam ( _@ (aniID));
+		CALL_FloatParam ( _@ (fY));
+		CALL_FloatParam ( _@ (fX));
+		CALL__thiscall (_@ (aniCtrlPtr), MEMINT_SwitchG1G2 (oCAniCtrl_Human__InterpolateCombineAni_G1, oCAniCtrl_Human__InterpolateCombineAni_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
 func void oCAniCtrl_Human_StopCombineAni (var int aniCtrlPtr, var int aniID) {
 	//0x0062D2E0 public: void __thiscall oCAniCtrl_Human::StopCombineAni(int)
 	const int oCAniCtrl_Human__StopCombineAni_G1 = 6476512;

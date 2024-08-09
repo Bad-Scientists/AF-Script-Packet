@@ -157,8 +157,17 @@ func string GetItemTextByIndex (var int itemPtr, var int index) {
 	if ((index < 0) || (index >= ITM_TEXT_MAX)) { return ""; };
 
 	var oCItem itm; itm = _^ (itemPtr);
-
 	return MEM_ReadStringArray (_@s(itm.text), index);
+};
+
+func int GetItemCountByIndex (var int itemPtr, var int index) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return 0; };
+
+	//Safety check for index boundaries
+	if ((index < 0) || (index >= ITM_TEXT_MAX)) { return 0; };
+
+	var oCItem itm; itm = _^ (itemPtr);
+	return MEM_ReadIntArray (_@ (itm.count[0]), index);
 };
 
 func int GetItemCountValue (var int itemPtr, var string text) {

@@ -1,12 +1,23 @@
 /*
-//Copy these functions outside of the script packet - define your own rules for equipping :)
+ *	Equip control
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it (define your own rules and logic for equipping)
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
-const int MAX_EQUIPPED_RINGS = 2;
+/*
+ *	In this example we woll allow player to equip 5 rings at a time
+ */
+
+const int MAX_EQUIPPED_RINGS = 5;
 const int MAX_EQUIPPED_AMULETS = 1;
 const int MAX_EQUIPPED_BELTS = 1;
 
-//
-func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
+//API function
+//Here we can define whether item can be equipped or not
+func int C_Npc_CanEquip(var C_NPC slf, var int itemPtr) {
 	//Same for G1 & G2A
 	const int ITM_FLAG_ACTIVE = 1 << 30;
 
@@ -17,27 +28,24 @@ func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 	const int ITM_FLAG_BELT = 1 << 24;
 
 	var int countEquipped;
-	var int category; category = Npc_ItemGetCategory (slf, itemPtr);
+	var int category; category = Npc_ItemGetCategory(slf, itemPtr);
 
 	//-- Rings
 
-	if (oCItem_HasFlag (itemPtr, ITM_FLAG_RING)) {
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_RING)) {
 		//Equip
-		if (!oCItem_HasFlag (itemPtr, ITM_FLAG_ACTIVE)) {
-			countEquipped = Npc_GetCountEquippedItemsByFlag (slf, category, ITM_FLAG_RING);
+		if (!oCItem_HasFlag(itemPtr, ITM_FLAG_ACTIVE)) {
+			countEquipped = Npc_GetCountEquippedItemsByFlag(slf, category, ITM_FLAG_RING);
 
 			if (countEquipped < MAX_EQUIPPED_RINGS) {
-				Npc_SimpleEquip (slf, itemPtr);
+				Npc_SimpleEquip(slf, itemPtr);
 			};
 
 			//Was handled by this hook (this will cancel engine equip!)
 			return TRUE;
 		} else {
-			//Unequip
-			//We can just let engine do it ...
-
-			//Unequip
-			//Npc_SimpleUnequip (slf, itemPtr);
+			//Unequip ... commented out ... we can just let engine do it ...
+			//Npc_SimpleUnequip(slf, itemPtr);
 
 			//Was handled by this hook (this will cancel engine equip!)
 			//return TRUE;
@@ -46,23 +54,20 @@ func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 
 	//-- Amulets
 
-	if (oCItem_HasFlag (itemPtr, ITM_FLAG_AMULET)) {
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_AMULET)) {
 		//Equip
-		if (!oCItem_HasFlag (itemPtr, ITM_FLAG_ACTIVE)) {
-			countEquipped = Npc_GetCountEquippedItemsByFlag (slf, category, ITM_FLAG_AMULET);
+		if (!oCItem_HasFlag(itemPtr, ITM_FLAG_ACTIVE)) {
+			countEquipped = Npc_GetCountEquippedItemsByFlag(slf, category, ITM_FLAG_AMULET);
 
 			if (countEquipped < MAX_EQUIPPED_AMULETS) {
-				Npc_SimpleEquip (slf, itemPtr);
+				Npc_SimpleEquip(slf, itemPtr);
 			};
 
 			//Was handled by this hook (this will cancel engine equip!)
 			return TRUE;
 		} else {
-			//Unequip
-			//We can just let engine do it ...
-
-			//Unequip
-			//Npc_SimpleUnequip (slf, itemPtr);
+			//Unequip ... commented out ... we can just let engine do it ...
+			//Npc_SimpleUnequip(slf, itemPtr);
 
 			//Was handled by this hook (this will cancel engine equip!)
 			//return TRUE;
@@ -71,23 +76,20 @@ func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 
 	//-- Belts - both G1 & G2A (if modder chooses to use them for G1 :) )
 
-	if (oCItem_HasFlag (itemPtr, ITM_FLAG_BELT)) {
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_BELT)) {
 		//Equip
-		if (!oCItem_HasFlag (itemPtr, ITM_FLAG_ACTIVE)) {
-			countEquipped = Npc_GetCountEquippedItemsByFlag (slf, category, ITM_FLAG_BELT);
+		if (!oCItem_HasFlag(itemPtr, ITM_FLAG_ACTIVE)) {
+			countEquipped = Npc_GetCountEquippedItemsByFlag(slf, category, ITM_FLAG_BELT);
 
 			if (countEquipped < MAX_EQUIPPED_BELTS) {
-				Npc_SimpleEquip (slf, itemPtr);
+				Npc_SimpleEquip(slf, itemPtr);
 			};
 
 			//Was handled by this hook (this will cancel engine equip!)
 			return TRUE;
 		} else {
-			//Unequip
-			//We can just let engine do it ...
-
-			//Unequip
-			//Npc_SimpleUnequip (slf, itemPtr);
+			//Unequip ... commented out ... we can just let engine do it ...
+			//Npc_SimpleUnequip(slf, itemPtr);
 
 			//Was handled by this hook (this will cancel engine equip!)
 			//return TRUE;
@@ -97,20 +99,20 @@ func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 	//-- Just some random item - e.g. item_Shoes, which have ITEM_KAT_NONE :)
 
 	var oCItem itm;
-	if (Hlp_Is_oCItem (itemPtr)) {
-		itm = _^ (itemPtr);
+	if (Hlp_Is_oCItem(itemPtr)) {
+		itm = _^(itemPtr);
 
-		if (Hlp_GetInstanceID (itm) == item_Shoes) {
+		if (Hlp_GetInstanceID(itm) == item_Shoes) {
 			//Equip
-			if (!oCItem_HasFlag (itemPtr, ITM_FLAG_ACTIVE)) {
-				countEquipped = Npc_GetCountEquippedItemsByInstance (slf, category, item_Shoes);
+			if (!oCItem_HasFlag(itemPtr, ITM_FLAG_ACTIVE)) {
+				countEquipped = Npc_GetCountEquippedItemsByInstance(slf, category, item_Shoes);
 
 				if (countEquipped < 1) {
-					Npc_SimpleEquip (slf, itemPtr);
+					Npc_SimpleEquip(slf, itemPtr);
 				};
 			} else {
 				//Unequip
-				Npc_SimpleUnequip (slf, itemPtr);
+				Npc_SimpleUnequip(slf, itemPtr);
 			};
 
 			//Was handled by this hook (this will cancel engine equip!)
@@ -121,4 +123,3 @@ func int C_Npc_CanEquip (var oCNpc slf, var int itemPtr) {
 	//Continue with engine equip-handling
 	return FALSE;
 };
-*/

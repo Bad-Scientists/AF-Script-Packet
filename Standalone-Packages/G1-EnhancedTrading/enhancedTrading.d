@@ -3,11 +3,11 @@
  *	https://forum.worldofplayers.de/forum/threads/879891-Skriptpaket-Ikarus-2/page12?p=14836995&viewfull=1#post14836995
  *
  *	They were modified to change multipliers for both inventory containers in case of both buying / selling containers.
- *
  */
 
 //-- Internal variables
-var int TradeForceTransferAccept; //Variable indicating that player forced trading
+var int _TradeForceTransferAccept; //Variable indicating that player forced trading
+var int _TradeCancelTransfer;
 
 func void Trade_SetBuyMultiplier (var int mulF) {
 	var oCViewDialogTrade dialogTrade;
@@ -189,8 +189,8 @@ func void Trade_SetTradeAmount (var int amount) {
 /*
  *	Function updates buy/sell multiplier for specific item pointer
  */
-func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
-	var oCNPC npc;
+func void Trade_UpdateBuySellMultiplier (var int itmPtr, var int sectionTrade) {
+	var C_NPC npc;
 	var oCItem itm;
 	var oCNpcInventory npcInventory;
 	var oCViewDialogTrade dialogTrade;
@@ -209,7 +209,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 
 	//--- Figure out if trader wants to buy an item
 
-	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) //Player selling items
+	if (sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) //Player selling items
 	{
 		const int symbID = 0;
 		var int retVal; retVal = 0;
@@ -226,9 +226,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 			retVal = MEM_PopIntResult ();
 
 			if (!retVal) {
-				//Trick von mud-freak! :)
-				const int contents = 0;
-				ECX = _@ (contents) - 4;
+				_TradeCancelTransfer = TRUE;
 				return;
 			};
 		};
@@ -238,15 +236,15 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 
 	var int multiplier;
 
-	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1)	//Player moving items back to his inventory
-	|| (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1)	//Player selling items
+	if (sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1)	//Player moving items back to his inventory
+	|| (sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1)	//Player selling items
 	{
 		multiplier = Trade_GetSellMultiplier ();
 
 		const int symbID1 = 0;
 
 		if (!symbID1) {
-			symbID1 = MEM_FindParserSymbol ("C_Npc_GetSellMultiplierF");
+			symbID1 = MEM_FindParserSymbol ("C_NPC_GETSELLMULTIPLIERF");
 		};
 
 		if (symbID1 != -1) {
@@ -265,7 +263,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 		const int symbID2 = 0;
 
 		if (!symbID2) {
-			symbID2 = MEM_FindParserSymbol ("C_Npc_GetBuyMultiplierF");
+			symbID2 = MEM_FindParserSymbol ("C_NPC_GETBUYMULTIPLIERF");
 		};
 
 		if (symbID2 != -1) {
@@ -305,7 +303,8 @@ func void Trade_MoveToInventoryPlayer (var int itmPtr, var int amount) {
 	var int playersContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_RIGHT_CONTAINER_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	npcInventoryPtr = Hlp_Trade_GetInventoryPlayerContainer ();
 	npcInventory = _^ (npcInventoryPtr);
@@ -349,7 +348,8 @@ func void Trade_MoveToContainerPlayer (var int itmPtr, var int amount) {
 	var int playersContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_RIGHT_INVENTORY_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	//If item value == 1 then we **have** to calculate this value ourselves!
 	//... oCViewDialogItemContainer_InsertItem updates total value of all items ...
@@ -404,7 +404,8 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 	var int npcInventoryPtr;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_LEFT_INVENTORY_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	//If item value == 1 then we **have** to calculate this value ourselves!
 	//... oCViewDialogItemContainer_InsertItem updates total value of all items ...
@@ -459,7 +460,8 @@ func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 	var int npcsContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_LEFT_CONTAINER_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	npcsContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
 	itmPtr = oCItemContainer_RemoveByPtr (npcsContainer, itmPtr, amount);
@@ -506,8 +508,13 @@ func void _hook_OnTransfer__EnhancedTrading () {
 	var int itemPtr; itemPtr = zCListSort_GetData (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem);
 
 	if (itemPtr) {
-		//Update buy/sell multipliers
-		Trade_UpdateBuySellMultiplier (itemPtr);
+		var oCViewDialogTrade dialogTrade;
+		if (MEM_InformationMan.DlgTrade) {
+			dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+			//Update buy/sell multipliers
+			Trade_UpdateBuySellMultiplier(itemPtr, dialogTrade.sectionTrade);
+		};
 	};
 };
 
@@ -518,7 +525,7 @@ func void _eventTradeOnExit__EnhancedTrading (var int dummyVariable) {
 	Trade_SetNpcContainerValue (0);
 	Trade_SetPlayerContainerValue (0);
 
-	TradeForceTransferAccept = 0;
+	_TradeForceTransferAccept = 0;
 };
 
 /*
@@ -603,22 +610,22 @@ func void _eventTradeHandleEvent__EnhancedTrading (var int dummyVariable) {
 			delta = 0 - delta;
 
 			if (delta > oreTrader) {
-				TradeForceTransferAccept += 1;
+				_TradeForceTransferAccept += 1;
 
 				//First warning
-				if (TradeForceTransferAccept == 1) {
+				if (_TradeForceTransferAccept == 1) {
 					API_CallByString ("ENHANCEDTRADING_TRADER_NOTENOUGHORE");
 					cancel = FALSE;
 				} else
 				//Second warning --> ignore enter
-				if (TradeForceTransferAccept == 2) {
+				if (_TradeForceTransferAccept == 2) {
 					API_CallByString ("ENHANCEDTRADING_TRADER_NOTENOUGHORE_CONFIRM");
 					cancel = TRUE;
 				} else
 				//If player confirmed trade anyway ... then don't ignore it
-				if (TradeForceTransferAccept == 3) {
+				if (_TradeForceTransferAccept == 3) {
 					cancel = FALSE;
-					TradeForceTransferAccept = 0;
+					_TradeForceTransferAccept = 0;
 				};
 			};
 
@@ -705,7 +712,7 @@ func void G1_EnhancedTrading_Init(){
 	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
 
 	if (!once) {
-		//Hooked functions checks whether NPC wants to buy an item or not. Also it cahnges selling/buying multiplier values
+		//Hooked functions checks whether NPC wants to buy an item or not. Also it changes selling/buying multiplier values
 		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_OnTransfer__EnhancedTrading");
 		HookEngine (oCViewDialogTrade__OnTransferRight, 10, "_hook_OnTransfer__EnhancedTrading");
 

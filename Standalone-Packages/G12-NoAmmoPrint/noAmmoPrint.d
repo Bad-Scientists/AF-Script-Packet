@@ -18,10 +18,21 @@ func void _hook_oCNpc_IsMunitionAvailable () {
 
 		//Get qty in hand
 		if (!count) {
-			var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-			if (Hlp_Is_oCItem (vobPtr)) {
-				var oCItem ammo; ammo = _^ (vobPtr);
-				if (Hlp_GetInstanceID (ammo) == weapon.munition) {
+			var oCItem ammo;
+
+			var int rightHandVobPtr; rightHandVobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+			var int leftHandVobPtr; leftHandVobPtr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+
+			if (Hlp_Is_oCItem(rightHandVobPtr)) {
+				ammo = _^ (rightHandVobPtr);
+				if (Hlp_GetInstanceID(ammo) == weapon.munition) {
+					count += ammo.amount;
+				};
+			};
+
+			if (Hlp_Is_oCItem(leftHandVobPtr)) {
+				ammo = _^ (leftHandVobPtr);
+				if (Hlp_GetInstanceID(ammo) == weapon.munition) {
 					count += ammo.amount;
 				};
 			};

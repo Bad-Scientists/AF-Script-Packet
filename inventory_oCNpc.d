@@ -18,6 +18,32 @@ NPC_GAME_STEAL
 };
 */
 
+/*
+ *	Function returns game_mode
+ */
+func int oCNpc_Get_Game_Mode () {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	return + MEM_ReadInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2));
+};
+
+/*
+ *	Function updates game_mode
+ */
+func void oCNpc_Set_Game_Mode (var int newMode) {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	MEM_WriteInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2), newMode);
+};
+
 //0x008DBC24 public: static int oCNpc::game_mode
 //0x008DBC28 class oCNpc * stealnpc
 //0x008DBC2C float stealcheck_timer
@@ -36,21 +62,56 @@ func int Hlp_GetOpenInventoryType () {
 	//0x00AB0FD4 class zCList<class oCItemContainer> s_openContainers
 	const int s_openContainers_G2 = 11210708;
 
-//-- TODO: add logic for G2A
-
 	//0x007DCDFC const oCItemContainer::`vftable'
 	const int oCItemContainer_vtbl_G1 = 8244732;
+
+	//0x0083C4AC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G2 = 8635564;
 
 	//0x007DCEA4 const oCStealContainer::`vftable'
 	const int oCStealContainer_vtbl_G1 = 8244900;
 
+	//0x0083C574 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G2 = 8635764;
+
 	//0x007DCF54 const oCNpcContainer::`vftable'
 	const int oCNpcContainer_vtbl_G1 = 8245076;
+
+	//0x0083C644 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G2 = 8635972;
 
 	//0x007DD004 const oCNpcInventory::`vftable'
 	const int oCNpcInventory_vtbl_G1 = 8245252;
 
-//--
+	//0x0083C714 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G2 = 8636180;
+
+//-- 1. check - game mode
+
+	const int NPC_GAME_NORMAL = 0; //When player is taking item
+	const int NPC_GAME_PLUNDER = 1; //When player is looting and Npc
+	const int NPC_GAME_STEAL = 2; //When player is stealing from Npc
+
+	var int game_mode; game_mode = oCNpc_Get_Game_Mode();
+
+	if (game_mode == NPC_GAME_PLUNDER) {
+		return OpenInvType_NPC;
+	};
+	if (game_mode == NPC_GAME_STEAL) {
+		return OpenInvType_Stealing;
+	};
+
+//-- 2. check - dialog trade
+
+	if (MEM_InformationMan.DlgTrade) {
+		var oCViewDialogTrade dlgTrade; dlgTrade = _^(MEM_InformationMan.DlgTrade);
+		if (dlgTrade.isActivated) {
+			return OpenInvType_Trading;
+		};
+	};
+
+//-- 3. check - determine based on open inventory types
+
 	var oCItemContainer container;
 
 	var int itemContainer; itemContainer = 0;
@@ -58,9 +119,8 @@ func int Hlp_GetOpenInventoryType () {
 	var int npcContainer; npcContainer = 0;
 	var int playerInventory; playerInventory = 0;
 
-	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
-
 	var zCList list;
+	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
 
 	while (ptr);
 		list = _^ (ptr);
@@ -69,14 +129,17 @@ func int Hlp_GetOpenInventoryType () {
 		if (ptr) {
 			container = _^ (ptr);
 
-			if (container.inventory2_vtbl == oCItemContainer_vtbl_G1) { itemContainer = 1; };
-			if (container.inventory2_vtbl == oCStealContainer_vtbl_G1) { stealContainer = 1; };
-			if (container.inventory2_vtbl == oCNpcContainer_vtbl_G1) { npcContainer = 1; };
-			if (container.inventory2_vtbl == oCNpcInventory_vtbl_G1) { playerInventory = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2)) { itemContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { stealContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { npcContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcInventory_vtbl_G1, oCNpcInventory_vtbl_G2)) { playerInventory = 1; };
 		};
 
 		ptr = list.next;
 	end;
+
+//-- TODO: check if this works with G2A
+	//With G2A we can probably use inventory2_oCItemContainer_invMode? For now this logic seems to be good enough :)
 
 	//Players inventory
 	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Player; };
@@ -289,34 +352,44 @@ func int Hlp_GetOpenContainer (var int vtbl) {
 	return 0;
 };
 
-//-- TODO: add logic for G2A
-
 func int Hlp_GetOpenContainer_oCItemContainer () {
 	//0x007DCDFC const oCItemContainer::`vftable'
 	const int oCItemContainer_vtbl_G1 = 8244732;
 
-	return +Hlp_GetOpenContainer (oCItemContainer_vtbl_G1);
+	//0x0083C4AC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G2 = 8635564;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCStealContainer () {
 	//0x007DCEA4 const oCStealContainer::`vftable'
 	const int oCStealContainer_vtbl_G1 = 8244900;
 
-	return +Hlp_GetOpenContainer (oCStealContainer_vtbl_G1);
+	//0x0083C574 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G2 = 8635764;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCNpcContainer () {
 	//0x007DCF54 const oCNpcContainer::`vftable'
 	const int oCNpcContainer_vtbl_G1 = 8245076;
 
-	return +Hlp_GetOpenContainer (oCNpcContainer_vtbl_G1);
+	//0x0083C644 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G2 = 8635972;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCNpcContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCNpcInventory () {
 	//0x007DD004 const oCNpcInventory::`vftable'
 	const int oCNpcInventory_vtbl_G1 = 8245252;
 
-	return +Hlp_GetOpenContainer (oCNpcInventory_vtbl_G1);
+	//0x0083C714 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G2 = 8636180;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCNpcInventory_vtbl_G1, oCNpcInventory_vtbl_G2));
 };
 
 //-- oCItemContainer functions
@@ -1664,21 +1737,24 @@ func void NPC_RemoveInventory (var int slfInstance, var int flagsKeepItems, var 
 	};
 };
 
-var int _NpcTransferItemPrint_Event;
-var int _NpcTransferItemPrint_Event_Enabled;
+var int _NpcTransferItem_Event;
+var int _NpcTransferItem_Event_Enabled;
 
-func void NpcTransferItemPrintEvent_Init () {
-	if (!_NpcTransferItemPrint_Event) {
-		_NpcTransferItemPrint_Event = Event_Create ();
+var int _NpcTransferItem_FromNpcPtr;
+var int _NpcTransferItem_ToNpcPtr;
+
+func void NpcTransferItemEvent_Init () {
+	if (!_NpcTransferItem_Event) {
+		_NpcTransferItem_Event = Event_Create ();
 	};
 };
 
-func void NpcTransferItemPrintEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcTransferItemPrint_Event, f);
+func void NpcTransferItemEvent_AddListener (var func f) {
+	Event_AddOnce (_NpcTransferItem_Event, f);
 };
 
-func void NpcTransferItemPrintEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcTransferItemPrint_Event, f);
+func void NpcTransferItemEvent_RemoveListener (var func f) {
+	Event_Remove (_NpcTransferItem_Event, f);
 };
 
 func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCat, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
@@ -1687,6 +1763,9 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 
 	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
 	if (!Hlp_IsValidNPC (oth)) { return; };
+
+	_NpcTransferItem_FromNpcPtr = _@ (slf);
+	_NpcTransferItem_ToNpcPtr = _@ (oth);
 
 	var int armorItemID; armorItemID = Npc_GetArmor (slf);
 
@@ -1736,8 +1815,8 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Custom prints for transferred items
-		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
-			Event_Execute (_NpcTransferItemPrint_Event, _@ (item));
+		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
+			Event_Execute (_NpcTransferItem_Event, _@ (item));
 		};
 
 		if (amount == 1) {
@@ -1965,11 +2044,14 @@ func void Npc_UnequipWeapons (var int slfInstance) {
 
 /*
  *	Npc_GetItemSlot
- *	 - function loops through inventory and return index of inventory slot in which item is stored
+ *	 - function loops through inventory and returns index of inventory slot in which item is stored
  */
 func int Npc_GetItemSlot (var int slfInstance, var int invCat, var int searchItemInstanceID) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	//By default -1
+	var int retSlot; retSlot = -1;
 
 	var int itmSlot; itmSlot = 0;
 	var int amount; amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1980,14 +2062,32 @@ func int Npc_GetItemSlot (var int slfInstance, var int invCat, var int searchIte
 		itemInstanceID = Hlp_GetInstanceID (item);
 
 		if (itemInstanceID == searchItemInstanceID) {
+			//Same for G1 & G2A
+			const int ITM_FLAG_ACTIVE = 1 << 30;
+
+			//Prio - unequipped items
+			if (oCItem_HasFlag(_@(item), ITM_FLAG_ACTIVE)) {
+				//Keep track of the equipped one tho
+				retSlot = itmSlot;
+
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
+				continue;
+			};
+
 			return + itmSlot;
+		} else {
+			//Exit if instance does not match
+			if (retSlot > -1) {
+				return retSlot;
+			};
 		};
 
 		itmSlot += 1;
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 	end;
 
-	return -1;
+	return retSlot;
 };
 
 /*

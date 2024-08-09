@@ -9,9 +9,14 @@ var int PC_ItemPreviewHealth;
 var int PC_ItemPreviewActive;
 var int PC_ItemPreviewCanUpdate;
 
+var int PC_ItemPreviewItemPtr;
+
 func void _eventOpenInventory__InvItemPreview (var int dummyVariable) {
 	PC_ItemPreviewActive = TRUE;
 	PC_ItemPreviewCanUpdate = TRUE;
+
+	//Reset pointer
+	PC_ItemPreviewItemPtr = 0;
 };
 
 func void _eventCloseInventory__InvItemPreview (var int dummyVariable) {
@@ -21,6 +26,9 @@ func void _eventCloseInventory__InvItemPreview (var int dummyVariable) {
 
 	PC_ItemPreviewActive = FALSE;
 	PC_ItemPreviewCanUpdate = TRUE;
+
+	//Reset pointer
+	PC_ItemPreviewItemPtr = 0;
 };
 
 func void _eventUseItemToStateStart__InvItemPreview (var int dummyVariable) {
@@ -40,6 +48,7 @@ func void GetItemPreviewData__InvItemPreview (var int npcInventoryPtr) {
 	if (!itemContainer.inventory2_oCItemContainer_passive) {
 		PC_ItemPreviewHealth = 0;
 		PC_ItemPreviewMana = 0;
+		PC_ItemPreviewItemPtr = 0;
 
 		if (itemContainer.inventory2_oCItemContainer_contents) {
 			if (itemContainer.inventory2_oCItemContainer_selectedItem > -1) {
@@ -66,6 +75,8 @@ func void GetItemPreviewData__InvItemPreview (var int npcInventoryPtr) {
 						PC_ItemPreviewHealth = lastHealth;
 						PC_ItemPreviewMana = lastMana;
 					};
+
+					PC_ItemPreviewItemPtr = vobPtr;
 				};
 			};
 		};

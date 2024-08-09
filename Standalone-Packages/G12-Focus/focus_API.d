@@ -1,6 +1,11 @@
 /*
-//Copy these constants outside of the script packet - define your own values.
-//If script-packet is updated in the future - your definition will be unaffected.
+ *	Focus
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
 const string MOBNAME_CRATE_EMPTY = "Empty box";
 const string MOBNAME_CHEST_EMPTY = "Empty chest";
@@ -28,4 +33,3 @@ const string PC_CHANGEFOCUS_COLOR_FRIENDLY = "66FFB2"; //Green
 const string PC_CHANGEFOCUS_COLOR_NEUTRAL = "FFFFFF"; //White
 const string PC_CHANGEFOCUS_COLOR_ANGRY = "FF8000"; //Orange
 const string PC_CHANGEFOCUS_COLOR_HOSTILE = "FF4646"; //Red
-*/

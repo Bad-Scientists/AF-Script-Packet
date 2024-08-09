@@ -61,15 +61,9 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 			//Close players inventory
 			oCNPC_CloseInventory (hero);
 
-			//Enable custom prints for transferred items
-			_MobTransferItemPrint_Event_Enabled = TRUE;
-
 			//Transfer all items
 			npc = Hlp_GetNPC (hero);
 			Mob_TransferItemsToNPC (npc.interactMob, hero);
-
-			//Disable custom prints for transferred items
-			_MobTransferItemPrint_Event_Enabled = FALSE;
 
 			//Send mob state change (from state S1 to S0) - hero will stop interaction with mob
 			oCMobInter_SendStateChange (npc.interactMob, 1, 0);
@@ -96,15 +90,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 			//We have to reset focus_vob
 			oCNPC_SetFocusVob (hero, 0);
 
-			//Enable custom prints for transferred items
-			_NpcTransferItemPrint_Event_Enabled = TRUE;
-
 			//Transfer all items
 			NPC_TransferInventory (npc, hero, FALSE, TRUE, TRUE);
-
-			//Disable custom prints for transferred items
-			_NpcTransferItemPrint_Event_Enabled = FALSE;
-
 			return TRUE;
 		};
 	};
@@ -115,7 +102,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 		var int numItemsInCategory; numItemsInCategory = List_LengthS (container.inventory2_oCItemContainer_contents) - 1;
 
 		if (numItemsInCategory > -1) {
-
 			//Page Up
 			if (key == KEY_PRIOR) {
 				if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset) {
@@ -340,6 +326,9 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
 								Trade_MoveToContainerPlayer (itmPtr, amount);
 							};
+
+							//Reset
+							_TradeCancelTransfer = FALSE;
 
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};

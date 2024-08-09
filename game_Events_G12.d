@@ -132,11 +132,11 @@ func void PlayerPortalRoomChange_RemoveListener (var func f) {
 	Event_Remove (_PlayerPortalRoomChange_Event, f);
 };
 
-func void MobStartInteraction_AddListener (var func f) {
+func void MobStartInteractionEvent_AddListener (var func f) {
 	Event_AddOnce (_MobStartInteraction_Event, f);
 };
 
-func void MobStartInteraction_RemoveListener (var func f) {
+func void MobStartInteractionEvent_RemoveListener (var func f) {
 	Event_Remove (_MobStartInteraction_Event, f);
 };
 
@@ -652,7 +652,7 @@ func void G12_PlayerPortalRoomChangeEvent_Init () {
 	};
 };
 
-func void G12_oCMobInterStartInterationEvent_Init () {
+func void G12_MobStartInterationEvent_Init () {
 	if (!_MobStartInteraction_Event) {
 		_MobStartInteraction_Event = Event_Create ();
 	};
@@ -721,30 +721,40 @@ const int OpenLockableEvent_PickLockFailureBroken = 5;
 
 func void _hook_oCMobLockable_UnlockWithKey () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithKey);
 	};
 };
 
 func void _hook_oCMobLockable_UnlockWithPickLock () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithPicklock);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockSuccess () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockSuccess);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockFailure () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailure);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockFailureBroken () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailureBroken);
 	};
 };
@@ -888,7 +898,7 @@ func void G12_GameEvents_Init () {
 	G12_GameState_Extended_Init ();
 	G12_MobStartStateChangeEvent_Init ();
 	G12_PlayerPortalRoomChangeEvent_Init ();
-	G12_oCMobInterStartInterationEvent_Init ();
+	G12_MobStartInterationEvent_Init ();
 	G12_FocusChangeEvent_Init ();
 	G12_OpenLockableEvent_Init ();
 	G12_MenuEvent_Init ();

@@ -1,25 +1,21 @@
 /*
-//Copy these constants outside of the script packet - define your own values.
-//If script-packet is updated in the future - your definition will be unaffected.
+ *	Better bars
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
 const string BETTERBARS_FONT = "FONT_OLD_10_WHITE.TGA";
 
-const string TEXTURE_BARPREVIEW_HEALTBAR = "Bar_Health_Preview.tga";
-const string TEXTURE_BARPREVIEW_MANABAR = "Bar_Mana_Preview.tga";
+const string TEXTURE_BARPREVIEW_HEALTBAR = "BAR_HEALTH_PREVIEW.TGA";
+const string TEXTURE_BARPREVIEW_MANABAR = "BAR_MANA_PREVIEW.TGA";
 
 const int HEALTHBAR_DISPLAYWHENHURT_PERCENTAGE = 50;
 
 const int HEALTHBAR_DISPLAYMETHOD = BarDisplay_Standard;
 const int HEALTHBAR_PREVIEWEFFECT = BarPreviewEffect_FadeInOut;
-
-//const int ALPHA_FUNC_MAT_DEFAULT	= 0;
-//const int ALPHA_FUNC_NONE		= 1;
-//const int ALPHA_FUNC_BLEND	= 2;
-//const int ALPHA_FUNC_ADD		= 3;
-//const int ALPHA_FUNC_SUB		= 4;
-//const int ALPHA_FUNC_MUL		= 5;
-//const int ALPHA_FUNC_MUL2		= 6;
-//const int ALPHA_FUNC_TEST		= 7;
 
 const int HEALTHBAR_DISPLAYVALUES = 1;
 const int HEALTHBAR_VIEW_ALPHAFUNC = 2; //ALPHA_FUNC_BLEND
@@ -75,4 +71,3 @@ const int FOCUSBAR_VPOSY = -1;
 
 const int FOCUSBAR_DISPLAYVALUEOFFSETX = 0;
 const int FOCUSBAR_DISPLAYVALUEOFFSETY = +1;
-*/

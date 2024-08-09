@@ -31,6 +31,9 @@ func string CC_Lock (var string param) {
 			var oCMobLockable mob; mob = _^ (her.focus_vob);
 			mob.bitfield = (mob.bitfield | oCMobLockable_bitfield_locked);
 
+			//Reset picklockNr
+			mob.bitfield = mob.bitfield & 3;
+
 			//Get name
 			msg = ConcatStrings ("Mob: '", mob._zCObject_objectName);
 			msg = ConcatStrings (msg, "'");

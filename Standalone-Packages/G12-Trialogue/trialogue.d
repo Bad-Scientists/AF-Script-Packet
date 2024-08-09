@@ -180,7 +180,9 @@ func void _Trialogue_SetCameraPtr (var int slfPtr, var int othPtr) {
 	trialogueOverrideCameraTarget = slfPtr;
 
 	//Activate camera immediately
-	if (!oCNpc_ActivateDialogCam (oth, slf, FLOATNULL)) {
+	if (oCNpc_ActivateDialogCam (oth, slf, FLOATNULL)) {
+		var int aiPtr; aiPtr = zCSession_GetCameraAI ();
+		zCAICamera_ReceiveMsg (aiPtr, _@ (zPLAYER_BEAMED));
 	};
 };
 
@@ -218,7 +220,7 @@ func void Trialogue_Finish () {
 	Trialogue_Wait (slf);
 	Trialogue_Wait (oth);
 
-	AI_Function (slf, _Trialogue_Finish);
+	AI_Function (hero, _Trialogue_Finish);
 };
 
 /*

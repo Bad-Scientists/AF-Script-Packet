@@ -1753,3 +1753,19 @@ func void zCVob_EndMovement (var int vobPtr, var int bHintTrafoChanged) {
 		call = CALL_End();
 	};
 };
+
+func void zCVob_BeginMovement (var int vobPtr) {
+	//0x005F0510 public: void __thiscall zCVob::BeginMovement(void)
+	const int zCVob__BeginMovement_G1 = 6227216;
+
+	//0x0061DA80 public: void __thiscall zCVob::BeginMovement(void)
+	const int zCVob__BeginMovement_G2 = 6412928;
+
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@ (vobPtr), MEMINT_SwitchG1G2 (zCVob__BeginMovement_G1, zCVob__BeginMovement_G2));
+		call = CALL_End();
+	};
+};

@@ -1,12 +1,3 @@
-/*
- *	Let's be honest LeGo 'focus names' feature ... it can be so much more!!!
- *	 - this feature changes font color of focus:
- *	   - to orange if chest/mob is locked by special key, cannot be picklocked and player does not have key
- *	   - to yellow if chest/mob is locked by special key and player does not have key, or can be picklocked
- *	   - to yellow if chest/mob can be picklocked
- *	 - renames chest from MOBNAME_CHEST to MOBNAME_CHEST_EMPTY and crates from MOBNAME_CRATE to MOBNAME_CRATE_EMPTY when they are empty and vice versa
- */
-
 const int PC_CHANGEFOCUS_LOCKABLE = 1;
 const int PC_CHANGEFOCUS_NPCATTITUDE = 2;
 const int PC_CHANGEFOCUS_RENAMEEMPTYCHESTS = 4;

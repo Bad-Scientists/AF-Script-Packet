@@ -6,7 +6,7 @@ func void _eventOpenDeadNPC (var int dummyVariable) {
 	if (NPC_IsPlayer (slf)) {
 		if (!Hlp_Is_oCNPC (slf.focus_vob)) { return; };
 
-		var oCNPC oth; oth = _^ (slf.focus_vob);
+		var C_NPC oth; oth = _^ (slf.focus_vob);
 
 		const int symbID = 0;
 		var int retVal; retVal = 0;
@@ -17,7 +17,6 @@ func void _eventOpenDeadNPC (var int dummyVariable) {
 
 		if (symbID != -1) {
 			MEM_PushInstParam (oth);
-
 			MEM_CallByID (symbID);
 			retVal = MEM_PopIntResult ();
 		};

@@ -1,7 +1,16 @@
 /*
-//Copy this function outside of the script packet - define your own rules and textures :)
+ *	Rain control
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it (define your own rules for when it should be raining)
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
-//Define your own logic here - when should rain start?
+/*
+ *	Example
+ *	Here it will be raining during specified time period
+ */
 func void RainControl_SetupRain () {
 	if (Wld_SetRainTime (04, 30, 05, 30)) {
 	} else if (Wld_SetRainTime (09, 30, 10, 30)) {
@@ -10,4 +19,3 @@ func void RainControl_SetupRain () {
 	} else if (Wld_SetRainTime (19, 30, 20, 30)) {
 	};
 };
-*/
