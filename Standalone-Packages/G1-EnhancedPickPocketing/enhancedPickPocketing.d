@@ -345,6 +345,7 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 								//Remove item from players inventory
 								npc = Hlp_GetNPC (hero);
 								npcInventoryPtr = _@ (npc.inventory2_vtbl);
+								oCNpc_UnequipItemPtr (npc, itemPtr);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
 								npc = Hlp_GetNpc (owner);
@@ -373,6 +374,7 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 								//Remove item from NPCs inventory
 								npc = Hlp_GetNpc (owner);
 								npcInventoryPtr = _@ (npc.inventory2_vtbl);
+								oCNpc_UnequipItemPtr (npc, itemPtr);
 								itemPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itemPtr, amount);
 
 								//Insert item to players inventory
