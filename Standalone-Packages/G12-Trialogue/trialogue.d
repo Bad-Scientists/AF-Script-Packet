@@ -218,7 +218,7 @@ func void Trialogue_Finish () {
 	Trialogue_Wait (slf);
 	Trialogue_Wait (oth);
 
-	AI_Function (slf, _Trialogue_Finish);
+	AI_Function (hero, _Trialogue_Finish);
 };
 
 /*
