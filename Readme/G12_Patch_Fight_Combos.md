@@ -1,4 +1,4 @@
-## Patch fight combos
+## G12 Patch fight combos
  - with this patch Npcs can now use combos! :smile:
 
 1H example
@@ -9,7 +9,7 @@
 
  [![G1&2 Patch fight combos 2H](https://img.youtube.com/vi/kAyYs_UJVfQ/0.jpg)](https://www.youtube.com/watch?v=kAyYs_UJVfQ)
 
-Init function: `G12_PatchFightCombos ();`
+Init function: `G12_PatchFightCombos();`
 
  - G1 FAI uses combos - defined FAI_HUMAN_MASTER.D - but they were not working ...
  - G2 NOTR **DOES NOT USE** combos by default - you will have to update your Fight AI logic

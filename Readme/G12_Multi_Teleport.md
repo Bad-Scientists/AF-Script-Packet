@@ -1,4 +1,4 @@
-## Multi-teleport
+## G12 Multi-teleport
  - feature adds multi-teleport to key `3` (which, let's be honest no one was using anyway :smile: )
  - it automatically registers all `TELEPORT*` spells in your inventory to separate spell book - you can use arrows to navigate through teleportation spells
  
