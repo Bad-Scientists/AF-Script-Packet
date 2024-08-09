@@ -509,8 +509,13 @@ func void _hook_OnTransfer__EnhancedTrading () {
 	var int itemPtr; itemPtr = zCListSort_GetData (container.inventory2_oCItemContainer_contents, container.inventory2_oCItemContainer_selectedItem);
 
 	if (itemPtr) {
-		//Update buy/sell multipliers
-		Trade_UpdateBuySellMultiplier (itemPtr);
+		var oCViewDialogTrade dialogTrade;
+		if (MEM_InformationMan.DlgTrade) {
+			dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+
+			//Update buy/sell multipliers
+			Trade_UpdateBuySellMultiplier(itemPtr, dialogTrade.sectionTrade);
+		};
 	};
 };
 
