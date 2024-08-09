@@ -130,6 +130,47 @@ func int oCNpc_IsFadingAway (var int slfInstance) {
 	return + retVal;
 };
 
+/*
+ *	_hook_oCAIHuman_DoAI_IsDead_Check__FadeAway
+ *	'patched' logic, where we check both oCAniCtrl_Human::IsDead (same as original engine) & ZS state (this is our patched logic)
+ */
+func void _hook_oCAIHuman_DoAI_IsDead_Check__FadeAway () {
+	//ECX 0x007DC814 const oCAIHuman::`vftable'
+	//ECX 0x0083BE2C const oCAIHuman::`vftable'
+	if (!ECX) { return; };
+
+	//If Npc is in ZS state ZS_FadeAway we also consider it dead
+	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (ECX);
+	if (!Hlp_Is_oCNpc(aniCtrl.npc)) { return; };
+	var oCNpc slf; slf = _^(aniCtrl.npc);
+
+	var int statePtr; statePtr = Npc_GetNpcState(slf);
+	if (!statePtr) { return; };
+	var oCNPC_States state; state = _^(statePtr);
+
+	//ZS_FADEAWAY
+	if (state.curState_prgIndex == -5) {
+		EAX = TRUE;
+		return;
+	};
+
+	//0x00624E70 public: int __thiscall oCAniCtrl_Human::IsDead(void)
+	const int oCAniCtrl_Human__IsDead_G1 = 6442608;
+
+	//0x006AD540 public: int __thiscall oCAniCtrl_Human::IsDead(void)
+	const int oCAniCtrl_Human__IsDead_G2 = 7001408;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL__thiscall (_@ (ECX), MEMINT_SwitchG1G2 (oCAniCtrl_Human__IsDead_G1, oCAniCtrl_Human__IsDead_G2));
+		call = CALL_End();
+	};
+
+	EAX = retVal;
+};
 
 func void _hook_oCAIHuman_DoAI_IsDead__FadeAway () {
 	//ECX 0x007DCBEC const oCGame::`vftable'
@@ -235,6 +276,19 @@ func void G12_FadeAway_Init () {
 	const int once = 0;
 
 	if (!once) {
+        //00615b39 e8  32  f3       CALL       oCAniCtrl_Human::IsDead                          int IsDead(oCAniCtrl_Human * thi
+        //         00  00
+		const int oCAIHuman__DoAI_IsDead_Check_G1 = 6380345;
+
+        //0069bc09 e8  32  19       CALL       oCAniCtrl_Human::IsDead                          int IsDead(oCAniCtrl_Human * thi
+        //         01  00
+		const int oCAIHuman__DoAI_IsDead_Check_G2 = 6929417;
+
+		//Patch considering npc in ZS state ZS_FADEAWAY also dead ...
+		var int addr; addr = MEMINT_SwitchG1G2(oCAIHuman__DoAI_IsDead_Check_G1, oCAIHuman__DoAI_IsDead_Check_G2);
+		MEM_WriteNOP(addr, 5);
+		HookEngine(addr, 5, "_hook_oCAIHuman_DoAI_IsDead_Check__FadeAway");
+
 		//0x00615A50 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
 		//615B90
 		const int oCAIHuman__DoAI_IsDead_G1 = 6380432;
