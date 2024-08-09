@@ -149,7 +149,7 @@ var int    StringOverlay_ColorPreset; // color template (sets colors)
 var string StringOverlay_Color; // color for dialogue text not selected
 var string StringOverlay_ColorSelected; // color for selected dialogue text
 
-const int StringOverlay_ColorPreset_Count    = 7; // count of available colors
+const int StringOverlay_ColorPreset_Count    = 8; // count of available colors
 
 const int StringOverlay_ColorPreset_Default  = 0; // default preset
 const int StringOverlay_ColorPreset_Red      = 1;
@@ -158,6 +158,7 @@ const int StringOverlay_ColorPreset_Yellow   = 3;
 const int StringOverlay_ColorPreset_Blue     = 4;
 const int StringOverlay_ColorPreset_Orange   = 5;
 const int StringOverlay_ColorPreset_Pink     = 6;
+const int StringOverlay_ColorPreset_Purple   = 7;
 
 // colors for dialogue text not selected
 const string StringOverlay_ColorPresets[StringOverlay_ColorPreset_Count] = {
@@ -167,7 +168,8 @@ const string StringOverlay_ColorPresets[StringOverlay_ColorPreset_Count] = {
     "FFF700", // yellow
     "6699FF", // blue
     "FF8000", // orange
-	"FF00A0"  // pink
+	"FF00A0", // pink
+	"BF00FF"  // purple
 };
 // colors for selected dialogue text
 const string StringOverlay_ColorSelectedPresets[StringOverlay_ColorPreset_Count] = {
@@ -177,7 +179,8 @@ const string StringOverlay_ColorSelectedPresets[StringOverlay_ColorPreset_Count]
     "FFFB80", // light yellow
     "99CCFF", // light blue
     "FFB266", // light orange
-	"FF66C7"  // light pink
+	"FF66C7", // light pink
+	"ECB3FF"  // light purple
 };
 
 // text align ------------------------------------------------------
