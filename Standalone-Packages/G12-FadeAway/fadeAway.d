@@ -85,6 +85,7 @@ func void oCNpc_StartFadeAway (var int slfInstance) {
 	if (!Hlp_IsValidNpc (slf)) { return; };
 
 	//Safety-net - always kill Npc
+	slf.variousFlags = 0; //npc.flags
 	if (slf.attribute[ATR_HITPOINTS] > 0) { slf.attribute[ATR_HITPOINTS] = 0; };
 
 	//Drop inventory into the world
