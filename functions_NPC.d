@@ -1043,7 +1043,7 @@ func void NPC_ChangeRoutine (var int slfInstance, var int funcID) {
 	//0x0076DF60 public: void __thiscall oCNpc_States::ChangeRoutine(int)
 	const int oCNpc_States__ChangeRoutine_G2 = 7790432;
 
-	if (!funcID) { return; };
+	if (funcID < 1) { return; };
 
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 
@@ -1414,30 +1414,54 @@ func void Npc_TurnToVob (var int slfInstance, var int vobPtr, var int startTurnA
 	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, fAzimuth, startTurnAnis);
 };
 
-/*
- *	Npc_SetAIState
- *	 - function overrides curState.index (#hacker)
- */
-func void Npc_SetAIState (var int slfInstance, var string stateName) {
+func int Npc_GetAIState(var int slfInstance) {
+	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
+	if (!statePtr) { return -1; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	if (state.curState_prgIndex < -1) {
+		return state.curState_prgIndex;
+	};
+
+	return state.curState_index;
+};
+
+func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 	if (!statePtr) { return; };
 
 	var oCNPC_States state; state = _^ (statePtr);
 
 	state.curState_valid = TRUE;
-	state.curState_index = MEM_FindParserSymbol (stateName);
+	state.curState_index = index;
+
+	state.curState_name = GetSymbolName(index);
 
 	//Special logic for by engine recognized ZS states
-	var int prgIndex; prgIndex = -1;
-	if (Hlp_StrCmp (stateName, "ZS_ANSWER")) { prgIndex = -2; };
-	if (Hlp_StrCmp (stateName, "ZS_DEAD")) { prgIndex = -3; };
-	if (Hlp_StrCmp (stateName, "ZS_UNCONSCIOUS")) { prgIndex = -4; };
-	if (Hlp_StrCmp (stateName, "ZS_FADEAWAY")) { prgIndex = -5; };
-	if (Hlp_StrCmp (stateName, "ZS_FOLLOW")) { prgIndex = -6; };
+	if (index < -1) {
+		state.curState_prgIndex = index;
 
-	if (prgIndex < -1) {
-		state.curState_prgIndex = prgIndex;
+		var string stateName; stateName = "";
+
+		if (index == -2) { stateName = "ZS_ANSWER"; };
+		if (index == -3) { stateName = "ZS_DEAD"; };
+		if (index == -4) { stateName = "ZS_UNCONSCIOUS"; };
+		if (index == -5) { stateName = "ZS_FADEAWAY"; };
+		if (index == -6) { stateName = "ZS_FOLLOW"; };
+
+		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
+		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
 	};
+};
+
+/*
+ *	Npc_SetAIState
+ *	 - function overrides curState.index (#hacker)
+ */
+func void Npc_SetAIState (var int slfInstance, var string stateName) {
+	var int index; index = MEM_FindParserSymbol (stateName);
+	Npc_SetAIState_ByIndex(slfInstance, index);
 };
 
 func string Npc_GetInteractMobName (var int slfInstance) {
