@@ -279,6 +279,10 @@ const int SEARCHVOBLIST_CHECKPORTALROOMOWNER = 4; //Ignore objects that are in p
 const int SEARCHVOBLIST_IGNOREORDER = 8; //Do not search for nearest FP
 const int SEARCHVOBLIST_IGNORECURRENTFP = 16; //Ignore freepoint Npc is currently standing on
 
+//Added specificallz for oCMobLockable
+const int SEARCHVOBLIST_ONLYLOCKED = 32; //Ignore unlocked oCMobLockable objects
+const int SEARCHVOBLIST_ONLYUNLOCKED = 64; //Ignore locked oCMobLockable objects
+
 /*
  *	Color values [G1 & G2A constants]
  */

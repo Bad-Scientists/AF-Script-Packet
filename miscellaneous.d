@@ -182,6 +182,22 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 			};
 		};
 
+		if (Hlp_Is_oCMobLockable(vobPtr)) {
+			var oCMobLockable mobLockable;
+			if (searchFlags & SEARCHVOBLIST_ONLYLOCKED) {
+				mobLockable = _^(vobPtr);
+				if ((mobLockable.bitfield & oCMobLockable_bitfield_locked) != oCMobLockable_bitfield_locked) {
+					continue;
+				};
+			};
+			if (searchFlags & SEARCHVOBLIST_ONLYUNLOCKED) {
+				mobLockable = _^(vobPtr);
+				if ((mobLockable.bitfield & oCMobLockable_bitfield_locked) == oCMobLockable_bitfield_locked) {
+					continue;
+				};
+			};
+		};
+
 		if (searchFlags & SEARCHVOBLIST_CANSEE) {
 			//if (!oCNpc_CanSee (slfInstance, vobPtr, 1)) {
 			if (!oCNpc_FreeLineOfSight (slfInstance, vobPtr)) {
