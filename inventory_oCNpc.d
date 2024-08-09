@@ -62,21 +62,56 @@ func int Hlp_GetOpenInventoryType () {
 	//0x00AB0FD4 class zCList<class oCItemContainer> s_openContainers
 	const int s_openContainers_G2 = 11210708;
 
-//-- TODO: add logic for G2A
-
 	//0x007DCDFC const oCItemContainer::`vftable'
 	const int oCItemContainer_vtbl_G1 = 8244732;
+
+	//0x0083C4AC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G2 = 8635564;
 
 	//0x007DCEA4 const oCStealContainer::`vftable'
 	const int oCStealContainer_vtbl_G1 = 8244900;
 
+	//0x0083C574 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G2 = 8635764;
+
 	//0x007DCF54 const oCNpcContainer::`vftable'
 	const int oCNpcContainer_vtbl_G1 = 8245076;
+
+	//0x0083C644 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G2 = 8635972;
 
 	//0x007DD004 const oCNpcInventory::`vftable'
 	const int oCNpcInventory_vtbl_G1 = 8245252;
 
-//--
+	//0x0083C714 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G2 = 8636180;
+
+//-- 1. check - game mode
+
+	const int NPC_GAME_NORMAL = 0; //When player is taking item
+	const int NPC_GAME_PLUNDER = 1; //When player is looting and Npc
+	const int NPC_GAME_STEAL = 2; //When player is stealing from Npc
+
+	var int game_mode; game_mode = oCNpc_Get_Game_Mode();
+
+	if (game_mode == NPC_GAME_PLUNDER) {
+		return OpenInvType_NPC;
+	};
+	if (game_mode == NPC_GAME_STEAL) {
+		return OpenInvType_Stealing;
+	};
+
+//-- 2. check - dialog trade
+
+	if (MEM_InformationMan.DlgTrade) {
+		var oCViewDialogTrade dlgTrade; dlgTrade = _^(MEM_InformationMan.DlgTrade);
+		if (dlgTrade.isActivated) {
+			return OpenInvType_Trading;
+		};
+	};
+
+//-- 3. check - determine based on open inventory types
+
 	var oCItemContainer container;
 
 	var int itemContainer; itemContainer = 0;
@@ -84,9 +119,8 @@ func int Hlp_GetOpenInventoryType () {
 	var int npcContainer; npcContainer = 0;
 	var int playerInventory; playerInventory = 0;
 
-	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
-
 	var zCList list;
+	var int ptr; ptr = MEMINT_SwitchG1G2(s_openContainers_G1, s_openContainers_G2);
 
 	while (ptr);
 		list = _^ (ptr);
@@ -95,14 +129,17 @@ func int Hlp_GetOpenInventoryType () {
 		if (ptr) {
 			container = _^ (ptr);
 
-			if (container.inventory2_vtbl == oCItemContainer_vtbl_G1) { itemContainer = 1; };
-			if (container.inventory2_vtbl == oCStealContainer_vtbl_G1) { stealContainer = 1; };
-			if (container.inventory2_vtbl == oCNpcContainer_vtbl_G1) { npcContainer = 1; };
-			if (container.inventory2_vtbl == oCNpcInventory_vtbl_G1) { playerInventory = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2)) { itemContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { stealContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { npcContainer = 1; };
+			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcInventory_vtbl_G1, oCNpcInventory_vtbl_G2)) { playerInventory = 1; };
 		};
 
 		ptr = list.next;
 	end;
+
+//-- TODO: check if this works with G2A
+	//With G2A we can probably use inventory2_oCItemContainer_invMode? For now this logic seems to be good enough :)
 
 	//Players inventory
 	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Player; };
@@ -315,34 +352,44 @@ func int Hlp_GetOpenContainer (var int vtbl) {
 	return 0;
 };
 
-//-- TODO: add logic for G2A
-
 func int Hlp_GetOpenContainer_oCItemContainer () {
 	//0x007DCDFC const oCItemContainer::`vftable'
 	const int oCItemContainer_vtbl_G1 = 8244732;
 
-	return +Hlp_GetOpenContainer (oCItemContainer_vtbl_G1);
+	//0x0083C4AC const oCItemContainer::`vftable'
+	const int oCItemContainer_vtbl_G2 = 8635564;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCStealContainer () {
 	//0x007DCEA4 const oCStealContainer::`vftable'
 	const int oCStealContainer_vtbl_G1 = 8244900;
 
-	return +Hlp_GetOpenContainer (oCStealContainer_vtbl_G1);
+	//0x0083C574 const oCStealContainer::`vftable'
+	const int oCStealContainer_vtbl_G2 = 8635764;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCNpcContainer () {
 	//0x007DCF54 const oCNpcContainer::`vftable'
 	const int oCNpcContainer_vtbl_G1 = 8245076;
 
-	return +Hlp_GetOpenContainer (oCNpcContainer_vtbl_G1);
+	//0x0083C644 const oCNpcContainer::`vftable'
+	const int oCNpcContainer_vtbl_G2 = 8635972;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCNpcContainer_vtbl_G2));
 };
 
 func int Hlp_GetOpenContainer_oCNpcInventory () {
 	//0x007DD004 const oCNpcInventory::`vftable'
 	const int oCNpcInventory_vtbl_G1 = 8245252;
 
-	return +Hlp_GetOpenContainer (oCNpcInventory_vtbl_G1);
+	//0x0083C714 const oCNpcInventory::`vftable'
+	const int oCNpcInventory_vtbl_G2 = 8636180;
+
+	return +Hlp_GetOpenContainer(MEMINT_SwitchG1G2(oCNpcInventory_vtbl_G1, oCNpcInventory_vtbl_G2));
 };
 
 //-- oCItemContainer functions
