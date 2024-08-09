@@ -102,7 +102,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 		var int numItemsInCategory; numItemsInCategory = List_LengthS (container.inventory2_oCItemContainer_contents) - 1;
 
 		if (numItemsInCategory > -1) {
-
 			//Page Up
 			if (key == KEY_PRIOR) {
 				if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset) {
@@ -327,6 +326,9 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
 								Trade_MoveToContainerPlayer (itmPtr, amount);
 							};
+
+							//Reset
+							_TradeCancelTransfer = FALSE;
 
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};

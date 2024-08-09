@@ -8,6 +8,7 @@
 
 //-- Internal variables
 var int TradeForceTransferAccept; //Variable indicating that player forced trading
+var int _TradeCancelTransfer;
 
 func void Trade_SetBuyMultiplier (var int mulF) {
 	var oCViewDialogTrade dialogTrade;
@@ -189,8 +190,8 @@ func void Trade_SetTradeAmount (var int amount) {
 /*
  *	Function updates buy/sell multiplier for specific item pointer
  */
-func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 	var oCNPC npc;
+func void Trade_UpdateBuySellMultiplier (var int itmPtr, var int sectionTrade) {
 	var oCItem itm;
 	var oCNpcInventory npcInventory;
 	var oCViewDialogTrade dialogTrade;
@@ -209,7 +210,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 
 	//--- Figure out if trader wants to buy an item
 
-	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) //Player selling items
+	if (sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) //Player selling items
 	{
 		const int symbID = 0;
 		var int retVal; retVal = 0;
@@ -226,9 +227,7 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 			retVal = MEM_PopIntResult ();
 
 			if (!retVal) {
-				//Trick von mud-freak! :)
-				const int contents = 0;
-				ECX = _@ (contents) - 4;
+				_TradeCancelTransfer = TRUE;
 				return;
 			};
 		};
@@ -238,8 +237,8 @@ func void Trade_UpdateBuySellMultiplier (var int itmPtr) {
 
 	var int multiplier;
 
-	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1)	//Player moving items back to his inventory
-	|| (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1)	//Player selling items
+	if (sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1)	//Player moving items back to his inventory
+	|| (sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1)	//Player selling items
 	{
 		multiplier = Trade_GetSellMultiplier ();
 
@@ -305,7 +304,8 @@ func void Trade_MoveToInventoryPlayer (var int itmPtr, var int amount) {
 	var int playersContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_RIGHT_CONTAINER_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	npcInventoryPtr = Hlp_Trade_GetInventoryPlayerContainer ();
 	npcInventory = _^ (npcInventoryPtr);
@@ -349,7 +349,8 @@ func void Trade_MoveToContainerPlayer (var int itmPtr, var int amount) {
 	var int playersContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_RIGHT_INVENTORY_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	//If item value == 1 then we **have** to calculate this value ourselves!
 	//... oCViewDialogItemContainer_InsertItem updates total value of all items ...
@@ -404,7 +405,8 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 	var int npcInventoryPtr;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_LEFT_INVENTORY_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	//If item value == 1 then we **have** to calculate this value ourselves!
 	//... oCViewDialogItemContainer_InsertItem updates total value of all items ...
@@ -459,7 +461,8 @@ func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 	var int npcsContainer;
 
 	//Update buy/sell multipliers
-	Trade_UpdateBuySellMultiplier (itmPtr);
+	Trade_UpdateBuySellMultiplier (itmPtr, TRADE_SECTION_LEFT_CONTAINER_G1);
+	if (_TradeCancelTransfer) { return; };
 
 	npcsContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
 	itmPtr = oCItemContainer_RemoveByPtr (npcsContainer, itmPtr, amount);
