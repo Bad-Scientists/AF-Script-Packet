@@ -5,6 +5,7 @@ var int Barrier_FadeStateMin;	//Min alpha value (cannot be 0! otherwise Barrier 
  *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState. Max fadeState value == 120
  */
 func void oCBarrier_FadeIn (var int fadeState){
+	if (!MEM_SkyController.barrier) { return; };
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
 
 	//Start fade in
@@ -22,6 +23,7 @@ func void oCBarrier_FadeIn (var int fadeState){
  *		fadeState		- fadeState in which Fade In effect should start. Use -1 to start from current fadeState. Max fadeState value == 120
  */
 func void oCBarrier_FadeOut (var int fadeState){
+	if (!MEM_SkyController.barrier) { return; };
 	var oCBarrier b; b = _^ (MEM_SkyController.barrier);
 
 	//Start fade out
