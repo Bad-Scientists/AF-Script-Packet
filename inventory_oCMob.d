@@ -200,21 +200,28 @@ func void Mob_RemoveItems (var int mobPtr, var int itemInstance, var int qty){
  *	Usage:
  *		Mob_TransferItemsToNPC (her.focus_vob, hero);
  */
-var int _MobTransferItemPrint_Event;
-var int _MobTransferItemPrint_Event_Enabled;
+var int _MobTransferItem_Event;
+var int _MobTransferItem_Event_Enabled;
 
-func void MobTransferItemPrintEvent_Init () {
-	if (!_MobTransferItemPrint_Event) {
-		_MobTransferItemPrint_Event = Event_Create ();
+var int _MobTransferItem_Method;
+	const int MobTransferItem_ToNpc = 1;
+	const int MobTransferItem_MoveToMob = 2;
+	const int MobTransferItem_CopyToMob = 3;
+
+var int _MobTransferItem_ToNpcPtr;
+
+func void MobTransferItemEvent_Init () {
+	if (!_MobTransferItem_Event) {
+		_MobTransferItem_Event = Event_Create ();
 	};
 };
 
-func void MobTransferItemPrintEvent_AddListener (var func f) {
-	Event_AddOnce (_MobTransferItemPrint_Event, f);
+func void MobTransferItemEvent_AddListener (var func f) {
+	Event_AddOnce (_MobTransferItem_Event, f);
 };
 
-func void MobTransferItemPrintEvent_RemoveListener (var func f) {
-	Event_Remove (_MobTransferItemPrint_Event, f);
+func void MobTransferItemEvent_RemoveListener (var func f) {
+	Event_Remove (_MobTransferItem_Event, f);
 };
 
 func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
@@ -222,6 +229,9 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	_MobTransferItem_ToNpcPtr = _@(slf);
+	_MobTransferItem_Method = MobTransferItem_ToNpc;
 
 	var oCItem itm;
 	var int i;
@@ -242,8 +252,8 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 			itm = _^ (itmPtr);
 
 			//Custom prints for transferred items
-			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
-				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			if ((_MobTransferItem_Event) && (_MobTransferItem_Event_Enabled)) {
+				Event_Execute (_MobTransferItem_Event, itmPtr);
 			};
 
 			i = 0;
@@ -263,6 +273,9 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 	if (!Hlp_Is_oCMobContainer (mobPtr1)) { return; };
 	if (!Hlp_Is_oCMobContainer (mobPtr2)) { return; };
 
+	_MobTransferItem_ToNpcPtr = 0;
+	_MobTransferItem_Method = MobTransferItem_MoveToMob;
+
 	var int i;
 
 	var int transferredItem;
@@ -281,8 +294,8 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 			ptr = list.next;
 		} else {
 			//Custom prints for transferred items
-			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
-				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			if ((_MobTransferItem_Event) && (_MobTransferItem_Event_Enabled)) {
+				Event_Execute (_MobTransferItem_Event, itmPtr);
 			};
 
 			oCMobContainer_Insert (mobPtr2, itmPtr);
@@ -296,6 +309,9 @@ func void Mob_TransferItemsToMob (var int mobPtr1, var int mobPtr2){
 func void Mob_CopyItemsToMob (var int mobPtr1, var int mobPtr2){
 	if (!Hlp_Is_oCMobContainer (mobPtr1)) { return; };
 	if (!Hlp_Is_oCMobContainer (mobPtr2)) { return; };
+
+	_MobTransferItem_ToNpcPtr = 0;
+	_MobTransferItem_Method = MobTransferItem_CopyToMob;
 
 	var int i;
 
@@ -313,8 +329,8 @@ func void Mob_CopyItemsToMob (var int mobPtr1, var int mobPtr2){
 
 		if (itmPtr) {
 			//Custom prints for transferred items
-			if ((_MobTransferItemPrint_Event) && (_MobTransferItemPrint_Event_Enabled)) {
-				Event_Execute (_MobTransferItemPrint_Event, itmPtr);
+			if ((_MobTransferItem_Event) && (_MobTransferItem_Event_Enabled)) {
+				Event_Execute (_MobTransferItem_Event, itmPtr);
 			};
 
 			oCMobContainer_Insert (mobPtr2, itmPtr);

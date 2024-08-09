@@ -1690,21 +1690,24 @@ func void NPC_RemoveInventory (var int slfInstance, var int flagsKeepItems, var 
 	};
 };
 
-var int _NpcTransferItemPrint_Event;
-var int _NpcTransferItemPrint_Event_Enabled;
+var int _NpcTransferItem_Event;
+var int _NpcTransferItem_Event_Enabled;
 
-func void NpcTransferItemPrintEvent_Init () {
-	if (!_NpcTransferItemPrint_Event) {
-		_NpcTransferItemPrint_Event = Event_Create ();
+var int _NpcTransferItem_FromNpcPtr;
+var int _NpcTransferItem_ToNpcPtr;
+
+func void NpcTransferItemEvent_Init () {
+	if (!_NpcTransferItem_Event) {
+		_NpcTransferItem_Event = Event_Create ();
 	};
 };
 
-func void NpcTransferItemPrintEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcTransferItemPrint_Event, f);
+func void NpcTransferItemEvent_AddListener (var func f) {
+	Event_AddOnce (_NpcTransferItem_Event, f);
 };
 
-func void NpcTransferItemPrintEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcTransferItemPrint_Event, f);
+func void NpcTransferItemEvent_RemoveListener (var func f) {
+	Event_Remove (_NpcTransferItem_Event, f);
 };
 
 func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCat, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
@@ -1713,6 +1716,9 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 
 	var C_NPC oth; oth = Hlp_GetNPC (othInstance);
 	if (!Hlp_IsValidNPC (oth)) { return; };
+
+	_NpcTransferItem_FromNpcPtr = _@ (slf);
+	_NpcTransferItem_ToNpcPtr = _@ (oth);
 
 	var int armorItemID; armorItemID = Npc_GetArmor (slf);
 
@@ -1762,8 +1768,8 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Custom prints for transferred items
-		if ((_NpcTransferItemPrint_Event) && (_NpcTransferItemPrint_Event_Enabled)) {
-			Event_Execute (_NpcTransferItemPrint_Event, _@ (item));
+		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
+			Event_Execute (_NpcTransferItem_Event, _@ (item));
 		};
 
 		if (amount == 1) {
