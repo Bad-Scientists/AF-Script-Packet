@@ -96,3 +96,7 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G12 Multi-teleport](Readme/G12_Multi_Teleport.md)
 
+## Patches:
+
+[G12 Patch fight combos](Readme/G12_Patch_Fight_Combos.md)
+
