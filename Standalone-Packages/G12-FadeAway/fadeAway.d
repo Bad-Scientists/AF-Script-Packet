@@ -26,22 +26,6 @@ var int _fadeAway_DontDropMainFlag;
 
 var string _fadeAway_ItemSlotName;
 
-//--
-
-/*
- *	We have to define this ZS state - as long as it is running (_LOOP function returns LOOP_CONTINUE) engine function oCAIHuman::DoAI will be active
- */
-func void ZS_FadeAway () {
-	Npc_SetPercTime (self, 1);
-};
-
-func int ZS_FadeAway_Loop () {
-	return LOOP_CONTINUE;
-};
-
-func void ZS_FadeAway_End () {
-};
-
 /*
  *	oCNpc_FadeAway
  *	 - function returns true when NPC is removed from world
@@ -182,7 +166,6 @@ func void _hook_oCAIHuman_DoAI_IsDead__FadeAway () {
 	//Class oCAIHuman inherits all properties from oCAniCtrl_Human ... so we can use oCAniCtrl_Human here for our purposes (to get to NPC information)
 	var int aniCtrlPtr; aniCtrlPtr = ESI;
 	if (!aniCtrlPtr) { return; };
-
 	var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (aniCtrlPtr);
 
 	var int npcPtr; /*npcPtr = EDX;*/ npcPtr = aniCtrl.npc;
@@ -191,17 +174,11 @@ func void _hook_oCAIHuman_DoAI_IsDead__FadeAway () {
 	var oCNpc slf; slf = _^ (npcPtr);
 
 	if (oCNpc_IsFadingAway (slf)) {
-		//Ignored by traceray (we will not be able to focus it)
-		VobTree_SetBitfield (npcPtr, zCVob_bitfield0_ignoredByTraceRay, 1);
-
-		//Remove shadow casting
-		VobTree_SetBitfield (npcPtr, zCVob_bitfield0_castDynShadow, 0);
-
-		//Remove from players focus
-		NPC_RemoveFromFocus (hero, npcPtr);
-
 		//Fade away Npc
-		var int retVal; retVal = oCNpc_FadeAway (slf);
+		if (oCNpc_FadeAway (slf)) {
+			//Remove from players focus
+			Npc_RemoveFromFocus(hero, npcPtr);
+		};
 	};
 };
 
@@ -253,6 +230,26 @@ func void _event_DropFromSlot_FadeAway (var int dummyVariable) {
 			};
 		};
 	};
+};
+
+/*
+ *	We have to define this ZS state - as long as it is running (_LOOP function returns LOOP_CONTINUE) engine function oCAIHuman::DoAI will be active
+ */
+func void ZS_FadeAway () {
+	//Ignored by traceray (we will not be able to focus it)
+	VobTree_SetBitfield (_@(self), zCVob_bitfield0_ignoredByTraceRay, 1);
+
+	//Remove shadow casting
+	VobTree_SetBitfield (_@(self), zCVob_bitfield0_castDynShadow, 0);
+
+	Npc_SetPercTime (self, 1);
+};
+
+func int ZS_FadeAway_Loop () {
+	return LOOP_CONTINUE;
+};
+
+func void ZS_FadeAway_End () {
 };
 
 func void G12_FadeAway_Init () {
