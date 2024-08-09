@@ -18,6 +18,32 @@ NPC_GAME_STEAL
 };
 */
 
+/*
+ *	Function returns game_mode
+ */
+func int oCNpc_Get_Game_Mode () {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	return + MEM_ReadInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2));
+};
+
+/*
+ *	Function updates game_mode
+ */
+func void oCNpc_Set_Game_Mode (var int newMode) {
+	//0x008DBC24 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G1 = 9288740;
+
+	//0x00AB27D0 public: static int oCNpc::game_mode
+	const int oCNpc__game_mode_G2 = 11216848;
+
+	MEM_WriteInt (MEMINT_SwitchG1G2 (oCNpc__game_mode_G1, oCNpc__game_mode_G2), newMode);
+};
+
 //0x008DBC24 public: static int oCNpc::game_mode
 //0x008DBC28 class oCNpc * stealnpc
 //0x008DBC2C float stealcheck_timer
