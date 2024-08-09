@@ -1399,3 +1399,177 @@ func void oCNpc_SetMovLock (var int slfInstance, var int on) {
 		call = CALL_End();
 	};
 };
+
+/*
+ *	oCNpc_DoDoAniEvents
+ */
+func int oCNpc_DoDoAniEvents(var int slfInstance) {
+	//0x0069EDF0 public: virtual int __thiscall oCNpc::DoDoAniEvents(void)
+	const int oCNpc__DoDoAniEvents_G1 = 6942192;
+
+	//0x00742A20 public: virtual int __thiscall oCNpc::DoDoAniEvents(void)
+	const int oCNpc__DoDoAniEvents_G2 = 7612960;
+
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return 0; };
+
+	var int slfPtr; slfPtr = _@ (slf);
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall (_@ (slfPtr), MEMINT_SwitchG1G2 (oCNpc__DoDoAniEvents_G1, oCNpc__DoDoAniEvents_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	oCNpc_GetInMovement
+ */
+func int oCNpc_GetInMovement(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return 0; };
+
+	var int isInMovementMode; isInMovementMode = slf.bitfield[1] & zCVob_bitfield1_isInMovementMode;
+	/*
+	enum zTMovementMode {
+		zVOB_MOVE_MODE_NOTINBLOCK,
+		zVOB_MOVE_MODE_INBLOCK,
+		zVOB_MOVE_MODE_INBLOCK_NOCD
+	};
+	*/
+	const int zVOB_MOVE_MODE_NOTINBLOCK = 0;
+	return (isInMovementMode != zVOB_MOVE_MODE_NOTINBLOCK);
+};
+
+/*
+ *	oCNpc_Turn
+ */
+func int oCNpc_Turn(var int slfInstance, var int posPtr) {
+	//0x0074DA70 public: float __thiscall oCNpc::Turn(class zVEC3 &)
+	const int oCNpc__Turn_G1 = 7658096;
+
+	//0x00683000 public: float __thiscall oCNpc::Turn(class zVEC3 &)
+	const int oCNpc__Turn_G2 = 6828032;
+
+	if (!posPtr) { return FLOATNULL; };
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return FLOATNULL; };
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_RetValIsFloat ();
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_PtrParam(_@(posPtr));
+		CALL__thiscall (_@(slfPtr), MEMINT_SwitchG1G2(oCNpc__Turn_G1, oCNpc__Turn_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
+ *	oCNpc_InterpolateAimVobPtr
+ *	 - allows aiming at vobPtr. Engine version of the function sends by default AssessThreat_S - which crashes if no Npc is used
+ *	 - returns true once Npc is aiming at vobPtr
+ */
+func int oCNpc_InterpolateAimVobPtr(var int slfInstance, var int vobPtr, var int disperse) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	if (!Hlp_IsValidNPC(slf)) { return 0; };
+	if (!slf.aniCtrl) { return 0; };
+
+	var oCAniCtrl_Human aniCtrl; aniCtrl = _^(slf.aniCtrl);
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	var int inMove; inMove = oCNpc_GetInMovement(slfInstance);
+	if (inMove) {
+		zCVob_EndMovement (slfPtr, FALSE);
+	};
+
+	var int fAzimuth; fAzimuth = FLOATNULL;
+	var int fElevation; fElevation = FLOATNULL;
+
+	oCNpc_GetAnglesVob(slf, vobPtr, _@(fAzimuth), _@(fElevation));
+
+	var int fX; fX = addf(divf(fAzimuth, mkf (90)), FLOATHALF);
+	var int fY; fY = subf(FLOATONE, addf(divf(fElevation, mkf(90)), FLOATHALF));
+
+	if ((lf(fX, FLOATNULL)) || (gf (fX, FLOATONE)) || (lf(fY, FLOATNULL)) || (gf (fY, FLOATONE)))
+	{
+		slf.hasLockedEnemy = FALSE;
+		var int pos[3];
+
+		if (zCVob_GetPositionWorldToPos(vobPtr, _@(pos))) {
+			oCNpc_Turn(slf, _@(pos));
+		};
+
+		return FALSE;
+	};
+
+	slf.hasLockedEnemy = TRUE;
+
+	if (inMove) {
+		zCVob_BeginMovement(slfPtr);
+	};
+
+	if (disperse) {
+		if (Hlp_Random (100) > 90) {
+			var int fXx; fXx = divf (mkf (Hlp_Random (10)), mkf (1000));
+			var int fYy; fYy = divf (mkf (Hlp_Random (10)), mkf (1000));
+
+			if (Hlp_Random (2) == 0) {
+				fXx = negf (fXx);
+			};
+
+			if (Hlp_Random (2) == 0) {
+				fYy = negf (fYy);
+			};
+
+			fX = addf (fX, fXx);
+			fY = addf (fY, fYy);
+		};
+	};
+
+	oCAniCtrl_Human_InterpolateCombineAni(slf.aniCtrl, fX, fY, aniCtrl._s_aim);
+
+	return TRUE;
+};
+
+/*
+ *	oCNpc_DoShootArrow
+ */
+func int oCNpc_DoShootArrow(var int slfInstance, var int autoAim) {
+	//0x006A09F0 public: virtual int __thiscall oCNpc::DoShootArrow(int)
+	const int oCNpc__DoShootArrow_G1 = 6949360;
+
+	//0x007446B0 public: virtual int __thiscall oCNpc::DoShootArrow(int)
+	const int oCNpc__DoShootArrow_G2 = 7620272;
+
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return FALSE; };
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam(_@(autoAim));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2(oCNpc__DoShootArrow_G1, oCNpc__DoShootArrow_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
