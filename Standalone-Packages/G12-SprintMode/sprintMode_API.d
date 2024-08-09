@@ -1,16 +1,27 @@
 /*
-//Copy these constants outside of the script packet - define your own values.
-//If script-packet is updated in the future - your definition will be unaffected.
+ *	Sprint mode
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
-const int PC_SPRINTMODEBAR_PPOSX = -1;		//If not defined script will put bar right underneath health bar
-const int PC_SPRINTMODEBAR_PPOSY = -1;		//If not defined script will put bar right underneath health bar
+//If not defined script will put bar right underneath health bar
+const int PC_SPRINTMODEBAR_PPOSX = -1;
+//If not defined script will put bar right underneath health bar
+const int PC_SPRINTMODEBAR_PPOSY = -1;
 
 //Virtual positions have higher prio than pixel positions.
-const int PC_SPRINTMODEBAR_VPOSX = -1;		//if not defined (-1) then PC_SprintModeBar_PPosX will be taken into consideration. Virtual coordinates
-const int PC_SPRINTMODEBAR_VPOSY = -1;		//if not defined (-1) then PC_SprintModeBar_PPosY will be taken into consideration. Virtual coordinates
+//if not defined (-1) then PC_SprintModeBar_PPosX will be taken into consideration. Virtual coordinates
+const int PC_SPRINTMODEBAR_VPOSX = -1;
+//if not defined (-1) then PC_SprintModeBar_PPosY will be taken into consideration. Virtual coordinates
+const int PC_SPRINTMODEBAR_VPOSY = -1;
 
-const int BAR_TEX_SPRINTMODE_STAMINA = 0;	//Bar texture for stamina
-const int BAR_TEX_SPRINTMODE_TIMEDOVERLAY = 1;	//Bar texture for timed overlays (potions)
+//Bar texture for stamina
+const int BAR_TEX_SPRINTMODE_STAMINA = 0;
+//Bar texture for timed overlays (potions)
+const int BAR_TEX_SPRINTMODE_TIMEDOVERLAY = 1;
 
 const string PC_SPRINTMODEBAR_TEX = "BAR_MISC.TGA";
 const string PC_SPRINTMODEBAR_TIMED_TEX = "BAR_SPRINTMODE_TIMEDOVERLAY.TGA";
@@ -36,15 +47,6 @@ const int PC_SPRINTMODE_CONSUMESTAMINA_DEFAULT = TRUE;
 
 const string PC_SPRINTMODE_FONT = "FONT_OLD_10_WHITE.TGA";
 
-//const int ALPHA_FUNC_MAT_DEFAULT	= 0;
-//const int ALPHA_FUNC_NONE		= 1;
-//const int ALPHA_FUNC_BLEND	= 2;
-//const int ALPHA_FUNC_ADD		= 3;
-//const int ALPHA_FUNC_SUB		= 4;
-//const int ALPHA_FUNC_MUL		= 5;
-//const int ALPHA_FUNC_MUL2		= 6;
-//const int ALPHA_FUNC_TEST		= 7;
-
 const int SPRINTBAR_DISPLAYMETHOD = BarDisplay_DynamicUpdate;
 const int SPRINTBAR_PREVIEWEFFECT = BarPreviewEffect_FadeInOut;
 
@@ -54,4 +56,3 @@ const string SPRINTBAR_DISPLAYVALUES_COLOR = "FFFFFF";
 
 const int SPRINTBAR_DISPLAYVALUEOFFSETX = 0;
 const int SPRINTBAR_DISPLAYVALUEOFFSETY = -1;
-*/

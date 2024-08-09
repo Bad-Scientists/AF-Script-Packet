@@ -1,5 +1,11 @@
 /*
-//Copy this function outside of the script packet - define your own rules and textures :)
+ *	Log dialogues
+ *
+ *	1. Copy this file outside of script-packet
+ *	2. Customize it
+ *	3. Link it to Gothic.src
+ *	4. Profit
+ */
 
 //const int LOG_MISSION = 0;
 //const int LOG_NOTE = 1;
@@ -10,8 +16,8 @@ const int LOG_SECTIONFORDIALOGUES = 1; //log to notes by default
 //For example: we don't need dialogues with ambient NPCs ...
 //return "" blank string if you don't want to log dialogue, otherwise return log name (by default, we return NPC name)
 
-func string GetLogTopicName__LogDialogs (var C_NPC npc, var C_NPC her) {
-	if (MEMINT_SwitchG1G2 (1, 0)) {
+func string GetLogTopicName__LogDialogs(var C_NPC npc, var C_NPC her) {
+	if (MEMINT_SwitchG1G2(1, 0)) {
 		//G1
 		//const int npctype_ambient = 0;
 		//const int Npctype_MINE_Ambient = 4;
@@ -32,4 +38,3 @@ func string GetLogTopicName__LogDialogs (var C_NPC npc, var C_NPC her) {
 
 	return npc.Name;
 };
-*/
