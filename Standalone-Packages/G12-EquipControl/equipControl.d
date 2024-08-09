@@ -11,7 +11,7 @@ func void _hook_oCNpc_EquipControl () {
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if (!Hlp_Is_oCItem (itemPtr)) { return; };
 
-	var oCNpc slf; slf = _^ (ECX);
+	var C_NPC slf; slf = _^ (ECX);
 
 	const int symbID = 0;
 	var int retVal; retVal = 0;
