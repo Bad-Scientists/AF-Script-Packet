@@ -102,6 +102,8 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G12 Set display dialogue time](Readme/G12_Set_Display_Dialogue_Time.md)
 
+[G12 Set player turn speed](Readme/G12_Set_Player_Turn_Speed.md)
+
 [G12 Patch fight combos](Readme/G12_Patch_Fight_Combos.md)
 
 ## Debugging:
