@@ -20,6 +20,8 @@ var int _pickLockHelper_PPosY;
 var int _pickLockHelper_VPosX;
 var int _pickLockHelper_VPosY;
 
+var int _pickLockHelper_AlignWithInvCatView;
+
 var int _pickLockHelper_WidthPxl;
 
 //Constant tracking last mob
@@ -43,21 +45,57 @@ var int hpickLockHelper_LastKey;
  *
  */
 
+/*
+ *
+ */
+func int PickLockHelper_InvOpen_GetPosX () {
+	if (Hlp_GetOpenInventoryType() != OpenInvType_Chest) {
+		return -1;
+	};
+
+	var int npcInvPtr; npcInvPtr = Hlp_GetOpenContainer_oCItemContainer();
+	if (!npcInvPtr) {
+		return -1;
+	};
+
+	//var oCItemContainer cont; cont = _^(npcInvPtr);
+	//if (!cont.inventory2_oCItemContainer_viewCat) {
+	//	return -1;
+	//};
+
+	//var zCView v; v = _^(cont.inventory2_oCItemContainer_viewCat);
+
+	//Get item category view
+	//G1	inventory2_oCItemContainer_viewCat		0x0580 - 0x0550 = 48
+	//G2A	inventory2_oCItemContainer_viewTitle	0x06C8 - 0x0668 = 96
+	var int viewPtr; viewPtr = MEM_ReadInt(npcInvPtr + MEMINT_SwitchG1G2(48, 96));
+	if (!viewPtr) { return -1; };
+	var zCView v; v = _^(viewPtr);
+	return +(v.vposx + v.vsizex + Print_ToVirtual(1, PS_X));
+};
+
+/*
+ *
+ */
 func int PickLockHelper_GetPosX () {
-	//Recalculate size and positions
-	var int scaleF; scaleF = _getInterfaceScaling ();
+	var int posX;
 
-	var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
-	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
-
-	var int viewWidth;
-	viewWidth = Print_ToVirtual(_pickLockHelper_WidthPxl, PS_X);
-	viewWidth = roundf (mulf (mkf (viewWidth), scaleF));
+	if (_pickLockHelper_AlignWithInvCatView) {
+		posX = PickLockHelper_InvOpen_GetPosX();
+		if (posX > -1) { return posX; };
+	};
 
 	//--- calculate if not specified
-	var int posX;
 	if (_pickLockHelper_PPosX == -1) {
-		//txt.posX = (PS_VMax - Print_ToVirtual(Font_GetStringWidth(text, font), PS_X)) / 2;
+		//Recalculate size and positions
+		var int scaleF; scaleF = _getInterfaceScaling ();
+
+		//var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
+		//fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+
+		var int viewWidth; viewWidth = Print_ToVirtual(_pickLockHelper_WidthPxl, PS_X);
+		viewWidth = roundf (mulf (mkf (viewWidth), scaleF));
+
 		posX = (PS_VMax - viewWidth) / 2;
 	} else {
 		posX = Print_ToVirtual (_pickLockHelper_PPosX, PS_X);
@@ -67,22 +105,56 @@ func int PickLockHelper_GetPosX () {
 		posX = _pickLockHelper_VPosX;
 	};
 
-	//Position does not have to be 'scaled'
-	//posX = roundf (mulf (mkf (posX), scaleF));
-
 	return posX;
 };
 
+/*
+ *
+ */
+func int PickLockHelper_InvOpen_GetPosY() {
+	if (Hlp_GetOpenInventoryType() != OpenInvType_Chest) {
+		return -1;
+	};
+
+	var int npcInvPtr; npcInvPtr = Hlp_GetOpenContainer_oCItemContainer();
+	if (!npcInvPtr) {
+		return -1;
+	};
+
+	//var oCItemContainer cont; cont = _^(npcInvPtr);
+	//if (!cont.inventory2_oCItemContainer_viewCat) {
+	//	return -1;
+	//};
+
+	//var zCView v; v = _^(cont.inventory2_oCItemContainer_viewCat);
+
+	//Get item category view
+	//G1	inventory2_oCItemContainer_viewCat		0x0580 - 0x0550 = 48
+	//G2A	inventory2_oCItemContainer_viewTitle	0x06C8 - 0x0668 = 96
+	var int viewPtr; viewPtr = MEM_ReadInt(npcInvPtr + MEMINT_SwitchG1G2(48, 96));
+	if (!viewPtr) { return -1; };
+	var zCView v; v = _^(viewPtr);
+	return +(v.vposy + Print_ToVirtual(1, PS_Y));
+};
+
+/*
+ *
+ */
 func int PickLockHelper_GetPosY () {
-	var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
-	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
-
-	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
-	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
-
 	var int posY;
+
+	if (_pickLockHelper_AlignWithInvCatView) {
+		posY = PickLockHelper_InvOpen_GetPosY();
+		if (posY > -1) { return posY; };
+	};
+
 	if (_pickLockHelper_PPosY == -1) {
-		//txt.posY = (PS_VMax - Print_ToVirtual(Print_GetFontHeight(font), PS_Y)) / 2;
+		var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
+		fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+
+		//var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
+		//spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
+
 		posY = (PS_VMax / 2 - fontHeight / 2);
 	} else {
 		posY = Print_ToVirtual (_pickLockHelper_PPosY, PS_Y);
@@ -91,9 +163,6 @@ func int PickLockHelper_GetPosY () {
 	if (_pickLockHelper_VPosY > -1) {
 		posY = _pickLockHelper_VPosY;
 	};
-
-	//Position does not have to be 'scaled'
-	//posY = roundf (mulf (mkf (posY), scaleF));
 
 	return posY;
 };
@@ -107,8 +176,17 @@ func void PickLockHelper_Show () {
 	var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
 	fontHeight = Print_ToVirtual (fontHeight, PS_Y);
 
-	var int viewWidth;
-	viewWidth = Print_ToVirtual(_pickLockHelper_WidthPxl, PS_X);
+	var string s;
+	if (STR_Len(pickLockHelper_LastCombination) > STR_Len(pickLockHelper_CurrentCombination)) {
+		s = pickLockHelper_LastCombination;
+	} else {
+		s = pickLockHelper_CurrentCombination;
+	};
+
+	var int textWidth; textWidth = Font_GetStringWidth(s, _pickLockHelper_FontName);
+	var int viewWidth; viewWidth = clamp(textWidth, _pickLockHelper_WidthPxl, textWidth);
+
+	viewWidth = Print_ToVirtual(viewWidth, PS_X);
 	viewWidth = roundf (mulf (mkf (viewWidth), scaleF));
 
 	var int posX; posX = PickLockHelper_GetPosX ();
@@ -193,19 +271,15 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 
 	if (!pickLockHelper_Visible) { return; };
 
+	//Update position
+	PickLockHelper_Show();
+
 	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
+	//Update texts
 	View_SetTextMarginAndFontColor (hPickLockHelper_LastCombination, pickLockHelper_LastCombination, RGBA (255, 255, 255, 64), spaceWidth);
 	View_SetTextMarginAndFontColor (hPickLockHelper_CurrentCombination, pickLockHelper_CurrentCombination, RGBA (096, 255, 096, 255), spaceWidth);
-
-	var int posX; posX = PickLockHelper_GetPosX ();
-	var int posY; posY = PickLockHelper_GetPosY ();
-
-	posX += Print_ToVirtual (Font_GetStringWidth (pickLockHelper_LastCombination, _pickLockHelper_FontName), PS_X);
-
-	View_MoveTo_Safe (hpickLockHelper_LastKey, posX, posY);
-
 	View_SetTextMarginAndFontColor (hpickLockHelper_LastKey, pickLockHelper_LastKey, RGBA (255, 070, 070, 255), spaceWidth);
 };
 
@@ -272,7 +346,7 @@ func void _hook_oCMobLockable_PickLock__PickLockHelper () {
 	};
 };
 
-func void _eventMobStartInteraction__PickLockHelper () {
+func void _eventMobStartInteraction__PickLockHelper (var int eventType) {
 	if (!Hlp_Is_oCMobLockable (ECX))  { return; };
 
 	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
@@ -304,8 +378,13 @@ func void _eventMobStartInteraction__PickLockHelper () {
 		pickLockHelper_CurrentCombination = "";
 	};
 
-	//Show picklock helper if chest is locked and player does not have key
-	if ((STR_Len (mob.pickLockStr) > 0) && (mob.bitfield & oCMobLockable_bitfield_locked)) {
+	//Show picklock helper if chest is locked with pickLockStr
+	if (STR_Len (mob.pickLockStr) > 0) /*&& (mob.bitfield & oCMobLockable_bitfield_locked))*/
+	{
+		//If chest is unlocked - update strings
+		if ((mob.bitfield & oCMobLockable_bitfield_locked) != oCMobLockable_bitfield_locked) {
+			pickLockHelper_LastCombination = mob.pickLockStr;
+		};
 
 		var int canOpenWithKey; canOpenWithKey = FALSE;
 		if (STR_Len (mob.keyInstance) > 0) {
@@ -316,6 +395,26 @@ func void _eventMobStartInteraction__PickLockHelper () {
 			PickLockHelper_Show ();
 		};
 	};
+};
+
+func void FF_WaitForInvOpen__PickLockHelper() {
+	if (Hlp_GetOpenInventoryType() != OpenInvType_Chest) {
+		return;
+	};
+
+	//Function will update view position
+	PickLockHelper_Show();
+};
+
+func void _eventOpenInventory__PickLockHelper (var int eventType) {
+	if (!pickLockHelper_Visible) { return; };
+	FF_ApplyOnceExtGT(FF_WaitForInvOpen__PickLockHelper, 0, -1);
+};
+
+func void _eventCloseInventory__PickLockHelper (var int eventType) {
+	if (!pickLockHelper_Visible) { return; };
+	PickLockHelper_Hide();
+	FF_Remove(FF_WaitForInvOpen__PickLockHelper);
 };
 
 //Function is called when player ended interation
@@ -331,7 +430,7 @@ func void _hook_oCMobInter_EndInteraction__PickLockHelper () {
 	PickLockHelper_Hide ();
 };
 
-//Function is called when player broke picklock and does not have any
+//Function is called when player breaks picklock / does not have any more picklocks
 func void _hook_oCMobInter_StopInteraction__PickLockHelper () {
 	if (!Hlp_Is_oCMobLockable (ECX)) { return; };
 
@@ -348,7 +447,12 @@ func void _hook_oCMobInter_StopInteraction__PickLockHelper () {
 };
 
 func void G12_PickLockHelper_Init () {
-	G12_oCMobInterStartInterationEvent_Init ();
+	//Add listener for inventory opening
+	G12_OpenInventoryEvent_Init();
+	OpenInventoryEvent_AddListener(_eventOpenInventory__PickLockHelper);
+
+	G12_CloseInventoryEvent_Init();
+	CloseInventoryEvent_AddListener(_eventCloseInventory__PickLockHelper);
 
 	//Add listener for mob use
 	G12_MobStartInterationEvent_Init();
@@ -371,7 +475,9 @@ func void G12_PickLockHelper_Init () {
 	_pickLockHelper_VPosX = API_GetSymbolIntValue ("PICKLOCKHELPER_VPOSX", -1);
 	_pickLockHelper_VPosY = API_GetSymbolIntValue ("PICKLOCKHELPER_VPOSY", -1);
 
-	_pickLockHelper_WidthPxl = API_GetSymbolIntValue ("PICKLOCKHELPER_WIDTHPXL", 320);
+	_pickLockHelper_AlignWithInvCatView = API_GetSymbolIntValue ("PICKLOCKHELPER_ALINGWITHINVCATVIEW", 1);
+
+	_pickLockHelper_WidthPxl = API_GetSymbolIntValue ("PICKLOCKHELPER_WIDTHPXL", 160);
 	//--
 
 	const int once = 0;
