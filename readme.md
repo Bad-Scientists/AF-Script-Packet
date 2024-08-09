@@ -94,3 +94,5 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G12 Equip control](Readme/G12_Equip_Control.md)
 
+[G12 Multi-teleport](Readme/G12_Multi_Teleport.md)
+
