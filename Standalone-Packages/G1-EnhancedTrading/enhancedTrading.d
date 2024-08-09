@@ -3,11 +3,10 @@
  *	https://forum.worldofplayers.de/forum/threads/879891-Skriptpaket-Ikarus-2/page12?p=14836995&viewfull=1#post14836995
  *
  *	They were modified to change multipliers for both inventory containers in case of both buying / selling containers.
- *
  */
 
 //-- Internal variables
-var int TradeForceTransferAccept; //Variable indicating that player forced trading
+var int _TradeForceTransferAccept; //Variable indicating that player forced trading
 var int _TradeCancelTransfer;
 
 func void Trade_SetBuyMultiplier (var int mulF) {
@@ -526,7 +525,7 @@ func void _eventTradeOnExit__EnhancedTrading (var int dummyVariable) {
 	Trade_SetNpcContainerValue (0);
 	Trade_SetPlayerContainerValue (0);
 
-	TradeForceTransferAccept = 0;
+	_TradeForceTransferAccept = 0;
 };
 
 /*
@@ -611,22 +610,22 @@ func void _eventTradeHandleEvent__EnhancedTrading (var int dummyVariable) {
 			delta = 0 - delta;
 
 			if (delta > oreTrader) {
-				TradeForceTransferAccept += 1;
+				_TradeForceTransferAccept += 1;
 
 				//First warning
-				if (TradeForceTransferAccept == 1) {
+				if (_TradeForceTransferAccept == 1) {
 					API_CallByString ("ENHANCEDTRADING_TRADER_NOTENOUGHORE");
 					cancel = FALSE;
 				} else
 				//Second warning --> ignore enter
-				if (TradeForceTransferAccept == 2) {
+				if (_TradeForceTransferAccept == 2) {
 					API_CallByString ("ENHANCEDTRADING_TRADER_NOTENOUGHORE_CONFIRM");
 					cancel = TRUE;
 				} else
 				//If player confirmed trade anyway ... then don't ignore it
-				if (TradeForceTransferAccept == 3) {
+				if (_TradeForceTransferAccept == 3) {
 					cancel = FALSE;
-					TradeForceTransferAccept = 0;
+					_TradeForceTransferAccept = 0;
 				};
 			};
 
@@ -713,7 +712,7 @@ func void G1_EnhancedTrading_Init(){
 	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
 
 	if (!once) {
-		//Hooked functions checks whether NPC wants to buy an item or not. Also it cahnges selling/buying multiplier values
+		//Hooked functions checks whether NPC wants to buy an item or not. Also it changes selling/buying multiplier values
 		HookEngine (oCViewDialogTrade__OnTransferLeft, 10, "_hook_OnTransfer__EnhancedTrading");
 		HookEngine (oCViewDialogTrade__OnTransferRight, 10, "_hook_OnTransfer__EnhancedTrading");
 
