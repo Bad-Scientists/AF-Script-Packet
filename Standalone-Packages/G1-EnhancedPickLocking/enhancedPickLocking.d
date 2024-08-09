@@ -94,7 +94,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID);
 			};
 
@@ -114,7 +114,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID2 != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID2);
 			};
 
@@ -135,7 +135,7 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			if (symbID3 != -1) {
-				MEM_PushInstParam (slf);
+				MEM_PushInstParam(npc);
 				MEM_CallByID (symbID3);
 			};
 
@@ -158,7 +158,7 @@ func void _hook_oCMobLockable_CanOpen () {
 				};
 
 				if (symbID4 != -1) {
-					MEM_PushInstParam (slf);
+					MEM_PushInstParam(npc);
 					MEM_CallByID (symbID4);
 				};
 			} else {
@@ -169,7 +169,7 @@ func void _hook_oCMobLockable_CanOpen () {
 				};
 
 				if (symbID5 != -1) {
-					MEM_PushInstParam (slf);
+					MEM_PushInstParam(npc);
 					MEM_CallByID (symbID5);
 				};
 			};
