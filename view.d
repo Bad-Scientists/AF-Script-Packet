@@ -7,6 +7,8 @@
  *	 View* functions - working with handles
  */
 
+const int Print_TimeInfinite = -1073741824; //float -2
+
 //	AFSP 'internal' constants for view intflags
 //	 - engine is only using const int VIEW_I_TEXT = 1 << 0; //1
 //	 - we will add our own constants to allow automated & easier view formatting
@@ -223,6 +225,85 @@ func void zCList_zCViewText_DeleteListDatas (var int listPtr) {
 		CALL__thiscall (_@ (listPtr), MEMINT_SwitchG1G2 (zCList_zCViewText__DeleteListDatas_G1, zCList_zCViewText__DeleteListDatas_G2));
 		call = CALL_End ();
 	};
+};
+
+/*
+ *	Gets font from view
+ */
+func int zCViewPtr_GetFont(var int viewPtr) {
+	//0x006FFDC0 public: class zCFont * __thiscall zCView::GetFont(void)
+	const int zCView__GetFont_G1 = 7339456;
+
+	//0x007A9950 public: class zCFont * __thiscall zCView::GetFont(void)
+	const int zCView__GetFont_G2 = 8034640;
+
+	if (!viewPtr) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin (call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall (_@ (viewPtr), MEMINT_SwitchG1G2(zCView__GetFont_G1, zCView__GetFont_G2));
+		call = CALL_End ();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	Prints centered timed colored text s at posY
+ */
+func void zCViewPtr_PrintTimedCX(var int viewPtr, var int posY, var string s, var int timeF, var int color) {
+	//0x006FE230 public: void __thiscall zCView::PrintTimedCX(int,class zSTRING const &,float,struct zCOLOR *)
+	const int zCView__PrintTimedCX_G1 = 7332400;
+
+	//0x007A7DB0 public: void __thiscall zCView::PrintTimedCX(int,class zSTRING const &,float,struct zCOLOR *)
+	const int zCView__PrintTimedCX_G2 = 8027568;
+
+	if (!viewPtr) { return; };
+
+	const int colorPtr = 0;
+
+	if (!colorPtr) {
+		colorPtr = MEM_Alloc (4);
+	};
+
+	MEM_WriteInt (colorPtr, color);
+
+	CALL_PtrParam(colorPtr);
+	CALL_FloatParam(timeF);
+	CALL_zStringPtrParam(s);
+	CALL_PtrParam(posY);
+	CALL__thiscall(viewPtr, MEMINT_SwitchG1G2 (zCView__PrintTimedCX_G1, zCView__PrintTimedCX_G2));
+};
+
+/*
+ *	Prints timed colored text s at posX & posY
+ */
+func void zCViewPtr_PrintTimed(var int viewPtr, var int posX, var int posY, var string s, var int timeF, var int color) {
+	//0x006FE1A0 public: void __thiscall zCView::PrintTimed(int,int,class zSTRING const &,float,struct zCOLOR *)
+	const int zCView__PrintTimed_G1 = 7332256;
+
+	//0x007A7D20 public: void __thiscall zCView::PrintTimed(int,int,class zSTRING const &,float,struct zCOLOR *)
+	const int zCView__PrintTimed_G2 = 8027424;
+
+	if (!viewPtr) { return; };
+
+	const int colorPtr = 0;
+
+	if (!colorPtr) {
+		colorPtr = MEM_Alloc (4);
+	};
+
+	MEM_WriteInt (colorPtr, color);
+
+	CALL_PtrParam(colorPtr);
+	CALL_FloatParam(timeF);
+	CALL_zStringPtrParam(s);
+	CALL_PtrParam(posY);
+	CALL_PtrParam(posX);
+	CALL__thiscall(viewPtr, MEMINT_SwitchG1G2 (zCView__PrintTimed_G1, zCView__PrintTimed_G2));
 };
 
 /*
