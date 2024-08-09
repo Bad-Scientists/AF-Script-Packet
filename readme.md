@@ -50,6 +50,8 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G1 Better inventory controls](Readme/G1_Better_Inventory_Controls.md)
 
+[G1 Enhanced pickpocketing](Readme/G1_Enhanced_PickPocketing.md)
+
 ---
 
 [G12 Enhanced information manager](Readme/G12_Enhanced_Information_Manager.md)
