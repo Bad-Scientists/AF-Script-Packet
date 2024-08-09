@@ -1,22 +1,3 @@
-/*
- *	FadeAway
- *	 - will slowly 'fade-away' NPC (will slowly get transparent) - as soon as NPC is invisible engine function oCNPC::FadeAway removes NPC from the world
- *
- *	Usage:
- *   - define function C_Npc_IsSummoned - defines which Npcs are spawned
- *	 - call from ZS_Dead state following code - if you want your dead NPCs to fade-away:
-
-	//Is this summoned NPC?
-	if (C_Npc_IsSummoned (self)) {
-		//Is it fading away?
-		if (!oCNpc_IsFadingAway (self)) {
-			//Start fading away effect:
-			Wld_PlayEffect("SPELLFX_MASSDEATH_TARGET", self, self, 0, 0, 0, FALSE);
-			oCNpc_StartFadeAway (self);
-		};
-	};
- */
-
 //-- Internal variables
 
 var int _fadeAway_DropWeapon;

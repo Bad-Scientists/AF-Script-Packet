@@ -1,8 +1,4 @@
 /*
- *	Super simple feature that will prevent dead bodies from despawning.
- */
-
-/*
  *	Simple feature preventing despawn of dead NPCs, if they have anything in their inventory
  */
 func void _hook_oCSpawnManager_CheckInsertNpc_HasMissionItem () {

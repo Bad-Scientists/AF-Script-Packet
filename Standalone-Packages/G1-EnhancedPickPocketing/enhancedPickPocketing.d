@@ -1,21 +1,3 @@
-/*
- *	Enhanced Pickpocketing
- *
- *	 - improves vanilla pickpocketing in G1:
- *		- enables additional body states (vanilla BS_STAND, BS_ITEMINTERACT, patched also while Npc is sitting / using mobs: BS_SIT, BS_LIE, BS_MOBINTERACT, BS_MOBINTERACT_INTERRUPT)
- *		- adds extra functions for failed pickpocketing attempts (from which we can let player know why attempt failed)
- *			- EnhancedPickPocketing_TooFar is called when victim is too far
- *		- fixes behaviour for failed theft attempts of which victim is **aware of**:
- *			- in vanilla nothing would happen, only T_DONTKNOW animation would play. Here we are calling oCNpc_StopTheft - this will send perception PERC_CATCHTHIEF to victim.
- *
- *	 - additionaly we allow player to insert items into victims inventory (vanilla allows only stealing)
- *
- *	 - this feature is using 2 'API' functions to determine whether item can be stoled from / inserted into victim's inventory:
- *		- C_PP_CanBeStolenFromInventory (var C_NPC npc, var int itemPtr) determines whether item can be stoled from victim
- *		- C_PP_CanBePutToInventory (var C_NPC npc, var int itemPtr) determines whether item can be inserted into victim's inventory
- *		- if any of these determines that item **cannot** be stoled/inserted then feature calls oCNpc_StopTheft and will send perception PERC_CATCHTHIEF to victim
- */
-
 var int _enhancedPickPocketing_StealItemAnyway;
 
 func int oCNpcFocus_GetRange2 () {

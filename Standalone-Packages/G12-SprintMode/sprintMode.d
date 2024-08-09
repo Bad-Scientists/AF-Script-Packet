@@ -1,27 +1,3 @@
-/*
- *	Sprint mode
- *		- toggle 'afsp.keySprintModeToggleKey' key to enable/disable sprint mode
- *		- 'afsp.keySprintModeToggleKey' can be defined either in Gothic.ini file section [KEYS] or mod.ini file section [KEYS]. (master is Gothic.ini)
- *		- if 'afsp.keySprintModeToggleKey' is not defined then by default KEY_RSHIFT will be used for toggling
- *
- *		- this feature adds stamina bar right underneath health bar, where it displays players stamina level
- *		- when player is exhausted sprint mode will disable with a cool down of 4 seconds
- *		- jumping and fighting exhausts stamina significantly
- *
- *		- you need to maintain stamina levels for player by yourself - set PC_SprintModeStaminaMax to whatever value makes sense to you at the beginning of the game in your STARTUP function:
- *			PC_SprintModeStaminaMax = 80;				//Max stamina level
- *			PC_SprintModeStamina = PC_SprintModeStaminaMax;		//Current stamina level
- *			PC_SprintModeConsumeStamina = TRUE;			//Make sure this is set to true
- *
- *		- potions of speed disable stamina consumption
- *		- potions of speed will have their own texture in stamina bar - you will see how much time is left from potion effect
- *
- *		- this feature restores potion effect (timed overlay) on game load
- *		- it also fixes error where multiple potion effects (multiple timed overlays with different times) would remove overlay
- *
- *	Requires LeGo flags: LeGo_HookEngine | LeGo_FrameFunctions | LeGo_Bars
- */
-
 //-- Internal variables
 
 var int PC_SprintMode;

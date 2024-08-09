@@ -1,8 +1,4 @@
 /*
- *	Moon phases
- *
- *	8 phases - I know this is incorrect when compared to how moon behaves in reality ... but let's not over-complicate moon-cycle phase calculation ... say moon moves to new phase every 3 days.
- *
  *	MEM_SkyController.masterTime (float)
  *	0.50 = 00:00
  *	0.75 = 06:00

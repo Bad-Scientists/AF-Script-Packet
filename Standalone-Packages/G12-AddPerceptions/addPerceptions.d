@@ -1,9 +1,4 @@
 /*
- *	Additional perceptions
- *	 - this feature allows you to add your own 'perception' functions to Npc perception list
- *	 - newly added perceptions will have perception type higher than vanilla perceptions (> NPC_PERC_MAX)
- *	 - the only global variable that gets updated for these perceptions is `self`
- *
  *	Fair warning: only 32 perceptions can be active at the same time. There is a chance that your perception won't be called if you use all vanilla perceptions on Npc at the same time ...
  */
 
