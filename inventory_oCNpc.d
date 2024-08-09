@@ -2044,11 +2044,14 @@ func void Npc_UnequipWeapons (var int slfInstance) {
 
 /*
  *	Npc_GetItemSlot
- *	 - function loops through inventory and return index of inventory slot in which item is stored
+ *	 - function loops through inventory and returns index of inventory slot in which item is stored
  */
 func int Npc_GetItemSlot (var int slfInstance, var int invCat, var int searchItemInstanceID) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	//By default -1
+	var int retSlot; retSlot = -1;
 
 	var int itmSlot; itmSlot = 0;
 	var int amount; amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -2059,14 +2062,32 @@ func int Npc_GetItemSlot (var int slfInstance, var int invCat, var int searchIte
 		itemInstanceID = Hlp_GetInstanceID (item);
 
 		if (itemInstanceID == searchItemInstanceID) {
+			//Same for G1 & G2A
+			const int ITM_FLAG_ACTIVE = 1 << 30;
+
+			//Prio - unequipped items
+			if (oCItem_HasFlag(_@(item), ITM_FLAG_ACTIVE)) {
+				//Keep track of the equipped one tho
+				retSlot = itmSlot;
+
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
+				continue;
+			};
+
 			return + itmSlot;
+		} else {
+			//Exit if instance does not match
+			if (retSlot > -1) {
+				return retSlot;
+			};
 		};
 
 		itmSlot += 1;
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 	end;
 
-	return -1;
+	return retSlot;
 };
 
 /*
