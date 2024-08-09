@@ -100,6 +100,8 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G12 Set display dialogue distance](Readme/G12_Set_Display_Dialogue_Distance.md)
 
+[G12 Set display dialogue time](Readme/G12_Set_Display_Dialogue_Time.md)
+
 [G12 Patch fight combos](Readme/G12_Patch_Fight_Combos.md)
 
 ## Debugging:
