@@ -106,6 +106,12 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 
 [G12 Set rain through vobs](Readme/G12_Set_Rain_Through_Vobs.md)
 
+---
+
+[G1 Patch firedamage multiplication](Readme/G1_Patch_FireDamage_Multiplication.md)
+
+---
+
 [G12 Patch fight combos](Readme/G12_Patch_Fight_Combos.md)
 
 ## Debugging:
