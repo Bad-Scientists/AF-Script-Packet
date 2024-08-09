@@ -351,7 +351,8 @@ func void G12_PickLockHelper_Init () {
 	G12_oCMobInterStartInterationEvent_Init ();
 
 	//Add listener for mob use
-	MobStartInteraction_AddListener (_eventMobStartInteraction__PickLockHelper);
+	G12_MobStartInterationEvent_Init();
+	MobStartInteractionEvent_AddListener(_eventMobStartInteraction__PickLockHelper);
 
 	//-- Load API values / init default values
 	_pickLockHelper_ShowFailedAttempt = API_GetSymbolIntValue ("PICKLOCKHELPER_SHOWFAILEDATTEMPT", 1);

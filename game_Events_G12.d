@@ -132,11 +132,11 @@ func void PlayerPortalRoomChange_RemoveListener (var func f) {
 	Event_Remove (_PlayerPortalRoomChange_Event, f);
 };
 
-func void MobStartInteraction_AddListener (var func f) {
+func void MobStartInteractionEvent_AddListener (var func f) {
 	Event_AddOnce (_MobStartInteraction_Event, f);
 };
 
-func void MobStartInteraction_RemoveListener (var func f) {
+func void MobStartInteractionEvent_RemoveListener (var func f) {
 	Event_Remove (_MobStartInteraction_Event, f);
 };
 
@@ -652,7 +652,7 @@ func void G12_PlayerPortalRoomChangeEvent_Init () {
 	};
 };
 
-func void G12_oCMobInterStartInterationEvent_Init () {
+func void G12_MobStartInterationEvent_Init () {
 	if (!_MobStartInteraction_Event) {
 		_MobStartInteraction_Event = Event_Create ();
 	};
@@ -888,7 +888,7 @@ func void G12_GameEvents_Init () {
 	G12_GameState_Extended_Init ();
 	G12_MobStartStateChangeEvent_Init ();
 	G12_PlayerPortalRoomChangeEvent_Init ();
-	G12_oCMobInterStartInterationEvent_Init ();
+	G12_MobStartInterationEvent_Init ();
 	G12_FocusChangeEvent_Init ();
 	G12_OpenLockableEvent_Init ();
 	G12_MenuEvent_Init ();
