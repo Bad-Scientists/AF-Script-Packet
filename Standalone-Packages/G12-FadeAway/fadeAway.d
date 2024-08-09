@@ -290,12 +290,27 @@ func void G12_FadeAway_Init () {
 		HookEngine(addr, 5, "_hook_oCAIHuman_DoAI_IsDead_Check__FadeAway");
 
 		//0x00615A50 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
+
+		//00615b90 e8  bb  2f       CALL       oCGame::GetSpawnManager                          oCSpawnManager * GetSpawnManager
+		//		 02  00
 		//615B90
 		const int oCAIHuman__DoAI_IsDead_G1 = 6380432;
 
 		//0x0069BAB0 public: virtual void __thiscall oCAIHuman::DoAI(class zCVob *,int &)
+
+		//0069bca0 e8  5b  70       CALL       oCGame::GetSpawnManager                          oCSpawnManager * GetSpawnManager
+		//         02  00
+
+		//69BCA0
 		const int oCAIHuman__DoAI_IsDead_G2 = 6929568;
 
+		/*
+		 *	This **was** restricted to animations only
+		 *	s_dead1, s_dead2, s_fallen, s_fallenb, t_dive_2_drowned, s_drowned, T_DEADB, T_DEADB, T_DEADB, s_hang
+		 *
+		 *	_hook_oCAIHuman_DoAI_IsDead_Check__FadeAway will make sure Npc is considered dead as soon as it is in ZS_FadeAway state
+		 *	I have implemented this change because I want Npc to be faded away in different animations...
+		 */
 		HookEngine (MEMINT_SwitchG1G2 (oCAIHuman__DoAI_IsDead_G1, oCAIHuman__DoAI_IsDead_G2), 5, "_hook_oCAIHuman_DoAI_IsDead__FadeAway");
 
 		once = 1;
