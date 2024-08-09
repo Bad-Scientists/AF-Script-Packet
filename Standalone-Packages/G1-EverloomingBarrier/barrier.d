@@ -45,16 +45,17 @@ func void oCBarrier_Hide (){
 
 func void _hook_oCBarrier_Render (){
 	var oCBarrier b; b = _^ (ECX);
-	
+
 	if (b.fadeOut) {
 		//If Barrier.fadeState == 0 then Barrier disappears completely
 		//We don't want that, set our minimal acceptable value Barrier_FadeStateMin = 1
 		if (Barrier_FadeStateMin == 0) {
 			Barrier_FadeStateMin = 1;
 		};
-		
-		//If we reached out minimal acceptable fade value - stop fading out
-		if (b.fadeState == Barrier_FadeStateMin){
+
+		//If we reached our minimal acceptable fade value - stop fading out
+		if (b.fadeState <= Barrier_FadeStateMin) {
+			b.fadeState = Barrier_FadeStateMin;
 			b.fadeOut = FALSE;
 		};
 	};
