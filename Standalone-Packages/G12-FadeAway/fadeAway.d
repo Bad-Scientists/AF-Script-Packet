@@ -87,6 +87,18 @@ func void oCNpc_StartFadeAway (var int slfInstance) {
 };
 
 /*
+ *	oCNpc_StartFadeAway_Ext
+ *	 - allows you to define fade-away time in miliseconds (float)
+ */
+func void oCNpc_StartFadeAway_Ext(var int slfInstance, var int fadeAwayTimeF) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+
+	oCNpc_StartFadeAway(slf);
+	slf.fadeAwayTime = fadeAwayTimeF;
+};
+
+/*
  *	oCNpc_IsFadingAway
  *	 - returns true if NPC is already fading away
  */
