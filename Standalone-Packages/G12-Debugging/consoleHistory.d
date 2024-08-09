@@ -210,7 +210,7 @@ func void _hook_zCConsole_HandleEvent () {
 						var string lastSuggestion;
 
 						if (!Hlp_StrCmp (lastSuggestion, consoleAutocompleteSuggestion)) {
-							zCView_Printwin (console.conview, consoleAutocompleteSuggestion);
+							zCViewPtr_Printwin (console.conview, consoleAutocompleteSuggestion);
 						};
 
 						lastSuggestion = consoleAutocompleteSuggestion;

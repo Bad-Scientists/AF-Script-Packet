@@ -148,9 +148,9 @@ func void View_CenterTextLines (var int hndl) {
 };
 
 /*
- *	zCView_Printwin
+ *	zCViewPtr_Printwin
  */
-func void zCView_Printwin (var int viewPtr, var string s) {
+func void zCViewPtr_Printwin (var int viewPtr, var string s) {
 	//0x00700D20 public: void __thiscall zCView::Printwin(class zSTRING const &)
 	const int zCView__Printwin_G1 = 7343392;
 
@@ -165,9 +165,9 @@ func void zCView_Printwin (var int viewPtr, var string s) {
 };
 
 /*
- *	zCView_SetPos
+ *	zCViewPtr_SetPos
  */
-func void zCView_SetPos (var int viewPtr, var int vposx, var int vposy) {
+func void zCViewPtr_SetPos (var int viewPtr, var int vposx, var int vposy) {
 	//0x006FDA10 public: void __thiscall zCView::SetPos(int,int)
 	const int zCView__SetPos_G1 = 7330320;
 
@@ -186,9 +186,9 @@ func void zCView_SetPos (var int viewPtr, var int vposx, var int vposy) {
 };
 
 /*
- *	zCView_CheckTimedText
+ *	zCViewPtr_CheckTimedText
  */
-func void zCView_CheckTimedText (var int viewPtr) {
+func void zCViewPtr_CheckTimedText (var int viewPtr) {
 	//0x006FE0E0 public: void __thiscall zCView::CheckTimedText(void)
 	const int zCView__CheckTimedText_G1 = 6753728;
 

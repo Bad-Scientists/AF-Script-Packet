@@ -3561,7 +3561,7 @@ func void _hook_oCItemContainer_DrawItemInfo_PreRenderItem_EIM () {
 			newX = v.vposx;
 			newY = v.vposy - (8192 - dlg.virtualPositionY);
 
-			zCView_SetPos (npcInventory.inventory2_oCItemContainer_viewItemInfo, newX, newY);
+			zCViewPtr_SetPos (npcInventory.inventory2_oCItemContainer_viewItemInfo, newX, newY);
 		};
 	};
 };
