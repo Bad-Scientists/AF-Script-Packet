@@ -721,30 +721,40 @@ const int OpenLockableEvent_PickLockFailureBroken = 5;
 
 func void _hook_oCMobLockable_UnlockWithKey () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithKey);
 	};
 };
 
 func void _hook_oCMobLockable_UnlockWithPickLock () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithPicklock);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockSuccess () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockSuccess);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockFailure () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailure);
 	};
 };
 
 func void _hook_oCMobLockable_PickLockFailureBroken () {
 	if (_OpenLockable_Event) {
+		//EBP 0x007DDF34 const oCNpc::`vftable'
+		self = _^(EBP);
 		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailureBroken);
 	};
 };
