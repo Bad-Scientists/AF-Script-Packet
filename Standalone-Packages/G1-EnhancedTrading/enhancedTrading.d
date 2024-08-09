@@ -190,8 +190,8 @@ func void Trade_SetTradeAmount (var int amount) {
 /*
  *	Function updates buy/sell multiplier for specific item pointer
  */
-	var oCNPC npc;
 func void Trade_UpdateBuySellMultiplier (var int itmPtr, var int sectionTrade) {
+	var C_NPC npc;
 	var oCItem itm;
 	var oCNpcInventory npcInventory;
 	var oCViewDialogTrade dialogTrade;
