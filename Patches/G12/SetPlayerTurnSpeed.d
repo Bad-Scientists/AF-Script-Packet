@@ -10,7 +10,7 @@ func void Init_Global () {
 	//Ikarus initialization
 	MEM_InitAll();
 
-	//Default 0.1
+	//Default turn speed is 0.1
 	G12_SetPlayerTurnSpeed(castToIntF (0.18));
 };
 
