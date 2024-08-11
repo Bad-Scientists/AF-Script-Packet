@@ -33,3 +33,15 @@ const string PC_CHANGEFOCUS_COLOR_FRIENDLY = "66FFB2"; //Green
 const string PC_CHANGEFOCUS_COLOR_NEUTRAL = "FFFFFF"; //White
 const string PC_CHANGEFOCUS_COLOR_ANGRY = "FF8000"; //Orange
 const string PC_CHANGEFOCUS_COLOR_HOSTILE = "FF4646"; //Red
+
+//API function
+//This is where you can define your own logic for determining attitudes
+func int C_Npc_GetAttitude(var C_NPC oth) {
+	var int att; att = Npc_GetPermAttitude(hero, oth);
+
+	if ((att == ATT_NEUTRAL) && (oth.npcType == NpcType_Friend)) {
+		att = ATT_FRIENDLY;
+	};
+
+	return att;
+};
