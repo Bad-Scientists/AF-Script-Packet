@@ -17,6 +17,11 @@ const int CHR_SPACE = 32;
 
 //-- Engine constants
 
+const int INFO_MGR_MODE_IMPORTANT = 0;
+const int INFO_MGR_MODE_INFO = 1;
+const int INFO_MGR_MODE_CHOICE = 2;
+const int INFO_MGR_MODE_TRADE = 3;
+
 const int NPC_GAME_NORMAL = 0; //When player is taking item
 const int NPC_GAME_PLUNDER = 1; //When player is looting Npc
 const int NPC_GAME_STEAL = 2; //When player is stealing from Npc (in RM we won't have this situation)
