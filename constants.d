@@ -5,6 +5,16 @@
 /*
  *	Script packet version - to better track potential issues
  */
+//-- AFSP constants
+const string STR_EMPTY = "";
+const string STR_SPACE = " ";
+const string STR_PIPE = "|";
+const string STR_DASH = "-";
+const string STR_ZERO = "0";
+const string STR_AT = "@";
+
+const int CHR_SPACE = 32;
+
 //-- Engine constants
 
 const int NPC_GAME_NORMAL = 0; //When player is taking item
