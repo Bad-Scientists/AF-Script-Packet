@@ -19,6 +19,8 @@
  *
  *		hidden@			'hidden@'							 - removes dialog choice from dialog box.
  *
+ *		autoConfirm@	'autoConfirm@15'					 - will auto-confirm currently selected choice in 15 seconds
+ *
  *		indOff@			'indOff@'							 - does not create spinner / answer indicators
  *		item@			'item@self:ItMiNugget'				 - creates 'item preview' - passively opens inventory for specified npc (default self) with focusing on specified item - will display item info
  *
@@ -39,6 +41,9 @@ var int InfoManagerSpinnerPageSize; //incremental increase (can be set by Page U
 
 var string InfoManagerSpinnerNumber;
 var int InfoManagerSpinnerNumberEditMode;
+
+//Auto-confirmation
+var int InfoManagerAutoConfirmTime;
 
 //Last choice text - might be useful
 var string InfoManageLastChoiceText;
@@ -129,6 +134,9 @@ class zEIM_Description {
 	var int npcInstance1;
 	var int itemInstance2;
 	var int npcInstance2;
+
+	var int autoConfirm;
+	var int autoConfirmTime;
 };
 
 /*
@@ -194,6 +202,10 @@ class zEIM {
 	var int spinnerAniProgress;
 
 	var int spinnerLoopingOff;
+
+	//Auto-confirmation indicator
+	var int autoConfirmationIndicatorPtr;
+	var int autoConfirm;
 
 	var int diaInstancePtr[EIM_DIALOG_MAX];
 	var int diaInstancePtrCount;
@@ -271,6 +283,9 @@ func void EIM_ParseDescription(var int strPtr) {
 	eimDescription.npcInstance1 = -1;
 	eimDescription.itemInstance2 = -1;
 	eimDescription.npcInstance2 = -1;
+
+	eimDescription.autoConfirm = FALSE;
+	eimDescription.autoConfirmTime = 0;
 
 	//Defaults
 	eimDescription.alignment = eimDefaults.alignment;
@@ -363,6 +378,7 @@ func void EIM_ParseDescription(var int strPtr) {
 			|| (Hlp_StrCmp(modifier, "al"))
 			|| (Hlp_StrCmp(modifier, "ac"))
 			|| (Hlp_StrCmp(modifier, "ar"))
+			|| (Hlp_StrCmp(modifier, "autoConfirm"))
 			|| (Hlp_StrCmp(modifier, "spinnerLoopingOff"))
 			|| (Hlp_StrCmp(modifier, "hidden"))
 			|| (Hlp_StrCmp(modifier, "indOff"))
@@ -476,6 +492,10 @@ func void EIM_ParseDescription(var int strPtr) {
 						eimDescription.npcInstance2 = npcInstance;
 					};
 				};
+			} else
+			if (Hlp_StrCmp(modifier, "autoConfirm")) {
+				eimDescription.autoConfirmTime = STR_ToInt(modifierParams);
+				eimDescription.autoConfirm = (eimDescription.autoConfirmTime > 0);
 			} else
 			if (Hlp_StrCmp(modifier, "spinnerLoopingOff")) {
 				eimDescription.spinnerLoopingOff = TRUE;
@@ -920,6 +940,7 @@ func void EIM_Reset () {
 	eim.ready = 0; //not ready
 	eim.diaInstancePtrCount = 0;
 	eim.infosCollectedAllDisabled = FALSE;
+	eim.autoConfirm = FALSE;
 };
 
 func int EIM_GetInfoPtr (var int index) {
@@ -928,119 +949,6 @@ func int EIM_GetInfoPtr (var int index) {
 	};
 
 	return MEM_ReadIntArray (_@ (eim.diaInstancePtr), index);
-};
-
-func void EIM_AnimateIndicators () {
-	var int answerWidth;
-
-	var int spaceWidth;
-	var int spinnerWidthL;
-	var int spinnerWidthR;
-
-	const int MOVE_MAX_PIXELS = 15;
-
-	var zCViewText2 answerIndicator;
-	var zCViewText2 spinnerIndicatorL;
-	var zCViewText2 spinnerIndicatorR;
-
-	if (!MEM_InformationMan.dlgChoice) { return; };
-	var zCViewDialogChoice dlgChoice; dlgChoice = _^ (MEM_InformationMan.dlgChoice);
-
-	//Animate answer indicator
-	if (eim.displayAnswerIndicator)
-	&& (eim.answerIndicatorPtr)
-	{
-		answerIndicator = _^(eim.answerIndicatorPtr);
-
-		if (eim.answerAniProgress > 2) {
-			eim.answerAniProgress = 0;
-		};
-
-		if (eim.answerAniProgress == 0) {
-			answerIndicator.text = ".";
-		} else
-		if (eim.answerAniProgress == 1) {
-			answerIndicator.text = "..";
-		} else
-		if (eim.answerAniProgress == 2) {
-			answerIndicator.text = "...";
-		};
-
-		//Adjust alignment of answer indicator (opposite to dialogue alignemnt)
-		answerWidth = Font_GetStringWidthPtr ("...", answerIndicator.font);
-
-		if ((eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER)) {
-			answerIndicator.pixelPositionX = dlgChoice.pixelSizeX - answerWidth - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
-		} else {
-			answerIndicator.pixelPositionX = dlgChoice.sizeMargin_0[0];
-		};
-	};
-
-	//Animate spinner indicator
-	if (eim.displaySpinnerIndicator)
-	&& (eim.leftSpinnerIndicatorPtr)
-	&& (eim.rightSpinnerIndicatorPtr)
-	{
-		//'Left' part
-		spinnerIndicatorL = _^ (eim.leftSpinnerIndicatorPtr);
-		spinnerIndicatorL.text = "<--";
-
-		//'Right' part
-		spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
-		spinnerIndicatorR.text = "-->";
-
-		spinnerWidthL = Font_GetStringWidthPtr(spinnerIndicatorL.text, spinnerIndicatorL.font);
-		spinnerWidthR = Font_GetStringWidthPtr(spinnerIndicatorR.text, spinnerIndicatorR.font);
-
-		spaceWidth = zCFont_GetWidth (spinnerIndicatorL.font, CtoB (STR_SPACE));
-
-		//Adjust alignment of spinner indicator (opposite to dialogue alignemnt)
-
-		//Left one
-		if (eim.alignment == ALIGN_LEFT) {
-			spinnerIndicatorL.pixelPositionX = dlgChoice.pixelSizeX - ((spinnerWidthL + MOVE_MAX_PIXELS) + (spaceWidth) + (spinnerWidthR + MOVE_MAX_PIXELS)) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
-		} else
-		if (eim.alignment == ALIGN_CENTER) {
-			spinnerIndicatorL.pixelPositionX = dlgChoice.sizeMargin_0[0] + (MOVE_MAX_PIXELS);
-		} else {
-			spinnerIndicatorL.pixelPositionX = dlgChoice.sizeMargin_0[0] + (MOVE_MAX_PIXELS);
-		};
-
-		//Right one
-		if (eim.alignment == ALIGN_LEFT) {
-			spinnerIndicatorR.pixelPositionX = dlgChoice.pixelSizeX - (spinnerWidthR + MOVE_MAX_PIXELS) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
-		} else
-		if (eim.alignment == ALIGN_CENTER) {
-			spinnerIndicatorR.pixelPositionX = dlgChoice.pixelSizeX - (spinnerWidthR + MOVE_MAX_PIXELS) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
-		} else {
-			spinnerIndicatorR.pixelPositionX = dlgChoice.sizeMargin_0[0] + ((spinnerWidthL + MOVE_MAX_PIXELS) + (spaceWidth) + (MOVE_MAX_PIXELS));
-		};
-
-		var int movePixels; movePixels = eim.spinnerAniProgress;
-
-		//Left part to left
-		if (movePixels < MOVE_MAX_PIXELS) {
-			spinnerIndicatorL.pixelPositionX -= movePixels;
-		} else
-
-		//Left part back
-		if (movePixels < MOVE_MAX_PIXELS * 2) {
-			spinnerIndicatorL.pixelPositionX -= ((MOVE_MAX_PIXELS * 2) - movePixels);
-		} else
-
-		//Right part to right
-		if (movePixels < MOVE_MAX_PIXELS * 3) {
-			spinnerIndicatorR.pixelPositionX += (movePixels - (MOVE_MAX_PIXELS * 2));
-		} else
-
-		//Right part back
-		if (movePixels < MOVE_MAX_PIXELS * 4) {
-			spinnerIndicatorR.pixelPositionX += ((MOVE_MAX_PIXELS * 4) - movePixels);
-		} else {
-			//Reset ani
-			eim.spinnerAniProgress = 0;
-		};
-	};
 };
 
 //
@@ -1264,22 +1172,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	//528        -
 	//522	2057 - Wheel up
 	//523	2058 - Wheel down
-
-	/*
-	if (key == 2050) {
-		//Do not cancel if user double-clicked
-		if (InfoManagerMouseDoubleClick) {
-			InfoManagerMouseDoubleClick = FALSE;
-			//Overwrite in case we want to enter answer mode
-			key = KEY_RETURN;
-		} else {
-			cancel = TRUE;
-		};
-	};
-	if (key == 2052) {
-		cancel = TRUE;
-	};
-	*/
 
 	const int mem = 0;
 	if (!mem) { mem = MEM_Alloc(1); };
@@ -1635,11 +1527,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 					};
 				};
 			};
-
-			//Refresh all overlays (everything might have changed)
-			//if (InfoManagerSpinnerValue != lastSpinnerValue) {
-			//	InfoManagerRefreshOverlays = cIM_RefreshOverlays;
-			//};
 		};
 
 		//-- Num Keys control
@@ -1674,18 +1561,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 					if (key == KEY_9) { key = KEY_8; update = TRUE; };
 				};
 			};
-
-			//We have to refresh dialog colors
-			//if ((key == KEY_0) || (key == KEY_1) || (key == KEY_2) || (key == KEY_3) || (key == KEY_4) || (key == KEY_5)
-			//|| (key == KEY_6) || (key == KEY_7) || (key == KEY_8) || (key == KEY_9)) {
-			//	numKeyPressed = TRUE;
-			//};
-
-			//if (InfoManagerRefreshOverlays == cIM_RefreshNothing)
-			//&& (numKeyPressed)
-			//{
-			//	InfoManagerRefreshOverlays = cIM_RefreshDialogColors;
-			//};
 		};
 
 		//-- Additional tweaks
@@ -1763,6 +1638,7 @@ func void EIM_CloseItemPreview ()
 
 func void _hook_oCInformationManager_Update_EIM () {
 	if (!MEM_Game.infoman) { return; };
+	if (MEM_Game.singleStep) { return; };
 
 	//Close item preview
 	if (MEM_InformationMan.IsDone)
@@ -1841,6 +1717,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 	var zCViewText2 spinnerIndicatorL;
 	var zCViewText2 spinnerIndicatorR;
 	var zCViewText2 answerIndicator;
+	var zCViewText2 autoConfirmationIndicator;
 
 	var zCViewText2 overlayView;
 	var zCViewText2 parentView;
@@ -1880,6 +1757,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 
 	var int timerSpinnerAnimation;
 	var int timerAnswerAnimation;
+	var int timerAutoConfirmation;
 
 	var int symbID;
 
@@ -1929,6 +1807,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 		eim.answerIndicatorPtr = 0;
 		eim.leftSpinnerIndicatorPtr = 0;
 		eim.rightSpinnerIndicatorPtr = 0;
+		eim.autoConfirmationIndicatorPtr = 0;
 
 		eimOverlays.overlayCount = 0;
 
@@ -2299,6 +2178,13 @@ func void _hook_oCInformationManager_Update_EIM () {
 					color = eimDescription.color;
 					colorSelected = eimDescription.colorSelected;
 
+					//Auto-confirmation
+					if (!eim.autoConfirm && eimDescription.autoConfirm) {
+						eim.autoConfirm = TRUE;
+						InfoManagerAutoConfirmTime = eimDescription.autoConfirmTime;
+						timerAutoConfirmation = 0;
+					};
+
 					//Update selected choice
 					if (eimDescription.isSelected) {
 						InfoManageLastChoiceTextClean = dlgDescription;
@@ -2518,67 +2404,305 @@ func void _hook_oCInformationManager_Update_EIM () {
 			//<-- Overlays
 		};
 
-		//-- Answer
+		//-- Create indicators
 
+		const int MOVE_MAX_PIXELS = 15;
+
+		var int acPosX; //auto confirmation posX
+
+		var int aPosX; //answer indicator posx
+
+		var int silPosX; //spinner indicator left
+		var int sirPosX;
+
+		var int spaceWidth;
+
+		var int spinnerWidthL; spinnerWidthL = 0;
+		var int spinnerWidthR; spinnerWidthR = 0;
+
+		var int acWidth; acWidth = 0;
+		var int acWidthFixed; acWidthFixed = 0;
+
+		var int answerWidth; answerWidth = 0;
+
+		txt = _^(MEM_ReadIntArray (arr.array, dlgChoice.ChoiceSelected));
+
+		spaceWidth = zCFont_GetWidth(txt.font, CtoB(STR_SPACE));
+
+		//Create auto-confirmation indicator
+		if (eim.autoConfirm) {
+			if (eim.autoConfirmationIndicatorPtr) {
+				autoConfirmationIndicator = _^(eim.autoConfirmationIndicatorPtr);
+			} else {
+				eim.autoConfirmationIndicatorPtr = create(zCViewText2@);
+				autoConfirmationIndicator = _^(eim.autoConfirmationIndicatorPtr);
+
+				autoConfirmationIndicator.font = txt.font;
+
+				autoConfirmationIndicator.enabledColor = txt.enabledColor;
+				autoConfirmationIndicator.font = txt.font;
+
+				autoConfirmationIndicator.enabledBlend = txt.enabledBlend;
+				autoConfirmationIndicator.funcAlphaBlend = txt.funcAlphaBlend;
+
+				autoConfirmationIndicator.color = eimDefaults.indicatorColor;
+				autoConfirmationIndicator.alpha = eimDefaults.indicatorAlpha;
+
+				MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.autoConfirmationIndicatorPtr);
+			};
+
+			//Format '10'
+			autoConfirmationIndicator.text = IntToString(InfoManagerAutoConfirmTime);
+			//max width will be set and not changing
+			acWidth = Font_GetStringWidthPtr(autoConfirmationIndicator.text, autoConfirmationIndicator.font);
+			acWidthFixed = Font_GetStringWidthPtr("99", autoConfirmationIndicator.font);
+		};
+
+		//Create answer indicator
 		if (eim.displayAnswerIndicator) {
-			txt = _^ (MEM_ReadIntArray (arr.array, dlgChoice.ChoiceSelected));
-
-			//Add answer indicator
 			if (!eim.answerMode) {
-				if (!eim.answerIndicatorPtr) {
-					//txt.enabledBlend = TRUE;
-					//txt.funcAlphaBlend = eimDefaults.alphaBlendFunc;
-
+				if (eim.answerIndicatorPtr) {
+					answerIndicator = _^ (eim.answerIndicatorPtr);
+				} else {
 					//Create new zCViewText2 instance for our indicator
 					eim.answerIndicatorPtr = create (zCViewText2@);
-					answerIndicator = _^ (eim.answerIndicatorPtr);
+					answerIndicator = _^(eim.answerIndicatorPtr);
 
 					answerIndicator.text = eimDefaults.answerIndicatorString;
 
+					answerIndicator.enabledColor = txt.enabledColor;
+					answerIndicator.font = txt.font;
+
 					answerIndicator.enabledBlend = txt.enabledBlend;
 					answerIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-					//answerIndicator.alpha = eimDefaults.indicatorAlpha;
+
+					answerIndicator.color = eimDefaults.indicatorColor;
+					answerIndicator.alpha = eimDefaults.indicatorAlpha;
 
 					//Insert indicator to dialog choices
-					MEM_ArrayInsert (_@ (dlgChoice.listTextLines_array), eim.answerIndicatorPtr);
+					MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.answerIndicatorPtr);
 
-					//'Animate' to update positions (non animated indicator will get it's position updated below
-					if (eimDefaults.answerIndicatorAnimation) {
-						eim.answerAniProgress = 0;
-						EIM_AnimateIndicators ();
-					};
-
+					//Reset ani progress and timer with creation
+					eim.answerAniProgress = 0;
 					timerAnswerAnimation = 450;
 				};
+			};
+		};
 
-				answerIndicator = _^ (eim.answerIndicatorPtr);
-				answerIndicator.font = txt.font;
+		//Create spinner indicators
+		if (eim.displaySpinnerIndicator) {
+			if (eim.leftSpinnerIndicatorPtr) {
+				spinnerIndicatorL = _^(eim.leftSpinnerIndicatorPtr);
+			} else {
+				eim.leftSpinnerIndicatorPtr = create(zCViewText2@);
 
-				answerIndicator.enabledColor = txt.enabledColor;
+				spinnerIndicatorL = _^(eim.leftSpinnerIndicatorPtr);
+				spinnerIndicatorL.font = txt.font;
 
-				answerIndicator.color = eimDefaults.indicatorColor;
-				answerIndicator.alpha = GetAlpha (eimDefaults.indicatorColor);
+				if (eimDefaults.spinnerIndicatorAnimation) {
+					spinnerIndicatorL.text = "<--";
+				} else {
+					spinnerIndicatorL.text = eimDefaults.spinnerIndicatorString;
+				};
 
-				answerIndicator.pixelPositionY = txt.pixelPositionY;
+				spinnerIndicatorL.enabledColor = txt.enabledColor;
+				spinnerIndicatorL.font = txt.font;
 
-				//Update alignment
-				if (!eimDefaults.answerIndicatorAnimation)
-				{
-					if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
-						answerIndicator.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (answerIndicator.text, answerIndicator.font) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
-					} else {
-						answerIndicator.pixelPositionX = dlgChoice.sizeMargin_0[0];
-					};
+				spinnerIndicatorL.enabledBlend = txt.enabledBlend;
+				spinnerIndicatorL.funcAlphaBlend = txt.funcAlphaBlend;
+
+				spinnerIndicatorL.color = eimDefaults.indicatorColor;
+				spinnerIndicatorL.alpha = eimDefaults.indicatorAlpha;
+
+				MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.leftSpinnerIndicatorPtr);
+
+				//Reset ani progress and timer with creation
+				eim.spinnerAniProgress = 0;
+				timerSpinnerAnimation = 10;
+			};
+
+			if (eim.rightSpinnerIndicatorPtr) {
+				spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
+			} else {
+				eim.rightSpinnerIndicatorPtr = create(zCViewText2@);
+
+				spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
+				spinnerIndicatorR.font = txt.font;
+
+				if (eimDefaults.spinnerIndicatorAnimation) {
+					spinnerIndicatorR.text = "-->";
+				} else {
+					//blank
+					spinnerIndicatorR.text = STR_EMPTY;
+				};
+
+				spinnerIndicatorR.enabledColor = txt.enabledColor;
+				spinnerIndicatorR.font = txt.font;
+
+				spinnerIndicatorR.enabledBlend = txt.enabledBlend;
+				spinnerIndicatorR.funcAlphaBlend = txt.funcAlphaBlend;
+
+				spinnerIndicatorR.color = eimDefaults.indicatorColor;
+				spinnerIndicatorR.alpha = eimDefaults.indicatorAlpha;
+
+				MEM_ArrayInsert(_@(dlgChoice.listTextLines_array), eim.rightSpinnerIndicatorPtr);
+			};
+
+			spinnerWidthL = Font_GetStringWidthPtr(spinnerIndicatorL.text, spinnerIndicatorL.font);
+			spinnerWidthR = Font_GetStringWidthPtr(spinnerIndicatorR.text, spinnerIndicatorR.font);
+		};
+
+		//-- Calculate indicator positions
+
+		if (eim.displaySpinnerIndicator) {
+			//Adjust alignment of spinner indicator (opposite to dialogue alignemnt)
+
+			//Animated
+			if (eimDefaults.spinnerIndicatorAnimation) {
+
+				//Calculate default posX position
+				//dlgChoice.sizeMargin_0 <> dlgChoice.sizeMargin_0?
+
+				if (eim.alignment == ALIGN_LEFT) {
+					silPosX = dlgChoice.pixelSizeX - (spinnerWidthL + spaceWidth + spinnerWidthR) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
+					sirPosX = dlgChoice.pixelSizeX - (spinnerWidthR) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
 				} else
-				{
+				if (eim.alignment == ALIGN_CENTER) {
+					silPosX = dlgChoice.sizeMargin_0[0];
+					sirPosX = dlgChoice.pixelSizeX - (spinnerWidthR) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
+				} else {
+					silPosX = dlgChoice.sizeMargin_0[0];
+					sirPosX = dlgChoice.sizeMargin_0[0] + (spinnerWidthL + spaceWidth);
+				};
+
+				//Offset by MOVE_MAX_PIXELS and space width
+				if (eim.alignment == ALIGN_LEFT) {
+					silPosX -= MOVE_MAX_PIXELS;
+					sirPosX -= MOVE_MAX_PIXELS;
+				} else
+				if (eim.alignment == ALIGN_CENTER) {
+					silPosX += MOVE_MAX_PIXELS;
+					sirPosX -= MOVE_MAX_PIXELS;
+				} else {
+					silPosX += MOVE_MAX_PIXELS;
+					sirPosX += MOVE_MAX_PIXELS;
+				};
+
+				//Offset by auto-confirmation width
+				if (eim.autoConfirm) {
+					if (eim.alignment == ALIGN_LEFT) {
+						silPosX -= acWidthFixed;
+					};
+
+					if (eim.alignment == ALIGN_RIGHT) {
+						sirPosX += acWidthFixed;
+					};
+				};
+			} else {
+				silPosX = dlgChoice.pixelSizeX - spinnerWidthL /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
+			};
+		};
+
+		if (eim.displayAnswerIndicator) {
+			if (!eim.answerMode) {
+				if (eimDefaults.answerIndicatorAnimation) {
+					if (eim.answerAniProgress > 2) {
+						eim.answerAniProgress = 0;
+					};
+
+					if (eim.answerAniProgress == 0) {
+						answerIndicator.text = ".";
+					} else
+					if (eim.answerAniProgress == 1) {
+						answerIndicator.text = "..";
+					} else
+					if (eim.answerAniProgress == 2) {
+						answerIndicator.text = "...";
+					};
+				};
+
+				//Adjust alignment of answer indicator (opposite to dialogue alignemnt)
+				answerWidth = Font_GetStringWidthPtr ("...", answerIndicator.font);
+
+				if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
+					aPosX = dlgChoice.pixelSizeX - answerWidth /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_0[0];
+				} else {
+					aPosX = dlgChoice.sizeMargin_0[0];
+				};
+			};
+		};
+
+		if (eim.autoConfirm) {
+			if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
+				acPosX = dlgChoice.pixelSizeX - acWidth /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
+			} else {
+				acPosX = dlgChoice.sizeMargin_0[0];
+			};
+
+			if (eim.displaySpinnerIndicator) {
+				if (eimDefaults.spinnerIndicatorAnimation) {
+					if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
+						acPosX = sirPosX - MOVE_MAX_PIXELS - (acWidth / 2);
+					} else {
+						acPosX = silPosX + spinnerWidthL + MOVE_MAX_PIXELS - (acWidth / 2);
+					};
+				};
+			} else
+			if (eim.displayAnswerIndicator) {
+				if (!eim.answerMode) {
+					if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
+						acPosX = aPosX - acWidth;
+					} else {
+						acPosX = aPosX + acWidth;
+					};
+				};
+			};
+		};
+
+//-- Indicators animation / position updates
+
+		//-- Auto-confirmation indicator
+
+		if (eim.autoConfirm) {
+			autoConfirmationIndicator.pixelPositionY = txt.pixelPositionY;
+			autoConfirmationIndicator.pixelPositionX = acPosX;
+
+			timerAutoConfirmation += MEM_Timer.frameTime;
+			if (timerAutoConfirmation >= 1000) {
+				timerAutoConfirmation = 0;
+
+				if (InfoManagerAutoConfirmTime > 0) {
+					InfoManagerAutoConfirmTime -= 1;
+				};
+			};
+
+			//Send KEY_RETURN
+			if (InfoManagerAutoConfirmTime == 0) {
+				zCInputCallback_SetHandleEventTop(_@(dlgChoice.zCInputCallback_vtbl));
+				retVal = zCInputCallback_DoEvents(KEY_RETURN);
+
+				//Exit here!
+				return;
+			};
+		};
+
+		//-- Answer
+
+		if (eim.displayAnswerIndicator) {
+			//Add answer indicator
+			if (!eim.answerMode) {
+				//Update alignment
+				if (eimDefaults.answerIndicatorAnimation) {
 					//Animation implemented without FrameFunctions
 					timerAnswerAnimation += MEM_Timer.frameTime;
 					if (timerAnswerAnimation > 450) {
 						timerAnswerAnimation = 0;
 						eim.answerAniProgress += 1;
-						EIM_AnimateIndicators ();
 					};
 				};
+
+				answerIndicator.pixelPositionY = txt.pixelPositionY;
+				answerIndicator.pixelPositionX = aPosX;
 			} else {
 				//Replace description with current answer
 				dlgDescription = ConcatStrings (InfoManagerAnswer, "_");
@@ -2589,14 +2713,14 @@ func void _hook_oCInformationManager_Update_EIM () {
 					txt.pixelPositionX = defaultPosX;
 				} else
 				if (eim.alignment == ALIGN_CENTER) {
-					txt.pixelPositionX = (dlgChoice.pixelSizeX / 2) - (Font_GetStringWidthPtr (txt.text, txt.font) / 2) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+					txt.pixelPositionX = (dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, txt.font) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_0[0]) / 2;
 
 					if (txt.pixelPositionX < defaultPosX) {
 						txt.pixelPositionX = defaultPosX;
 					};
 				} else
 				if (eim.alignment == ALIGN_RIGHT) {
-					txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, txt.font) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+					txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, txt.font) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_0[0];
 
 					if (txt.pixelPositionX < defaultPosX) {
 						txt.pixelPositionX = defaultPosX;
@@ -2615,104 +2739,58 @@ func void _hook_oCInformationManager_Update_EIM () {
 		//-- Spinner
 
 		if (eim.displaySpinnerIndicator) {
-			//Get spinner ID
-			//InfoManagerSpinnerID = MEM_ReadStringArray (_@s (eim.dialogSpinnerID), dlgChoice.ChoiceSelected);
-
-			//Dokazeme tu pridat novy 'dialog' s transparentnym textom '<>' ako overlay ???
-			//Funguje !
-
-			txt = _^ (MEM_ReadIntArray (arr.array, dlgChoice.ChoiceSelected));
-
-			//Create spinner indicators
-			if (!eim.leftSpinnerIndicatorPtr) {
-				//txt.enabledBlend = TRUE;
-				//txt.funcAlphaBlend = eimDefaults.alphaBlendFunc;
-
-				//Create 1st zCViewText2 instance for our indicator
-				eim.leftSpinnerIndicatorPtr = create (zCViewText2@);
-				MEM_ArrayInsert (_@ (dlgChoice.listTextLines_array), eim.leftSpinnerIndicatorPtr);
-
-				//Create 2nd zCViewText2 instance for our indicator
-				eim.rightSpinnerIndicatorPtr = create (zCViewText2@);
-				MEM_ArrayInsert (_@ (dlgChoice.listTextLines_array), eim.rightSpinnerIndicatorPtr);
-
-				//'Animate' to update positions (non animated indicator will get it's position updated below
-				if (eimDefaults.spinnerIndicatorAnimation) {
-					spinnerIndicatorL = _^ (eim.leftSpinnerIndicatorPtr);
-					spinnerIndicatorL.font = txt.font;
-
-					spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
-					spinnerIndicatorR.font = txt.font;
-
-					eim.spinnerAniProgress = 0;
-					EIM_AnimateIndicators ();
-				};
-
-				timerSpinnerAnimation = 10;
-			};
-
-			//Update properties
-
-			//'Left' part of spinner indicator
 			spinnerIndicatorL = _^ (eim.leftSpinnerIndicatorPtr);
 
-			if (!eimDefaults.spinnerIndicatorAnimation) {
-				spinnerIndicatorL.text = eimDefaults.spinnerIndicatorString;
-			};
-
-			spinnerIndicatorL.enabledColor = txt.enabledColor;
-			spinnerIndicatorL.font = txt.font;
-
-			spinnerIndicatorL.enabledBlend = txt.enabledBlend;
-			spinnerIndicatorL.funcAlphaBlend = txt.funcAlphaBlend;
-
-			spinnerIndicatorL.color = eimDefaults.indicatorColor;
-			spinnerIndicatorL.alpha = GetAlpha (eimDefaults.indicatorColor);
-
-			spinnerIndicatorL.pixelPositionY = txt.pixelPositionY;
-
-			//'Right' part of spinner indicator
 			spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
 
-			if (!eimDefaults.spinnerIndicatorAnimation) {
-				//spinnerIndicatorR.text = eimDefaults.spinnerIndicatorString;
-			};
-
-			spinnerIndicatorR.enabledColor = txt.enabledColor;
-			spinnerIndicatorR.font = txt.font;
-
-			spinnerIndicatorR.enabledBlend = txt.enabledBlend;
-			spinnerIndicatorR.funcAlphaBlend = txt.funcAlphaBlend;
-
-			spinnerIndicatorR.color = eimDefaults.indicatorColor;
-			spinnerIndicatorR.alpha = GetAlpha (eimDefaults.indicatorColor);
-
-			spinnerIndicatorR.pixelPositionY = txt.pixelPositionY;
-
-			if (!eimDefaults.spinnerIndicatorAnimation)
-			{
-				if (eim.leftSpinnerIndicatorPtr) {
-					spinnerIndicatorL = _^ (eim.leftSpinnerIndicatorPtr);
-					spinnerIndicatorL.text = eimDefaults.spinnerIndicatorString;
-
-					//Adjust alignment of spinner indicator
-
-					if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
-						spinnerIndicatorL.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (spinnerIndicatorL.text, spinnerIndicatorL.font) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
-					} else {
-						spinnerIndicatorL.pixelPositionX = dlgChoice.sizeMargin_0[0];
-					};
-				};
-			} else {
+			//Animated
+			if (eimDefaults.spinnerIndicatorAnimation) {
+				//Move spinnerIndicatorL & spinnerIndicatorR
 				//Animation implemented without FrameFunctions
+
 				timerSpinnerAnimation += MEM_Timer.frameTime;
 				if (timerSpinnerAnimation > 10) {
 					timerSpinnerAnimation = 0;
 
 					eim.spinnerAniProgress += 1;
-					EIM_AnimateIndicators ();
+				};
+
+				//Left part to left
+				if (eim.spinnerAniProgress < MOVE_MAX_PIXELS) {
+					silPosX = silPosX - eim.spinnerAniProgress;
+				} else
+				//Left part back
+				if (eim.spinnerAniProgress < MOVE_MAX_PIXELS * 2) {
+					silPosX = silPosX - ((MOVE_MAX_PIXELS * 2) - eim.spinnerAniProgress);
+				} else
+				//Right part to right
+				if (eim.spinnerAniProgress < MOVE_MAX_PIXELS * 3) {
+					sirPosX = sirPosX + (eim.spinnerAniProgress - (MOVE_MAX_PIXELS * 2));
+				} else
+				//Right part back
+				if (eim.spinnerAniProgress < MOVE_MAX_PIXELS * 4) {
+					sirPosX = sirPosX + ((MOVE_MAX_PIXELS * 4) - eim.spinnerAniProgress);
+				} else {
+					//Reset ani
+					eim.spinnerAniProgress = 0;
+				};
+			} else {
+				if (eim.alignment == ALIGN_LEFT) || (eim.alignment == ALIGN_CENTER) {
+					silPosX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(spinnerIndicatorL.text, spinnerIndicatorL.font) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_1[0];
+				} else
+				if (eim.alignment == ALIGN_CENTER) {
+					silPosX = dlgChoice.sizeMargin_0[0];
+				} else {
+					silPosX = dlgChoice.sizeMargin_0[0];
 				};
 			};
+
+			spinnerIndicatorL.pixelPositionY = txt.pixelPositionY;
+			spinnerIndicatorL.pixelPositionX = silPosX;
+
+			spinnerIndicatorR.pixelPositionY = txt.pixelPositionY;
+			spinnerIndicatorR.pixelPositionX = sirPosX;
+
 		} else
 		{
 			//Remove spinner if not required
@@ -3314,6 +3392,7 @@ func void EIM_Init() {
 	eim.answerIndicatorPtr = 0;
 	eim.leftSpinnerIndicatorPtr = 0;
 	eim.rightSpinnerIndicatorPtr = 0;
+	eim.autoConfirmationIndicatorPtr = 0;
 };
 
 func void G12_EnhancedInfoManager_Init () {
