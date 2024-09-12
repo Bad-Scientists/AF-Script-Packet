@@ -3351,7 +3351,7 @@ func void EIM_LoadAPI() {
 	eimDefaults.colorDisabled = API_GetSymbolHEX2RGBAValue ("INFOMANAGERDISABLEDCOLORDIALOGGREY", "666666");
 	eimDefaults.alignment = API_GetSymbolIntValue ("INFOMANAGERDEFAULTDIALOGALIGNMENT", ALIGN_LEFT);
 	eimDefaults.indicatorColor = API_GetSymbolHEX2RGBAValue ("INFOMANAGERINDICATORCOLORDEFAULT", "C8C8C8");
-	eimDefaults.indicatorAlpha = API_GetSymbolIntValue ("INFOMANAGERINDICATORALPHA", 255);
+	eimDefaults.indicatorAlpha = API_GetSymbolIntValue ("INFOMANAGERINDICATORALPHA", 196);
 	eimDefaults.spinnerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERSPINNERINDICATORSTRING", "<-- -->");
 	eimDefaults.answerIndicatorString = API_GetSymbolStringValue ("INFOMANAGERANSWERINDICATORSTRING", "...");
 	eimDefaults.answerIndicatorAnimation = API_GetSymbolIntValue ("INFOMANAGERANSWERANIMATION", 1);

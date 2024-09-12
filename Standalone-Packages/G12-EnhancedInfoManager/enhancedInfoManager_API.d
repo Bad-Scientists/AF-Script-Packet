@@ -21,7 +21,7 @@ const int InfoManagerDefaultDialogAlignment = ALIGN_LEFT;
 //Default color for 'answer' and 'spinner' indicator - if empty it will be same as underlying dialog
 const string InfoManagerIndicatorColorDefault = "C8C8C8";
 //Default alpha value for 'answer' and 'spinner' indicator
-const int InfoManagerIndicatorAlpha = 255;
+const int InfoManagerIndicatorAlpha = 196;
 
 //Default spinner indicator (non animated)
 const string InfoManagerSpinnerIndicatorString = "<-- -->";
