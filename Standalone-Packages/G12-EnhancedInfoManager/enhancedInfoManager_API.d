@@ -30,6 +30,7 @@ const string InfoManagerAnswerIndicatorString = "...";
 
 //Set to TRUE if you want animated spinner
 const int InfoManagerSpinnerIndicatorAnimation = 1;
+const int InfoManagerAnswerAnimation = 1;
 
 //Dialog 'NumKey' controls [WIP]
 //Set to TRUE if you want to enable num key support for dialogs
