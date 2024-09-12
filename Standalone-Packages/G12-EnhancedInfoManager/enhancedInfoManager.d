@@ -2433,7 +2433,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 
 		txt = _^(MEM_ReadIntArray (arr.array, dlgChoice.ChoiceSelected));
 
-		spaceWidth = zCFont_GetWidth(txt.font, CtoB(STR_SPACE));
+		spaceWidth = zCFont_GetWidth(txt.font, CHR_SPACE);
 
 		//Create auto-confirmation indicator
 		if (eim.autoConfirm) {
