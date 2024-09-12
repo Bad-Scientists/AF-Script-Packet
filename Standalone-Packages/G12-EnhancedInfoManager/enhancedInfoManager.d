@@ -171,6 +171,8 @@ class zEIM {
 	var int dialogColorSelected[EIM_DIALOG_MAX];
 
 	var int dialogDisabled[EIM_DIALOG_MAX]; //track which dialogues are disabledd
+	//1 - disabled
+	//2 - disabled and too long
 
 	var int isDisabled;
 	var int lastChoiceSelected;
@@ -1762,6 +1764,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 	var int symbID;
 
 	var int isDisabled;
+	var int isDisabledAndTooLong;
 
 //---
 
@@ -2347,6 +2350,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 						if (isDisabled) {
 							//Horizontal scrolling - if dialogue text > dialogue window
 							if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlgChoice.pixelSizeX - dlgChoice.sizeMargin_1[0])) {
+								//Disabled and too long
+								MEM_WriteIntArray (_@ (eim.dialogDisabled), i, 2);
+
 								//Init scrolling
 								horizontalScrollingDisabled = HSCROLL_INIT;
 								timerHorizontalScrollingDisabled = 0;
@@ -2936,8 +2942,8 @@ func void _hook_oCInformationManager_Update_EIM () {
 						break;
 					};
 
-					isDisabled = MEM_ReadIntArray (_@ (eim.dialogDisabled), i);
-					if (isDisabled) {
+					isDisabledAndTooLong = (MEM_ReadIntArray(_@ (eim.dialogDisabled), i) == 2);
+					if (isDisabledAndTooLong) {
 						//Double check size - shall we trim?
 						if (Font_GetStringWidthPtr (txt.text, txt.font) > (dlgChoice.pixelSizeX - dlgChoice.sizeMargin_1[0])) {
 							//Switch to pixel scrolling
@@ -2977,9 +2983,8 @@ func void _hook_oCInformationManager_Update_EIM () {
 							break;
 						};
 
-						isDisabled = MEM_ReadIntArray (_@ (eim.dialogDisabled), i);
-						if (isDisabled) {
-
+						isDisabledAndTooLong = (MEM_ReadIntArray(_@ (eim.dialogDisabled), i) == 2);
+						if (isDisabledAndTooLong) {
 							if (txt.pixelPositionX > dlgChoice.sizeMargin_0[0]) {
 								txt.pixelPositionX -= 1;
 								wasSomethingScrolled = TRUE;
