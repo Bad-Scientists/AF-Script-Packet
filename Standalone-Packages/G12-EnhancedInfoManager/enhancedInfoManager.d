@@ -112,6 +112,7 @@ class zEIM_Description {
 
 	var int isSpinner;
 	var string spinnerID;
+	var int spinnerLoopingOff;
 
 	var int alignment;
 	var int tabOffset;
@@ -192,6 +193,8 @@ class zEIM {
 	var int rightSpinnerIndicatorPtr;
 	var int spinnerAniProgress;
 
+	var int spinnerLoopingOff;
+
 	var int diaInstancePtr[EIM_DIALOG_MAX];
 	var int diaInstancePtrCount;
 
@@ -252,6 +255,7 @@ func void EIM_ParseDescription(var int strPtr) {
 	eimDescription.isAnswer = FALSE;
 	eimDescription.isSpinner = FALSE;
 	eimDescription.spinnerID = STR_EMPTY;
+	eimDescription.spinnerLoopingOff = FALSE;
 
 	eimDescription.tabOffset = 0;
 
@@ -359,6 +363,7 @@ func void EIM_ParseDescription(var int strPtr) {
 			|| (Hlp_StrCmp(modifier, "al"))
 			|| (Hlp_StrCmp(modifier, "ac"))
 			|| (Hlp_StrCmp(modifier, "ar"))
+			|| (Hlp_StrCmp(modifier, "spinnerLoopingOff"))
 			|| (Hlp_StrCmp(modifier, "hidden"))
 			|| (Hlp_StrCmp(modifier, "indOff"))
 			{
@@ -471,6 +476,9 @@ func void EIM_ParseDescription(var int strPtr) {
 						eimDescription.npcInstance2 = npcInstance;
 					};
 				};
+			} else
+			if (Hlp_StrCmp(modifier, "spinnerLoopingOff")) {
+				eimDescription.spinnerLoopingOff = TRUE;
 			} else
 			if (Hlp_StrCmp(modifier, "hidden")) {
 				eimDescription.isHidden = TRUE;
@@ -1488,7 +1496,11 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
 					};
 				} else {
-					InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					if (eim.spinnerLoopingOff) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					} else {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					};
 				};
 
 				cancel = TRUE;
@@ -1508,7 +1520,11 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
 					};
 				} else {
-					InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					if (eim.spinnerLoopingOff) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					} else {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					};
 				};
 
 				cancel = TRUE;
@@ -1604,11 +1620,19 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 			if (cancel) {
 				//Min/Max values
 				if (InfoManagerSpinnerValue < InfoManagerSpinnerValueMin) {
-					InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					if (eim.spinnerLoopingOff) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					} else {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					};
 				};
 
 				if (InfoManagerSpinnerValue > InfoManagerSpinnerValueMax) {
-					InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					if (eim.spinnerLoopingOff) {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMax;
+					} else {
+						InfoManagerSpinnerValue = InfoManagerSpinnerValueMin;
+					};
 				};
 			};
 
@@ -2278,6 +2302,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 					//Update selected choice
 					if (eimDescription.isSelected) {
 						InfoManageLastChoiceTextClean = dlgDescription;
+
+						//Spinner looping
+						eim.spinnerLoopingOff = eimDescription.spinnerLoopingOff;
 
 						//Set alignemnt for selected choice
 						eim.alignment = eimDescription.alignment;
