@@ -29,3 +29,35 @@ func int zCInput_GetFirstBindedLogicalKey (var int key) {
 	return + (retVal & 255);
 };
 
+
+func void zCInputCallback_SetHandleEventTop(var int inputCallBackPtr) {
+	//0x006FB880 public: void __thiscall zCInputCallback::SetHandleEventTop(void)
+	const int zCInputCallback__SetHandleEventTop_G1 = 7321728;
+
+	//0x007A5470 public: void __thiscall zCInputCallback::SetHandleEventTop(void)
+	const int zCInputCallback__SetHandleEventTop_G2 = 8017008;
+
+	if (!inputCallBackPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(inputCallBackPtr), MEMINT_SwitchG1G2(zCInputCallback__SetHandleEventTop_G1, zCInputCallback__SetHandleEventTop_G2));
+		call = CALL_End();
+	};
+};
+
+func int zCInputCallback_DoEvents(var int key) {
+	//0x006FB9A0 public: static int __cdecl zCInputCallback::DoEvents(int)
+	const int zCInputCallback__DoEvents_G1 = 7322016;
+
+	//0x007A5590 public: static int __cdecl zCInputCallback::DoEvents(int)
+	const int zCInputCallback__DoEvents_G2 = 8017296;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(key));
+		CALL__cdecl(MEMINT_SwitchG1G2(zCInputCallback__DoEvents_G1, zCInputCallback__DoEvents_G2));
+		call = CALL_End();
+	};
+};
+
