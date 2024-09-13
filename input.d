@@ -61,3 +61,29 @@ func int zCInputCallback_DoEvents(var int key) {
 	};
 };
 
+func int GetCharFromDIK(var int key, var int shift, var int alt) {
+	//0x004C7590 char __cdecl GetCharFromDIK(char,char)
+	const int GetCharFromDIK_G1 = 5010832;
+
+	//0x004D2130 unsigned char __cdecl GetCharFromDIK(int,int,int)
+	const int GetCharFromDIK_G2 = 5054768;
+
+	var int retVal;
+
+	CALL_PutRetValTo(_@(retVal));
+
+	if (MEMINT_SwitchG1G2(0, 1)) {
+		CALL_IntParam(alt);
+	};
+
+	CALL_IntParam(shift);
+	CALL_IntParam(key);
+	CALL__cdecl(MEMINT_SwitchG1G2 (GetCharFromDIK_G1, GetCharFromDIK_G2));
+
+	if (retVal == -1) {
+		return + retVal;
+	};
+
+	return + (retVal & 255);
+};
+
