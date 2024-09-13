@@ -302,7 +302,7 @@ func int Npc_GetManaInvested (var int slfInstance) {
  *	 - function reads spell instance name from array spellFXInstanceNames
  */
 func string Spell_GetInstanceName (var int spellID) {
-	var string instanceName; instanceName = "";
+	var string instanceName; instanceName = STR_EMPTY;
 
 	if ((spellID >= 0) && (spellID < MAX_SPELL)) {
 		instanceName = MEM_ReadStatStringArr (spellFXInstanceNames, spellID);

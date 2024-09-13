@@ -1081,8 +1081,8 @@ func void G12_BetterBars_Init () {
 	};
 
 	if (!Hlp_IsValidHandle (hHealthBarValueView)) {
-		hHealthBarValueView = Bar_CreateValuesView (hHealthBar, "");
-		View_AddText (hHealthBarValueView, 0, 0, "", _betterBars_Font);
+		hHealthBarValueView = Bar_CreateValuesView (hHealthBar, STR_EMPTY);
+		View_AddText (hHealthBarValueView, 0, 0, STR_EMPTY, _betterBars_Font);
 		View_SetAlphaFunc (hHealthBarValueView, _healthBar_DisplayValues_AlphaFunc);
 		View_SetIntFlags (hHealthBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
@@ -1106,8 +1106,8 @@ func void G12_BetterBars_Init () {
 	};
 
 	if (!Hlp_IsValidHandle (hManaBarValueView)) {
-		hManaBarValueView = Bar_CreateValuesView (hManaBar, "");
-		View_AddText (hManaBarValueView, 0, 0, "", _betterBars_Font);
+		hManaBarValueView = Bar_CreateValuesView (hManaBar, STR_EMPTY);
+		View_AddText (hManaBarValueView, 0, 0, STR_EMPTY, _betterBars_Font);
 		View_SetAlphaFunc (hManaBarValueView, _manaBar_DisplayValues_AlphaFunc);
 		View_SetIntFlags (hManaBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
@@ -1125,8 +1125,8 @@ func void G12_BetterBars_Init () {
 	vSwimBarBackTexView = View_Get (bSwimBar.v0); //back texture
 
 	if (!Hlp_IsValidHandle (hSwimBarValueView)) {
-		hSwimBarValueView = Bar_CreateValuesView (hSwimBar, "");
-		View_AddText (hSwimBarValueView, 0, 0, "", _betterBars_Font);
+		hSwimBarValueView = Bar_CreateValuesView (hSwimBar, STR_EMPTY);
+		View_AddText (hSwimBarValueView, 0, 0, STR_EMPTY, _betterBars_Font);
 		View_SetAlphaFunc (hSwimBarValueView, _focusBar_DisplayValues_AlphaFunc);
 		View_SetIntFlags (hSwimBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};
@@ -1144,8 +1144,8 @@ func void G12_BetterBars_Init () {
 	vFocusBarBackTexView = View_Get (bFocusBar.v0); //back texture
 
 	if (!Hlp_IsValidHandle (hFocusBarValueView)) {
-		hFocusBarValueView = Bar_CreateValuesView (hFocusBar, "");
-		View_AddText (hFocusBarValueView, 0, 0, "", _betterBars_Font);
+		hFocusBarValueView = Bar_CreateValuesView (hFocusBar, STR_EMPTY);
+		View_AddText (hFocusBarValueView, 0, 0, STR_EMPTY, _betterBars_Font);
 		View_SetAlphaFunc (hFocusBarValueView, _focusBar_DisplayValues_AlphaFunc);
 		View_SetIntFlags (hFocusBarValueView, VIEW_AUTO_ALPHA | VIEW_AUTO_RESIZE | VIEW_TXT_HCENTER | VIEW_TXT_VCENTER);
 	};

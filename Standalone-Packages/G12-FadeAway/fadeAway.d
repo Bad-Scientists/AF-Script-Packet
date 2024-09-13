@@ -216,7 +216,7 @@ func void _event_DropFromSlot_FadeAway (var int dummyVariable) {
 		if (vobSlotPtr) {
 			var TNpcSlot vobSlot; vobSlot = _^ (vobSlotPtr);
 
-			var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+			var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
 
 			if (vobSlot.vob == vobPtr) {
 				MEM_WriteInt (ESP + 4, 0);

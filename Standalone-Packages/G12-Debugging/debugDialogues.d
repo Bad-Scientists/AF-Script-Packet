@@ -20,7 +20,7 @@ func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int ind
 	var string s;
 	var oCInfo dlgInstance;
 
-	if (!infoPtr) { return ""; };
+	if (!infoPtr) { return STR_EMPTY; };
 
 	dlgInstance = _^ (infoPtr);
 
@@ -33,7 +33,7 @@ func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int ind
 	};
 
 	//Add flags: Important, Trade or Permanent dialogue
-	var string flags; flags = "";
+	var string flags; flags = STR_EMPTY;
 	if (dlgInstance.important) { flags = STR_AddString (flags, "I", ","); };
 	if (dlgInstance.trade) { flags = STR_AddString (flags, "T", ","); };
 	if (dlgInstance.permanent) { flags = STR_AddString (flags, "P", ","); };
@@ -44,12 +44,12 @@ func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int ind
 		s = ConcatStrings (s, ")");
 	};
 
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, dlgInstance.description);
 
 	//Add spinner --> option to switch dialogues (told/untold)
 	var string spinnerID; spinnerID = ConcatStrings ("s@DebugDialogues", IntToString (index));
-	spinnerID = ConcatStrings (spinnerID, " ");
+	spinnerID = ConcatStrings (spinnerID, STR_SPACE);
 	s = ConcatStrings (spinnerID, s);
 
 	return s;
@@ -261,7 +261,7 @@ func string CC_DebugDialogues (var string param) {
 	NPC_ClearAIQueue (npc);
 	AI_StandUpQuick (npc);
 
-	AI_StartState (npc, ZS_Talk, 1, "");
+	AI_StartState (npc, ZS_Talk, 1, STR_EMPTY);
 	return "ok";
 };
 

@@ -5,9 +5,9 @@ const string InfoManagerDefaultDialogColorSelected = "FFFFFF";
 const string InfoManagerDefaultColorDialogGrey = "C8C8C8";
 
 //Default font for selected dialog choice (if blank default Gothic version will be used)
-const string InfoManagerDefaultFontDialogSelected = "";
+const string InfoManagerDefaultFontDialogSelected = STR_EMPTY;
 //Default font for greyed (if blank default Gothic version will be used)
-const string InfoManagerDefaultFontDialogGrey = "";
+const string InfoManagerDefaultFontDialogGrey = STR_EMPTY;
 
 //Disabled color - selected
 const string InfoManagerDisabledDialogColorSelected = "808080";

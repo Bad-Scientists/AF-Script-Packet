@@ -344,7 +344,7 @@ func string GetSymbolName (var int symbolIndex) {
 		return symb.name;
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func int NPC_BodyStateContains (var int slfInstance, var int bodyState) {

@@ -56,7 +56,7 @@ func string zCCSManager_LibGetSvmModuleName (var int ou) {
 	//0x00419BC0 public: virtual class zSTRING __thiscall zCCSManager::LibGetSvmModuleName(int)
 	const int zCCSManager__LibGetSvmModuleName_G2 = 4299712;
 
-	if (!MEM_Game._zCSession_csMan) { return ""; };
+	if (!MEM_Game._zCSession_csMan) { return STR_EMPTY; };
 
 	CALL_RetValIszString ();
 	CALL_IntParam (ou);

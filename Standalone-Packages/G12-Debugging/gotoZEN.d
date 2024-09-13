@@ -5,20 +5,20 @@ func string CC_GotoZEN (var string param) {
 	param = STR_Trim (param, " ");
 	param = STR_Upper (param);
 
-	var int count; count = STR_SplitCount (param, " ");
-	var string levelName; levelName = "";
-	var string vobName; vobName = "";
+	var int count; count = STR_SplitCount (param, STR_SPACE);
+	var string levelName; levelName = STR_EMPTY;
+	var string vobName; vobName = STR_EMPTY;
 
 	//Get first parameter
 	if (count > 0) {
-		levelName = STR_Split (param, " ", 0);
 		levelName = STR_Trim (levelName, " ");
+		levelName = STR_Split (param, STR_SPACE, 0);
 		levelName = STR_Upper (levelName);
 
 		//Get second parameter
 		if (count > 1) {
-			vobName = STR_Split (param, " ", 1);
 			vobName = STR_Trim (vobName, " ");
+			vobName = STR_Split (param, STR_SPACE, 1);
 			vobName = STR_Upper (vobName);
 		} else {
 			//If second parameter was not supplied ... figure it out :)
@@ -41,7 +41,7 @@ func string CC_GotoZEN (var string param) {
 	if ((STR_Len (levelName)) && (STR_Len (vobName))) {
 		var string msg;
 		msg = ConcatStrings ("oCGame_TriggerChangeLevel ", levelName);
-		msg = ConcatStrings (msg, " ");
+		msg = ConcatStrings (msg, STR_SPACE);
 		msg = ConcatStrings (msg, vobName);
 
 		MEM_Info (msg);
@@ -84,7 +84,7 @@ func void CC_GotoZEN_Init () {
 
 			autoCompletion = "goto ZEN ";
 			autoCompletion = ConcatStrings (autoCompletion, trigger.levelName);
-			autoCompletion = ConcatStrings (autoCompletion, " ");
+			autoCompletion = ConcatStrings (autoCompletion, STR_SPACE);
 			autoCompletion = ConcatStrings (autoCompletion, trigger.startVob);
 
 			MEM_Info (ConcatStrings ("CC_GotoZEN_Init register: ", autoCompletion));

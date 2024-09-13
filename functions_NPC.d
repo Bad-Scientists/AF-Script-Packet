@@ -147,7 +147,7 @@ func int NPC_GetNPCState (var int slfInstance) {
 
 func string NPC_GetRoutineName (var int slfInstance) {
 //	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-//	if (!Hlp_IsValidNPC (slf)) { return ""; };
+//	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 //
 //	var int ptr; ptr = _@ (slf);
 //
@@ -163,7 +163,7 @@ func string NPC_GetRoutineName (var int slfInstance) {
 //		return symb.name;
 //	};
 //
-//	return "";
+//	return STR_EMPTY;
 
 	//0x006C6C10 public: class zSTRING __thiscall oCNpc_States::GetRoutineName(void)
 	const int oCNpc_States__GetRoutineName_G1 = 7105552;
@@ -172,7 +172,7 @@ func string NPC_GetRoutineName (var int slfInstance) {
 	const int oCNpc_States__GetRoutineName_G2 = 7790976;
 
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
-	if (!statePtr) { return ""; };
+	if (!statePtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString ();
 	CALL__thiscall (statePtr, MEMINT_SwitchG1G2 (oCNpc_States__GetRoutineName_G1, oCNpc_States__GetRoutineName_G2));
@@ -217,7 +217,7 @@ func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 func string NPC_GetStartAIStateName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
 
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	var int ptr; ptr = _@ (slf);
 
@@ -232,12 +232,12 @@ func string NPC_GetStartAIStateName (var int slfInstance) {
 		return symb.name;
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func string NPC_GetCurrentAIStateName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	return slf.state_curState_name;
 };
@@ -460,7 +460,7 @@ func void NPC_RemoveDuplicatedTimedOverlays (var int slfInstance, var string tes
 							timedOverlay.timer = f;
 						} else {
 							//Remove overlay name - this way overlay wont be removed from NPC
-							timedOverlay.mdsOverlayName = "";
+							timedOverlay.mdsOverlayName = STR_EMPTY;
 							timedOverlay.timer = FLOATNULL;
 						};
 
@@ -505,7 +505,7 @@ func void NPC_RemoveTimedOverlay (var int slfInstance, var string testOverlay) {
 
 			if (Hlp_StrCmp (timedOverlay.mdsOverlayName, testOverlay)) {
 				//Remove overlay name - this way overlay wont be removed from NPC
-				timedOverlay.mdsOverlayName = "";
+				timedOverlay.mdsOverlayName = STR_EMPTY;
 				timedOverlay.timer = FLOATNULL;
 			};
 		};
@@ -1154,7 +1154,7 @@ func int NPC_GetNearestMobOptPosition (var int slfInstance, var int mobPtr) {
 func string NPC_GetNearestMobNodeName (var int slfInstance, var int mobPtr) {
 	var int ptr; ptr = NPC_GetNearestMobOptPosition (slfInstance, mobPtr);
 
-	if (!ptr) { return ""; };
+	if (!ptr) { return STR_EMPTY; };
 
 	var TMobOptPos mobOptPos; mobOptPos = _^ (ptr);
 	return mobOptPos.nodeName;
@@ -1442,7 +1442,7 @@ func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
 	if (index < -1) {
 		state.curState_prgIndex = index;
 
-		var string stateName; stateName = "";
+		var string stateName; stateName = STR_EMPTY;
 
 		if (index == -2) { stateName = "ZS_ANSWER"; };
 		if (index == -3) { stateName = "ZS_DEAD"; };
@@ -1466,9 +1466,9 @@ func void Npc_SetAIState (var int slfInstance, var string stateName) {
 
 func string Npc_GetInteractMobName (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
-	if (!Hlp_Is_oCMobInter (slf.interactMob)) { return ""; };
+	if (!Hlp_Is_oCMobInter (slf.interactMob)) { return STR_EMPTY; };
 
 	var oCMobInter mobInter; mobInter = _^ (slf.interactMob);
 	return mobInter._zCObject_objectName;

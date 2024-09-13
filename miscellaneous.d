@@ -7,7 +7,7 @@
  *	Function traverses through all oCMobInter objects and updates onStateFunc, conditionFunc and useWithItem for all objects, which do have specified visual name.
  *	Usage:
  *
- *	oCMobInter_SetupAllMobsByVisual ("ORE_GROUND.ASC", "MINING", "", "ITMWPICKAXE");
+ *	oCMobInter_SetupAllMobsByVisual ("ORE_GROUND.ASC", "MINING", STR_EMPTY, "ITMWPICKAXE");
  */
 func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string onStateFunc, var string conditionFunc, var string useWithItem) {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
@@ -165,7 +165,7 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 	var int routePtr;
 
 	var string scemeName;
-	var int scemeNameCount; scemeNameCount = STR_SplitCount (scemeNames, "|");
+	var int scemeNameCount; scemeNameCount = STR_SplitCount (scemeNames, STR_PIPE);
 
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
@@ -795,7 +795,7 @@ func string GetSymbolStringValue (var int symbolIndex) {
 		};
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func void SetSymbolStringValue (var int symbolIndex, var string s) {
@@ -853,7 +853,10 @@ func int API_GetSymbolHEX2RGBAValue (var string symbolName, var string defaultVa
  */
 func void API_CallByString (var string fnc) {
     var int symbID;
-    const string cacheFunc = ""; const int cacheSymbID = 0;
+	//This does not work - seems like we cannot use global constant when initializing local one?
+	//const string cacheFunc = STR_EMPTY;
+	const string cacheFunc = "";
+	const int cacheSymbID = 0;
 
     if (Hlp_StrCmp (cacheFunc, fnc)) {
         symbID = cacheSymbID;

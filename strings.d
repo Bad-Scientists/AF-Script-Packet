@@ -5,12 +5,12 @@
 func string mySTR_SubStr (var string str, var int start, var int count) {
     if (start < 0) || (count < 0) {
         //MEM_Error ("STR_SubStr: start and count may not be negative.");
-        return "";
+        return STR_EMPTY;
     };
 
     /* Hole Adressen von zwei Strings, Source und Destination (für Kopieroperation) */
     var zString zStrSrc;
-    var zString zStrDst; var string dstStr; dstStr = "";
+    var zString zStrDst; var string dstStr; dstStr = STR_EMPTY;
 
     zStrSrc = _^(_@s(str));
     zStrDst = _^(_@s(dstStr));
@@ -18,7 +18,7 @@ func string mySTR_SubStr (var string str, var int start, var int count) {
     if (zStrSrc.len < start + count) {
         if (zStrSrc.len < start) {
             //MEM_Warn ("STR_SubStr: The desired start of the substring lies beyond the end of the string.");
-            return "";
+            return STR_EMPTY;
 
         } else {
             /* The start is in valid bounds. The End is shitty. */
@@ -105,7 +105,7 @@ func string STR_TrimL(var string str, var string tok) {
     end;
 
     if (startP >= lenS) {
-        return "";
+        return STR_EMPTY;
     } else {
         return STR_Substr(str, startP, lenS-startP);
     };
@@ -150,7 +150,7 @@ func string STR_TrimR(var string str, var string tok) {
     endP += 1;
 
     if (endP <= 0) {
-        return "";
+        return STR_EMPTY;
     } else {
         return STR_Substr(str, 0, endP);
     };
@@ -367,7 +367,7 @@ func string STR_FormatLeadingZeros (var int number, var int len) {
 };
 
 func int STR_GetWords (var string s) {
-	var int count; count = STR_SplitCount (s, " ");
+	var int count; count = STR_SplitCount (s, STR_SPACE);
 	return + count;
 };
 
@@ -379,19 +379,19 @@ func int STR_GetWords (var string s) {
  *  'insert item right here'
  */
 func string STR_PickWord (var string s, var int num) {
-	var int count; count = STR_SplitCount (s, " ");
+	var int count; count = STR_SplitCount (s, STR_SPACE);
 
-	if ((num < 0) || (num > count)) { return ""; };
+	if ((num < 0) || (num > count)) { return STR_EMPTY; };
 
-	return STR_Split (s, " ", num);
+	return STR_Split (s, STR_SPACE, num);
 };
 
 func string STR_RemoveWord (var string s, var int num) {
-	var int count; count = STR_SplitCount (s, " ");
+	var int count; count = STR_SplitCount (s, STR_SPACE);
 
 	if ((num < 0) || (num > count)) { return s; };
 
-	var string s1; s1 = "";
+	var string s1; s1 = STR_EMPTY;
 
 	repeat (i, count); var int i;
 		if (i == num) {
@@ -399,10 +399,10 @@ func string STR_RemoveWord (var string s, var int num) {
 		};
 
 		if (STR_Len (s1)) {
-			s1 = ConcatStrings (s1, " ");
+			s1 = ConcatStrings (s1, STR_SPACE);
 		};
 
-		s1 = ConcatStrings (s1, STR_Split (s, " ", i));
+		s1 = ConcatStrings (s1, STR_Split (s, STR_SPACE, i));
 	end;
 
 	return s1;
@@ -431,7 +431,7 @@ func string STR_NotLeft (var string s, var int count) {
 	var int len; len = STR_Len (s);
 
 	if (len <= count) {
-		return "";
+		return STR_EMPTY;
 	};
 
 	return mySTR_SubStr (s, count, len - count);
@@ -445,7 +445,7 @@ func string STR_NotRight (var string s, var int count) {
 	var int len; len = STR_Len (s);
 
 	if (len <= count) {
-		return "";
+		return STR_EMPTY;
 	};
 
 	return mySTR_SubStr (s, 0, len - count);

@@ -906,7 +906,7 @@ func string oCNpc_GetVisualBody (var int slfInstance) {
 	const int oCNpc__GetVisualBody_G2 = 7571392;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	CALL_RetValIszString ();
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__GetVisualBody_G1, oCNpc__GetVisualBody_G2));

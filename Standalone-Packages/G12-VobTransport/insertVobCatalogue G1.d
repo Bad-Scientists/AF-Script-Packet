@@ -622,7 +622,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 	//oCMobInter
 	vobPtr = InsertObject ("oCMobWheel", "VOB_BUY_WHEEL", "VWHEEL_1_OC.MDS", _@ (trafo), 0);
 	oCMob_SetMobName (vobPtr, "MOBNAME_WHEEL");
-//	oCMob_SetOwnerStr (vobPtr, "", "GIL_GRD ");
+//	oCMob_SetOwnerStr (vobPtr, STR_EMPTY, "GIL_GRD ");
 //	oCMobInter_SetSceme (vobPtr, "VWHEEL");
 //	oCMobInter_SetConditionFunc (vobPtr, "WHEEL_INTRO_COND");
 //	oCMobInter_SetOnStateFuncName (vobPtr, "WHEEL_INTRO_STATE");
@@ -832,7 +832,7 @@ func void Startup_InsertVobCatalogue_G1__VobTransport () {
 
 	vobPtr = InsertMobDoor ("VOB_BUY_DOOR_WOODEN", "DOOR_WOODEN.MDS", _@ (trafo));
 	oCMob_SetMobName (vobPtr, "MOBNAME_DOOR");
-//	oCMob_SetOwnerStr (vobPtr, "", "GIL_GRD");
+//	oCMob_SetOwnerStr (vobPtr, STR_EMPTY, "GIL_GRD");
 //	oCMobInter_SetSceme (vobPtr, "DOOR");
 //	oCMobLockable_SetPickLockStr (vobPtr, "LLRRLRL");
 	oCMobDoor_SetAddName (vobPtr, "FRONT");

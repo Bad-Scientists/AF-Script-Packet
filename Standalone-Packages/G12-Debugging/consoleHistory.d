@@ -36,15 +36,15 @@ func void _hook_zCConsole_HandleEvent () {
 
 	var string command;
 	var string consoleCommand;
-	var string storeCommand; storeCommand = "";
+	var string storeCommand; storeCommand = STR_EMPTY;
 
 	//0x008DC5A0 class zCConsole zcon
 	var zCConsole console; console = _^ (zcon_address);
 
 	const int init = 0;
 	if (!init) {
-		consoleAutocompleteCommand = "";
-		consoleAutocompleteSuggestion = "";
+		consoleAutocompleteCommand = STR_EMPTY;
+		consoleAutocompleteSuggestion = STR_EMPTY;
 		historyEntries = -1;
 		init = 1;
 	};
@@ -83,12 +83,12 @@ func void _hook_zCConsole_HandleEvent () {
 		if (historyIndex < 0) {
 			//Clear
 			historyIndex = -1;
-			console.instr = "";
+			console.instr = STR_EMPTY;
 		} else
 		if (historyIndex > historyEntries) {
 			//Clear
 			historyIndex = historyEntries + 1;
-			console.instr = "";
+			console.instr = STR_EMPTY;
 		} else {
 			//Read from history
 			command = MEM_ReadStringArray (_@s (history), historyIndex);
@@ -103,9 +103,9 @@ func void _hook_zCConsole_HandleEvent () {
 	if (key == KEY_RIGHTARROW) {
 		if (STR_Len (consoleAutocompleteSuggestion)) {
 			consoleCommand = consoleAutocompleteCommand;
-			consoleCommand = ConcatStrings (consoleCommand, " ");
+			consoleCommand = ConcatStrings (consoleCommand, STR_SPACE);
 			consoleCommand = ConcatStrings (consoleCommand, consoleAutocompleteSuggestion);
-			consoleCommand = ConcatStrings (consoleCommand, " ");
+			consoleCommand = ConcatStrings (consoleCommand, STR_SPACE);
 
 			consoleCommand = STR_Lower (consoleCommand);
 
@@ -113,8 +113,8 @@ func void _hook_zCConsole_HandleEvent () {
 			zCConsole_Update ();
 			cancel = TRUE;
 
-			consoleAutocompleteCommand = "";
-			consoleAutocompleteSuggestion = "";
+			consoleAutocompleteCommand = STR_EMPTY;
+			consoleAutocompleteSuggestion = STR_EMPTY;
 		};
 	};
 
@@ -172,8 +172,8 @@ func void _hook_zCConsole_HandleEvent () {
 			numWords = STR_GetWords (newInstr);
 
 			//Reset
-			consoleAutocompleteCommand = "";
-			consoleAutocompleteSuggestion = "";
+			consoleAutocompleteCommand = STR_EMPTY;
+			consoleAutocompleteSuggestion = STR_EMPTY;
 
 			//Autocomplete only from word 2 onwards
 			if (numWords > 1) {
@@ -217,7 +217,7 @@ func void _hook_zCConsole_HandleEvent () {
 						break;
 					};
 
-					consoleCommand = ConcatStrings (consoleCommand, " ");
+					consoleCommand = ConcatStrings (consoleCommand, STR_SPACE);
 					consoleCommand = ConcatStrings (consoleCommand, STR_PickWord (newInstr, i));
 
 					i += 1;

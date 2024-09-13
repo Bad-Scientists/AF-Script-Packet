@@ -41,7 +41,7 @@ func void AI_TurnToPos (var int slfInstance, var int posPtr) {
 	if (!posPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_TURNTOPOS, "", 0, posPtr, mkf (0), 0);
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_TURNTOPOS, STR_EMPTY, 0, posPtr, mkf (0), 0);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -161,7 +161,7 @@ func void AI_GotoPos (var int slfInstance, var int posPtr) {
 	if (!posPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, "", 0, posPtr, mkf (0), 0);
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, STR_EMPTY, 0, posPtr, mkf (0), 0);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -181,7 +181,7 @@ func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTarget
 	if (!posPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, "", 0, posPtr, mkf (0), 0);
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_GOTOPOS, STR_EMPTY, 0, posPtr, mkf (0), 0);
 
 	//Init robust trace
 	oCNpc_RbtInit (slfInstance, posPtr, 0);
@@ -236,7 +236,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 	//-- Get nearest waypoint to vob
 	//var string toWp; toWp = WP_GetNearestWPAtVob (vobPtr);
 
-	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), "", "", SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
+	var string toWp; toWp = WP_GetByPosAndPortalRoom (_@ (posVob), STR_EMPTY, STR_EMPTY, SEARCHVOBLIST_CANSEE, vobPtr, 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (toWp)) {
@@ -251,7 +251,7 @@ func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
 
 	//-- Get nearest waypoint to Npc
 	//var string fromWp; fromWp = WP_GetNearestWPAtVob (_@ (slf));
-	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), "", "", SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
+	var string fromWp; fromWp = WP_GetByPosAndPortalRoom (_@ (posNpc), STR_EMPTY, STR_EMPTY, SEARCHVOBLIST_CANSEE, _@ (slf), 500, 500, 400);
 
 	//if vob is not visible from waypoint ... ignore
 	if (!STR_Len (fromWp)) {
@@ -934,8 +934,8 @@ func void AI_UseMobPtr (var int slfInstance, var int vobPtr, var int targetState
 	//var oCMobInter mob; mob = _^ (vobPtr);
 
 	//Create new message
-	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, "", "");
+	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, STR_EMPTY, STR_EMPTY);
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, STR_EMPTY, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -956,8 +956,8 @@ func void AI_UseMobPtr_Ext (var int slfInstance, var int vobPtr, var int targetS
 	//var oCMobInter mob; mob = _^ (vobPtr);
 
 	//Create new message
-	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, "", "");
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, name, "");
+	//var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, mob.sceme, vobPtr, targetState, STR_EMPTY, STR_EMPTY);
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_USEMOB, oCMobInter_GetScemeName (vobPtr), vobPtr, targetState, name, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -976,7 +976,7 @@ func void AI_DropVobPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DROPVOB, "", vobPtr, 0, "", "");
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DROPVOB, STR_EMPTY, vobPtr, 0, STR_EMPTY, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -995,7 +995,7 @@ func void AI_EquipItemPtr (var int slfInstance, var int vobPtr) {
 	if (!vobPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_EQUIPITEM, "", vobPtr, 0, "", "");
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_EQUIPITEM, STR_EMPTY, vobPtr, 0, STR_EMPTY, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -1012,7 +1012,7 @@ func void AI_DestroyInteractItem (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DESTROYINTERACTITEM, "", 0, 0, "", "");
+	var int eMsg; eMsg = oCMsgManipulate_Create (EV_DESTROYINTERACTITEM, STR_EMPTY, 0, 0, STR_EMPTY, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -1104,7 +1104,7 @@ func void AI_WhirlAroundToPos (var int slfInstance, var int posPtr) {
 	if (!posPtr) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgMovement_Create (EV_WHIRLAROUND, "", 0, posPtr, mkf (0), 0);
+	var int eMsg; eMsg = oCMsgMovement_Create (EV_WHIRLAROUND, STR_EMPTY, 0, posPtr, mkf (0), 0);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -1124,7 +1124,7 @@ func void AI_ContinueState (var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
 	//Create new message
-	var int eMsg; eMsg = oCMsgState_Create (EV_STARTSTATE, 0, 0, "");
+	var int eMsg; eMsg = oCMsgState_Create (EV_STARTSTATE, 0, 0, STR_EMPTY);
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));

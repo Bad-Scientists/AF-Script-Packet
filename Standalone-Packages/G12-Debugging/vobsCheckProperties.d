@@ -27,10 +27,10 @@ func string Vob_GetPortalNameAndPosition (var int vobPtr) {
 
 		s = ConcatStrings (s, ", pos: ");
 		s = ConcatStrings (s, IntToString (x));
-		s = ConcatStrings (s, " ");
+		s = ConcatStrings (s, STR_SPACE);
 
 		s = ConcatStrings (s, IntToString (y));
-		s = ConcatStrings (s, " ");
+		s = ConcatStrings (s, STR_SPACE);
 
 		s = ConcatStrings (s, IntToString (z));
 	};
@@ -84,7 +84,7 @@ func void oCMob_CheckProperties () {
 
 		if (Hlp_Is_oCMob (vobPtr)) {
 			mob = _^ (vobPtr);
-			msg = "";
+			msg = STR_EMPTY;
 
 			var int ownerStrHasToBeTrimmed; ownerStrHasToBeTrimmed = FALSE;
 			var int ownerGuildStrHasToBeTrimmed; ownerGuildStrHasToBeTrimmed = FALSE;
@@ -187,7 +187,7 @@ func void oCMob_CheckProperties () {
 		if (Hlp_Is_oCMobLockable (vobPtr)) {
 			mobLockable = _^ (vobPtr);
 
-			msg = "";
+			msg = STR_EMPTY;
 
 			var int pickLockStrValid; pickLockStrValid = TRUE;
 			var int keyIsValid; keyIsValid = TRUE;
@@ -195,8 +195,8 @@ func void oCMob_CheckProperties () {
 			//Check if pickLockStr is valid (only combination of L and R)
 			if (STR_Len (mobLockable.pickLockStr)) {
 				var string pickLockStr; pickLockStr = mobLockable.pickLockStr;
-				pickLockStr = STR_ReplaceAll (pickLockStr, "L", "");
-				pickLockStr = STR_ReplaceAll (pickLockStr, "R", "");
+				pickLockStr = STR_ReplaceAll (pickLockStr, "L", STR_EMPTY);
+				pickLockStr = STR_ReplaceAll (pickLockStr, "R", STR_EMPTY);
 
 				pickLockStr = STR_Trim (pickLockStr, " ");
 
@@ -339,7 +339,7 @@ func void zCTrigger_CheckProperties () {
 
 		if (Hlp_Is_zCTrigger (vobPtr)) {
 			trigger = _^ (vobPtr);
-			msg = "";
+			msg = STR_EMPTY;
 
 			var int countTriggerTarget; countTriggerTarget = 0;
 			var int triggerTargetHasToBeTrimmed; triggerTargetHasToBeTrimmed = FALSE;
@@ -442,16 +442,16 @@ func void zCTrigger_CheckProperties () {
 };
 
 func string ObjectRoutine_GetString (var int ptr) {
-	if (!ptr) { return ""; };
+	if (!ptr) { return STR_EMPTY; };
 
 	var TObjectRoutine oRtn; oRtn = _^ (ptr);
 
 	var string s;
 
 	s = oRtn.objName;
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, STR_FormatLeadingZeros (oRtn.hour1, 2));
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, STR_FormatLeadingZeros (oRtn.min1, 2));
 	s = ConcatStrings (s, " s");
 	s = ConcatStrings (s, IntToString (oRtn.stateNum));

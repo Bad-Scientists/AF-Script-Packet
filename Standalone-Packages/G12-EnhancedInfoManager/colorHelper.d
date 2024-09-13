@@ -78,7 +78,7 @@ func string DIA_ColorHelper_BuildHexColor (var int r, var int g, var int b, var 
 	if (STR_Len(_b) == 1) { _b = ConcatStrings ("0", _b); };
 	if (STR_Len(_a) == 1) { _a = ConcatStrings ("0", _a); };
 
-	var string s; s = "";
+	var string s; s = STR_EMPTY;
 
 	s = ConcatStrings (s, _r);
 	s = ConcatStrings (s, _g);
@@ -92,7 +92,7 @@ func string DIA_ColorHelper_BuildHexColor (var int r, var int g, var int b, var 
 	s = ConcatStrings (s, _b);
 	s = ConcatStrings (s, _a);
 
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 
 	s = ConcatStrings (s, _r);
 	s = ConcatStrings (s, _g);
@@ -137,7 +137,7 @@ func int DIA_ColorHelper_RED_Condition () {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//Spinner ID CookMeat
 	//newDescription = ConcatStrings (newDescription, "h@");
@@ -196,7 +196,7 @@ func int DIA_ColorHelper_GREEN_Condition () {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//Spinner ID CookMeat
 	//newDescription = ConcatStrings (newDescription, "h@");
@@ -255,7 +255,7 @@ func int DIA_ColorHelper_BLUE_Condition () {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//Spinner ID CookMeat
 	//newDescription = ConcatStrings (newDescription, "h@");
@@ -314,7 +314,7 @@ func int DIA_ColorHelper_ALPHA_Condition () {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//Spinner ID CookMeat
 	//newDescription = ConcatStrings (newDescription, "h@");

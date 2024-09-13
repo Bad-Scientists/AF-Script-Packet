@@ -8,12 +8,12 @@ func string CC_PrintTrafoWrapper (var string param, var int printTrafo) {
 
 	var oCNpc her; her = Hlp_GetNpc (hero);
 
-	var int count; count = STR_SplitCount (param, " ");
-	var string objectName; objectName = "";
+	var int count; count = STR_SplitCount (param, STR_SPACE);
+	var string objectName; objectName = STR_EMPTY;
 
 	if (count > 0) {
-		objectName = STR_Split (param, " ", 0);
 		objectName = STR_Trim (objectName, " ");
+		objectName = STR_Split (param, STR_SPACE, 0);
 	};
 
 	var string msg;

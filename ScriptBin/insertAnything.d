@@ -744,22 +744,22 @@ func int InsertMobFireWP(var string nm, var string vis, var string wp) {
  * InsertMover                (string objName, string visual, int[16] *trafoMat)
  */
 func int InsertTrigger(var string nm, var int trf) {
-    return InsertObject("zCTrigger", nm, "", trf, 0);
+    return InsertObject("zCTrigger", nm, STR_EMPTY, trf, 0);
 };
 func int InsertTriggerPos(var string nm, var int pos, var int dir) {
-    return InsertObjectPos("zCTrigger", nm, "", pos, dir, 0);
+    return InsertObjectPos("zCTrigger", nm, STR_EMPTY, pos, dir, 0);
 };
 func int InsertTriggerScript(var string nm, var int trf) {
-    return InsertObject("oCTriggerScript", nm, "", trf, 0);
+    return InsertObject("oCTriggerScript", nm, STR_EMPTY, trf, 0);
 };
 func int InsertTriggerScriptPos(var string nm, var int pos, var int dir) {
-    return InsertObjectPos("oCTriggerScript", nm, "", pos, dir, 0);
+    return InsertObjectPos("oCTriggerScript", nm, STR_EMPTY, pos, dir, 0);
 };
 func int InsertTriggerChangeLevel(var string nm, var int trf) {
-    return InsertObject("oCTriggerChangeLevel", nm, "", trf, 0);
+    return InsertObject("oCTriggerChangeLevel", nm, STR_EMPTY, trf, 0);
 };
 func int InsertTriggerChangeLevelPos(var string nm, var int pos, var int dir) {
-    return InsertObjectPos("oCTriggerChangeLevel", nm, "", pos, dir, 0);
+    return InsertObjectPos("oCTriggerChangeLevel", nm, STR_EMPTY, pos, dir, 0);
 };
 func int InsertMover(var string nm, var string vis, var int trf) {
     return InsertObject("zCMover", nm, vis, trf, 0);
@@ -866,7 +866,7 @@ func void InsertPileOfVobs(var string nm, var string vis, var int trf, var int a
     InsertPileOf("zCVob", nm, vis, trf, am, cm, rot);
 };
 func void InsertPileOfItems(var string itmInst, var int trf, var int am, var int cm, var int rot) {
-    InsertPileOf("oCItem", itmInst, "", trf, am, cm, rot);
+    InsertPileOf("oCItem", itmInst, STR_EMPTY, trf, am, cm, rot);
 };
 
 

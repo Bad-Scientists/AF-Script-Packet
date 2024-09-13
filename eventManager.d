@@ -360,7 +360,7 @@ func string zCEvMsgCutscene_MD_GetSubTypeString (var int eMsg, var int subType) 
 	//0x0040C6B0 public: virtual class zSTRING __thiscall zCEvMsgCutscene::MD_GetSubTypeString(int)
 	const int zCEvMsgCutscene__MD_GetSubTypeString_G2 = 4245168;
 
-	if (!Hlp_Is_zCEvMsgCutscene (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEvMsgCutscene (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -375,7 +375,7 @@ func string zCCSCamera_EventMsg_MD_GetSubTypeString (var int eMsg, var int subTy
 	//0x004C7010 public: virtual class zSTRING __thiscall zCCSCamera_EventMsg::MD_GetSubTypeString(int)
 	const int zCCSCamera_EventMsg__MD_GetSubTypeString_G2 = 5009424;
 
-	if (!Hlp_Is_zCCSCamera_EventMsg (eMsg)) { return ""; };
+	if (!Hlp_Is_zCCSCamera_EventMsg (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -390,7 +390,7 @@ func string zCCSCamera_EventMsgActivate_MD_GetSubTypeString (var int eMsg, var i
 	//0x004C7410 public: virtual class zSTRING __thiscall zCCSCamera_EventMsgActivate::MD_GetSubTypeString(int)
 	const int zCCSCamera_EventMsgActivate__MD_GetSubTypeString_G2 = 5010448;
 
-	if (!Hlp_Is_zCCSCamera_EventMsgActivate (eMsg)) { return ""; };
+	if (!Hlp_Is_zCCSCamera_EventMsgActivate (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -405,7 +405,7 @@ func string zCEventCore_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x006062F0 public: virtual class zSTRING __thiscall zCEventCore::MD_GetSubTypeString(int)
 	const int zCEventCore__MD_GetSubTypeString_G2 = 6316784;
 
-	if (!Hlp_Is_zCEventCore (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEventCore (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -420,7 +420,7 @@ func string zCEventCommon_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x0060F7E0 public: virtual class zSTRING __thiscall zCEventCommon::MD_GetSubTypeString(int)
 	const int zCEventCommon__MD_GetSubTypeString_G2 = 6354912;
 
-	if (!Hlp_Is_zCEventCommon (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEventCommon (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -435,7 +435,7 @@ func string zCEventMover_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x0060F940 public: virtual class zSTRING __thiscall zCEventMover::MD_GetSubTypeString(int)
 	const int zCEventMover__MD_GetSubTypeString_G2 = 6355264;
 
-	if (!Hlp_Is_zCEventMover (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEventMover (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -450,7 +450,7 @@ func string zCEventScreenFX_MD_GetSubTypeString (var int eMsg, var int subType) 
 	//0x00617720 public: virtual class zSTRING __thiscall zCEventScreenFX::MD_GetSubTypeString(int)
 	const int zCEventScreenFX__MD_GetSubTypeString_G2 = 6387488;
 
-	if (!Hlp_Is_zCEventScreenFX (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEventScreenFX (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -465,7 +465,7 @@ func string oCMobMsg_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x0071B750 public: virtual class zSTRING __thiscall oCMobMsg::MD_GetSubTypeString(int)
 	const int oCMobMsg__MD_GetSubTypeString_G2 = 7452496;
 
-	if (!Hlp_Is_oCMobMsg (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMobMsg (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -480,7 +480,7 @@ func string oCMsgDamage_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x007653C0 public: virtual class zSTRING __thiscall oCMsgDamage::MD_GetSubTypeString(int)
 	const int oCMsgDamage__MD_GetSubTypeString_G2 = 7754688;
 
-	if (!Hlp_Is_oCMsgDamage (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgDamage (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -495,7 +495,7 @@ func string oCMsgWeapon_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x00766AD0 public: virtual class zSTRING __thiscall oCMsgWeapon::MD_GetSubTypeString(int)
 	const int oCMsgWeapon__MD_GetSubTypeString_G2 = 7760592;
 
-	if (!Hlp_Is_oCMsgWeapon (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgWeapon (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -510,7 +510,7 @@ func string oCMsgMovement_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x007660A0 public: virtual class zSTRING __thiscall oCMsgMovement::MD_GetSubTypeString(int)
 	const int oCMsgMovement__MD_GetSubTypeString_G2 = 7757984;
 
-	if (!Hlp_Is_oCMsgMovement (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgMovement (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -525,7 +525,7 @@ func string oCMsgAttack_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x007676B0 public: virtual class zSTRING __thiscall oCMsgAttack::MD_GetSubTypeString(int)
 	const int oCMsgAttack__MD_GetSubTypeString_G2 = 7763632;
 
-	if (!Hlp_Is_oCMsgAttack (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgAttack (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -540,7 +540,7 @@ func string oCMsgState_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x007684F0 public: virtual class zSTRING __thiscall oCMsgState::MD_GetSubTypeString(int)
 	const int oCMsgState__MD_GetSubTypeString_G2 = 7767280;
 
-	if (!Hlp_Is_oCMsgState (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgState (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -555,7 +555,7 @@ func string oCMsgManipulate_MD_GetSubTypeString (var int eMsg, var int subType) 
 	//0x00769550 public: virtual class zSTRING __thiscall oCMsgManipulate::MD_GetSubTypeString(int)
 	const int oCMsgManipulate__MD_GetSubTypeString_G2 = 7771472;
 
-	if (!Hlp_Is_oCMsgManipulate (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgManipulate (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -570,7 +570,7 @@ func string oCMsgMagic_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x0076B430 public: virtual class zSTRING __thiscall oCMsgMagic::MD_GetSubTypeString(int)
 	const int oCMsgMagic__MD_GetSubTypeString_G2 = 7779376;
 
-	if (!Hlp_Is_oCMsgMagic (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgMagic (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -585,7 +585,7 @@ func string zCEventMusicControler_MD_GetSubTypeString (var int eMsg, var int sub
 	//0x00642BC0 public: virtual class zSTRING __thiscall zCEventMusicControler::MD_GetSubTypeString(int)
 	const int zCEventMusicControler__MD_GetSubTypeString_G2 = 6564800;
 
-	if (!Hlp_Is_zCEventMusicControler (eMsg)) { return ""; };
+	if (!Hlp_Is_zCEventMusicControler (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -770,7 +770,7 @@ func string zCEventMessage_MD_GetSubTypeString (var int eMsg, var int subType) {
 	//0x00401FF0 public: virtual class zSTRING __thiscall zCEventMessage::MD_GetSubTypeString(int)
 	const int zCEventMessage__MD_GetSubTypeString_G2 = 4202480;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return ""; };
+	if (!eMsg) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -925,7 +925,7 @@ func string oCMsgConversation_MD_GetSubTypeString (var int eMsg, var int subType
 	//0x0076AB60 public: virtual class zSTRING __thiscall oCMsgConversation::MD_GetSubTypeString(int)
 	const int oCMsgConversation__MD_GetSubTypeString_G2 = 7777120;
 
-	if (!Hlp_Is_oCMsgConversation (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgConversation (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL_IntParam (subType);
@@ -940,7 +940,7 @@ func string oCMsgConversation_MD_GetVobRefName (var int eMsg) {
 	//0x0076AD60 public: virtual class zSTRING __thiscall oCMsgConversation::MD_GetVobRefName(void)
 	const int oCMsgConversation__MD_GetVobRefName_G2 = 7777632;
 
-	if (!Hlp_Is_oCMsgConversation (eMsg)) { return ""; };
+	if (!Hlp_Is_oCMsgConversation (eMsg)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (eMsg, MEMINT_SwitchG1G2 (oCMsgConversation__MD_GetVobRefName_G1, oCMsgConversation__MD_GetVobRefName_G2));
@@ -1273,7 +1273,7 @@ func int eMsg_MD_GetSubType (var int eMsg) {
 };
 
 func string eMsg_MD_GetMsgTypeString (var int eMsg) {
-	if (!eMsg) { return ""; };
+	if (!eMsg) { return STR_EMPTY; };
 
 	if (Hlp_Is_zCEventScreenFX (eMsg)) { return "zCEventScreenFX"; };
 	if (Hlp_Is_zCEventMusicControler (eMsg)) { return "zCEventMusicControler"; };
@@ -1299,7 +1299,7 @@ func string eMsg_MD_GetMsgTypeString (var int eMsg) {
 	//unknown vtbl
 	var int vtbl; vtbl = MEM_ReadInt (eMsg);
 	MEM_Info (ConcatStrings ("eMsg_MD_GetMsgTypeString - unknown vtbl: ", IntToString (vtbl)));
-	return "";
+	return STR_EMPTY;
 };
 
 /*
@@ -1307,7 +1307,7 @@ func string eMsg_MD_GetMsgTypeString (var int eMsg) {
  */
 func string eMsg_MD_GetSubTypeString (var int eMsg) {
 	var int subType; subType = eMsg_MD_GetSubType (eMsg);
-	if (subType == -1) { return ""; };
+	if (subType == -1) { return STR_EMPTY; };
 
 	/*
 		Seems like not all event-like classes have their MD_GetSubTypeString function ...
@@ -1352,7 +1352,7 @@ func string eMsg_MD_GetSubTypeString (var int eMsg) {
 
 	if (Hlp_Is_oCMsgUseItem (eMsg)) {
 		MEM_Info ("eMsg_MD_GetSubTypeString: oCMsgUseItem does not have MD_GetSubTypeString function.");
-		return "";
+		return STR_EMPTY;
 	};
 
 	if (Hlp_Is_oCMsgState (eMsg)) {
@@ -1385,7 +1385,7 @@ func string eMsg_MD_GetSubTypeString (var int eMsg) {
 
 	if (Hlp_Is_oCNpcMessage (eMsg)) {
 		MEM_Info ("eMsg_MD_GetSubTypeString: oCNpcMessage does not have MD_GetSubTypeString function.");
-		return "";
+		return STR_EMPTY;
 	};
 
 	if (Hlp_Is_oCMobMsg (eMsg)) {
@@ -1401,7 +1401,7 @@ func string eMsg_MD_GetSubTypeString (var int eMsg) {
 	//unknown vtbl
 	var int vtbl; vtbl = MEM_ReadInt (eMsg);
 	MEM_Info (ConcatStrings ("eMsg_MD_GetSubTypeString - unknown vtbl: ", IntToString (vtbl)));
-	return "";
+	return STR_EMPTY;
 };
 
 /*
@@ -1410,15 +1410,15 @@ func string eMsg_MD_GetSubTypeString (var int eMsg) {
  *		index			Event Message index (starts at 0)
  */
 func string zcEventManager_GetEventName (var int eMgr, var int index){
-	if (!Hlp_Is_zCEventManager (eMgr)) { return ""; };
+	if (!Hlp_Is_zCEventManager (eMgr)) { return STR_EMPTY; };
 
 	//Is there anything in event manager?
-	if (zCEventManager_GetNumMessages (eMgr) <= index) { return ""; };
+	if (zCEventManager_GetNumMessages (eMgr) <= index) { return STR_EMPTY; };
 
 	//Get Event Message
 	var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, index);
 
-	if (!eMsg) { return ""; };
+	if (!eMsg) { return STR_EMPTY; };
 
 	var string eventName;
 	eventName = eMsg_MD_GetSubTypeString (eMsg);
@@ -1529,10 +1529,10 @@ func int NPC_EM_GetEventCount (var int slfInstance){
  *		index			Event Message index (starts at 0)
  */
 func string NPC_EM_GetEventName (var int slfInstance, var int index){
-	if (index < 0) { return ""; };
+	if (index < 0) { return STR_EMPTY; };
 
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
@@ -1563,16 +1563,16 @@ func int NPC_EM_GetEventCountByEventName (var int slfInstance, var string eventN
  */
 func string NPC_EM_GetActiveEventName (var int slfInstance){
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	//Get Event Manager
 	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-	if (!Hlp_Is_zCEventManager (eMgr)) { return ""; };
+	if (!Hlp_Is_zCEventManager (eMgr)) { return STR_EMPTY; };
 
 	//Get Event Message
 	var int eMsg; eMsg = zCEventManager_GetActiveMessage (eMgr);
 
-	if (!eMsg) { return ""; };
+	if (!eMsg) { return STR_EMPTY; };
 
 	var string eventName;
 	eventName = eMsg_MD_GetSubTypeString (eMsg);

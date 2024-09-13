@@ -151,10 +151,10 @@ func int oCItem_SplitItemPtr (var int itemPtr, var int qty){
 };
 
 func string GetItemTextByIndex (var int itemPtr, var int index) {
-	if (!Hlp_Is_oCItem (itemPtr)) { return ""; };
+	if (!Hlp_Is_oCItem (itemPtr)) { return STR_EMPTY; };
 
 	//Safety check for index boundaries
-	if ((index < 0) || (index >= ITM_TEXT_MAX)) { return ""; };
+	if ((index < 0) || (index >= ITM_TEXT_MAX)) { return STR_EMPTY; };
 
 	var oCItem itm; itm = _^ (itemPtr);
 	return MEM_ReadStringArray (_@s(itm.text), index);

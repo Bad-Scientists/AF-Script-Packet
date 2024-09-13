@@ -81,7 +81,10 @@ func int zCTrigger_CanBeActivatedNow (var int trigger, var int vobPtr) {
 
 func void _hook_zCTrigger_OnTrigger () {
 	var int symbID;
-	const string cacheFunc = ""; const int cacheSymbID = 0;
+	//This does not work - seems like we cannot use global constant when initializing local one?
+	//const string cacheFunc = STR_EMPTY;
+	const string cacheFunc = "";
+	const int cacheSymbID = 0;
 
 	if (!ECX) { return; };
 
@@ -96,7 +99,7 @@ func void _hook_zCTrigger_OnTrigger () {
 
 			if (!ts._zCVob_touchVobList_numInArray) {
 				ts._zCTrigger_fireDelaySec = FLOATNULL;
-				ts._zCTrigger_triggerTarget = "";
+				ts._zCTrigger_triggerTarget = STR_EMPTY;
 				return;
 			} else {
 				if (ts._zCTrigger_retriggerWaitSec) {
@@ -155,7 +158,10 @@ func void _hook_zCTrigger_OnTrigger () {
 
 func void _hook_zCTrigger_OnTouch () {
 	var int symbID;
-	const string cacheFunc = ""; const int cacheSymbID = 0;
+	//This does not work - seems like we cannot use global constant when initializing local one?
+	//const string cacheFunc = STR_EMPTY;
+	const string cacheFunc = "";
+	const int cacheSymbID = 0;
 
 	if (!ECX) { return; };
 
@@ -235,7 +241,10 @@ func void _hook_zCTrigger_OnTouch () {
 
 func void _hook_zCTrigger_OnUntouch () {
 	var int symbID;
-	const string cacheFunc = ""; const int cacheSymbID = 0;
+	//This does not work - seems like we cannot use global constant when initializing local one?
+	//const string cacheFunc = STR_EMPTY;
+	const string cacheFunc = "";
+	const int cacheSymbID = 0;
 
 	if (!ECX) { return; };
 

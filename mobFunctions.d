@@ -138,7 +138,7 @@ func void oCMobFire_SetFireVobtreeName (var int mobPtr, var string fireVobtreeNa
 /*
  *	Function locks chest with specific key or pick lock string
  *	 - use "-" if you don't want to update keyInstance / pickLockStr
- *	MOB_SetLock ("CHEST", "KEY_GOMEZ", ""); //locks chest with KEY_GOMEZ, pick lock string is removed if present previously
+ *	MOB_SetLock ("CHEST", "KEY_GOMEZ", STR_EMPTY); //locks chest with KEY_GOMEZ, pick lock string is removed if present previously
  *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "-"); //locks chest with KEY_GOMEZ, pick lock string is not touched if present previously
  *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "LRLR"); //locks chest with KEY_GOMEZ, updates pick lock string to LRLR
  */

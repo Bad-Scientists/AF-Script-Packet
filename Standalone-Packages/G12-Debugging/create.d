@@ -16,18 +16,18 @@
 		npc = _^ (her.focus_vob);
 	};
 
-	var string instanceName; instanceName = "";
+	var string instanceName; instanceName = STR_EMPTY;
 	var string amount; amount = "1";
 
-	var int count; count = STR_SplitCount (param, " ");
+	var int count; count = STR_SplitCount (param, STR_SPACE);
 	if (count > 0) {
-		instanceName = STR_Split (param, " ", 0);
 		instanceName = STR_Trim (instanceName, " ");
+		instanceName = STR_Split (param, STR_SPACE, 0);
 	};
 
 	if (count > 1) {
-		amount = STR_Split (param, " ", 1);
 		amount = STR_Trim (amount, " ");
+		amount = STR_Split (param, STR_SPACE, 1);
 
 		if (!STR_IsNumeric (amount)) {
 			amount = "1";
