@@ -1175,9 +1175,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	//522	2057 - Wheel up
 	//523	2058 - Wheel down
 
-	const int mem = 0;
-	if (!mem) { mem = MEM_Alloc(1); };
-
 	//cancel selection by KEY_TAB (causing auto-selection in combination with Alt + Tab)
 	if (key == KEY_TAB) {
 		cancel = TRUE;
@@ -1226,93 +1223,57 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 			s = STR_EMPTY;
 
 			if (eim.answerMode) {
-				var int shift;
-				shift = (MEM_KeyState (KEY_LSHIFT) == KEY_PRESSED) | (MEM_KeyState (KEY_LSHIFT) == KEY_HOLD) | (MEM_KeyState (KEY_RSHIFT) == KEY_PRESSED) | (MEM_KeyState (KEY_RSHIFT) == KEY_HOLD);
+				var int keyStateLShift; keyStateLShift = MEM_KeyState(KEY_LSHIFT);
+				var int keyStateRShift; keyStateRShift = MEM_KeyState(KEY_RSHIFT);
+				var int keyStateShift; keyStateShift = ((keyStateLShift == KEY_PRESSED) | (keyStateLShift == KEY_HOLD) | (keyStateRShift == KEY_PRESSED) | (keyStateRShift == KEY_HOLD));
 
-				if (key == KEY_1) { if (shift) { s = "!"; } else { s = "1"; }; };
-				if (key == KEY_2) { if (shift) { s = "@"; } else { s = "2"; }; };
-				if (key == KEY_3) { if (shift) { s = "#"; } else { s = "3"; }; };
-				if (key == KEY_4) { if (shift) { s = "$"; } else { s = "4"; }; };
-				if (key == KEY_5) { if (shift) { s = "%"; } else { s = "5"; }; };
-				if (key == KEY_6) { if (shift) { s = "^"; } else { s = "6"; }; };
-				if (key == KEY_7) { if (shift) { s = "&"; } else { s = "7"; }; };
-				if (key == KEY_8) { if (shift) { s = "*"; } else { s = "8"; }; };
-				if (key == KEY_9) { if (shift) { s = "("; } else { s = "9"; }; };
-				if (key == KEY_0) { if (shift) { s = ")"; } else { s = "0"; }; };
+				var int keyStateLAlt; keyStateLAlt = MEM_KeyState(KEY_LMENU);
+				var int keyStateRAlt; keyStateRAlt = MEM_KeyState(KEY_RMENU);
+				var int keyStateAlt; keyStateAlt = ((keyStateLAlt == KEY_PRESSED) | (keyStateLAlt == KEY_HOLD) | (keyStateRAlt == KEY_PRESSED) | (keyStateRAlt == KEY_HOLD));
 
-				if (key == KEY_MINUS) { if (shift) { s = "-"; } else { s = "_"; }; };
-				if (key == KEY_EQUALS) { if (shift) { s = "+"; } else { s = "="; }; };
+				//US keyboard layout by default
+				if (key == KEY_GRAVE) { if (keyStateShift) { s = "~"; } else { s = "`"; }; };
 
-				//Backspace
-				if (key == KEY_BACK) {
-					len = STR_Len (InfoManagerAnswer);
+				if (key == KEY_1) { if (keyStateShift) { s = "!"; } else { s = "1"; }; };
+				if (key == KEY_2) { if (keyStateShift) { s = "@"; } else { s = "2"; }; };
+				if (key == KEY_3) { if (keyStateShift) { s = "#"; } else { s = "3"; }; };
+				if (key == KEY_4) { if (keyStateShift) { s = "$"; } else { s = "4"; }; };
+				if (key == KEY_5) { if (keyStateShift) { s = "%"; } else { s = "5"; }; };
+				if (key == KEY_6) { if (keyStateShift) { s = "^"; } else { s = "6"; }; };
+				if (key == KEY_7) { if (keyStateShift) { s = "&"; } else { s = "7"; }; };
+				if (key == KEY_8) { if (keyStateShift) { s = "*"; } else { s = "8"; }; };
+				if (key == KEY_9) { if (keyStateShift) { s = "("; } else { s = "9"; }; };
+				if (key == KEY_0) { if (keyStateShift) { s = ")"; } else { s = "0"; }; };
 
-					if (len == 1) {
-						InfoManagerAnswer = STR_EMPTY;
-					} else
-					if (len > 1) {
-						InfoManagerAnswer = mySTR_SubStr (InfoManagerAnswer, 0, len - 1);
+				if (key == KEY_MINUS) { if (keyStateShift) { s = "-"; } else { s = "_"; }; };
+				if (key == KEY_EQUALS) { if (keyStateShift) { s = "+"; } else { s = "="; }; };
+
+				if (key == KEY_LBRACKET) { if (keyStateShift) { s = "{"; } else { s = "["; }; };
+				if (key == KEY_RBRACKET) { if (keyStateShift) { s = "}"; } else { s = "]"; }; };
+
+				//I left backslash commented out, because it is escape character that caused my N++ to format rest of the code 'incorrectly' :)
+				//So this way we will have both nice code format as well as an option to write backslash :)
+				if (key == KEY_BACKSLASH) {
+					if (keyStateShift) {
+						s = STR_PIPE;
+					} else {
+						//Backslash
+						s = BtoC(92);
 					};
 				};
 
-				if (key == KEY_Q) { if (shift) { s = "Q"; } else { s = "q"; }; };
-				if (key == KEY_W) { if (shift) { s = "W"; } else { s = "w"; }; };
-				if (key == KEY_E) { if (shift) { s = "E"; } else { s = "e"; }; };
-				if (key == KEY_R) { if (shift) { s = "R"; } else { s = "r"; }; };
-				if (key == KEY_T) { if (shift) { s = "T"; } else { s = "t"; }; };
-				if (key == KEY_Y) { if (shift) { s = "Y"; } else { s = "y"; }; };
-				if (key == KEY_U) { if (shift) { s = "U"; } else { s = "u"; }; };
-				if (key == KEY_I) { if (shift) { s = "I"; } else { s = "i"; }; };
-				if (key == KEY_O) { if (shift) { s = "O"; } else { s = "o"; }; };
-				if (key == KEY_P) { if (shift) { s = "P"; } else { s = "p"; }; };
-
-				if (key == KEY_LBRACKET) { if (shift) { s = "{"; } else { s = "["; }; };
-				if (key == KEY_RBRACKET) { if (shift) { s = "}"; } else { s = "]"; }; };
-
-				if (key == KEY_A) { if (shift) { s = "A"; } else { s = "a"; }; };
-				if (key == KEY_S) { if (shift) { s = "S"; } else { s = "s"; }; };
-				if (key == KEY_D) { if (shift) { s = "D"; } else { s = "d"; }; };
-				if (key == KEY_F) { if (shift) { s = "F"; } else { s = "f"; }; };
-				if (key == KEY_G) { if (shift) { s = "G"; } else { s = "g"; }; };
-				if (key == KEY_H) { if (shift) { s = "H"; } else { s = "h"; }; };
-				if (key == KEY_J) { if (shift) { s = "J"; } else { s = "j"; }; };
-				if (key == KEY_K) { if (shift) { s = "K"; } else { s = "k"; }; };
-				if (key == KEY_L) { if (shift) { s = "L"; } else { s = "l"; }; };
-
-				if (key == KEY_SEMICOLON) { if (shift) { s = ":"; } else { s = ";"; }; };
-				if (key == KEY_APOSTROPHE) { if (shift) {
+				if (key == KEY_SEMICOLON) { if (keyStateShift) { s = ":"; } else { s = ";"; }; };
+				if (key == KEY_APOSTROPHE) { if (keyStateShift) {
 						//Double quote
-						MEM_WriteByte (mem, 34);
-						s = STR_FromChar (mem);
+						s = BtoC(34);
 					} else {
 						s = "'";
 					};
 				};
 
-				if (key == KEY_GRAVE) { if (shift) { s = "~"; } else { s = "`"; }; };
-
-				//I left backslash commented out, because it is escape character that caused my N++ to format rest of the code 'incorrectly' :)
-				//So this way we will have both nice code format as well as an option to write backslash :)
-				if (key == KEY_BACKSLASH) { if (shift) {
-						s = STR_PIPE;
-					} else {
-						//Backslash
-						MEM_WriteByte (mem, 92);
-						s = STR_FromChar (mem);
-					};
-				};
-
-				if (key == KEY_Z) { if (shift) { s = "Z"; } else { s = "z"; }; };
-				if (key == KEY_X) { if (shift) { s = "X"; } else { s = "x"; }; };
-				if (key == KEY_C) { if (shift) { s = "C"; } else { s = "c"; }; };
-				if (key == KEY_V) { if (shift) { s = "V"; } else { s = "v"; }; };
-				if (key == KEY_B) { if (shift) { s = "B"; } else { s = "b"; }; };
-				if (key == KEY_N) { if (shift) { s = "N"; } else { s = "n"; }; };
-				if (key == KEY_M) { if (shift) { s = "M"; } else { s = "m"; }; };
-
-				if (key == KEY_COMMA) { if (shift) { s = "<"; } else { s = ","; }; };
-				if (key == KEY_PERIOD) { if (shift) { s = ">"; } else { s = "."; }; };
-				if (key == KEY_SLASH) { if (shift) { s = "?"; } else { s = "/"; }; };
+				if (key == KEY_COMMA) { if (keyStateShift) { s = "<"; } else { s = ","; }; };
+				if (key == KEY_PERIOD) { if (keyStateShift) { s = ">"; } else { s = "."; }; };
+				if (key == KEY_SLASH) { if (keyStateShift) { s = "?"; } else { s = "/"; }; };
 
 				if (key == KEY_SPACE) { s = STR_SPACE; };
 
@@ -1331,6 +1292,29 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 				if (key == KEY_SUBTRACT) { s = "-"; };
 				if (key == KEY_ADD) { s = "+"; };
 				if (key == KEY_DECIMAL) { s = "."; };
+
+				//Backspace
+				if (key == KEY_BACK) {
+					len = STR_Len (InfoManagerAnswer);
+
+					if (len == 1) {
+						InfoManagerAnswer = STR_EMPTY;
+					} else
+					if (len > 1) {
+						InfoManagerAnswer = mySTR_SubStr (InfoManagerAnswer, 0, len - 1);
+					};
+				};
+
+				//Delete
+				if (key == KEY_DELETE) {
+					InfoManagerAnswer = STR_EMPTY;
+				};
+
+				//A..Z a..z
+				key = GetCharFromDIK(key, keyStateShift * KEY_LSHIFT, keyStateAlt);
+				if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
+					s = BtoC(key);
+				};
 
 				if (STR_Len (s) > 0) {
 					InfoManagerAnswer = ConcatStrings (InfoManagerAnswer, s);
