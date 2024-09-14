@@ -1015,7 +1015,7 @@ func string zMAT4_GetDescriptionRot (var int trafoPtr) {
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionRot_G1, zMAT4__GetDescriptionRot_G2));
-	return STR_Trim (CALL_RetValAszstring (), " ");
+	return STR_TrimChar(CALL_RetValAszstring (), CHR_SPACE);
 };
 
 /*
@@ -1032,7 +1032,7 @@ func string zMAT4_GetDescriptionPos (var int trafoPtr) {
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionPos_G1, zMAT4__GetDescriptionPos_G2));
-	return STR_Trim (CALL_RetValAszstring (), " ");
+	return STR_TrimChar(CALL_RetValAszstring (), CHR_SPACE);
 };
 
 /*

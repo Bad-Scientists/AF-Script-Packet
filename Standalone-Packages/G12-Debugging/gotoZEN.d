@@ -2,7 +2,7 @@
  *	Simple debugging feature that allows you to switch between ZEN worlds from console.
  */
 func string CC_GotoZEN (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var int count; count = STR_SplitCount (param, STR_SPACE);
@@ -11,14 +11,14 @@ func string CC_GotoZEN (var string param) {
 
 	//Get first parameter
 	if (count > 0) {
-		levelName = STR_Trim (levelName, " ");
 		levelName = STR_Split (param, STR_SPACE, 0);
+		levelName = STR_TrimChar (levelName, CHR_SPACE);
 		levelName = STR_Upper (levelName);
 
 		//Get second parameter
 		if (count > 1) {
-			vobName = STR_Trim (vobName, " ");
 			vobName = STR_Split (param, STR_SPACE, 1);
+			vobName = STR_TrimChar (vobName, CHR_SPACE);
 			vobName = STR_Upper (vobName);
 		} else {
 			//If second parameter was not supplied ... figure it out :)
@@ -32,7 +32,7 @@ func string CC_GotoZEN (var string param) {
 				var int qryLen; qryLen = STR_Len (vobName);
 
 				vobName = STR_SubStr( vobName, cmdLen, qryLen - cmdLen);
-				vobName = STR_Trim (vobName, " ");
+				vobName = STR_TrimChar (vobName, CHR_SPACE);
 				vobName = STR_Upper (vobName);
 			};
 		};

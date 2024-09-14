@@ -1708,7 +1708,7 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchWay
 	//Target position
 	var int toPos[3];
 
-	searchByPortalName = STR_Trim (searchByPortalName, " ");
+	searchByPortalName = STR_TrimChar (searchByPortalName, CHR_SPACE);
 	searchByPortalName = STR_Upper (searchByPortalName);
 
 	var int compareName; compareName = STR_Len (searchWaypointName);

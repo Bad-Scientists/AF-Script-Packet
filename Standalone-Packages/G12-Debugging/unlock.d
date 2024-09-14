@@ -4,7 +4,7 @@
  *	   lock pickLockStr - keyInstance
  */
 func string CC_Lock (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 
 	var string msg;
 	var oCNpc her; her = Hlp_GetNPC (hero);

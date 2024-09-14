@@ -4,7 +4,7 @@
  */
 
  func string CC_Create (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var string msg;
@@ -21,13 +21,13 @@
 
 	var int count; count = STR_SplitCount (param, STR_SPACE);
 	if (count > 0) {
-		instanceName = STR_Trim (instanceName, " ");
 		instanceName = STR_Split (param, STR_SPACE, 0);
+		instanceName = STR_TrimChar (instanceName, CHR_SPACE);
 	};
 
 	if (count > 1) {
-		amount = STR_Trim (amount, " ");
 		amount = STR_Split (param, STR_SPACE, 1);
+		amount = STR_TrimChar (amount, CHR_SPACE);
 
 		if (!STR_IsNumeric (amount)) {
 			amount = "1";

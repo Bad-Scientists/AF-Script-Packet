@@ -123,7 +123,7 @@ func void _hook_zCConsole_HandleEvent () {
 		historyIndex = -1;
 
 		//Trim input
-		console.instr = STR_Trim (console.instr, " ");
+		console.instr = STR_TrimChar (console.instr, CHR_SPACE);
 		storeCommand = console.instr;
 	};
 

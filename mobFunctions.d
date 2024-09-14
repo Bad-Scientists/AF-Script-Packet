@@ -18,10 +18,10 @@ func void oCMob_SetOwnerStr (var int mobPtr, var string ownerStr, var string own
 
 	if (!mobPtr) { return; };
 
-	ownerStr = STR_Trim (ownerStr, " ");
+	ownerStr = STR_TrimChar (ownerStr, CHR_SPACE);
 	ownerStr = STR_Upper (ownerStr);
 
-	ownerGuildStr = STR_Trim (ownerGuildStr, " ");
+	ownerGuildStr = STR_TrimChar (ownerGuildStr, CHR_SPACE);
 	ownerGuildStr = STR_Upper (ownerGuildStr);
 
 	var int ownerStrPtr; ownerStrPtr = _@s (ownerStr);

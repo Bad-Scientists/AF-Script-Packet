@@ -14,7 +14,7 @@ func string CC_SetRoutine (var string newRtn) {
 	if (!Hlp_Is_oCNpc (her.focus_vob)) { return "No NPC in focus."; };
 
 	//Hmmm seems like parameter has extra leading space
-	newRtn = STR_Trim (newRtn, " ");
+	newRtn = STR_TrimChar (newRtn, CHR_SPACE);
 
 	var C_NPC npc; npc = _^ (her.focus_vob);
 

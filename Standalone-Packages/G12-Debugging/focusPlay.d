@@ -3,7 +3,7 @@
  *	- will play animation on focused NPC
  */
 func string CC_FocusPlayAni (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var oCNpc npc;
@@ -19,8 +19,8 @@ func string CC_FocusPlayAni (var string param) {
 
 	var int count; count = STR_SplitCount (param, STR_SPACE);
 	if (count > 0) {
-		aniName = STR_Trim (aniName, " ");
 		aniName = STR_Split (param, STR_SPACE, 0);
+		aniName = STR_TrimChar (aniName, CHR_SPACE);
 	};
 
 	if (!STR_Len (aniName)) {
@@ -31,8 +31,8 @@ func string CC_FocusPlayAni (var string param) {
 	var string aniFrameS; aniFrameS = STR_EMPTY;
 
 	if (count > 1) {
-		aniFrameS = STR_Trim (aniFrameS, " ");
 		aniFrameS = STR_Split (param, STR_SPACE, 1);
+		aniFrameS = STR_TrimChar (aniFrameS, CHR_SPACE);
 		aniFrame = STR_ToFloat (aniFrameS);
 	};
 
@@ -67,7 +67,7 @@ func string CC_FocusPlayAni (var string param) {
  *	- will play effect on focused NPC
  */
 func string CC_FocusPlayEffect (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var oCNpc npc;
@@ -83,8 +83,8 @@ func string CC_FocusPlayEffect (var string param) {
 
 	var int count; count = STR_SplitCount (param, STR_SPACE);
 	if (count > 0) {
-		effectName = STR_Trim (effectName, " ");
 		effectName = STR_Split (param, STR_SPACE, 0);
+		effectName = STR_TrimChar (effectName, CHR_SPACE);
 	};
 
 	if (!STR_Len (effectName)) {

@@ -99,8 +99,8 @@ func void oCMob_CheckProperties () {
 			var int lenOwnerStr; lenOwnerStr = STR_Len (ownerStr);
 			var int lenOwnerGuildStr; lenOwnerGuildStr = STR_Len (ownerGuildStr);
 
-			ownerStr = STR_Trim (ownerStr, " ");
-			ownerGuildStr = STR_Trim (ownerGuildStr, " ");
+			ownerStr = STR_TrimChar (ownerStr, CHR_SPACE);
+			ownerGuildStr = STR_TrimChar (ownerGuildStr, CHR_SPACE);
 
 			if (lenOwnerStr != STR_Len (ownerStr)) {
 				ownerStrHasToBeTrimmed = TRUE;
@@ -198,7 +198,7 @@ func void oCMob_CheckProperties () {
 				pickLockStr = STR_ReplaceAll (pickLockStr, "L", STR_EMPTY);
 				pickLockStr = STR_ReplaceAll (pickLockStr, "R", STR_EMPTY);
 
-				pickLockStr = STR_Trim (pickLockStr, " ");
+				pickLockStr = STR_TrimChar (pickLockStr, CHR_SPACE);
 
 				pickLockStrValid = (STR_Len (pickLockStr) == 0);
 			};
@@ -350,7 +350,7 @@ func void zCTrigger_CheckProperties () {
 
 			var int lenTriggerTarget; lenTriggerTarget = STR_Len (triggerTarget);
 
-			triggerTarget = STR_Trim (triggerTarget, " ");
+			triggerTarget = STR_TrimChar (triggerTarget, CHR_SPACE);
 
 			if (lenTriggerTarget != STR_Len (triggerTarget)) {
 				triggerTargetHasToBeTrimmed = TRUE;
