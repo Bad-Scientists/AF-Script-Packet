@@ -37,6 +37,12 @@ const string NPC_NODE_HELMET = "ZS_HELMET";
 const string NPC_NODE_JAWS = "ZS_JAWS";
 const string NPC_NODE_TORSO = "ZS_TORSO";
 
+const string VISBODY_PREFIX_HUM = "HUM"; //Humans
+const string VISBODY_PREFIX_ORC = "ORC"; //Orcs
+
+const string MDS_HUMANS_TORCH = "HUMANS_TORCH.MDS";
+const string MDS_ORC_TORCH = "ORC_TORCH.MDS";
+
 //fight mode
 const int NPC_WEAPON_NONE = 0;
 const int NPC_WEAPON_FIST = 1;
