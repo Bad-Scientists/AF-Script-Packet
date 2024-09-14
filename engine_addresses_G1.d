@@ -432,6 +432,8 @@ func void SetFontColor (var int col) {
 };
 
 func string GetSymbolName (var int symbolIndex) {
+	if (symbolIndex < 0) { return STR_EMPTY; };
+
 	var int symbPtr; symbPtr = MEM_GetSymbolByIndex (symbolIndex);
 
 	if (symbPtr) {
