@@ -640,6 +640,195 @@ func int Npc_HasVisualBody(var int slfInstance, var string visualBodyPrefix) {
 	return FALSE;
 };
 
+/*
+ *	Npc_CarriesTorch
+ *	 - returns true if Npc is carrying torch (checks both hands)
+ *	 - updates global variable item with torch in hand
+ */
+func int Npc_CarriesTorch (var int slfinstance){
+	var oCNpc slf; slf = Hlp_GetNpc(slfinstance);
+	if (!Hlp_IsValidNPC(slf)) { return FALSE; };
+
+	var int ptr;
+	var oCItem itm;
+
+	//Get pointer to ZS_LEFTHAND
+	ptr = oCNpc_GetSlotItem(slf, NPC_NODE_LEFTHAND);
+
+	//Is there anything in hand?
+	if (ptr) {
+		itm = _^ (ptr);
+
+		//Is it ItLsTorchBurning / ItLsTorchBurned ?
+		if ((Hlp_GetinstanceID(itm) == ItLsTorchBurning) || (Hlp_GetinstanceID(itm) == ItLsTorchBurned)) {
+			item = _^(ptr);
+			return TRUE;
+		};
+	};
+
+	//Get pointer to ZS_RIGHTHAND
+	ptr = oCNpc_GetSlotItem(slf, NPC_NODE_RIGHTHAND);
+
+	//Is there anything in hand?
+	if (ptr) {
+		itm = _^ (ptr);
+
+		//Is it ItLsTorchBurning / ItLsTorchBurned ?
+		if ((Hlp_GetinstanceID(itm) == ItLsTorchBurning) || (Hlp_GetinstanceID(itm) == ItLsTorchBurned)) {
+			item = _^(ptr);
+			return TRUE;
+		};
+	};
+
+	return FALSE;
+};
+
+/*
+ *	Function calls torch exchange & removes overlay when torch is not in ZS_LEFTHAND
+ */
+func int Npc_DoExchangeTorch (var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
+
+	if (!Npc_IsInFightMode(slf, FMODE_NONE)) {
+		return FALSE;
+	};
+
+	if (oCNpc_DoExchangeTorch(slfInstance)) {
+		if (!Npc_CarriesTorch(slfInstance)) {
+			if (Npc_HasVisualBody(slf, VISBODY_PREFIX_HUM)) {
+				if (Npc_HasOverlay(slfInstance, MDS_HUMANS_TORCH)) {
+					Mdl_RemoveOverlayMds(slf, MDS_HUMANS_TORCH);
+				};
+			} else
+			if (Npc_HasVisualBody(slf, VISBODY_PREFIX_ORC)) {
+				if (Npc_HasOverlay(slfInstance, MDS_ORC_TORCH)) {
+					Mdl_RemoveOverlayMds(slf, MDS_ORC_TORCH);
+				};
+			};
+		};
+
+		return TRUE;
+	};
+	return FALSE;
+};
+
+/*
+ *	Npc_TorchSwitchOff
+ */
+func void Npc_TorchSwitchOff (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC(slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	//Is there anything in hand?
+	if (Npc_CarriesTorch(slf)) {
+		//if in right hand then perform DoExchangeTorch to get it back to left hand
+		var int ptr; ptr = oCNpc_GetSlotItem(slf, NPC_NODE_RIGHTHAND);
+		if (ptr == _@(item)) {
+			var int retVal; retVal = oCNpc_DoExchangeTorch(slf);
+		};
+
+		//Use item - will put ItLsTorch back to inventory
+		oCNpc_EquipPtr(slf, _@(item));
+
+		if (Npc_HasVisualBody(slf, VISBODY_PREFIX_HUM)) {
+			if (Npc_HasOverlay(slfInstance, MDS_HUMANS_TORCH)) {
+				Mdl_RemoveOverlayMds(slf, MDS_HUMANS_TORCH);
+			};
+		} else
+		if (Npc_HasVisualBody(slf, VISBODY_PREFIX_ORC)) {
+			if (Npc_HasOverlay(slfInstance, MDS_ORC_TORCH)) {
+				Mdl_RemoveOverlayMds(slf, MDS_ORC_TORCH);
+			};
+		};
+	};
+};
+
+/*
+ *	NPC_TorchSwitchOn
+ */
+func void NPC_TorchSwitchOn (var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNPC(slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	Npc_TorchSwitchOff(slf);
+
+	var int ptr;
+
+	//Check fight mode!
+	if (!Npc_IsInFightMode(slf, FMODE_NONE)) {
+		//Exception for FMODE_MELEE - check talent
+		if (!Npc_IsInFightMode(slf, FMODE_MELEE)) {
+			return;
+		};
+
+		//Get weapon pointer - we will allow torch in case of 1H lvl > 0
+		ptr = oCNpc_GetSlotItem(slf, NPC_NODE_RIGHTHAND);
+		var int is1H; is1H = oCItem_IsOneHanded(ptr);
+
+		if (!is1H) {
+			return;
+ 		};
+
+		//Don't allow torches on lvl 0
+		if (is1H && Npc_GetTalentSkill(slf, NPC_TALENT_1H) == 0) {
+			return;
+		};
+	};
+
+	//Get pointer to ZS_LEFTHAND
+	ptr = oCNpc_GetSlotItem(slf, NPC_NODE_LEFTHAND);
+
+	//Is hand empty?
+	if (!ptr) {
+		//Search for torches ItLsTorchBurning, ItLsTorchBurned, ItLsTorch
+		if (!NPC_GetInvItem(slf, ItLsTorchBurning)) {
+			if (!NPC_GetInvItem(slf, ItLsTorchBurned)) {
+				if (!NPC_GetInvItem(slf, ItLsTorch)) {
+					return;
+				};
+			};
+		};
+
+		oCNpc_EquipPtr(slf, _@(item));
+
+		//Apply overlay
+		if (Npc_HasVisualBody(slf, VISBODY_PREFIX_HUM)) {
+			if (!Npc_HasOverlay(slfInstance, MDS_HUMANS_TORCH)) {
+				Mdl_ApplyOverlayMds(slf, MDS_HUMANS_TORCH);
+			};
+		} else
+		if (Npc_HasVisualBody(slf, VISBODY_PREFIX_ORC)) {
+			if (!Npc_HasOverlay(slfInstance, MDS_ORC_TORCH)) {
+				Mdl_ApplyOverlayMds(slf, MDS_ORC_TORCH);
+			};
+		};
+	};
+};
+
+/*
+ *	Switches torches on - off
+ *		return -1 if NPC does not have torch
+ *		return 0 if torch was removed
+ *		return 1 if torch was put in hand
+ */
+func int NPC_TorchSwitchOnOff(var int slfinstance) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfinstance);
+	if (!Hlp_IsValidNPC (slf)) { return -1; };
+
+	if (Npc_CarriesTorch(slf)) {
+		Npc_TorchSwitchOff(slf);
+		return 0;
+	} else {
+		Npc_TorchSwitchOn(slf);
+		if (Npc_CarriesTorch(slf)) {
+			return 1;
+		};
+	};
+
+	return -1;
+};
+
 func int NPC_GetNode (var int slfInstance, var string nodeName) {
 	//0x00563F80 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
 	const int zCModel__SearchNode_G1 = 5652352;
