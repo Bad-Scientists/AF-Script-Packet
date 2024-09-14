@@ -560,26 +560,6 @@ func void _AI_TeleportKeepQueue (var string vobName) {
 	Snd_Play ("MFX_TELEPORT_CAST");
 };
 
-func string _AI_GetAniName_T_MAGRUN_2_HEASHOOT () {
-	//G1 version has much cooler teleportation animation with particle effects ;-)
-	if (MEMINT_SwitchG1G2 (1, 0)) {
-		return "T_STAND_2_TELEPORT";
-	};
-
-	//G2A teleportation animation
-	return "T_MAGRUN_2_HEASHOOT";
-};
-
-func string _AI_GetAniName_T_HEASHOOT_2_STAND () {
-	//G1 version has much cooler teleportation animation with particle effects ;-)
-	if (MEMINT_SwitchG1G2 (1, 0)) {
-		return "T_TELEPORT_2_STAND";
-	};
-
-	//G2A teleportation animation
-	return "T_HEASHOOT_2_STAND";
-};
-
 /*
  *	AI_TeleportKeepQueue
  *	 - function performs teleportation without clearing AI queue (use carefully!)
@@ -588,14 +568,28 @@ func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	var string aniTeleportationStart; aniTeleportationStart = _AI_GetAniName_T_MAGRUN_2_HEASHOOT ();
-
-	if (!Npc_HasAni (slf, aniTeleportationStart)) {
-		AI_PlayAni (slf, aniTeleportationStart);
+	if (!Npc_HasAni(slf, ANINAME_T_STAND_2_TELEPORT))
+	&& (!Npc_HasAni(slf, ANINAME_T_MAGRUN_2_HEASHOOT))
+	&& (!Npc_HasAni(slf, ANINAME_S_TELEPORT))
+	&& (!Npc_HasAni(slf, ANINAME_S_HEASHOOT))
+	{
+		//G1 version has much cooler teleportation animation with particle effects ;-)
+		if (MEMINT_SwitchG1G2(0, 1))
+		{
+			AI_PlayAni(slf, ANINAME_T_STAND_2_TELEPORT);
+		} else {
+			AI_PlayAni(slf, ANINAME_T_MAGRUN_2_HEASHOOT);
+		};
 	};
 
 	AI_Function_S (slf, _AI_TeleportKeepQueue, vobName);
-	AI_PlayAni (slf, _AI_GetAniName_T_HEASHOOT_2_STAND ());
+
+	//G1 version has much cooler teleportation animation with particle effects ;-)
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		AI_PlayAni(slf, ANINAME_T_TELEPORT_2_STAND);
+	} else {
+		AI_PlayAni(slf, ANINAME_T_HEASHOOT_2_STAND);
+	};
 };
 
 func void _AI_BeamToKeepQueue (var string vobName) {
@@ -627,7 +621,18 @@ func void AI_TeleportToWorld (var int slfInstance, var string levelName, var str
 	if (Hlp_StrCmp (thisLevelName, levelName)) {
 		AI_TeleportKeepQueue (slfInstance, vobName);
 	} else {
-		AI_PlayAni (slf, _AI_GetAniName_T_MAGRUN_2_HEASHOOT ());
+		if (!Npc_HasAni (slf, ANINAME_T_STAND_2_TELEPORT))
+		&& (!Npc_HasAni (slf, ANINAME_T_MAGRUN_2_HEASHOOT))
+		{
+			//G1 version has much cooler teleportation animation with particle effects ;-)
+			if (MEMINT_SwitchG1G2(0, 1))
+			{
+				AI_PlayAni(slf, ANINAME_T_STAND_2_TELEPORT);
+			} else {
+				AI_PlayAni(slf, ANINAME_T_MAGRUN_2_HEASHOOT);
+			};
+		};
+
 		AI_Function_SS (slf, oCGame_TriggerChangeLevel, levelName, vobName);
 	};
 };
