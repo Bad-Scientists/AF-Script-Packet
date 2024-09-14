@@ -204,3 +204,12 @@ func int oCItem_GetCondValue (var int itemPtr, var int index) {
 
 	return MEM_ReadIntArray (_@(itm.cond_value[0]), index);
 };
+
+func int oCItem_IsOneHanded(var int itemPtr) {
+	const int ITM_FLAG_DAG = 1 << 13;
+	const int ITM_FLAG_SWD = 1 << 14;
+	const int ITM_FLAG_AXE = 1 << 15;
+
+	return (oCItem_HasFlag(itemPtr, ITM_FLAG_DAG) | oCItem_HasFlag(itemPtr, ITM_FLAG_SWD) | oCItem_HasFlag(itemPtr, ITM_FLAG_AXE));
+};
+
