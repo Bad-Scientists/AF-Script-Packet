@@ -1607,3 +1607,64 @@ func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string even
 	//Get Event Message
 	return +zcEventManager_GetEventByEventName (eMgr, eventName);
 };
+
+/*
+ *	Npc_EM_SendTozSpy
+ *	 - list current events in AI queue to zSpy
+ */
+func void Npc_EM_SendTozSpy (var int slfInstance) {
+	var int count; count = NPC_EM_GetEventCount (slfInstance);
+
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+
+	var string s;
+
+	s = ConcatStrings ("Npc_EM_SendTozSpy: ", GetSymbolName (Hlp_GetInstanceID (slf)));
+	s = ConcatStrings (s, " -->");
+
+	zSpy_Info (s);
+
+	if (count) {
+		var int eMgr; eMgr = zCVob_GetEM(_@ (slf));
+
+		var int i; i = 0;
+		while (i < count);
+			var string eventName;
+			eventName = NPC_EM_GetEventName(slfInstance, i);
+
+			var int eMsg;
+			eMsg = zCEventManager_GetEventMessage(eMgr, i);
+
+			if (zCEventMessage_IsHighPriority(eMsg)) {
+				eventName = ConcatStrings(eventName, " (high prio)");
+			};
+
+			if (zCEventMessage_IsOverlay(eMsg)) {
+				eventName = ConcatStrings(eventName, " (overlay)");
+			};
+
+			if (zCEventMessage_IsDeleted(eMsg)) {
+				eventName = ConcatStrings(eventName, " (deleted)");
+			};
+
+			if (zCEventManager_IsRunning(eMgr, eMsg)) {
+				eventName = ConcatStrings(eventName, " (running)");
+
+				if (oCNpcMessage_IsInUse(eMsg)) {
+					eventName = ConcatStrings(eventName, " (in use)");
+				};
+			};
+
+			if ((slf.lastLookMsg == eMsg) && (eMsg)) {
+				eventName = ConcatStrings(eventName, " (lastLookMsg)");
+			};
+
+			zSpy_Info (eventName);
+			i += 1;
+		end;
+	} else {
+		zSpy_Info ("AI queue is empty.");
+	};
+
+	zSpy_Info ("<--");
+};
