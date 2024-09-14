@@ -9,7 +9,7 @@ func int zCEventMessage_MD_GetNumOfSubTypes (var int eMsg) {
 	//0x00401FE0 public: virtual int __thiscall zCEventMessage::MD_GetNumOfSubTypes(void)
 	const int zCEventMessage__MD_GetNumOfSubTypes_G2 = 4202464;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return -1; };
+	if (!eMsg) { return -1; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -27,7 +27,7 @@ func int zCEventMessage_GetSubType (var int eMsg) {
 	//0x00674290 public: unsigned short __thiscall zCEventMessage::GetSubType(void)const
 	const int zCEventMessage__GetSubType_G2 = 6767248;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return -1; };
+	if (!eMsg) { return -1; };
 
 	var int retVal;
 
@@ -626,7 +626,7 @@ func int zCEventMessage_GetClassDef (var int eMsg) {
 	//0x00401F30 private: virtual class zCClassDef * __thiscall zCEventMessage::_GetClassDef(void)const
 	const int zCEventMessage___GetClassDef_G2 = 4202288;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -644,7 +644,7 @@ func int zCEventMessage_IsOverlay (var int eMsg) {
 	//0x00401F40 public: virtual int __thiscall zCEventMessage::IsOverlay(void)
 	const int zCEventMessage__IsOverlay_G2 = 4202304;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -662,7 +662,7 @@ func int zCEventMessage_IsNetRelevant (var int eMsg) {
 	//0x00401F50 public: virtual int __thiscall zCEventMessage::IsNetRelevant(void)
 	const int zCEventMessage__IsNetRelevant_G2 = 4202320;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -680,7 +680,7 @@ func int zCEventMessage_IsHighPriority (var int eMsg) {
 	//0x00401F60 public: virtual int __thiscall zCEventMessage::IsHighPriority(void)
 	const int zCEventMessage__IsHighPriority_G2 = 4202336;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -698,7 +698,7 @@ func int zCEventMessage_IsJob (var int eMsg) {
 	//0x00401F70 public: virtual int __thiscall zCEventMessage::IsJob(void)
 	const int zCEventMessage__IsJob_G2 = 4202352;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -716,7 +716,7 @@ func int zCEventMessage_IsDeleteable (var int eMsg) {
 	//0x00401FA0 public: virtual int __thiscall zCEventMessage::IsDeleteable(void)
 	const int zCEventMessage__IsDeleteable_G2 = 4202400;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -734,7 +734,7 @@ func int zCEventMessage_IsDeleted (var int eMsg) {
 	//0x00401FB0 public: virtual int __thiscall zCEventMessage::IsDeleted(void)
 	const int zCEventMessage__IsDeleted_G2 = 4202416;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -752,7 +752,7 @@ func int zCEventMessage_GetCutsceneMode (var int eMsg) {
 	//0x00401FD0 public: virtual int __thiscall zCEventMessage::GetCutsceneMode(void)
 	const int zCEventMessage__GetCutsceneMode_G2 = 4202448;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	if (!eMsg) { return 0; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -785,7 +785,7 @@ func void zCEventMessage_Delete (var int eMsg) {
 	//0x00401F90 public: virtual void __thiscall zCEventMessage::Delete(void)
 	const int zCEventMessage__Delete_G2 = 4202384;
 
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+	if (!eMsg) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -811,7 +811,7 @@ func int zCEventManager_IsRunning (var int eMgr, var int eMsg) {
 	//It can be used to check if message is 'safe' (if it is in EM then it's kinda safe :) )
 	//Function Hlp_Is_zCEventMessage is reading pointer - if pointer is invalid we might crash (which happened to me as I used some EM manipulation functions incorrectly ...)
 	//Anyway it's counter-productive to check eMsg here --> thus only checking if eMsg is NULL
-	//if (!Hlp_Is_zCEventMessage (eMsg)) { return 0; };
+	//if (!eMsg) { return 0; };
 	if (!eMsg) { return 0; };
 	if (!Hlp_Is_zCEventManager (eMgr)) { return 0; };
 
@@ -1067,7 +1067,7 @@ func void zCEventManager_OnMessage (var int eMgr, var int eMsg, var int vobPtr) 
 	const int zCEventManager__OnMessage_G2 = 7889792;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+	if (!eMsg) { return; };
 	if (!vobPtr) { return; };
 
 	const int call = 0;
@@ -1088,7 +1088,7 @@ func void zCEventManager_Delete (var int eMgr, var int eMsg) {
 	const int zCEventManager__Delete_G2 = 7893616;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+	if (!eMsg) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -1107,7 +1107,7 @@ func void zCEventManager_RemoveFromList (var int eMgr, var int eMsg) {
 	const int zCEventManager__RemoveFromList_G2 = 7893680;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+	if (!eMsg) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
@@ -1126,7 +1126,7 @@ func void zCEventManager_InsertInList (var int eMgr, var int eMsg) {
 	const int zCEventManager__InsertInList_G2 = 7893760;
 
 	if (!Hlp_Is_zCEventManager (eMgr)) { return; };
-	if (!Hlp_Is_zCEventMessage (eMsg)) { return; };
+	if (!eMsg) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
