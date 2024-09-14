@@ -222,15 +222,59 @@ func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTarget
  */
 
 func void AI_GotoVobPtr_EvalWaynetUse (var int slfInstance, var int vobPtr) {
-	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	var int slfPtr; slfPtr = _@ (slf);
 
 	var int posNpc[3];
 	var int posVob[3];
 
+	//Get Npc position
 	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (posNpc)))
+	//Get Vob position
 	|| (!zCVob_GetPositionWorldToPos (vobPtr, _@ (posVob)))
 	{
 		return;
+	};
+
+	//Update vob position with ideal position in case of oCMobInter objects
+	if (Hlp_Is_oCMobInter(vobPtr)) {
+		//func void oCMobInter_ScanIdealPositions (var int mobPtr) {
+			//0x0067C9C0 protected: void __thiscall oCMobInter::ScanIdealPositions(void)
+			const int oCMobInter__ScanIdealPositions_G1 = 6801856;
+
+			//0x0071DC30 public: void __thiscall oCMobInter::ScanIdealPositions(void)
+			const int oCMobInter__ScanIdealPositions_G2 = 7461936;
+
+			const int call = 0;
+			if (CALL_Begin(call)) {
+				CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (oCMobInter__ScanIdealPositions_G1, oCMobInter__ScanIdealPositions_G2));
+				call = CALL_End();
+			};
+		//};
+
+		//func int oCMobInter_GetFreePosition (var int mobPtr, var int slfInstance, var int vecPtr) {
+			//0x0067CD00 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+			const int oCMobInter__GetFreePosition_G1 = 6802688;
+
+			//0x0071DF50 public: int __thiscall oCMobInter::GetFreePosition(class oCNpc *,class zVEC3 &)
+			const int oCMobInter__GetFreePosition_G2 = 7462736;
+
+			var int freePos[3]; var int freePosPtr; freePosPtr = _@(freePos);
+
+			const int call2 = 0;
+			if (CALL_Begin(call2)) {
+				CALL_PtrParam (_@ (freePosPtr));
+				CALL_PtrParam (_@ (slfPtr));
+				CALL__thiscall (_@ (vobPtr), MEMINT_SwitchG1G2 (oCMobInter__GetFreePosition_G1, oCMobInter__GetFreePosition_G2));
+				call2 = CALL_End();
+			};
+
+			var int retVal; retVal = CALL_RetValAsInt ();
+			if (retVal) {
+				MEM_CopyBytes(freePosPtr, _@(posVob), 12);
+			};
+		//};
 	};
 
 	//-- Get nearest waypoint to vob
