@@ -623,6 +623,23 @@ func void NPC_SetBitfield (var int slfInstance, var int bitfield, var int value)
 	};
 };
 
+/*
+ *	Npc_HasVisualBody
+ *	 - checks if visual body name starts with specified string
+ */
+func int Npc_HasVisualBody(var int slfInstance, var string visualBodyPrefix) {
+	var string visualBody; visualBody = oCNpc_GetVisualBody(slfInstance);
+
+	visualBody = STR_Upper(visualBody);
+	visualBodyPrefix = STR_Upper(visualBodyPrefix);
+
+	if (STR_StartsWith(visualBody, visualBodyPrefix)) {
+		return TRUE;
+	};
+
+	return FALSE;
+};
+
 func int NPC_GetNode (var int slfInstance, var string nodeName) {
 	//0x00563F80 public: class zCModelNodeInst * __thiscall zCModel::SearchNode(class zSTRING const &)
 	const int zCModel__SearchNode_G1 = 5652352;
