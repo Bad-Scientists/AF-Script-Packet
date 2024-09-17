@@ -779,8 +779,3 @@ func int STR_Count (var string s, var string s1) {
 
 	return count;
 };
-
-func void testSCount () {
-	PrintS (IntToString (STR_Count ("Ahoj ako sa mas?", " ")));
-	PrintS (BtoC (97));
-};
