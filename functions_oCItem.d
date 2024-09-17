@@ -205,6 +205,16 @@ func int oCItem_GetCondValue (var int itemPtr, var int index) {
 	return MEM_ReadIntArray (_@(itm.cond_value[0]), index);
 };
 
+func int oCItem_GetOwnerID(var int itemPtr) {
+	if (!Hlp_Is_oCItem(itemPtr)) { return -1; };
+
+	//int owner; // sizeof 04h offset 1E0h
+	//int owner; // sizeof 04h offset 200h
+
+	//for some reason item.owner is 'func' in vanilla Gothic ... so we will use offset to read owner information
+	return + MEM_ReadInt (itemPtr + MEMINT_SwitchG1G2(480, 512));
+};
+
 func int oCItem_IsOneHanded(var int itemPtr) {
 	const int ITM_FLAG_DAG = 1 << 13;
 	const int ITM_FLAG_SWD = 1 << 14;
@@ -213,3 +223,57 @@ func int oCItem_IsOneHanded(var int itemPtr) {
 	return (oCItem_HasFlag(itemPtr, ITM_FLAG_DAG) | oCItem_HasFlag(itemPtr, ITM_FLAG_SWD) | oCItem_HasFlag(itemPtr, ITM_FLAG_AXE));
 };
 
+func string oCItem_GetInvSlotName(var int itemPtr) {
+	if (!Hlp_Is_oCItem (itemPtr)) { return STR_EMPTY; };
+	var oCItem itm; itm = _^(itemPtr);
+
+	const int ITM_FLAG_DAG = 1<<13;
+	const int ITM_FLAG_SWD = 1<<14;
+	const int ITM_FLAG_AXE = 1<<15;
+	const int ITM_FLAG_2HD_SWD = 1<<16;
+	const int ITM_FLAG_2HD_AXE = 1<<17;
+	const int ITM_FLAG_SHIELD = 1<<18;
+	const int ITM_FLAG_BOW = 1<<19;
+	const int ITM_FLAG_CROSSBOW = 1<<20;
+	const int ITM_FLAG_MULTI = 1<<21;
+
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_SWD) || oCItem_HasFlag(itemPtr, ITM_FLAG_DAG) || oCItem_HasFlag(itemPtr, ITM_FLAG_AXE))
+	{
+		return NPC_NODE_SWORD;
+	};
+
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_2HD_SWD) || oCItem_HasFlag(itemPtr, ITM_FLAG_2HD_AXE))
+	{
+		return NPC_NODE_LONGSWORD;
+	};
+
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_SHIELD))
+	{
+		return NPC_NODE_SHIELD;
+	};
+
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_BOW))
+	{
+		return NPC_NODE_BOW;
+	};
+
+	if (oCItem_HasFlag(itemPtr, ITM_FLAG_CROSSBOW))
+	{
+		return NPC_NODE_CROSSBOW;
+	};
+
+	const int ITM_WEAR_TORSO = 1;
+	const int ITM_WEAR_HEAD = 2;
+
+	if (itm.wear == ITM_WEAR_HEAD)
+	{
+		return NPC_NODE_HELMET;
+	};
+
+	if (itm.wear == ITM_WEAR_TORSO)
+	{
+		return NPC_NODE_TORSO;
+	};
+
+	return STR_EMPTY;
+};
