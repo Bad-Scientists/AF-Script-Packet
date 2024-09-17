@@ -634,6 +634,11 @@ func void _eventDoTakeVob_SwitchCategory () {
 };
 
 func void _eventOpenInventory_SwitchToCategory () {
+	//Only if not in dialogue - otherwise this collides with EIM item preview feature
+	if (!InfoManager_HasFinished()) {
+		return;
+	};
+
 	if (invCategory_VobTaken_ItemInstanceID > -1) {
 		Npc_InvSelectItem (hero, invCategory_VobTaken_ItemInstanceID);
 		invCategory_VobTaken_ItemInstanceID = -1;
