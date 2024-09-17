@@ -732,8 +732,15 @@ func string NPC_GetLastRoutineWP (var int slfInstance) {
 	//If rtnBefore == rtnNow - then return blank string
 	if (state.rtnBefore == state.rtnNow) { return STR_EMPTY; };
 
-	var int rtnEntryPtr; rtnEntryPtr = state.rtnBefore;
-	if (!rtnEntryPtr) { return ""; };
+	var int rtnEntryPtr;
+
+	if (state.rtnBefore) {
+		rtnEntryPtr = state.rtnBefore;
+	} else {
+		rtnEntryPtr = state.rtnNow;
+	};
+
+	if (!rtnEntryPtr) { return STR_EMPTY; };
 
 	var oCRtnEntry rtnEntry; rtnEntry = _^ (rtnEntryPtr);
 	return rtnEntry.wpname;
