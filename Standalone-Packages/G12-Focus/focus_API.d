@@ -35,13 +35,26 @@ const string PC_CHANGEFOCUS_COLOR_ANGRY = "FF8000"; //Orange
 const string PC_CHANGEFOCUS_COLOR_HOSTILE = "FF4646"; //Red
 
 //API function
-//This is where you can define your own logic for determining attitudes
-func int C_Npc_GetAttitude(var C_NPC oth) {
+//This is where you can define your own logic for determining focus color
+func int C_Npc_GetFocusColor(var C_NPC oth) {
 	var int att; att = Npc_GetPermAttitude(hero, oth);
 
-	if ((att == ATT_NEUTRAL) && (oth.npcType == NpcType_Friend)) {
-		att = ATT_FRIENDLY;
+	if (((att == ATT_NEUTRAL) && (oth.npcType == NpcType_Friend))
+	|| ((att == ATT_FRIENDLY)))
+	{
+		return RGBA(102, 255, 178, 255); //66FFB2 green
 	};
 
-	return att;
+	if ((att == ATT_ANGRY)))
+	{
+		return RGBA(255, 128, 000, 255); //FF8000 orange
+	};
+
+	if ((att == ATT_HOSTILE)))
+	{
+		return RGBA(255, 070, 070, 255); //FF4646 red
+	};
+
+	//Default - white
+	return RGBA(255, 255, 255, 255);
 };
