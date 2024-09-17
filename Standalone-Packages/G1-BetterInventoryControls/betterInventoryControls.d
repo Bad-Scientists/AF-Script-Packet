@@ -327,9 +327,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 								Trade_MoveToContainerPlayer (itmPtr, amount);
 							};
 
-							//Reset
-							_TradeCancelTransfer = FALSE;
-
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};
 
