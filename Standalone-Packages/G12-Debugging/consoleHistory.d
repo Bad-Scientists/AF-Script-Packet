@@ -100,7 +100,7 @@ func void _hook_zCConsole_HandleEvent () {
 	};
 
 	//Append auto-completion suggestion
-	if (key == KEY_RIGHTARROW) {
+	if (key == KEY_TAB) {
 		if (STR_Len (consoleAutocompleteSuggestion)) {
 			consoleCommand = consoleAutocompleteCommand;
 			consoleCommand = ConcatStrings (consoleCommand, STR_SPACE);
