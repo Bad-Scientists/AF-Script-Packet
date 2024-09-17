@@ -1428,6 +1428,10 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 		};
 	end;
 
+	if (Npc_IsAniActive_ByAniName(slf, aniName)) {
+		count += 1;
+	};
+
 	return count;
 };
 
