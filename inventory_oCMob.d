@@ -256,12 +256,18 @@ func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){
 				Event_Execute (_MobTransferItem_Event, itmPtr);
 			};
 
-			i = 0;
-			while (i < itm.amount);
-				//We have to create items in a loop using CreateInvItem function (because of items without ITEM_MULTI flag)
-				CreateInvItem (slf, Hlp_GetInstanceID (itm));
-				i += 1;
-			end;
+			var int itemInstanceID; itemInstanceID = Hlp_GetInstanceID(itm);
+
+			if ((itm.flags & ITEM_MULTI) == ITEM_MULTI) {
+				CreateInvItems(slf, itemInstanceID, itm.amount);
+			} else {
+				i = 0;
+				while (i < itm.amount);
+					//We have to create items in a loop using CreateInvItem function (because of items without ITEM_MULTI flag)
+					CreateInvItem(slf, itemInstanceID);
+					i += 1;
+				end;
+			};
 
 			oCMobContainer_Remove(mobPtr, itmPtr);
 			ptr = container.containList_next;
