@@ -356,11 +356,13 @@ func int MEM_StringArrayContains (var int arrPtr, var string s) {
 /*
  *	STR_FormatLeadingZeros
  */
-func string STR_FormatLeadingZeros (var int number, var int len) {
-	var string s; s = IntToString (number);
+func string STR_FormatLeadingZeros (var int number, var int total) {
+	var string s; s = IntToString(number);
+	var int len; len = STR_Len(s);
 
-	while (STR_Len (s) < len);
+	while(len < total);
 		s = ConcatStrings ("0", s);
+		len += 1;
 	end;
 
 	return s;
