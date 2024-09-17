@@ -870,8 +870,8 @@ func int Npc_GetNodePositionWorldToPos (var int slfInstance, var string nodeName
 	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (slfInstance, nodeName);
 
 	if (nodePosPtr) {
-		CopyVector (nodePosPtr, posPtr);
-		MEM_Free (nodePosPtr);
+		MEM_CopyBytes(nodePosPtr, posPtr, 12);
+		MEM_Free(nodePosPtr);
 		return TRUE;
 	};
 
