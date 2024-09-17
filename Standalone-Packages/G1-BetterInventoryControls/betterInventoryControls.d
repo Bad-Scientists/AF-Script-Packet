@@ -99,17 +99,19 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
-		var int numItemsInCategory; numItemsInCategory = List_LengthS (container.inventory2_oCItemContainer_contents) - 1;
+		var int numItemsInCategory; numItemsInCategory = zCListSort_GetLength(container.inventory2_oCItemContainer_contents);
 
-		if (numItemsInCategory > -1) {
+		if (numItemsInCategory > 0) {
+			var int pageSize; pageSize = container.inventory2_oCItemContainer_drawItemMax;
+
 			//Page Up
 			if (key == KEY_PRIOR) {
 				if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset) {
 					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset;
 				} else {
-					if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_drawItemMax) {
-						container.inventory2_oCItemContainer_offset -= container.inventory2_oCItemContainer_drawItemMax;
-						container.inventory2_oCItemContainer_selectedItem -= container.inventory2_oCItemContainer_drawItemMax;
+					if (container.inventory2_oCItemContainer_selectedItem > pageSize) {
+						container.inventory2_oCItemContainer_offset -= pageSize;
+						container.inventory2_oCItemContainer_selectedItem -= pageSize;
 					} else {
 						container.inventory2_oCItemContainer_selectedItem = 0;
 						container.inventory2_oCItemContainer_offset = 0;
@@ -119,10 +121,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			//Page Down
 			if (key == KEY_NEXT) {
-				var int pageSize; pageSize = container.inventory2_oCItemContainer_drawItemMax - 1;
-
-				if (container.inventory2_oCItemContainer_selectedItem < container.inventory2_oCItemContainer_offset + pageSize) {
-					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset + pageSize;
+				if (container.inventory2_oCItemContainer_selectedItem < container.inventory2_oCItemContainer_offset + pageSize - 1) {
+					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset + pageSize - 1;
 				} else {
 					container.inventory2_oCItemContainer_offset += pageSize;
 					container.inventory2_oCItemContainer_selectedItem += pageSize;
@@ -137,20 +137,20 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			//Jump to last item
 			if (key == KEY_END) {
-				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory;
+				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory - 1;
 			};
 
-			if (container.inventory2_oCItemContainer_offset > numItemsInCategory) {
-				container.inventory2_oCItemContainer_offset = numItemsInCategory;
+			//Adjust offsets
+			if (container.inventory2_oCItemContainer_selectedItem >= numItemsInCategory) {
+				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory - 1;
+
+				if (container.inventory2_oCItemContainer_selectedItem > pageSize) {
+					container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - pageSize;
+				};
 			};
 
-			if (container.inventory2_oCItemContainer_selectedItem > numItemsInCategory) {
-				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory;
-			};
-
-			//Adjust offset
-			if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset + container.inventory2_oCItemContainer_drawItemMax) {
-				container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - container.inventory2_oCItemContainer_drawItemMax;
+			if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset + pageSize) {
+				container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - pageSize;
 			};
 
 			return TRUE;
