@@ -69,3 +69,17 @@ func void oCGame_InitNpcAttitudes () {
 		call = CALL_End ();
 	};
 };
+
+/*
+ *	Function returns TRUE if chapter is yet to be introduced
+ */
+func int CGameManager_GetChapterIntroduce()
+{
+	//0085e9e0
+	const int s_chapter_introduce_addr_G1 = 8776160;
+
+	//008c2954
+	const int s_chapter_introduce_addr_G2 = 9185620;
+
+	return + MEM_ReadByte(MEMINT_SwitchG1G2(s_chapter_introduce_addr_G1, s_chapter_introduce_addr_G2));
+};
