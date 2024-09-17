@@ -152,7 +152,7 @@ func int PickLockHelper_GetPosY () {
 		var int fontHeight; fontHeight = Print_GetFontHeight (_pickLockHelper_FontName);
 		fontHeight = Print_ToVirtual (fontHeight, PS_Y);
 
-		//var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
+		//var int spaceWidth; spaceWidth = Font_GetStringWidth (STR_SPACE, _pickLockHelper_FontName);
 		//spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 		posY = (PS_VMax / 2 - fontHeight / 2);
@@ -168,7 +168,7 @@ func int PickLockHelper_GetPosY () {
 };
 
 func void PickLockHelper_Show () {
-	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
+	var int spaceWidth; spaceWidth = Font_GetStringWidth (STR_SPACE, _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 	var int scaleF; scaleF = _getInterfaceScaling ();
@@ -264,7 +264,7 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 
 	//Reset current combination
 	if (currCharCount == 0) {
-		pickLockHelper_CurrentCombination = "";
+		pickLockHelper_CurrentCombination = STR_EMPTY;
 	};
 
 //-- Update PickLockHelper view
@@ -274,7 +274,7 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 	//Update position
 	PickLockHelper_Show();
 
-	var int spaceWidth; spaceWidth = Font_GetStringWidth (" ", _pickLockHelper_FontName);
+	var int spaceWidth; spaceWidth = Font_GetStringWidth (STR_SPACE, _pickLockHelper_FontName);
 	spaceWidth = Print_ToVirtual (spaceWidth, PS_X);
 
 	//Update texts
@@ -290,7 +290,7 @@ func void _hook_oCMobLockable_PickLock__PickLockHelper () {
 
 	var int c; c = MEM_ReadInt (ESP + 8);
 
-	var string pickLockString; pickLockString = "";
+	var string pickLockString; pickLockString = STR_EMPTY;
 
 	var int currCharCount; currCharCount = (mob.bitfield & oCMobLockable_bitfield_pickLockNr) >> 2;
 
@@ -335,7 +335,7 @@ func void _hook_oCMobLockable_PickLock__PickLockHelper () {
 	pickLockHelper_CurrentCombination = STR_ReplaceAll (pickLockHelper_CurrentCombination, "R", _pickLockHelper_RightKey);
 
 	if (STR_Len (pickLockHelper_CurrentCombination) > pickLockHelper_LastKeyPos) {
-		pickLockHelper_LastKey = "";
+		pickLockHelper_LastKey = STR_EMPTY;
 		pickLockHelper_LastKeyPos = 0;
 	};
 
@@ -359,9 +359,9 @@ func void _eventMobStartInteraction__PickLockHelper (var int eventType) {
 
 	//Reset for new mob
 	if (pickLockHelper_LastMob != ECX) {
-		pickLockHelper_CurrentCombination = "";
-		pickLockHelper_LastCombination = "";
-		pickLockHelper_LastKey = "";
+		pickLockHelper_CurrentCombination = STR_EMPTY;
+		pickLockHelper_LastCombination = STR_EMPTY;
+		pickLockHelper_LastKey = STR_EMPTY;
 		pickLockHelper_LastKeyPos = 0;
 	};
 
@@ -375,7 +375,7 @@ func void _eventMobStartInteraction__PickLockHelper (var int eventType) {
 	if (currCharCount > 0) {
 		pickLockHelper_CurrentCombination = STR_Prefix (mob.pickLockStr, currCharCount);
 	} else {
-		pickLockHelper_CurrentCombination = "";
+		pickLockHelper_CurrentCombination = STR_EMPTY;
 	};
 
 	//Show picklock helper if chest is locked with pickLockStr
@@ -443,7 +443,7 @@ func void _hook_oCMobInter_StopInteraction__PickLockHelper () {
 	PickLockHelper_Hide ();
 
 	//Reset
-	pickLockHelper_CurrentCombination = "";
+	pickLockHelper_CurrentCombination = STR_EMPTY;
 };
 
 func void G12_PickLockHelper_Init () {

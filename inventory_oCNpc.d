@@ -1676,7 +1676,7 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCat, var 
 		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
 		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
 		//we have to check invCat one more time here!
-		if (invCat > 0) {
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
 			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
 				itmSlot += 1;
 				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1778,7 +1778,7 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
 		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
 		//we have to check invCat one more time here!
-		if (invCat > 0) {
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
 			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
 				itmSlot += 1;
 				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1819,12 +1819,12 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 			Event_Execute (_NpcTransferItem_Event, _@ (item));
 		};
 
-		if (amount == 1) {
-			CreateInvItem (oth, itemInstanceID);
-			NPC_RemoveInvItem (slf, itemInstanceID);
+		if (item.flags & ITEM_MULTI) {
+			CreateInvItems(oth, itemInstanceID, amount);
+			NPC_RemoveInvItems(slf, itemInstanceID, amount);
 		} else {
-			CreateInvItems (oth, itemInstanceID, amount);
-			NPC_RemoveInvItems (slf, itemInstanceID, amount);
+			CreateInvItem(oth, itemInstanceID);
+			NPC_RemoveInvItem(slf, itemInstanceID);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1862,7 +1862,7 @@ func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCat) {
 		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
 		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
 		//we have to check invCat one more time here!
-		if (invCat > 0) {
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
 			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
 				itmSlot += 1;
 				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -2406,3 +2406,42 @@ func int Npc_GetEquippedItemPtrByFlag (var int slfInstance, var int category, va
 	return 0;
 };
 
+/*
+ *	Npc_HasOwnMeleeWeapon
+ *	 - function returns pointer to item
+ */
+func int Npc_HasOwnMeleeWeapon(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return 0; };
+
+	//Unpack inventory
+	oCNpc_UnpackInventory(slf);
+
+	var int invCat; invCat = INV_WEAPON;
+	var int itmSlot; itmSlot = 0;
+
+	var int amount; amount = NPC_GetInvItemBySlot(slf, invCat, itmSlot);
+
+	while(amount > 0);
+		var int itemPtr; itemPtr = _@(item);
+
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
+			if (Npc_ItemGetCategory(slfInstance, itemPtr) != invCat) {
+				itmSlot += 1;
+				amount = NPC_GetInvItemBySlot(slf, invCat, itmSlot);
+				continue;
+			};
+		};
+
+		if (oCItem_GetOwnerID(itemPtr) == Hlp_GetInstanceID(slf)) {
+			return + itemPtr;
+		};
+
+		itmSlot += 1;
+		amount = NPC_GetInvItemBySlot(slf, invCat, itmSlot);
+	end;
+
+	return 0;
+};

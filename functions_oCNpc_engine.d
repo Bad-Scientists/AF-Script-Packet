@@ -24,6 +24,25 @@ func void oCNpc_SetFocusVob (var int slfInstance, var int focusPtr) {
 	};
 };
 
+func void oCNpc_SetInteractItem(var int slfInstance, var int itemPtr) {
+	//0x006A6670 public: void __thiscall oCNpc::SetInteractItem(class oCItem *)
+	const int oCNpc__SetInteractItem_G1 = 6973040;
+
+	//0x0074ACC0 public: void __thiscall oCNpc::SetInteractItem(class oCItem *)
+	const int oCNpc__SetInteractItem_G2 = 7646400;
+
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	var int slfPtr; slfPtr = _@ (slf);
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(itemPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2(oCNpc__SetInteractItem_G1, oCNpc__SetInteractItem_G2));
+		call = CALL_End();
+	};
+};
+
 /*
  *
  */
@@ -906,7 +925,7 @@ func string oCNpc_GetVisualBody (var int slfInstance) {
 	const int oCNpc__GetVisualBody_G2 = 7571392;
 
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	CALL_RetValIszString ();
 	CALL__thiscall (_@ (slf), MEMINT_SwitchG1G2 (oCNpc__GetVisualBody_G1, oCNpc__GetVisualBody_G2));

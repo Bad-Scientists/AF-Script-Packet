@@ -57,7 +57,7 @@ func string byte2hex(var int byte) {
  * Convert decimal to hexadecimal (big endian)
  */
 func string dec2hex(var int dec) {
-    var string hex; hex = "";
+    var string hex; hex = STR_EMPTY;
     hex = ConcatStrings(hex, byte2hex(dec >> 24));
     hex = ConcatStrings(hex, byte2hex(dec >> 16));
     hex = ConcatStrings(hex, byte2hex(dec >> 8));
@@ -84,7 +84,7 @@ func int hex2dec(var string hex) {
     };
 
     // Remove any spaces
-    hex = STR_ReplaceAll(hex, " ", "");
+    hex = STR_ReplaceAll(hex, STR_SPACE, STR_EMPTY);
 
     // Check length
     if (zStr.len > 8) {
@@ -109,8 +109,8 @@ func int h(var string hex) {
  * Convert decimal to binary
  */
 func string dec2bin(var int dec) {
-    var string bin; bin = "";
     repeat(i, 32); var int i;
+    var string bin; bin = STR_EMPTY;
         if (dec & (1 << i)) {
             bin = ConcatStrings("1", bin);
         } else {
@@ -139,7 +139,7 @@ func int bin2dec(var string bin) {
     };
 
     // Remove any spaces
-    bin = STR_ReplaceAll(bin, " ", "");
+    bin = STR_ReplaceAll(bin, STR_SPACE, STR_EMPTY);
 
     // Check length
     if (zStr.len > 32) {

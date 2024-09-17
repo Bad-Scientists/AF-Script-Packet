@@ -153,7 +153,7 @@ func string GetKeyName (var int key) {
 };
 
 func string GetKeyChar (var int key) {
-	if (key == KEY_ESCAPE) { return ""; };
+	if (key == KEY_ESCAPE) { return STR_EMPTY; };
 	if (key == KEY_1) { return "1"; };
 	if (key == KEY_2) { return "2"; };
 	if (key == KEY_3) { return "3"; };
@@ -166,7 +166,7 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_0) { return "0"; };
 	if (key == KEY_MINUS) { return "-"; };
 	if (key == KEY_EQUALS) { return "="; };
-	if (key == KEY_BACK) { return ""; };
+	if (key == KEY_BACK) { return STR_EMPTY; };
 	if (key == KEY_TAB) { return BtoC (9); };
 	if (key == KEY_Q) { return "Q"; };
 	if (key == KEY_W) { return "W"; };
@@ -181,7 +181,7 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_LBRACKET) { return "["; };
 	if (key == KEY_RBRACKET) { return "]"; };
 	if (key == KEY_RETURN) { return BtoC (10); };
-	if (key == KEY_LCONTROL) { return ""; };
+	if (key == KEY_LCONTROL) { return STR_EMPTY; };
 	if (key == KEY_A) { return "A"; };
 	if (key == KEY_S) { return "S"; };
 	if (key == KEY_D) { return "D"; };
@@ -194,7 +194,7 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_SEMICOLON) { return ";"; };
 	if (key == KEY_APOSTROPHE) { return "'"; };
 	if (key == KEY_GRAVE) { return "`"; };
-	if (key == KEY_LSHIFT) { return ""; };
+	if (key == KEY_LSHIFT) { return STR_EMPTY; };
 	if (key == KEY_BACKSLASH) { return BtoC (92); };
 	if (key == KEY_Z) { return "Z"; };
 	if (key == KEY_X) { return "X"; };
@@ -206,23 +206,23 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_COMMA) { return ","; };
 	if (key == KEY_PERIOD) { return "."; };
 	if (key == KEY_SLASH) { return "/"; };
-	if (key == KEY_RSHIFT) { return ""; };
+	if (key == KEY_RSHIFT) { return STR_EMPTY; };
 	if (key == KEY_MULTIPLY) { return "*"; };
-	if (key == KEY_LMENU) { return ""; };
-	if (key == KEY_SPACE) { return " "; };
-//	if (key == KEY_CAPITAL) { return ""; }; ?
-	if (key == KEY_F1) { return ""; };
-	if (key == KEY_F2) { return ""; };
-	if (key == KEY_F3) { return ""; };
-	if (key == KEY_F4) { return ""; };
-	if (key == KEY_F5) { return ""; };
-	if (key == KEY_F6) { return ""; };
-	if (key == KEY_F7) { return ""; };
-	if (key == KEY_F8) { return ""; };
-	if (key == KEY_F9) { return ""; };
-	if (key == KEY_F10) { return ""; };
-	if (key == KEY_NUMLOCK) { return ""; };
-	if (key == KEY_SCROLL) { return ""; };
+	if (key == KEY_LMENU) { return STR_EMPTY; };
+	if (key == KEY_SPACE) { return STR_SPACE; };
+//	if (key == KEY_CAPITAL) { return STR_EMPTY; }; ?
+	if (key == KEY_F1) { return STR_EMPTY; };
+	if (key == KEY_F2) { return STR_EMPTY; };
+	if (key == KEY_F3) { return STR_EMPTY; };
+	if (key == KEY_F4) { return STR_EMPTY; };
+	if (key == KEY_F5) { return STR_EMPTY; };
+	if (key == KEY_F6) { return STR_EMPTY; };
+	if (key == KEY_F7) { return STR_EMPTY; };
+	if (key == KEY_F8) { return STR_EMPTY; };
+	if (key == KEY_F9) { return STR_EMPTY; };
+	if (key == KEY_F10) { return STR_EMPTY; };
+	if (key == KEY_NUMLOCK) { return STR_EMPTY; };
+	if (key == KEY_SCROLL) { return STR_EMPTY; };
 	if (key == KEY_NUMPAD7) { return "7"; };
 	if (key == KEY_NUMPAD8) { return "8"; };
 	if (key == KEY_NUMPAD9) { return "9"; };
@@ -237,8 +237,8 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_NUMPAD0) { return "0"; };
 	if (key == KEY_DECIMAL) { return "."; };
 //	if (key == KEY_OEM_102) { return "Escape"; }; ?
-	if (key == KEY_F11) { return ""; };
-	if (key == KEY_F12) { return ""; };
+	if (key == KEY_F11) { return STR_EMPTY; };
+	if (key == KEY_F12) { return STR_EMPTY; };
 /*
 	if (key == KEY_F13) { return "F13"; };
 	if (key == KEY_F14) { return "Escape"; };
@@ -261,7 +261,7 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_NEXTTRACK) { return "Escape"; };
 */
 	if (key == KEY_NUMPADENTER) { return BtoC (10); };
-	if (key == KEY_RCONTROL) { return ""; };
+	if (key == KEY_RCONTROL) { return STR_EMPTY; };
 /*
 	if (key == KEY_MUTE) { return "Escape"; };
 	if (key == KEY_CALCULATOR) { return "Escape"; };
@@ -274,20 +274,20 @@ func string GetKeyChar (var int key) {
 */
 	if (key == KEY_DIVIDE) { return "/"; };
 //	if (key == KEY_SYSRQ) { return "Escape"; }; ?
-	if (key == KEY_RMENU) { return ""; };
+	if (key == KEY_RMENU) { return STR_EMPTY; };
 //	if (key == KEY_PAUSE) { return "Escape"; }; ?
-	if (key == KEY_HOME) { return ""; };
-	if (key == KEY_UPARROW) { return ""; };
-	if (key == KEY_PRIOR) { return ""; };
-	if (key == KEY_LEFTARROW) { return ""; };
-	if (key == KEY_RIGHTARROW) { return ""; };
-	if (key == KEY_END) { return ""; };
-	if (key == KEY_DOWNARROW) { return ""; };
-	if (key == KEY_NEXT) { return ""; };
-	if (key == KEY_INSERT) { return ""; };
-	if (key == KEY_DELETE) { return ""; };
-	if (key == KEY_LWIN) { return ""; };
-	if (key == KEY_RWIN) { return ""; };
+	if (key == KEY_HOME) { return STR_EMPTY; };
+	if (key == KEY_UPARROW) { return STR_EMPTY; };
+	if (key == KEY_PRIOR) { return STR_EMPTY; };
+	if (key == KEY_LEFTARROW) { return STR_EMPTY; };
+	if (key == KEY_RIGHTARROW) { return STR_EMPTY; };
+	if (key == KEY_END) { return STR_EMPTY; };
+	if (key == KEY_DOWNARROW) { return STR_EMPTY; };
+	if (key == KEY_NEXT) { return STR_EMPTY; };
+	if (key == KEY_INSERT) { return STR_EMPTY; };
+	if (key == KEY_DELETE) { return STR_EMPTY; };
+	if (key == KEY_LWIN) { return STR_EMPTY; };
+	if (key == KEY_RWIN) { return STR_EMPTY; };
 /*
 	if (key == KEY_APPS) { return "Escape"; };
 	if (key == KEY_POWER) { return "Escape"; };
@@ -303,5 +303,5 @@ func string GetKeyChar (var int key) {
 	if (key == KEY_MAIL) { return "Escape"; };
 	if (key == KEY_MEDIASELECT) { return "Escape"; };
 */
-	return "";
+	return STR_EMPTY;
 };

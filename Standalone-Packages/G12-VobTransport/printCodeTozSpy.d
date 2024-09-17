@@ -52,9 +52,9 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 	MEM_Info ("var float up[3];");
 	MEM_Info ("var float right[3];");
 	MEM_Info ("var int trafo[16];");
-	MEM_Info ("");
+	MEM_Info (STR_EMPTY);
 	MEM_Info ("NewTrafo(_@(trafo));");
-	MEM_Info ("");
+	MEM_Info (STR_EMPTY);
 
 //--- Print object trafo
 
@@ -130,13 +130,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 
 //--- Put trafo together
 
-	MEM_Info ("");
+	MEM_Info (STR_EMPTY);
 	MEM_Info ("vectorPosToTrf (_@f (pos), _@ (trafo));");
 	MEM_Info ("zMAT4_SetAtVector (_@ (trafo), _@f (at));");
 	MEM_Info ("zMAT4_SetUpVector (_@ (trafo), _@f (up));");
 	MEM_Info ("zMAT4_SetRightVector (_@ (trafo), _@f (right));");
 
-	MEM_Info ("");
+	MEM_Info (STR_EMPTY);
 
 //--- Object creation script
 

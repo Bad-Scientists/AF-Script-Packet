@@ -89,10 +89,10 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
 
 			if (i == 0) {
 				//Re-insert object
-				vobPtr = InsertObject ("zCVob", "", visualName, _@ (trafo), 0);
+				vobPtr = InsertObject ("zCVob", STR_EMPTY, visualName, _@ (trafo), 0);
 			} else {
 				//Insert empty vob
-				vobPtr = InsertObject ("zCVob", "", "", _@ (trafo), 0);
+				vobPtr = InsertObject ("zCVob", STR_EMPTY, STR_EMPTY, _@ (trafo), 0);
 			};
 
 			zCVob_SetBBox3DLocal (vobPtr, bboxPtr);
@@ -117,7 +117,7 @@ func int Vob_GetPortalNamePtr (var int vobPtr) {
 		MEM_CopyBytes (_@ (vob.trafoObjToWorld), _@ (trafo), 64);
 
 		//Create vob
-		vobPtr = InsertObject ("zCVob", "", visualName, _@ (trafo), 0);
+		vobPtr = InsertObject ("zCVob", STR_EMPTY, visualName, _@ (trafo), 0);
 
 		const int call2 = 0;
 		if (CALL_Begin(call2)) {
@@ -147,7 +147,7 @@ func int Trafo_GetPortalNamePtr (var int trafoPtr) {
 	if (!trafoPtr) { return 0; };
 
 	//--> Dirty workaround: Insert temporarily Vob at trafo position
-	var int vobPtr; vobPtr = InsertObject ("zCVob", "", "", trafoPtr, 0);
+	var int vobPtr; vobPtr = InsertObject ("zCVob", STR_EMPTY, STR_EMPTY, trafoPtr, 0);
 	//<--
 
 	var int sectorNamePtr; sectorNamePtr = 0;
@@ -284,7 +284,7 @@ func string Vob_GetPortalName (var int vobPtr) {
 		return portalName;
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 /*
@@ -298,7 +298,7 @@ func string Trafo_GetPortalName (var int trafoPtr) {
 		return portalName;
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func string WP_GetPortalName (var string wpName) {
@@ -469,6 +469,8 @@ func void Wld_RoomRemoveNpc (var string portalName, var int slfInstance) {
 								CALL__thiscall (_@(portalPtr), MEMINT_SwitchG1G2 (oCPortalRoom___oCPortalRoom_G1, oCPortalRoom___oCPortalRoom_G2));
 								call = CALL_End();
 							};
+
+							continue;
 						};
 					};
 				};

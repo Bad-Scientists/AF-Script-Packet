@@ -106,7 +106,7 @@ func void _hook_oCNpc_GetRightHand__VobThrowing () {
 	};
 
 	//Do we have anything in right hand ?
-	var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+	var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, NPC_NODE_RIGHTHAND);
 
 	//If we do have an item ...
 	if (Hlp_Is_oCItem (vobPtr)) {
@@ -156,7 +156,7 @@ func void _eventPlayerActionKeyReleased__VobThrowing () {
 func void DoThrowVob__VobThrowing () {
 	var oCNPC her; her = Hlp_GetNPC (hero);
 
-	var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+	var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, NPC_NODE_RIGHTHAND);
 
 	//One more check
 	if (!vobPtr) { return; };
@@ -165,7 +165,7 @@ func void DoThrowVob__VobThrowing () {
 
 	//Get position of players right hand
 	var int pos[3];
-	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, "ZS_RIGHTHAND");
+	var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, NPC_NODE_RIGHTHAND);
 	CopyVector (nodePosPtr, _@ (pos));
 	MEM_Free (nodePosPtr);
 
@@ -176,7 +176,7 @@ func void DoThrowVob__VobThrowing () {
 	PosDirToTrf (_@ (pos), 0, _@ (trafo));
 
 	//Remove item from hand
-	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 1, 0);
+	vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, NPC_NODE_RIGHTHAND, 1, 0);
 
 	//Safety check
 	if (!vobPtr) { return; };
@@ -196,7 +196,7 @@ func void DoThrowVob__VobThrowing () {
 	vobPtr = InsertItem (itemInstanceName, amount, _@ (trafo));
 */
 
-	//vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", 1, 0);
+	//vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, NPC_NODE_RIGHTHAND, 1, 0);
 
 	//We will use oCNpc_DoThrowVob:
 	// - it removes an item from hand, inserts it back to the world
@@ -204,7 +204,7 @@ func void DoThrowVob__VobThrowing () {
 	//var int retVal; retVal = oCNpc_DoThrowVob (hero, vobPtr, FLOATNULL);
 
 	//Drop from slot
-	vobPtr = oCNpc_DropFromSlot (hero, "ZS_RIGHTHAND");
+	vobPtr = oCNpc_DropFromSlot (hero, NPC_NODE_RIGHTHAND);
 
 	//Get camera
 	var zCVob camVob; camVob = _^ (MEM_Game._zCSession_camVob);
@@ -392,7 +392,7 @@ func void FrameFunction_Trajectory__VobThrowing () {
 	if ((PC_VobThrowing_Activated) && (!PC_VobThrowing_DoThrow)) {
 		var oCNPC her; her = Hlp_GetNPC (hero);
 
-		var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, "ZS_RIGHTHAND");
+		var int vobPtr; vobPtr = oCNpc_GetSlotItem (hero, NPC_NODE_RIGHTHAND);
 		if (!vobPtr) { return; };
 
 		var oCItem itm; itm = _^ (vobPtr);
@@ -401,7 +401,7 @@ func void FrameFunction_Trajectory__VobThrowing () {
 
 		//Get position of players right hand
 		var int pos[3];
-		var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, "ZS_RIGHTHAND");
+		var int nodePosPtr; nodePosPtr = NPC_GetNodePositionWorld (hero, NPC_NODE_RIGHTHAND);
 		CopyVector (nodePosPtr, _@ (pos));
 		MEM_Free (nodePosPtr);
 

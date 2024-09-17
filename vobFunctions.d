@@ -46,7 +46,7 @@ func string zCModel_GetVisualName (var int modelPtr) {
 	//0x0057DF60 public: virtual class zSTRING __thiscall zCModel::GetVisualName(void)
 	const int zCModel__GetVisualName_G2 = 5758816;
 
-	if (!modelPtr) { return ""; };
+	if (!modelPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__GetVisualName_G1, zCModel__GetVisualName_G2));
@@ -60,7 +60,7 @@ func string zCDecal_GetVisualName (var int vobPtr) {
 	//0x00556B80 public: virtual class zSTRING __thiscall zCDecal::GetVisualName(void)
 	const int zCDecal__GetVisualName_G2 = 5598080;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCDecal__GetVisualName_G1, zCDecal__GetVisualName_G2));
@@ -74,7 +74,7 @@ func string zCProgMeshProto_GetVisualName (var int vobPtr) {
 	//0x005C7130 public: virtual class zSTRING __thiscall zCProgMeshProto::GetVisualName(void)
 	const int zCProgMeshProto__GetVisualName_G2 = 6058288;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCProgMeshProto__GetVisualName_G1, zCProgMeshProto__GetVisualName_G2));
@@ -88,7 +88,7 @@ func string zCParticleFX_GetVisualName (var int vobPtr) {
 	//0x005ADD30 public: virtual class zSTRING __thiscall zCParticleFX::GetVisualName(void)
 	const int zCParticleFX__GetVisualName_G2 = 5954864;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCParticleFX__GetVisualName_G1, zCParticleFX__GetVisualName_G2));
@@ -102,7 +102,7 @@ func string zCMorphMesh_GetVisualName (var int vobPtr) {
 	//0x005A6290 public: virtual class zSTRING __thiscall zCMorphMesh::GetVisualName(void)
 	const int zCMorphMesh__GetVisualName_G2 = 5923472;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCMorphMesh__GetVisualName_G1, zCMorphMesh__GetVisualName_G2));
@@ -116,7 +116,7 @@ func string zCPolyStrip_GetVisualName (var int vobPtr) {
 	//0x004CA110 public: virtual class zSTRING __thiscall zCPolyStrip::GetVisualName(void)
 	const int zCPolyStrip__GetVisualName_G2 = 5021968;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCPolyStrip__GetVisualName_G1, zCPolyStrip__GetVisualName_G2));
@@ -130,7 +130,7 @@ func string zCFlash_GetVisualName (var int vobPtr) {
 	//0x004CA1E0 public: virtual class zSTRING __thiscall zCFlash::GetVisualName(void)
 	const int zCFlash__GetVisualName_G2 = 5022176;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCFlash__GetVisualName_G1, zCFlash__GetVisualName_G2));
@@ -144,7 +144,7 @@ func string zCMesh_GetVisualName (var int vobPtr) {
 	//0x00567020 public: virtual class zSTRING __thiscall zCMesh::GetVisualName(void)
 	const int zCMesh__GetVisualName_G2 = 5664800;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCMesh__GetVisualName_G1, zCMesh__GetVisualName_G2));
@@ -158,7 +158,7 @@ func string zCQuadMark_GetVisualName (var int vobPtr) {
 	//0x005D0AB0 public: virtual class zSTRING __thiscall zCQuadMark::GetVisualName(void)
 	const int zCQuadMark__GetVisualName_G2 = 6097584;
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (vobPtr, MEMINT_SwitchG1G2 (zCQuadMark__GetVisualName_G1, zCQuadMark__GetVisualName_G2));
@@ -193,11 +193,11 @@ func int zCVob_GetVisual (var int vobPtr) {
  */
 func string Visual_GetVisualName (var int visualPtr) {
 /*
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	var zCVob vob; vob = _^ (vobPtr);
 
-	if (!vob.visual) { return ""; };
+	if (!vob.visual) { return STR_EMPTY; };
 
 	var zCObject visualObj;
 	visualObj = _^ (vob.visual);
@@ -205,7 +205,7 @@ func string Visual_GetVisualName (var int visualPtr) {
 	return visualObj.objectName;
 */
 
-	if (!visualPtr) { return ""; };
+	if (!visualPtr) { return STR_EMPTY; };
 	var zCVisual visual; visual = _^ (visualPtr);
 
 	//visual zCDecal
@@ -325,7 +325,7 @@ func string Visual_GetVisualName (var int visualPtr) {
 };
 
 func string Vob_GetVisualName (var int vobPtr){
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 
 	//in case of oCMob we need to get visual from object model
 	//if (Hlp_Is_oCMob (vobPtr)){
@@ -335,7 +335,7 @@ func string Vob_GetVisualName (var int vobPtr){
 
 	//B_Msg_Add (zCDecal_GetVisualName (vobPtr));
 
-	if (!vobPtr) { return ""; };
+	if (!vobPtr) { return STR_EMPTY; };
 	var int visualPtr; visualPtr = zCVob_GetVisual (vobPtr);
 
 	return Visual_GetVisualName (visualPtr);
@@ -346,7 +346,7 @@ func string Vob_GetVisualName (var int vobPtr){
  *	 - returns vob name
  */
 func string zCVob_GetName (var int vobPtr) {
-	if (!Hlp_Is_zCVob (vobPtr)) { return ""; };
+	if (!Hlp_Is_zCVob (vobPtr)) { return STR_EMPTY; };
 	var zCVob vob; vob = _^ (vobPtr);
 	return vob._zCObject_objectName;
 };
@@ -1011,11 +1011,11 @@ func string zMAT4_GetDescriptionRot (var int trafoPtr) {
 	//0x00515CA0 public: class zSTRING __thiscall zMAT4::GetDescriptionRot(void)const
 	const int zMAT4__GetDescriptionRot_G2 = 5332128;
 
-	if (!trafoPtr) { return ""; };
+	if (!trafoPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionRot_G1, zMAT4__GetDescriptionRot_G2));
-	return STR_Trim (CALL_RetValAszstring (), " ");
+	return STR_TrimChar(CALL_RetValAszstring (), CHR_SPACE);
 };
 
 /*
@@ -1028,11 +1028,11 @@ func string zMAT4_GetDescriptionPos (var int trafoPtr) {
 	//0x00515EE0 public: class zSTRING __thiscall zMAT4::GetDescriptionPos(void)const
 	const int zMAT4__GetDescriptionPos_G2 = 5332704;
 
-	if (!trafoPtr) { return ""; };
+	if (!trafoPtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (_@ (trafoPtr), MEMINT_SwitchG1G2 (zMAT4__GetDescriptionPos_G1, zMAT4__GetDescriptionPos_G2));
-	return STR_Trim (CALL_RetValAszstring (), " ");
+	return STR_TrimChar(CALL_RetValAszstring (), CHR_SPACE);
 };
 
 /*

@@ -50,7 +50,7 @@ func string GetLocalDateTimeStamp () {
 	var int dd; dd = MEM_ReadInt(SystemTimePtr+6) & 2047;
 	if (dd < 10) { timeStr = ConcatStrings(timeStr, "0"); };
 	timeStr = ConcatStrings(timeStr, IntToString(dd));
-	timeStr = ConcatStrings(timeStr, " ");
+	timeStr = ConcatStrings(timeStr, STR_SPACE);
 
 	var int hh; hh = MEM_ReadInt(SystemTimePtr+8) & 2047;
 	if (hh < 10) { timeStr = ConcatStrings(timeStr, "0"); };

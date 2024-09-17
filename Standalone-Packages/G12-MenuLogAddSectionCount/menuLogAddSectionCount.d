@@ -52,33 +52,33 @@ func void Log_AddSectionCount (var string logMenuSectionName, var int count) {
 
 func void FF_LogMenuAddSectionCount () {
 	//MENU_ITEM_SEL_MISSIONS_ACT LOG_MISSION LOG_RUNNING|MENU_ITEM_SEL_MISSIONS_OLD LOG_MISSION LOG_SUCCESS
-	var int sectionCount; sectionCount = STR_SplitCount (_refreshTopicSectionSetup, "|");
+	var int sectionCount; sectionCount = STR_SplitCount (_refreshTopicSectionSetup, STR_PIPE);
 
 	repeat (i, sectionCount); var int i;
-		var string sectionSetup; sectionSetup = STR_Split (_refreshTopicSectionSetup, "|", i);
 
-		var int sectionOptionCount; sectionOptionCount = STR_SplitCount (sectionSetup, " ");
+		var string sectionSetup; sectionSetup = STR_Split (_refreshTopicSectionSetup, STR_PIPE, i);
+		var int sectionOptionCount; sectionOptionCount = STR_SplitCount (sectionSetup, STR_SPACE);
 
 		var string s;
 
-		var string logMenuSectionName; logMenuSectionName = "";
+		var string logMenuSectionName; logMenuSectionName = STR_EMPTY;
 
 		var int logSection; logSection = -1;
 		var int logStatus; logStatus = -1;
 
 		if (sectionOptionCount > 0) {
-			logMenuSectionName = STR_Split (sectionSetup, " ", 0);
+			logMenuSectionName = STR_Split (sectionSetup, STR_SPACE, 0);
 		};
 
 		if (sectionOptionCount > 1) {
-			s = STR_Split (sectionSetup, " ", 1);
+			s = STR_Split (sectionSetup, STR_SPACE, 1);
 			if (!Hlp_StrCmp (s, "-1")) {
 				logSection = API_GetSymbolIntValue (s, -1);
 			};
 		};
 
 		if (sectionOptionCount > 2) {
-			s = STR_Split (sectionSetup, " ", 2);
+			s = STR_Split (sectionSetup, STR_SPACE, 2);
 			if (!Hlp_StrCmp (s, "-1")) {
 				logStatus = API_GetSymbolIntValue (s, -1);
 			};

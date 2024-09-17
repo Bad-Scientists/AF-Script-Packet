@@ -67,7 +67,7 @@ func string STR_ReplaceOnce(var string haystack, var string needle, var string r
         return haystack;
     };
 
-    var string destStr; destStr = "";
+    var string destStr; destStr = STR_EMPTY;
 
     destStr = STR_Prefix(haystack, startPos);
     destStr = ConcatStrings(destStr, replace);
@@ -81,7 +81,7 @@ func string STR_ReplaceOnce(var string haystack, var string needle, var string r
  * Replace all occurrences of needle in haystack and replace them
  */
 func string STR_ReplaceAll(var string haystack, var string needle, var string replace) {
-    var string before; before = "";
+    var string before; before = STR_EMPTY;
     while(!Hlp_StrCmp(haystack, before));
         before = haystack;
         haystack = STR_ReplaceOnce(before, needle, replace);
@@ -199,7 +199,7 @@ func string STR_Trim(var string str, var string tok) {
     endP += 1;
 
     if (startP >= endP) {
-        return "";
+        return STR_EMPTY;
     } else {
         return STR_Substr(str, startP, endP-startP);
     };

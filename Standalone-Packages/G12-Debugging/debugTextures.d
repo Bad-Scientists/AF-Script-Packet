@@ -223,7 +223,7 @@ func void FrameFunction__DebugTextures () {
 func void DebugTextures_Enable () {
 	if (!Hlp_IsValidHandle (hView__DebugTextures)) {
 		hView__DebugTextures = View_Create(0, 0, 0, 0);
-		View_AddText (hView__DebugTextures, 0, 0, "", DEBUGTEXTURES_FONT);
+		View_AddText (hView__DebugTextures, 0, 0, STR_EMPTY, DEBUGTEXTURES_FONT);
 	};
 
 	FF_ApplyOnceExtGT (FrameFunction__DebugTextures, 0, -1);

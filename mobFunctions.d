@@ -18,10 +18,10 @@ func void oCMob_SetOwnerStr (var int mobPtr, var string ownerStr, var string own
 
 	if (!mobPtr) { return; };
 
-	ownerStr = STR_Trim (ownerStr, " ");
+	ownerStr = STR_TrimChar (ownerStr, CHR_SPACE);
 	ownerStr = STR_Upper (ownerStr);
 
-	ownerGuildStr = STR_Trim (ownerGuildStr, " ");
+	ownerGuildStr = STR_TrimChar (ownerGuildStr, CHR_SPACE);
 	ownerGuildStr = STR_Upper (ownerGuildStr);
 
 	var int ownerStrPtr; ownerStrPtr = _@s (ownerStr);
@@ -138,7 +138,7 @@ func void oCMobFire_SetFireVobtreeName (var int mobPtr, var string fireVobtreeNa
 /*
  *	Function locks chest with specific key or pick lock string
  *	 - use "-" if you don't want to update keyInstance / pickLockStr
- *	MOB_SetLock ("CHEST", "KEY_GOMEZ", ""); //locks chest with KEY_GOMEZ, pick lock string is removed if present previously
+ *	MOB_SetLock ("CHEST", "KEY_GOMEZ", STR_EMPTY); //locks chest with KEY_GOMEZ, pick lock string is removed if present previously
  *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "-"); //locks chest with KEY_GOMEZ, pick lock string is not touched if present previously
  *	MOB_SetLock ("CHEST", "KEY_GOMEZ", "LRLR"); //locks chest with KEY_GOMEZ, updates pick lock string to LRLR
  */

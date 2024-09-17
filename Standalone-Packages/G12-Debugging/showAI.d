@@ -36,7 +36,7 @@ func string CC_ShowAI (var string param) {
 			} else {
 				NPC_SetShowAI (npc, 1);
 				msg = GetSymbolName (Hlp_GetInstanceID (npc));
-				msg = ConcatStrings (msg, " ");
+				msg = ConcatStrings (msg, STR_SPACE);
 				msg = ConcatStrings (msg, NPC_GetRoutineName (npc));
 				msg = ConcatStrings (msg, " show AI info.");
 			};

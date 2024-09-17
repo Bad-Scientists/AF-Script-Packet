@@ -68,7 +68,7 @@ func void MEM_RtnMan_Init () {
  *	 - returns waypoints name
  */
 func string zCWaypoint_GetName (var int wpPtr) {
-	if (!Hlp_Is_zCWaypoint (wpPtr)) { return ""; };
+	if (!Hlp_Is_zCWaypoint (wpPtr)) { return STR_EMPTY; };
 
 	var zCWaypoint wp; wp = _^ (wpPtr);
 	return wp.Name;
@@ -315,7 +315,7 @@ func int oCRtnManager_GetNpcRoutines (var int slfInstance) {
 func int Npc_IsInRtnStateName (var int slfInstance, var string stateName) {
 	stateName = STR_Upper (stateName);
 
-	var string rtnStateName; rtnStateName = "";
+	var string rtnStateName; rtnStateName = STR_EMPTY;
 
 	//Get all routines
 	var int rtnArrayPtr; rtnArrayPtr = oCRtnManager_GetNpcRoutines (slfInstance);
@@ -547,7 +547,7 @@ func string zCRoute_GetDesc (var int routePtr) {
 	//0x007B2980 public: class zSTRING __thiscall zCRoute::GetDesc(void)
 	const int zCRoute__GetDesc_G2 = 8071552;
 
-	if (!routePtr) { return ""; };
+	if (!routePtr) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 	CALL__thiscall (routePtr, MEMINT_SwitchG1G2 (zCRoute__GetDesc_G1, zCRoute__GetDesc_G2));
@@ -669,7 +669,7 @@ func string NPC_Route_GetWPName (var int slfInstance, var int index) {
 		return zCWaypoint_GetName (nextWPPtr);
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func void NPC_FindRoute (var int slfInstance, var string fromWP, var string toWP) {
@@ -724,16 +724,23 @@ func void zCRoute_Delete (var int routePtr) {
  */
 func string NPC_GetLastRoutineWP (var int slfInstance) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
-	if (!statePtr) { return ""; };
+	if (!statePtr) { return STR_EMPTY; };
 
 	var oCNPC_States state; state = _^ (statePtr);
-	if (!state.hasRoutine) { return ""; };
+	if (!state.hasRoutine) { return STR_EMPTY; };
 
 	//If rtnBefore == rtnNow - then return blank string
-	if (state.rtnBefore == state.rtnNow) { return ""; };
+	if (state.rtnBefore == state.rtnNow) { return STR_EMPTY; };
 
-	var int rtnEntryPtr; rtnEntryPtr = state.rtnBefore;
-	if (!rtnEntryPtr) { return ""; };
+	var int rtnEntryPtr;
+
+	if (state.rtnBefore) {
+		rtnEntryPtr = state.rtnBefore;
+	} else {
+		rtnEntryPtr = state.rtnNow;
+	};
+
+	if (!rtnEntryPtr) { return STR_EMPTY; };
 
 	var oCRtnEntry rtnEntry; rtnEntry = _^ (rtnEntryPtr);
 	return rtnEntry.wpname;
@@ -944,7 +951,7 @@ func int NPC_GetCurrentFreepoint (var int slfInstance) {
  *	Function returns freepoint name
  */
 func string FP_GetFreePointName (var int vobSpotPtr) {
-	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return ""; };
+	if (!Hlp_Is_zCVobSpot (vobSpotPtr)) { return STR_EMPTY; };
 
 	var zCVobSpot vobSpot; vobSpot = _^ (vobSpotPtr);
 	return vobSpot._zCObject_objectName;
@@ -1413,7 +1420,7 @@ func int WP_Create (var string waypointName, var int posPtr, var int connectWith
 	NewTrafo (_@(trafo));
 	PosDirToTrf (posPtr, 0, _@ (trafo));
 
-	var int vobWp; vobWp = InsertObject ("zCVobWaypoint", waypointName, "", _@ (trafo), 0);
+	var int vobWp; vobWp = InsertObject ("zCVobWaypoint", waypointName, STR_EMPTY, _@ (trafo), 0);
 
 	zCWaypoint_Init (newWpPtr, waypointName, vobWp, x, y, z);
 	zCWayNet_InsertWaypoint_ByPtr (newWpPtr);
@@ -1434,7 +1441,7 @@ func int WP_Create (var string waypointName, var int posPtr, var int connectWith
 	//	PosDirToTrf (_@ (newWP.pos), _@ (newWP.dir), _@ (trafo));
 
 	//	InsertObject(string class, string objName, string visual, int trafoPtr, int parentVobPtr)
-	//	newWP.wpvob = InsertObject ("zCVobWaypoint", waypointName, "", _@ (trafo), parentVobPtr);
+	//	newWP.wpvob = InsertObject ("zCVobWaypoint", waypointName, STR_EMPTY, _@ (trafo), parentVobPtr);
 	//};
 
 	//Set waypoint name
@@ -1467,7 +1474,7 @@ func string WP_GetNearestWPAtPos (var int posPtr) {
 func string WP_GetNearestWPAtVob (var int vobPtr) {
 	var int pos[3];
 	if (!zCVob_GetPositionWorldToPos (vobPtr, _@ (pos))) {
-		return "";
+		return STR_EMPTY;
 	};
 
 	return WP_GetNearestWPAtPos (_@ (pos));
@@ -1708,7 +1715,7 @@ func int zCVobWaypoint_GetByPortalRoom (var int fromPosPtr, var string searchWay
 	//Target position
 	var int toPos[3];
 
-	searchByPortalName = STR_Trim (searchByPortalName, " ");
+	searchByPortalName = STR_TrimChar (searchByPortalName, CHR_SPACE);
 	searchByPortalName = STR_Upper (searchByPortalName);
 
 	var int compareName; compareName = STR_Len (searchWaypointName);
@@ -1813,10 +1820,10 @@ func void WP_ToPos(var string wpName, var int posPtr) {
  */
 func string Npc_GetNearestWP_ByPortalRoom (var int slfInstance, var string searchWaypointName, var string searchByPortalName, var int searchFlags, var int range, var int distLimit, var int verticalLimit) {
 	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
-	if (!Hlp_IsValidNPC (slf)) { return ""; };
+	if (!Hlp_IsValidNPC (slf)) { return STR_EMPTY; };
 
 	var int pos[3];
-	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) { return ""; };
+	if (!zCVob_GetPositionWorldToPos (_@ (slf), _@ (pos))) { return STR_EMPTY; };
 
 	return WP_GetByPosAndPortalRoom (_@ (pos), searchWaypointName, searchByPortalName, searchFlags, _@ (slf), range, distLimit, verticalLimit);
 };

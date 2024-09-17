@@ -7,7 +7,7 @@
  *	Function traverses through all oCMobInter objects and updates onStateFunc, conditionFunc and useWithItem for all objects, which do have specified visual name.
  *	Usage:
  *
- *	oCMobInter_SetupAllMobsByVisual ("ORE_GROUND.ASC", "MINING", "", "ITMWPICKAXE");
+ *	oCMobInter_SetupAllMobsByVisual ("ORE_GROUND.ASC", "MINING", STR_EMPTY, "ITMWPICKAXE");
  */
 func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string onStateFunc, var string conditionFunc, var string useWithItem) {
 	var int vobListPtr; vobListPtr = MEM_ArrayCreate ();
@@ -165,7 +165,7 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 	var int routePtr;
 
 	var string scemeName;
-	var int scemeNameCount; scemeNameCount = STR_SplitCount (scemeNames, "|");
+	var int scemeNameCount; scemeNameCount = STR_SplitCount (scemeNames, STR_PIPE);
 
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
@@ -795,7 +795,7 @@ func string GetSymbolStringValue (var int symbolIndex) {
 		};
 	};
 
-	return "";
+	return STR_EMPTY;
 };
 
 func void SetSymbolStringValue (var int symbolIndex, var string s) {
@@ -853,7 +853,10 @@ func int API_GetSymbolHEX2RGBAValue (var string symbolName, var string defaultVa
  */
 func void API_CallByString (var string fnc) {
     var int symbID;
-    const string cacheFunc = ""; const int cacheSymbID = 0;
+	//This does not work - seems like we cannot use global constant when initializing local one?
+	//const string cacheFunc = STR_EMPTY;
+	const string cacheFunc = "";
+	const int cacheSymbID = 0;
 
     if (Hlp_StrCmp (cacheFunc, fnc)) {
         symbID = cacheSymbID;
@@ -1088,59 +1091,4 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 	if (!Npc_IsPlayer (npc)) {
 		oCNpc_Enable (npc, _@ (pos));
 	};
-};
-
-/*
- *	Npc_EM_SendTozSpy
- *	 - list current events in AI queue to zSpy
- */
-func void Npc_EM_SendTozSpy (var int slfInstance) {
-	var int count; count = NPC_EM_GetEventCount (slfInstance);
-
-	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
-
-	var string s;
-
-	s = ConcatStrings ("Npc_EM_SendTozSpy: ", GetSymbolName (Hlp_GetInstanceID (slf)));
-	s = ConcatStrings (s, " -->");
-
-	zSpy_Info (s);
-
-	if (count) {
-		var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
-
-		repeat (i, count); var int i;
-			var string eventName;
-			eventName = NPC_EM_GetEventName (slfInstance, i);
-
-			var int eMsg;
-			eMsg = zCEventManager_GetEventMessage (eMgr, i);
-
-			if (zCEventMessage_IsHighPriority (eMsg)) {
-				eventName = ConcatStrings (eventName, " (high prio)");
-			};
-
-			if (zCEventMessage_IsOverlay (eMsg)) {
-				eventName = ConcatStrings (eventName, " (overlay)");
-			};
-
-			if (zCEventMessage_IsDeleted (eMsg)) {
-				eventName = ConcatStrings (eventName, " (deleted)");
-			};
-
-			if (zCEventManager_IsRunning (eMgr, eMsg)) {
-				eventName = ConcatStrings (eventName, " (running)");
-			};
-
-			if ((slf.lastLookMsg == eMsg) && (eMsg)) {
-				eventName = ConcatStrings (eventName, " (lastLookMsg)");
-			};
-
-			zSpy_Info (eventName);
-		end;
-	} else {
-		zSpy_Info ("AI queue is empty.");
-	};
-
-	zSpy_Info ("<--");
 };

@@ -1,35 +1,56 @@
 /*
  *	zCListSort functions (I don't like LeGo ListS functions ... I mean why would you not start properly from index 0? :))
  */
-func int zCListSort_GetNode (var int list, var int nr) {
-	if (!list) { return 0; };
 
+/*
+ *	zCListSort_GetNode
+ */
+func int zCListSort_GetNode(var int list, var int nr) {
+	if (!list) { return 0; };
 	if (nr < 0) { return 0; };
 
 	var int i; i = 0;
-	var int nodePtr; nodePtr = 0;
+	var int ptr; ptr = list;
 
-	var zCListSort l; l = _^ (list);
+	while (ptr);
+		ptr = MEM_ReadInt(ptr + 8);
 
-	while (l.next);
 		if (i == nr) {
-			nodePtr = l.next;
-			break;
+			return ptr;
 		};
 
-		l = _^ (l.next);
 		i += 1;
 	end;
 
-	return nodePtr;
+	return 0;
 };
 
-func int zCListSort_GetData (var int list, var int nr) {
+/*
+ *	zCListSort_GetData
+ */
+func int zCListSort_GetData(var int list, var int nr) {
 	if (!list) { return 0; };
 
-	var int nodePtr; nodePtr = zCListSort_GetNode (list, nr);
+	var int nodePtr; nodePtr = zCListSort_GetNode(list, nr);
 	if (!nodePtr) { return 0; };
 
-	var zCListSort l; l = _^ (nodePtr);
-	return l.data;
+	nodePtr = MEM_ReadInt(nodePtr + 4);
+	return + nodePtr;
+};
+
+/*
+ *	zCListSort_GetLength
+ */
+func int zCListSort_GetLength(var int list) {
+	if (!list) { return 0; };
+
+	var int nr; nr = 0;
+	var int ptr; ptr = list;
+
+	while(ptr);
+		ptr = MEM_ReadInt(ptr + 8);
+		nr += 1;
+	end;
+
+	return nr;
 };

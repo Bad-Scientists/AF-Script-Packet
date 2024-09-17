@@ -719,7 +719,7 @@ func void G12_SprintMode_Init () {
 	} else {
 		repeat (i, _PC_SprintMode_IgnoreWithOverlays_Count); var int i;
 			var string symbName; symbName = ConcatStrings ("PC_SPRINTMODE_IGNOREWITHOVERLAYS", IntToString (i));
-			var string ignoreOverlay; ignoreOverlay = API_GetSymbolStringValue (symbName, "");
+			var string ignoreOverlay; ignoreOverlay = API_GetSymbolStringValue (symbName, STR_EMPTY);
 			MEM_WriteStringArray (_@s (_PC_SprintMode_IgnoreWithOverlays), i, ignoreOverlay);
 		end;
 	};
@@ -763,8 +763,8 @@ func void G12_SprintMode_Init () {
 	vStaminaBarBackTexView = View_Get (bStaminaBar.v0); //back texture
 
 	if (!Hlp_IsValidHandle (hStaminaBarValueView)) {
-		hStaminaBarValueView = Bar_CreateValuesView (hStaminaBar, "");
-		View_AddText (hStaminaBarValueView, 0, 0, "", _PC_SprintMode_Font);
+		hStaminaBarValueView = Bar_CreateValuesView (hStaminaBar, STR_EMPTY);
+		View_AddText (hStaminaBarValueView, 0, 0, STR_EMPTY, _PC_SprintMode_Font);
 		View_SetAlphaFunc (hStaminaBarValueView, _staminaBar_DisplayValues_AlphaFunc);
 	};
 

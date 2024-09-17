@@ -18,7 +18,7 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 	if ((ECX != MEM_InformationMan.npc) && (ECX != MEM_InformationMan.player)) { return; };
 
 	var string log;
-	var string logName; logName = "";
+	var string logName; logName = STR_EMPTY;
 	var int writeLog; writeLog = FALSE;
 
 	// 0 EV_PLAYANISOUND
@@ -105,7 +105,7 @@ func void _hook_oCNpc_OnMessage__LogDialogs () {
 		if (STR_Len (log) > 0) {
 			Log_CreateTopic (logName, _log_SectionForDialogues);
 			Log_AddEntry (logName, log);
-			log = "";
+			log = STR_EMPTY;
 		};
 	};
 };

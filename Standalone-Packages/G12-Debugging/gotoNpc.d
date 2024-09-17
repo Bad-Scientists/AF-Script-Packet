@@ -8,7 +8,7 @@
  */
 
 func string CC_GotoNpc (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var string objectName;
@@ -49,7 +49,7 @@ func string CC_GotoNpc (var string param) {
 					if (Hlp_Is_oCNpc (list.data)) {
 						npc = _^ (list.data);
 						if (Hlp_IsValidNPC (npc)) {
-							if (Hlp_StrCmp (STR_Trim (STR_Upper (npc.name), " "), objectName)) {
+							if (Hlp_StrCmp (STR_TrimChar (STR_Upper (npc.name), CHR_SPACE), objectName)) {
 								PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
 
 								//Enable npc first
@@ -71,7 +71,7 @@ func string CC_GotoNpc (var string param) {
 };
 
 func string CC_BringNpc (var string param) {
-	param = STR_Trim (param, " ");
+	param = STR_TrimChar (param, CHR_SPACE);
 	param = STR_Upper (param);
 
 	var string objectName;
@@ -105,7 +105,7 @@ func string CC_BringNpc (var string param) {
 					if (Hlp_Is_oCNpc (list.data)) {
 						npc = _^ (list.data);
 						if (Hlp_IsValidNPC (npc)) {
-							if (Hlp_StrCmp (STR_Trim (STR_Upper (npc.name), " "), objectName)) {
+							if (Hlp_StrCmp (STR_TrimChar (STR_Upper (npc.name), CHR_SPACE), objectName)) {
 								PrintS (GetSymbolName (Hlp_GetInstanceID (npc)));
 
 								//Enable npc first

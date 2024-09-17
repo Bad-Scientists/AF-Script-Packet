@@ -33,7 +33,7 @@ func string oCMobInter_GetScemeName (var int mobPtr) {
 	//0x0071DBE0 public: virtual class zSTRING __thiscall oCMobInter::GetScemeName(void)
 	const int oCMobInter__GetScemeName_G2 = 7461856;
 
-	if (!Hlp_Is_oCMobInter (mobPtr)) { return ""; };
+	if (!Hlp_Is_oCMobInter (mobPtr)) { return STR_EMPTY; };
 
 	CALL_RetValIszString();
 

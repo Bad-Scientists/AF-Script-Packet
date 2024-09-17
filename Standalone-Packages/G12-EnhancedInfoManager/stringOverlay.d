@@ -280,7 +280,7 @@ func void StringOverlay_Reset() {
 // -----------------------------------------------------------------
 func string StringOverlay_Generate(var string str) {
     if (STR_Len(str) <= 0) {
-        return "";
+        return STR_EMPTY;
     };
 
     // start overlay
@@ -288,14 +288,14 @@ func string StringOverlay_Generate(var string str) {
 
     // text align
     if (StringOverlay_Settings & StringOverlay_Settings_TextAlignEnabled) {
-        var string textAlignModifier; textAlignModifier = "";
+        var string textAlignModifier; textAlignModifier = STR_EMPTY;
 
         if (StringOverlay_TextAlign == StringOverlay_TextAlign_Left  ) {textAlignModifier = "al@"; };
         if (StringOverlay_TextAlign == StringOverlay_TextAlign_Center) {textAlignModifier = "ac@"; };
         if (StringOverlay_TextAlign == StringOverlay_TextAlign_Right ) {textAlignModifier = "ar@"; };
 
         overlayStr = ConcatStrings(overlayStr, textAlignModifier);
-        overlayStr = ConcatStrings(overlayStr, " ");
+        overlayStr = ConcatStrings(overlayStr, STR_SPACE);
     };
 
     // text color

@@ -20,8 +20,8 @@ func void _hook_oCNpc_IsMunitionAvailable () {
 		if (!count) {
 			var oCItem ammo;
 
-			var int rightHandVobPtr; rightHandVobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
-			var int leftHandVobPtr; leftHandVobPtr = oCNpc_GetSlotItem (slf, "ZS_LEFTHAND");
+			var int rightHandVobPtr; rightHandVobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
+			var int leftHandVobPtr; leftHandVobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_LEFTHAND);
 
 			if (Hlp_Is_oCItem(rightHandVobPtr)) {
 				ammo = _^ (rightHandVobPtr);

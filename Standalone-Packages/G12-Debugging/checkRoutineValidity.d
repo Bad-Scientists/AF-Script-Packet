@@ -26,19 +26,19 @@
  */
 
 func string oCRtnEntry_GetString (var int rtnPtr) {
-	if (!rtnPtr) { return ""; };
+	if (!rtnPtr) { return STR_EMPTY; };
 	var oCRtnEntry rtn; rtn = _^ (rtnPtr);
 
-	var string s; s = "";
+	var string s; s = STR_EMPTY;
 
 	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.hour1, 2));
 	s = ConcatStrings (s, ":");
 	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.min1, 2));
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.hour2, 2));
 	s = ConcatStrings (s, ":");
 	s = ConcatStrings (s, STR_FormatLeadingZeros (rtn.min2, 2));
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 
 	if (rtn.f_script > -1) {
 		s = ConcatStrings (s, GetSymbolName (rtn.f_script));
@@ -50,12 +50,12 @@ func string oCRtnEntry_GetString (var int rtnPtr) {
 		s = ConcatStrings (s, " (O)");
 	};
 
-	s = ConcatStrings (s, " ");
+	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, rtn.wpname);
 
 	if (rtn.npc) {
 		var oCNpc npc; npc = _^ (rtn.npc);
-		s = ConcatStrings (s, " ");
+		s = ConcatStrings (s, STR_SPACE);
 		s = ConcatStrings (s, GetSymbolName (Hlp_GetInstanceID (npc)));
 	};
 
@@ -263,7 +263,7 @@ func int oCRtnManager_RtnList_CheckIssues (var int checkNpcPtr) {
 
 				//<--
 
-				msg = "";
+				msg = STR_EMPTY;
 
 				wpIsValid = SearchWaypointByName (rtn.wpname);
 
@@ -433,7 +433,7 @@ func void oCRtnManager_AllRoutines_CheckValidity () {
 
 					//Some NPCs might have same ID by mistake!
 					var int countNPC; countNPC = 0;
-					var string npcWithID; npcWithID = "";
+					var string npcWithID; npcWithID = STR_EMPTY;
 
 					//Find an NPC with this ID
 					var int listPtr; listPtr = MEM_World_Get_voblist_npcs ();

@@ -331,7 +331,7 @@ func void G12_TorchHotKey_Init () {
 	if (_TorchHotkey_RelitMobs_ascModels_Count > 0) {
 		repeat (i, _TorchHotkey_RelitMobs_ascModels_Count);
 			symbName = ConcatStrings ("TORCHHOTKEY_RELITMOBS_ASCMODELS", IntToString (i));
-			ascModel = API_GetSymbolStringValue (symbName, "");
+			ascModel = API_GetSymbolStringValue (symbName, STR_EMPTY);
 			MEM_WriteStringArray (_@s (_TorchHotkey_RelitMobs_ascModels), i, ascModel);
 		end;
 	};
@@ -349,7 +349,7 @@ func void G12_TorchHotKey_Init () {
 	} else {
 		repeat (i, _TorchHotkey_ReapplyOverlays_Count);
 			symbName = ConcatStrings ("TORCHHOTKEY_REAPPLYOVERLAYS", IntToString (i));
-			ascModel = API_GetSymbolStringValue (symbName, "");
+			ascModel = API_GetSymbolStringValue (symbName, STR_EMPTY);
 			MEM_WriteStringArray (_@s (_TorchHotkey_ReapplyOverlays), i, ascModel);
 		end;
 	};

@@ -37,6 +37,19 @@ const string NPC_NODE_HELMET = "ZS_HELMET";
 const string NPC_NODE_JAWS = "ZS_JAWS";
 const string NPC_NODE_TORSO = "ZS_TORSO";
 
+const string VISBODY_PREFIX_HUM = "HUM"; //Humans
+const string VISBODY_PREFIX_ORC = "ORC"; //Orcs
+
+const string MDS_HUMANS_TORCH = "HUMANS_TORCH.MDS";
+const string MDS_ORC_TORCH = "ORC_TORCH.MDS";
+
+const string ANINAME_T_STAND_2_TELEPORT = "T_STAND_2_TELEPORT";
+const string ANINAME_T_MAGRUN_2_HEASHOOT = "T_MAGRUN_2_HEASHOOT";
+const string ANINAME_S_TELEPORT = "S_TELEPORT";
+const string ANINAME_S_HEASHOOT = "S_HEASHOOT";
+const string ANINAME_T_TELEPORT_2_STAND = "T_TELEPORT_2_STAND";
+const string ANINAME_T_HEASHOOT_2_STAND = "T_HEASHOOT_2_STAND";
+
 //fight mode
 const int NPC_WEAPON_NONE = 0;
 const int NPC_WEAPON_FIST = 1;

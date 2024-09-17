@@ -42,8 +42,8 @@ const string HUMAN_NODENAMES [HUMAN_NODENAMES_MAX] = {
 };
 
 func string GetNodeName__PuppetMaster (var int index) {
-	if (index < 0) { return ""; };
-	if (index >= HUMAN_NODENAMES_MAX) { return ""; };
+	if (index < 0) { return STR_EMPTY; };
+	if (index >= HUMAN_NODENAMES_MAX) { return STR_EMPTY; };
 
 	return MEM_ReadStatStringArr (HUMAN_NODENAMES, index);
 };
@@ -68,7 +68,7 @@ func void DrawBBox__PuppetMaster () {
 	//Create 'helper' vob
 	if (!puppetNodeVobPtr) {
 		//Insert empty vob
-		puppetNodeVobPtr = InsertObject ("zCVob", "", "", _@ (trafo), 0);
+		puppetNodeVobPtr = InsertObject ("zCVob", STR_EMPTY, STR_EMPTY, _@ (trafo), 0);
 
 		//Remove collisions
 		var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (puppetNodeVobPtr);
@@ -107,10 +107,10 @@ func void DIA_PuppetMaster_UpdateNodePos_Handler (var string spinnerID) {
 	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
 
 	if (!isChoiceModeActive) {
-		oldDescription = "";
-		oldDescription1 = "";
-		oldDescription2 = "";
-		oldDescription3 = "";
+		oldDescription = STR_EMPTY;
+		oldDescription1 = STR_EMPTY;
+		oldDescription2 = STR_EMPTY;
+		oldDescription3 = STR_EMPTY;
 		return;
 	};
 
@@ -153,12 +153,12 @@ func void DIA_PuppetMaster_UpdateNodePos_Handler (var string spinnerID) {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//newDescription = ConcatStrings (newDescription, "h@");
 	newDescription = ConcatStrings (newDescription, "s@");
 	newDescription = ConcatStrings (newDescription, spinnerID);
-	newDescription = ConcatStrings (newDescription, " ");
+	newDescription = ConcatStrings (newDescription, STR_SPACE);
 
 	if (value) {
 		var int vobPtr; vobPtr = _@ (Puppet);
@@ -238,10 +238,10 @@ func void DIA_PuppetMaster_RotateNode_Handler (var string spinnerID) {
 	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
 
 	if (!isChoiceModeActive) {
-		oldDescription = "";
-		oldDescription1 = "";
-		oldDescription2 = "";
-		oldDescription3 = "";
+		oldDescription = STR_EMPTY;
+		oldDescription1 = STR_EMPTY;
+		oldDescription2 = STR_EMPTY;
+		oldDescription3 = STR_EMPTY;
 		return;
 	};
 
@@ -284,12 +284,12 @@ func void DIA_PuppetMaster_RotateNode_Handler (var string spinnerID) {
 
 	lastSpinnerID = InfoManagerSpinnerID;
 
-	var string newDescription; newDescription = "";
+	var string newDescription; newDescription = STR_EMPTY;
 
 	//newDescription = ConcatStrings (newDescription, "h@");
 	newDescription = ConcatStrings (newDescription, "s@");
 	newDescription = ConcatStrings (newDescription, spinnerID);
-	newDescription = ConcatStrings (newDescription, " ");
+	newDescription = ConcatStrings (newDescription, STR_SPACE);
 
 	if (value) {
 		var int vobPtr; vobPtr = _@ (Puppet);
@@ -370,7 +370,7 @@ func int DIA_PuppetMaster_Main_Condition () {
 	var int isChoiceModeActive; isChoiceModeActive = InfoManager_IsChoiceModeActive ();
 
 	if (!isChoiceModeActive) {
-		oldDescription1 = "";
+		oldDescription1 = STR_EMPTY;
 		return TRUE;
 	};
 
@@ -439,7 +439,7 @@ func int DIA_PuppetMaster_Main_Condition () {
 	};
 
 	//Spinner ID
-	newDescription1 = "";
+	newDescription1 = STR_EMPTY;
 	newDescription1 = ConcatStrings (newDescription1, "s@SelectNode Select node: ");
 
 	//Manually typed in number:
@@ -515,7 +515,7 @@ func int DIA_PuppetMaster_Main_Condition () {
 		var string oldDescription2;
 
 		oldDescription2 = newDescription2;
-		newDescription2 = "";
+		newDescription2 = STR_EMPTY;
 
 		if (max == 0) {
 			//newDescription2 = "d@ "; //disabled

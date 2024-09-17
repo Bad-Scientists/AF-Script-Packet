@@ -420,7 +420,7 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 		var string worldName; worldName = oCWorld_GetWorldFilename ();
 		var string s;
 
-		s = Concat3Strings ("TestSuite_ProcessInfo - world ", worldName, " ");
+		s = Concat3Strings ("TestSuite_ProcessInfo - world ", worldName, STR_SPACE);
 		MEM_Info (Concat5Strings (s, "dialogue instance ", infoName, " npc is invalid: ", npcInstanceName));
 
 		var C_NPC diaMeatbug;
@@ -498,10 +498,10 @@ func void TestSuite_ProcessInfo(var string infoQuery) {
 		infoQuery = mySTR_SubStr (infoQuery, index + 1, len - (index + 1));
 
 		//Split query
-		var int count; count = STR_SplitCount (infoQuery, "|");
+		var int count; count = STR_SplitCount (infoQuery, STR_PIPE);
 
 		repeat (i, count); var int i;
-			var string infoChoice; infoChoice = STR_Split (infoQuery, "|", i);
+			var string infoChoice; infoChoice = STR_Split (infoQuery, STR_PIPE, i);
 			symbID = MEM_GetSymbolIndex(infoChoice);
 
 			if (!TestSuite_ReportOnlyIssues) {

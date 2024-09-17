@@ -198,7 +198,7 @@ func void _hook_oCNpc_OnMessage () {
 					var oCMsgConversation msgConversation; msgConversation = _^ (eMsg);
 					//&& (Hlp_StrCmp (msgConversation.name, "T_DONTKNOW")) {
 					PC_IgnoreAnimations -= 1;
-					msgConversation.name = "";
+					msgConversation.name = STR_EMPTY;
 				};
 			};
 		};

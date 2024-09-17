@@ -99,17 +99,19 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
-		var int numItemsInCategory; numItemsInCategory = List_LengthS (container.inventory2_oCItemContainer_contents) - 1;
+		var int numItemsInCategory; numItemsInCategory = zCListSort_GetLength(container.inventory2_oCItemContainer_contents);
 
-		if (numItemsInCategory > -1) {
+		if (numItemsInCategory > 0) {
+			var int pageSize; pageSize = container.inventory2_oCItemContainer_drawItemMax;
+
 			//Page Up
 			if (key == KEY_PRIOR) {
 				if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset) {
 					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset;
 				} else {
-					if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_drawItemMax) {
-						container.inventory2_oCItemContainer_offset -= container.inventory2_oCItemContainer_drawItemMax;
-						container.inventory2_oCItemContainer_selectedItem -= container.inventory2_oCItemContainer_drawItemMax;
+					if (container.inventory2_oCItemContainer_selectedItem > pageSize) {
+						container.inventory2_oCItemContainer_offset -= pageSize;
+						container.inventory2_oCItemContainer_selectedItem -= pageSize;
 					} else {
 						container.inventory2_oCItemContainer_selectedItem = 0;
 						container.inventory2_oCItemContainer_offset = 0;
@@ -119,10 +121,8 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			//Page Down
 			if (key == KEY_NEXT) {
-				var int pageSize; pageSize = container.inventory2_oCItemContainer_drawItemMax - 1;
-
-				if (container.inventory2_oCItemContainer_selectedItem < container.inventory2_oCItemContainer_offset + pageSize) {
-					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset + pageSize;
+				if (container.inventory2_oCItemContainer_selectedItem < container.inventory2_oCItemContainer_offset + pageSize - 1) {
+					container.inventory2_oCItemContainer_selectedItem = container.inventory2_oCItemContainer_offset + pageSize - 1;
 				} else {
 					container.inventory2_oCItemContainer_offset += pageSize;
 					container.inventory2_oCItemContainer_selectedItem += pageSize;
@@ -137,20 +137,20 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 			//Jump to last item
 			if (key == KEY_END) {
-				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory;
+				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory - 1;
 			};
 
-			if (container.inventory2_oCItemContainer_offset > numItemsInCategory) {
-				container.inventory2_oCItemContainer_offset = numItemsInCategory;
+			//Adjust offsets
+			if (container.inventory2_oCItemContainer_selectedItem >= numItemsInCategory) {
+				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory - 1;
+
+				if (container.inventory2_oCItemContainer_selectedItem > pageSize) {
+					container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - pageSize;
+				};
 			};
 
-			if (container.inventory2_oCItemContainer_selectedItem > numItemsInCategory) {
-				container.inventory2_oCItemContainer_selectedItem = numItemsInCategory;
-			};
-
-			//Adjust offset
-			if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset + container.inventory2_oCItemContainer_drawItemMax) {
-				container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - container.inventory2_oCItemContainer_drawItemMax;
+			if (container.inventory2_oCItemContainer_selectedItem > container.inventory2_oCItemContainer_offset + pageSize) {
+				container.inventory2_oCItemContainer_offset = container.inventory2_oCItemContainer_selectedItem - pageSize;
 			};
 
 			return TRUE;
@@ -326,9 +326,6 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
 								Trade_MoveToContainerPlayer (itmPtr, amount);
 							};
-
-							//Reset
-							_TradeCancelTransfer = FALSE;
 
 							//Trade_SetTradeAmount (trade_amount_backup);
 						};
@@ -512,7 +509,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 				if (npcInventory.inventory2_oCItemContainer_contents) {
 					slf = _^ (npcInventory.inventory2_owner);
 					if (NPC_IsPlayer (slf)) {
-						vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+						vobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
 						//Put item to hand only if hand is empty!
 						if (!vobPtr) {
 							if (npcInventory.inventory2_oCItemContainer_selectedItem > -1) {
@@ -529,7 +526,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 											//Take 1 piece from inventory, put in hand
 											vobPtr = oCNpc_RemoveFromInvByPtr (slf, vobPtr, 1);
 											oCNpc_SetRightHand (slf, vobPtr);
-											//oCNpc_PutInSlot (slf, "ZS_RIGHTHAND", vobPtr, 0);
+											//oCNpc_PutInSlot (slf, NPC_NODE_RIGHTHAND, vobPtr, 0);
 
 											//If I close inventory - then player will jump - cancel action has no effect (key event is then handled by different function?)
 											//Close inventory
@@ -554,11 +551,11 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 												oCNpc_SetRightHand (slf, vobPtr);
 												//oCNpc_RemoveFromHand__BetterInvControls (slf);
 
-												//var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
+												//var int retVal; retVal = oCNpc_DropFromSlot (slf, NPC_NODE_RIGHTHAND);
 												//We can't play any animations here
 												//Npc_PlayAni (slf, "T_STAND_2_IDROP");
 												//
-												vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+												vobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
 												AI_DropVobPtr (slf, vobPtr);
 
 												//0x0066DF50 public: int __thiscall oCNpcInventory::FindNextCategory(void)
@@ -574,13 +571,13 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 						} else {
 							//If an item is already in hand - we can drop it directly
 							if ((action == action_DropItem) || (action == action_DropAllItems)) {
-								vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+								vobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
 								AI_DropVobPtr (slf, vobPtr);
 							} else
 							//If an item is already in hand - and we try to put an item to hand - do the opposite - put it back to inventory
 							if (action == action_PutInHand) {
 								//Remove from hand - do not drop
-								vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, "ZS_RIGHTHAND", FALSE, 0);
+								vobPtr = oCNpc_RemoveFromSlot_Fixed (hero, NPC_NODE_RIGHTHAND, FALSE, 0);
 								//Put in inventory
 								vobPtr = oCNpc_PutInInvPtr (slf, vobPtr);
 							};
@@ -608,10 +605,10 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, "ZS_RIGHTHAND");
+	var int vobPtr; vobPtr = oCNpc_GetSlotItem (slf, NPC_NODE_RIGHTHAND);
 	if (vobPtr) {
 		//This engine function drops item from hand only
-		var int retVal; retVal = oCNpc_DropFromSlot (slf, "ZS_RIGHTHAND");
+		var int retVal; retVal = oCNpc_DropFromSlot (slf, NPC_NODE_RIGHTHAND);
 
 		//Crash ...
 		//const int contents = 0;
@@ -637,6 +634,11 @@ func void _eventDoTakeVob_SwitchCategory () {
 };
 
 func void _eventOpenInventory_SwitchToCategory () {
+	//Only if not in dialogue - otherwise this collides with EIM item preview feature
+	if (!InfoManager_HasFinished()) {
+		return;
+	};
+
 	if (invCategory_VobTaken_ItemInstanceID > -1) {
 		Npc_InvSelectItem (hero, invCategory_VobTaken_ItemInstanceID);
 		invCategory_VobTaken_ItemInstanceID = -1;

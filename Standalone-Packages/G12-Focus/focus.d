@@ -129,23 +129,8 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 		if (Hlp_Is_oCNpc (her.focus_vob)) {
 			var C_NPC oth; oth = _^ (her.focus_vob);
 
-			var int att;
-
-			//Custom function determining whether Npc is friendly or not
-			const int symbID = 0;
-			if (!symbID) {
-				symbID = MEM_GetSymbolIndex ("C_NPC_GETATTITUDE");
-			};
-
-			if (symbID != -1) {
-				MEM_PushInstParam (oth);
-				MEM_CallByID (symbID);
-
-				att = MEM_PopIntResult ();
-			} else {
-				//Default - use Perm attitude
-				att = Npc_GetPermAttitude(hero, oth);
-			};
+			//Default - use Perm attitude
+			var int att; att = Npc_GetPermAttitude(hero, oth);
 
 			if (att == ATT_FRIENDLY) {
 				focusColor = _PC_ChangeFocus_Color_Friendly;
@@ -158,6 +143,19 @@ func void _hook_oCGame_UpdateStatus__Focus () {
 			} else
 			if(att == ATT_HOSTILE) {
 				focusColor = _PC_ChangeFocus_Color_Hostile;
+			};
+
+			//API function that determines focus color
+			const int symbID = 0;
+			if (!symbID) {
+				symbID = MEM_GetSymbolIndex ("C_NPC_GETFOCUSCOLOR");
+			};
+
+			if (symbID != -1) {
+				MEM_PushInstParam (oth);
+				MEM_CallByID (symbID);
+
+				focusColor = MEM_PopIntResult ();
 			};
 		};
 	};

@@ -92,11 +92,11 @@ func int Log_GetNoOfEntries (var string topicName) {
  */
 func string Log_GetEntryByIndex (var string topicName, var int index) {
 	var int ptr; ptr = Log_GetTopic (topicName);
-	if (!ptr) { return ""; };
+	if (!ptr) { return STR_EMPTY; };
 
 	var oCLogTopic logTopic; logTopic = _^ (ptr);
 
-	if (!logTopic.m_lstEntries_next) { return ""; };
+	if (!logTopic.m_lstEntries_next) { return STR_EMPTY; };
 
 	var zCList l;
 	var int list; list = logTopic.m_lstEntries_next;
@@ -117,7 +117,7 @@ func string Log_GetEntryByIndex (var string topicName, var int index) {
 		list = l.next;
 	end;
 
-	return "";
+	return STR_EMPTY;
 };
 
 /*
