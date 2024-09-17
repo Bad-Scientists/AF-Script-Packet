@@ -469,6 +469,8 @@ func void Wld_RoomRemoveNpc (var string portalName, var int slfInstance) {
 								CALL__thiscall (_@(portalPtr), MEMINT_SwitchG1G2 (oCPortalRoom___oCPortalRoom_G1, oCPortalRoom___oCPortalRoom_G2));
 								call = CALL_End();
 							};
+
+							continue;
 						};
 					};
 				};
