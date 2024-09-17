@@ -68,7 +68,8 @@ func void Npc_StopAni_G1 (var int slfInstance, var string aniName) {
 				var oCMsgConversation msg; msg = _^ (eMsg);
 
 				if (Hlp_StrCmp (msg.name, aniName)) {
-					zCEventMessage_Delete (eMsg);
+					zCEventManager_Delete(eMgr, eMsg);
+					continue;
 				};
 			};
 		};
