@@ -80,6 +80,10 @@ func void _hook_zCConsole_HandleEvent () {
 
 	if ((key == KEY_DOWNARROW) || (key == KEY_UPARROW) || (key == KEY_INSERT))
 	{
+		//Store already typed in console input
+		console.instr = STR_TrimChar (console.instr, CHR_SPACE);
+		storeCommand = console.instr;
+
 		if (historyIndex < 0) {
 			//Clear
 			historyIndex = -1;
