@@ -61,6 +61,7 @@ keys.d
 input.d
 
 vectors.d
+zError_engine.d
 vobFunctions.d
 
 spatialState.d
@@ -91,8 +92,6 @@ ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
-
-zError_engine.d
 
 mobFunctions.d
 
