@@ -1245,6 +1245,11 @@ func void AI_DiaSync () {
  */
 func void _AI_PutInSlot (var string slotName, var int itemInstanceID) {
 	if (Npc_GetInvItem (self, itemInstanceID)) {
+		var oCNpc slf; slf = Hlp_GetNpc(self);
+		if (!slf.interactItem) {
+			oCNpc_SetInteractItem(self, _@(item));
+		};
+
 		oCNpc_PutInSlot_Fixed (self, slotName, _@ (item), 1);
 	};
 };
@@ -1270,7 +1275,13 @@ func void _AI_CreateItemInSlot (var string slotName, var int itemInstanceID) {
 	var int trafo[16];
 	NewTrafo(_@(trafo));
 	var int itemPtr; itemPtr = InsertItem (itemName, 1, _@ (trafo));
-	oCNpc_PutInSlot_Fixed (self, slotName, itemPtr, 0);
+
+	var oCNpc slf; slf = Hlp_GetNpc(self);
+	if (!slf.interactItem) {
+		oCNpc_SetInteractItem(self, itemPtr);
+	};
+
+	oCNpc_PutInSlot_Fixed(self, slotName, itemPtr, 0);
 };
 
 func void AI_CreateItemInSlot (var int slfInstance, var string slotName, var int itemInstanceID) {
@@ -1300,6 +1311,7 @@ func void AI_PutInInvFromSlot (var int slfInstance, var string slotName) {
  */
 func void _AI_RemoveItemFromSlot (var string slotName) {
 	var int itemPtr; itemPtr = oCNpc_RemoveFromSlot_Fixed (self, slotName, 1, 1);
+	oCNpc_SetInteractItem(self, 0);
 	//var C_Item itm; itm = _^ (itemPtr);
 	//Wld_RemoveItem (itm);
 	RemoveoCVobSafe (itemPtr, 0);
