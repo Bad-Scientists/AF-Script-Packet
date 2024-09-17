@@ -1819,12 +1819,12 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 			Event_Execute (_NpcTransferItem_Event, _@ (item));
 		};
 
-		if (amount == 1) {
-			CreateInvItem (oth, itemInstanceID);
-			NPC_RemoveInvItem (slf, itemInstanceID);
+		if (item.flags & ITEM_MULTI) {
+			CreateInvItems(oth, itemInstanceID, amount);
+			NPC_RemoveInvItems(slf, itemInstanceID, amount);
 		} else {
-			CreateInvItems (oth, itemInstanceID, amount);
-			NPC_RemoveInvItems (slf, itemInstanceID, amount);
+			CreateInvItem(oth, itemInstanceID);
+			NPC_RemoveInvItem(slf, itemInstanceID);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
