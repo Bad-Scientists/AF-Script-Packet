@@ -1470,6 +1470,12 @@ func void Npc_TurnToVob (var int slfInstance, var int vobPtr, var int startTurnA
 	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, fAzimuth, startTurnAnis);
 };
 
+func void Npc_TurnDegrees (var int slfInstance, var int degreesF, var int startTurnAnis) {
+	var oCNpc slf; slf = Hlp_GetNpc (slfInstance);
+	if (!Hlp_IsValidNpc (slf)) { return; };
+	oCAniCtrl_Human_TurnDegrees (slf.aniCtrl, degreesF, startTurnAnis);
+};
+
 func int Npc_GetAIState(var int slfInstance) {
 	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
 	if (!statePtr) { return -1; };
