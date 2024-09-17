@@ -330,6 +330,23 @@ func void MEM_StringArrayRemoveIndex (var int arrPtr, var int index) {
 	MEM_ArrayRemoveIndex (arrPtr, index);
 };
 
+func string MEM_StringArrayGetString (var int arrPtr, var int index) {
+	if (!arrPtr) { return STR_EMPTY; };
+
+	var zCArray arr; arr = _^ (arrPtr);
+
+	var int ptr;
+	var string t;
+
+	ptr = MEM_ArrayRead (arrPtr, index);
+
+	if (ptr) {
+		t = MEM_ReadString (ptr);
+		return t;
+	};
+
+	return STR_EMPTY;
+};
 
 func int MEM_StringArrayContains (var int arrPtr, var string s) {
 	if (!arrPtr) { return FALSE; };
@@ -363,6 +380,37 @@ func string STR_FormatLeadingZeros (var int number, var int total) {
 	while(len < total);
 		s = ConcatStrings ("0", s);
 		len += 1;
+	end;
+
+	return s;
+};
+
+func string STR_TrimDecimal(var string s, var int count) {
+	var int len; len = STR_Len(s);
+	var int buf; buf = STR_toChar(s);
+
+	var int i; i = 0;
+
+	while(i < len);
+		var int c; c = MEM_ReadInt(buf + i) & 255;
+
+		//Decimal separator '.'
+		if (c == 46) {
+			i += 1;
+
+			while ((count > 0) && (i < len));
+				count -= 1;
+				i += 1;
+			end;
+
+			if (i < len) {
+				s = STR_Left(s, i);
+			};
+
+			return s;
+		};
+
+		i += 1;
 	end;
 
 	return s;
