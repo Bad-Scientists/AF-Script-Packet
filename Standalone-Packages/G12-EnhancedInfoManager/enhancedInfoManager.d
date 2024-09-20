@@ -326,12 +326,17 @@ func void EIM_ParseDescription(var int strPtr) {
 			j = i - 1;
 			while(j >= 0);
 				b = MEM_ReadInt(buf + j) & 255;
-				//' ', '~'
 				if ((b == 32) || (b == 126)) {
 					j += 1;
 					break;
 				};
 				modifier = ConcatStrings(BtoC(b), modifier);
+
+				//Exception for overlay!
+				if (Hlp_StrCmp(modifier, "o")) {
+					break;
+				};
+
 				j -= 1;
 			end;
 
@@ -827,6 +832,12 @@ func void EIM_ParseDescription(var int strPtr) {
 					break;
 				};
 				modifier = ConcatStrings(BtoC(b), modifier);
+
+				//Exception for overlay!
+				if (Hlp_StrCmp(modifier, "o")) {
+					break;
+				};
+
 				j -= 1;
 			end;
 
