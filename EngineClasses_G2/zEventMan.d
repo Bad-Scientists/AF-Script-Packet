@@ -7,7 +7,6 @@ class zCObject {
     var string objectName;     // 0x0010 zSTRING
 };
 */
-
 const int EV_ROBUSTTRACE = 0;
 const int EV_GOTOPOS = 1;
 const int EV_GOTOVOB = 2;
@@ -111,13 +110,22 @@ const int EV_SETTIME = 3;
 const int EV_APPLYTIMEDOVERLAY = 4;
 const int EV_STATE_MAX = 5;
 
-class zCEventManager {
-	var int _vtbl;			//0	8251772		zCEventManager_vtbl
-	var int refctr;			//4	1
-	var int hashindex;		//8	65535
-	var int hashNext;		//12	0
+const int EV_DAMAGE_ONCE = 0;
+const int EV_DAMAGE_PER_FRAME = 1;
 
-	var string objectName;		//16	8193786		zSTRING numMessages in string sometimes???
+const int bitfield_oCNpcMessage_highPriority = 1;
+const int bitfield_oCNpcMessage_deleted = 2;
+const int bitfield_oCNpcMessage_inUse = 4;
+
+class zCEventManager {
+	//public zCObject
+	var int _vtbl;			//0
+
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int cleared;		//36	int cleared;
 	var int active;			//40	int active;
@@ -134,12 +142,14 @@ class zCEventManager {
 const int sizeof_zCEventMessage		= 44;
 
 class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -157,12 +167,14 @@ class zCEventMessage {
 const int sizeof_zCEventCore		= 76;
 
 class zCEventCore {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -190,12 +202,14 @@ class zCEventCore {
 const int sizeof_oCNpcMessage		= 68;
 
 class oCNpcMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -211,12 +225,14 @@ class oCNpcMessage {
 //const int sizeof_oCMsgDamage		= ?;
 
 class oCMsgDamage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -236,8 +252,56 @@ class oCMsgDamage {
 	};
 	*/
 
-	//TODO ma tu byt rozpad na oSDamageDescriptor ? alebo pointer ?
 	//oCNpc::oSDamageDescriptor descDamage;
+	//class oSDamageDescriptor {
+	var int validFields; //68 unsigned long dwFieldsValid;
+
+	var int attackerVob; //72 zCVob* pVobAttacker;
+	var int attackerNpc; //76 oCNpc* pNpcAttacker;
+	var int hitVob; //80 zCVob* pVobHit;
+	var int hitPfx; //84 oCVisualFX* pFXHit;
+	var int itemWeapon; //88 oCItem* pItemWeapon;
+
+	var int spellID; //92 unsigned long nSpellID;
+	var int spellCat; //96 unsigned long nSpellCat;
+	var int spellLevel; //100 unsigned long nSpellLevel;
+
+	var int dmgMode; //104 unsigned long enuModeDamage;
+	var int weaponMode; //108 unsigned long enuModeWeapon;
+
+	var int dmgArray[8]; //112 unsigned long aryDamage[oEDamageIndex_MAX];
+	var int dmgTotal; //144 float fDamageTotal;
+	var int dmgMultiplier; //148 float fDamageMultiplier;
+
+	var int locationHit[3]; //152 zVEC3 vecLocationHit;
+	var int directionFly[3]; //164 zVEC3 vecDirectionFly;
+
+	var string visualFXStr; //176 zSTRING strVisualFX;
+
+	var int duration; //196 float fTimeDuration;
+	var int interval; //200 float fTimeInterval;
+	var int dmgPerInterval; //204 float fDamagePerInterval;
+	var int dmgDontKill; //208 int bDamageDontKill;
+
+	var int bitfield; //212 1 -> Once, 2 -> finished, 4 -> isDead, 8 -> isUnconscious
+	//group {
+	//unsigned long bOnce : 1;
+	//unsigned long bFinished : 1;
+	//unsigned long bIsDead : 1;
+	//unsigned long bIsUnconscious : 1;
+	//unsigned long lReserved : 28;
+	//};
+
+	var int azimuth; //216 float fAzimuth;
+	var int elevation; //220 float fElevation;
+	var int timeCurrent; //224 float fTimeCurrent;
+	var int dmgReal; //228 float fDamageReal;
+	var int dmgEffective; //232 float fDamageEffective;
+	var int dmgArrayEffective[8]; //236 unsigned long aryDamageEffective[oEDamageIndex_MAX];
+	var int vobParticleFX; //268 zCVob* pVobParticleFX;
+	var int particleFX; //272 zCParticleFX* pParticleFX;
+	var int visualFX; //276 oCVisualFX* pVisualFX;
+	//};
 };
 
 const int sizeof_oCMsgWeapon		= 80;
@@ -249,12 +313,14 @@ const int bitfield_oCMsgWeapon_UseFist = 8;
 const int bitfield_oCMsgWeapon_ShowMagicCircle = 16;
 
 class oCMsgWeapon {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -300,12 +366,14 @@ class oCMsgWeapon {
 const int sizeof_oCMsgMovement		= 124;
 
 class oCMsgMovement {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -355,12 +423,14 @@ class oCMsgMovement {
 const int sizeof_oCMsgAttack		= 88;
 
 class oCMsgAttack {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 //class zCEventMessage
 
@@ -406,12 +476,14 @@ class oCMsgAttack {
 const int sizeof_oCMsgUseItem		= 80;
 
 class oCMsgUseItem {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -440,12 +512,14 @@ class oCMsgUseItem {
 const int sizeof_oCMsgState		= 116;
 
 class oCMsgState {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -470,7 +544,7 @@ class oCMsgState {
 
 	var int function;		//68	int function;
 	var int minutes;		//72	int minutes;
-	var int instance;		//76	int instance;
+	var int inst;			//76	int instance;
 	var string wp;			//80	zSTRING wp;
 	var int timer;			//100	float timer;
 	var int other;			//104	oCNpc* other;
@@ -484,12 +558,14 @@ class oCMsgState {
 const int sizeof_oCMsgManipulate	= 132;
 
 class oCMsgManipulate {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -534,7 +610,7 @@ class oCMsgManipulate {
 
 //    union {
 	var int npcSlot;		//120	int npcSlot;
-	var int targetState;		//124	int targetState;
+	var int targetState;	//124	int targetState;
 	var int aniID;			//128	int aniID
 //    };
 
@@ -543,12 +619,14 @@ class oCMsgManipulate {
 const int sizeof_oCMsgConversation = 152;
 
 class oCMsgConversation {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -612,12 +690,14 @@ class oCMsgConversation {
 const int sizeof_oCMsgMagic = 108;
 
 class oCMsgMagic {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -656,14 +736,17 @@ class oCMsgMagic {
 };
 
 const int sizeof_oCMobMsg = 56;
+const int bitfield_oCMobMsg_to = 1 << 31 - 1;
 
 class oCMobMsg {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	var int subType;		//36	unsigned short int subType;
 	var int inCutscene;		//40	int inCutscene;
@@ -686,12 +769,14 @@ class oCMobMsg {
 
 class zCCSCamera_EventMsg {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -735,12 +820,14 @@ class zCCSCamera_EventMsg {
 
 class zCCSCamera_EventMsgActivate {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -770,12 +857,14 @@ class zCCSCamera_EventMsgActivate {
 
 class zCEventMusicControler {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -804,12 +893,14 @@ class zCEventMusicControler {
 //Same as zCEventMessage ?
 class zCEventCommon {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -837,12 +928,14 @@ class zCEventCommon {
 
 class zCEventMover {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {
@@ -872,12 +965,14 @@ class zCEventMover {
 
 class zCEventScreenFX {
 	//class zCEventMessage {
+	//public zCObject
 	var int _vtbl;			//0
-	var int refctr;			//4
-	var int hashindex;		//8
-	var int hashNext;		//12
 
-	var string objectName;		//16	8193786
+	var int refCtr;			//4 int
+	var int hashIndex;		//8 unsigned short
+	var int hashNext;		//12 zCObject*
+	var string objectName;	//16 zSTRING
+	//};
 
 	/*
 	enum zTTimeBehavior {

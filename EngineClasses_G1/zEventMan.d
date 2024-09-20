@@ -25,7 +25,7 @@ const int EV_GOTOFP = 14;
 const int EV_DODGE = 15;
 const int EV_BEAMTO = 16;
 const int EV_ALIGNTOFP = 17;
-const int MOVE_MAX = 18;
+const int EV_MOVE_MAX = 18;
 
 const int EV_TAKEVOB = 0;
 const int EV_DROPVOB = 1;
@@ -104,6 +104,9 @@ const int EV_SETNPCSTOSTATE = 2;
 const int EV_SETTIME = 3;
 const int EV_APPLYTIMEDOVERLAY = 4;
 const int EV_STATE_MAX = 5;
+
+const int EV_DAMAGE_ONCE = 0;
+const int EV_DAMAGE_PER_FRAME = 1;
 
 const int bitfield_oCNpcMessage_highPriority = 1;
 const int bitfield_oCNpcMessage_deleted = 2;
@@ -244,8 +247,54 @@ class oCMsgDamage {
 	};
 	*/
 
-	//TODO ma tu byt rozpad na oSDamageDescriptor ? alebo pointer ?
 	//oCNpc::oSDamageDescriptor descDamage;
+	//class oSDamageDescriptor {
+	var int validFields; //68 unsigned long dwFieldsValid;
+
+	var int attackerVob; //72 zCVob* pVobAttacker;
+	var int attackerNPC; //76 oCNpc* pNpcAttacker;
+	var int hitVob; //80 zCVob* pVobHit;
+	var int hitPfx; //84 oCVisualFX* pFXHit;
+	var int itemWeapon; //88 oCItem* pItemWeapon;
+
+	var int spellID; //92 unsigned long nSpellID;
+	var int spellLevel; //96 unsigned long nSpellLevel;
+
+	var int dmgMode; //100 unsigned long enuModeDamage;
+	var int weaponMode; //104 unsigned long enuModeWeapon;
+
+	var int dmgArray[8];  //108 unsigned long aryDamage[oEDamageIndex_MAX];
+	var int dmgTotal; //140 float fDamageTotal;
+	var int dmgMultiplier; //144 float fDamageMultiplier;
+
+	var int locationHit[3]; //148  zVEC3 vecLocationHit;
+	var int directionFly[3]; //160 zVEC3 vecDirectionFly;
+
+	var string visualFXStr; //172 zSTRING strVisualFX;
+
+	var int duration; //192 float fTimeDuration;
+	var int interval; //196 float fTimeInterval;
+	var int dmgPerInterval; //200 float fDamagePerInterval;
+
+	var int bitfield_oSDamageDescriptor; //204 1 -> Once, 2 -> finished, 4 -> isDead, 8 -> isUnconscious
+	//group {
+	//unsigned long bOnce : 1;
+	//unsigned long bFinished : 1;
+	//unsigned long bIsDead : 1;
+	//unsigned long bIsUnconscious : 1;
+	//unsigned long lReserved : 28;
+	//};
+
+	var int azimuth; //208 float fAzimuth;
+	var int elevation; //212 float fElevation;
+	var int timeCurrent; //216 float fTimeCurrent;
+	var int dmgReal; //220 float fDamageReal;
+	var int dmgEffective; //224 float fDamageEffective;
+	var int dmgArrayEffective[8]; //228 unsigned long aryDamageEffective[oEDamageIndex_MAX];
+	var int vobParticleFX; //260 zCVob* pVobParticleFX;
+	var int particleFX; //264 zCParticleFX* pParticleFX;
+	var int visualFX; //268 oCVisualFX* pVisualFX;
+	//};
 };
 
 const int sizeof_oCMsgWeapon		= 80;
@@ -488,7 +537,7 @@ class oCMsgState {
 
 	var int function;		//68	int function;
 	var int minutes;		//72	int minutes;
-	var int instance;		//76	int instance;
+	var int inst;			//76	int instance;
 	var string wp;			//80	zSTRING wp;
 	var int timer;			//100	float timer;
 	var int other;			//104	oCNpc* other;
@@ -501,6 +550,7 @@ class oCMsgState {
 
 const int sizeof_oCMsgManipulate	= 132;
 
+// class oCMsgManipulate : public oCNpcMessage {
 class oCMsgManipulate {
 	//public zCObject
 	var int _vtbl;			//0
@@ -675,6 +725,7 @@ class oCMsgMagic {
 };
 
 const int sizeof_oCMobMsg = 56;
+const int bitfield_oCMobMsg_to = 1 << 31 - 1;
 
 class oCMobMsg {
 	//public zCObject
@@ -731,9 +782,9 @@ class zCEventMusicControler {
 
 	/*
 	enum zTEventMusicControlerSubType {
-	zEVENT_START_SPECIAL_SGT,
-	zEVENT_STOP_SPECIAL_SGT,
-	zEVENT_MUSICCONTROLER_COUNT
+		zEVENT_START_SPECIAL_SGT,
+		zEVENT_STOP_SPECIAL_SGT,
+		zEVENT_MUSICCONTROLER_COUNT
 	};
 	*/
 
@@ -767,11 +818,11 @@ class zCEventCommon {
 
 	/*
 	enum zTEventCommonSubType {
-	zEVENT_ENABLE,
-	zEVENT_DISABLE,
-	zEVENT_TOGGLE_ENABLED,
-	zEVENT_RESET,
-	zEVENT_MISC_NUM_SUBTYPES
+		zEVENT_ENABLE,
+		zEVENT_DISABLE,
+		zEVENT_TOGGLE_ENABLED,
+		zEVENT_RESET,
+		zEVENT_MISC_NUM_SUBTYPES
 	};
 	*/
 };
