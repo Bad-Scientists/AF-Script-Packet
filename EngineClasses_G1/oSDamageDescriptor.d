@@ -1,16 +1,23 @@
-/*
-	typedef enum oEIndexDamage {
-	oEDamageIndex_Barrier,
-	oEDamageIndex_Blunt,
-	oEDamageIndex_Edge,
-	oEDamageIndex_Fire,
-	oEDamageIndex_Fly,
-	oEDamageIndex_Magic,
-	oEDamageIndex_Point,
-	oEDamageIndex_Fall,
-	oEDamageIndex_MAX
-	} oEDamageIndex, oEProtectionIndex;
-*/
+const int oEDamageIndex_Barrier = 0;
+const int oEDamageIndex_Blunt = 1;
+const int oEDamageIndex_Edge = 2;
+const int oEDamageIndex_Fire = 3;
+const int oEDamageIndex_Fly = 4;
+const int oEDamageIndex_Magic = 5;
+const int oEDamageIndex_Point = 6;
+const int oEDamageIndex_Fall = 7;
+const int oEDamageIndex_MAX = 8;
+
+const int oEDamageType_Unknown = 0;
+const int oEDamageType_Barrier = 1;
+const int oEDamageType_Blunt = 2;
+const int oEDamageType_Edge = 4;
+const int oEDamageType_Fire = 8;
+const int oEDamageType_Fly = 16;
+const int oEDamageType_Magic = 32;
+const int oEDamageType_Point = 64;
+const int oEDamageType_Fall = 128;
+
 const int oEDamageDescFlag_Attacker = 1;
 const int oEDamageDescFlag_Npc = 2;
 const int oEDamageDescFlag_Inflictor = 4;
