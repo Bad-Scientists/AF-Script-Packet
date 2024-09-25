@@ -597,8 +597,6 @@ func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 };
 
 func void _AI_TeleportKeepQueue (var string vobName) {
-	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
-
 	Npc_BeamToKeepQueue (self, vobName);
 	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", self, self, 0, 0, 0, FALSE);
 	Snd_Play ("MFX_TELEPORT_CAST");
@@ -637,7 +635,6 @@ func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
 };
 
 func void _AI_BeamToKeepQueue (var string vobName) {
-	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
 	Npc_BeamToKeepQueue (self, vobName);
 };
 
