@@ -1412,3 +1412,83 @@ func void AI_ActivateDialogCam(var int slfInstance, var int othInstance) {
 
 	AI_Function_II(slf, _AI_ActivateDialogCam, _@(slf), _@(oth));
 };
+
+/*
+ *	AI queue 'injection'
+ *	 - allows you to inject AI functions from executed ai_function
+ *
+ *	Example:
+ *	--------
+ *	func void AIQ_GotoWp_OC3() {
+ *		AI_Inject(self)
+ *		AI_GotoWp(self, "OC3");
+ *		AI_InjectEnd(self);
+ *	};
+ *
+ *	func void main() {
+ *		AI_GotoWp(self, "OC1";
+ *		AI_Function(hero, AIQ_GotoWp_OC3);
+ *		AI_GotoWp(self, "OC2";
+ *	};
+ *
+ *	Will on execution of function AIQ_GotoWp_OC3 translate in AI queue into:
+ *		AI_GotoWp(self, "OC3");
+ *		AI_GotoWp(self, "OC2";
+ */
+const int _AI_Inject_Index = -1;
+const int _AI_Inject_NumInArray = 0;
+
+func void AI_Inject(var int slfInstance) {
+	if (_AI_Inject_Index != -1) {
+		_AI_Inject_Index = -1;
+
+		zSpy_Info("AI_Inject called without AI_InjectEnd! Injection aborted.");
+		return;
+	};
+
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int emPtr; emPtr = zCVob_GetEM(_@(slf));
+	if (!emPtr) { return; };
+	var zCEventManager em; em = _^(emPtr);
+
+	if (em.messageList_numInArray) {
+		_AI_Inject_Index = 0;
+		_AI_Inject_NumInArray = em.messageList_numInArray;
+	};
+};
+
+func void AI_InjectEnd(var int slfInstance) {
+	if (_AI_Inject_Index == -1) {
+		zSpy_Info("AI_InjectEnd no AI queue available for injection.");
+		return;
+	};
+
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int emPtr; emPtr = zCVob_GetEM(_@(slf));
+	if (!emPtr) { return; };
+	var zCEventManager em; em = _^(emPtr);
+
+	var int numInArray; numInArray = em.messageList_numInArray - _AI_Inject_NumInArray;
+	if (numInArray <= 0) { return; };
+
+	while(numInArray);
+		var int i; i = em.messageList_numInArray - 1;
+		var int e; e = MEM_ArrayRead(_@(em.messageList_array), i);
+
+		while(i > _AI_Inject_Index);
+			MEM_ArrayWrite(_@(em.messageList_array), i, MEM_ArrayRead(_@(em.messageList_array), i - 1));
+			i -= 1;
+		end;
+
+		MEM_ArrayWrite(_@(em.messageList_array), _AI_Inject_Index, e);
+
+		numInArray -= 1;
+	end;
+
+	_AI_Inject_Index = -1;
+	_AI_Inject_NumInArray = 0;
+};
