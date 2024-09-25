@@ -1389,3 +1389,26 @@ func void AI_GotoNpc_Ext (var int slfInstance, var int othInstance, var int maxT
 		AI_GotoPos_Ext (slf, _@ (pos), maxTargetDist);
 	};
 };
+
+/*
+ *	AI_ActivateDialogCam
+ *	 - to be used in dialogues, switches camera target to oth (gives you control to switch camera at will)
+ */
+func void _AI_ActivateDialogCam(var int slfPtr, var int othPtr) {
+	var oCNpc slf; slf = _^(slfPtr);
+	var oCNpc oth; oth = _^(othPtr);
+
+	var int retVal; retVal = oCNpc_ActivateDialogCam(oth, slf, FLOATNULL);
+	var int aiPtr; aiPtr = zCSession_GetCameraAI ();
+	zCAICamera_ReceiveMsg (aiPtr, _@ (zPLAYER_BEAMED));
+};
+
+func void AI_ActivateDialogCam(var int slfInstance, var int othInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC(slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNPC(othInstance);
+	if (!Hlp_IsValidNPC(oth)) { return; };
+
+	AI_Function_II(slf, _AI_ActivateDialogCam, _@(slf), _@(oth));
+};
