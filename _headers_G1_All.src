@@ -141,6 +141,7 @@ bars.d
 
 routines_waynet.d
 
+camera.d
 AI_Functions.d
 
 spawnManager.d
@@ -149,7 +150,6 @@ time.d
 sound.d
 
 menu.d
-camera.d
 
 vobThrowing.d
 miscellaneous.d
