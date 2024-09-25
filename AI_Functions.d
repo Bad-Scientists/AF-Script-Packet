@@ -1243,7 +1243,7 @@ func void AI_DiaSync () {
 func void _AI_PutInSlot (var string slotName, var int itemInstanceID) {
 	if (Npc_GetInvItem (self, itemInstanceID)) {
 		var oCNpc slf; slf = Hlp_GetNpc(self);
-		if (!slf.interactItem) {
+		if (slf.interactItem) {
 			oCNpc_SetInteractItem(self, _@(item));
 		};
 
@@ -1274,7 +1274,7 @@ func void _AI_CreateItemInSlot (var string slotName, var int itemInstanceID) {
 	var int itemPtr; itemPtr = InsertItem (itemName, 1, _@ (trafo));
 
 	var oCNpc slf; slf = Hlp_GetNpc(self);
-	if (!slf.interactItem) {
+	if (slf.interactItem) {
 		oCNpc_SetInteractItem(self, itemPtr);
 	};
 
