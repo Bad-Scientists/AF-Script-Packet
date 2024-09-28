@@ -21,13 +21,11 @@ func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string o
 	var int vobPtr;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
-	var int i; i = 0;
-
 	var int count; count = vobList.numInArray;
 
 	var string mobVisualName;
 
-	while (i < count);
+	repeat(i, count); var int i;
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -39,8 +37,6 @@ func void oCMobInter_SetupAllMobsByVisual (var string searchVisual, var string o
 			oCMobInter_SetConditionFunc (vobPtr, conditionFunc);
 			oCMobInter_SetUseWithItem (vobPtr, useWithItem);
 		};
-
-		i += 1;
 	end;
 
 	MEM_ArrayFree (vobListPtr);
@@ -62,14 +58,12 @@ func int oCMobContainer_SearchByPortalRoom (var string searchVisual, var string 
 	var int vobPtr;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
-	var int i; i = 0;
-
 	var int count; count = vobList.numInArray;
 
 	var string mobVisualName;
 	var string mobPortalRoom;
 
-	while (i < count);
+	repeat(i, count); var int i;
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -84,8 +78,6 @@ func int oCMobContainer_SearchByPortalRoom (var string searchVisual, var string 
 				return vobPtr;
 			};
 		};
-
-		i += 1;
 	end;
 
 	MEM_ArrayFree (vobListPtr);
@@ -396,7 +388,8 @@ func int Npc_DetectItem (var int slfInstance, var int range, var int mainflag, v
 
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
-	repeat (i, vobList.numInArray); var int i;
+
+	repeat(i, vobList.numInArray); var int i;
 		var int vobPtr; vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (!Hlp_Is_oCItem (vobPtr)) {
@@ -502,7 +495,8 @@ func int Npc_DetectNpc (var int slfInstance, var int range, var string stateName
 
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
-	repeat (i, vobList.numInArray); var int i;
+
+	repeat(i, vobList.numInArray); var int i;
 		var int vobPtr; vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		//Ignore self
@@ -604,7 +598,8 @@ func int Npc_DetectVobByName (var int slfInstance, var int range, var string obj
 
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
-	repeat (i, vobList.numInArray); var int i;
+
+	repeat(i, vobList.numInArray); var int i;
 		var int vobPtr; vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (!vobPtr) {
@@ -717,14 +712,12 @@ func int zCVob_GetNearest_AtPos (var string className, var int fromPosPtr) {
 	var int vobPtr;
 	var zCArray vobList; vobList = _^ (vobListPtr);
 
-	var int i; i = 0;
-
 	var int count; count = vobList.numInArray;
 
 	var int dir[3];
 	var int posPtr;
 
-	while (i < count);
+	repeat(i, count); var int i;
 		//Read vobPtr from vobList array
 		vobPtr = MEM_ArrayRead (vobListPtr, i);
 
@@ -742,8 +735,6 @@ func int zCVob_GetNearest_AtPos (var string className, var int fromPosPtr) {
 				maxDist = dist;
 			};
 		};
-
-		i += 1;
 	end;
 
 	MEM_ArrayFree (vobListPtr);
