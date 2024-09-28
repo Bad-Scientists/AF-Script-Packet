@@ -291,16 +291,14 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 
 /*
  *	Npc_DetectVobByVisual
- *	 - function returns pointer to *nearest* vob with specified searchVisualName within specified verticalLimit
+ *	 - function returns pointer to *nearest* vob with specified visualNames within specified verticalLimit
  */
-func int Npc_DetectVobByVisual (var int slfInstance, var int range, var string searchVisualName, var int searchFlags, var int distLimit, var int verticalLimit) {
+func int Npc_DetectVobByVisual (var int slfInstance, var int range, var string visualNames, var int searchFlags, var int distLimit, var int verticalLimit) {
 	var int dist;
 	var int firstPtr; firstPtr = 0;
 	var int nearestPtr; nearestPtr = 0;
 
 	var int maxDist; maxDist = mkf (999999);
-
-	var string visualName;
 
 	//Get Npc
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
@@ -322,9 +320,14 @@ func int Npc_DetectVobByVisual (var int slfInstance, var int range, var string s
 	var int toPos[3];
 	var int routePtr;
 
+	var string searchVisual;
+	var string vobVisualName;
+	var int visualNameCount; visualNameCount = STR_SplitCount (visualNames, STR_PIPE);
+
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
-	repeat (i, vobList.numInArray); var int i;
+
+	repeat(i, vobList.numInArray); var int i;
 		var int vobPtr; vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (searchFlags & SEARCHVOBLIST_CANSEE) {
@@ -348,31 +351,35 @@ func int Npc_DetectVobByVisual (var int slfInstance, var int range, var string s
 		};
 
 		if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
-			visualName = Vob_GetVisualName (vobPtr);
+			repeat(j, visualNameCount); var int j;
+				searchVisual = STR_Split (visualNames, STR_PIPE, j);
 
-			if (Hlp_StrCmp (visualName, searchVisualName)) {
-				//Find route from Npc to vob - get total distance if Npc travels by waynet
-				if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
-					retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
+				vobVisualName = Vob_GetVisualName (vobPtr);
 
-					routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
-					dist = zCRoute_GetLength (routePtr); //float
-					zCRoute_Delete (routePtr);
+				if (Hlp_StrCmp (searchVisual, vobVisualName)) {
+					//Find route from Npc to vob - get total distance if Npc travels by waynet
+					if (searchFlags & SEARCHVOBLIST_USEWAYNET) {
+						retVal = zCVob_GetPositionWorldToPos (vobPtr, _@ (toPos));
 
-					dist = RoundF (dist);
-				} else {
-					dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
-				};
+						routePtr = zCWayNet_FindRoute_Positions (_@ (fromPos), _@ (toPos), 0);
+						dist = zCRoute_GetLength (routePtr); //float
+						zCRoute_Delete (routePtr);
 
-				if ((dist <= distLimit) || (distLimit == -1)) {
-					if (!firstPtr) { firstPtr = vobPtr; };
+						dist = RoundF (dist);
+					} else {
+						dist = NPC_GetDistToVobPtr (slfInstance, vobPtr); //int
+					};
 
-					if (dist < maxDist) {
-						nearestPtr = vobPtr;
-						maxDist = dist;
+					if ((dist <= distLimit) || (distLimit == -1)) {
+						if (!firstPtr) { firstPtr = vobPtr; };
+
+						if (dist < maxDist) {
+							nearestPtr = vobPtr;
+							maxDist = dist;
+						};
 					};
 				};
-			};
+			end;
 		};
 	end;
 
