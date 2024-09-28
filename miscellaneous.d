@@ -125,6 +125,13 @@ func int Npc_CollectVobsInRange (var int slfInstance, var int range) {
 	return + arrPtr;
 };
 
+//Additional filters
+var string _searchFilter_Visuals;
+
+func void Npc_DetectVobSetSearchByVisuals(var string visualNames) {
+	_searchFilter_Visuals = visualNames;
+};
+
 /*
  *	Npc_DetectMobByScemeName
  *	 - function returns pointer to *nearest* available mob with specified scemeName with specified state within specified verticalLimit
@@ -135,6 +142,10 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 	var int nearestPtr; nearestPtr = 0;
 
 	var int maxDist; maxDist = mkf (999999);
+
+	//Reset global visual filter
+	var string visualNames; visualNames = _searchFilter_Visuals; _searchFilter_Visuals = STR_EMPTY;
+	var int checkVisual; checkVisual = STR_Len(visualNames);
 
 	//Get Npc
 	var oCNPC slf; slf = Hlp_GetNPC (slfInstance);
@@ -159,9 +170,14 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 	var string scemeName;
 	var int scemeNameCount; scemeNameCount = STR_SplitCount (scemeNames, STR_PIPE);
 
+	var string searchVisual;
+	var string vobVisualName;
+	var int visualNameCount; visualNameCount = STR_SplitCount (visualNames, STR_PIPE);
+
 	//Loop through list
 	var zCArray vobList; vobList = _^ (arrPtr);
-	repeat (i, vobList.numInArray); var int i;
+
+	repeat(i, vobList.numInArray); var int i;
 		var int vobPtr; vobPtr = MEM_ReadIntArray (vobList.array, i);
 
 		if (availabilityCheck) {
@@ -212,10 +228,28 @@ func int Npc_DetectMobByScemeName (var int slfInstance, var int range, var strin
 
 		if ((abs (NPC_GetHeightToVobPtr (slf, vobPtr)) < verticalLimit) || (verticalLimit == -1)) {
 
-			repeat (j, scemeNameCount); var int j;
-				scemeName = STR_Split (scemeNames, "|", j);
+			repeat(j, scemeNameCount); var int j;
+				scemeName = STR_Split (scemeNames, STR_PIPE, j);
 
 				if (STR_StartsWith (oCMobInter_GetScemeName (vobPtr), scemeName)) {
+					if (checkVisual) {
+						var int visualMatch; visualMatch = FALSE;
+
+						repeat(k, visualNameCount); var int k;
+							searchVisual = STR_Split(visualNames, STR_PIPE, k);
+							vobVisualName = Vob_GetVisualName(vobPtr);
+
+							if (Hlp_StrCmp(searchVisual, vobVisualName)) {
+								visualMatch = TRUE;
+								break;
+							};
+						end;
+
+						if (!visualMatch) {
+							break;
+						};
+					};
+
 					var oCMobInter mob; mob = _^ (vobPtr);
 					if ((mob.state == state) || (state == -1)) {
 						//Find route from Npc to vob - get total distance if Npc travels by waynet
