@@ -552,7 +552,7 @@ func int Npc_SpellTransformTo (var int slfInstance, var int instanceID) {
 
 /*
  *	Npc_HasActiveSpellID
- *	 - function checks if specified spellID is in activeSpells_next
+ *	 - function checks if specified spellID is in activeSpells
  */
 func int Npc_HasActiveSpellID (var int slfInstance, var int spellID) {
 	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);

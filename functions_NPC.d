@@ -32,10 +32,10 @@ func int NPC_GetWalkMode (var int slfInstance) {
 	var string result;
 	result = CALL_RetValAszstring ();
 
-	if (Hlp_StrCmp (result, "RUN"))		{ 	return NPC_RUN; 	};
-	if (Hlp_StrCmp (result, "WALK"))	{ 	return NPC_WALK;	};
-	if (Hlp_StrCmp (result, "SNEAK"))	{	return NPC_SNEAK;	};
-	if (Hlp_StrCmp (result, ""))		{	return NPC_INWATER;	};
+	if (Hlp_StrCmp (result, "RUN")) { return NPC_RUN; };
+	if (Hlp_StrCmp (result, "WALK")) { return NPC_WALK; };
+	if (Hlp_StrCmp (result, "SNEAK")) { return NPC_SNEAK; };
+	if (Hlp_StrCmp (result, STR_EMPTY)) { return NPC_INWATER; };
 
 	return -1;
 };
@@ -842,9 +842,12 @@ func int NPC_GetNode (var int slfInstance, var string nodeName) {
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
 	if (!modelPtr) { return 0; };
 
+	var int retVal;
+
+	CALL_PutRetValTo(_@(retVal));
 	CALL_zStringPtrParam (nodeName);
 	CALL__thiscall (modelPtr, MEMINT_SwitchG1G2 (zCModel__SearchNode_G1, zCModel__SearchNode_G2));
-	return CALL_RetValAsPtr ();
+	return + retVal;
 };
 
 func int NPC_GetNodePositionWorld (var int slfInstance, var string nodeName) {

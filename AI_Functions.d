@@ -197,7 +197,7 @@ func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTarget
 
 	slf.rbt_bitfield = slf.rbt_bitfield | oTRobustTrace_bitfield_standIfTargetReached;
 	slf.rbt_bitfield = slf.rbt_bitfield & ~ oTRobustTrace_bitfield_exactPosition;
-	slf.rbt_maxTargetDist = mkf (maxTargetDist * maxTargetDist);
+	slf.rbt_maxTargetDist = mkf(maxTargetDist * maxTargetDist);
 
 	//Set inUse
 	oCNpcMessage_SetInUse (eMsg, 1);
@@ -823,8 +823,7 @@ func int AI_GotoMobPtr (var int slfInstance, var int mobPtr) {
 	if (!retVal) { return FALSE; };
 
 	AI_GotoVobPtr_EvalWaynetUse (slfInstance, mobPtr);
-	AI_GotoPos (slfInstance, _@ (pos));
-
+	AI_GotoPos(slfInstance, _@ (pos));
 	return TRUE;
 };
 
