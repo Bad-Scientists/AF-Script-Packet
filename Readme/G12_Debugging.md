@@ -1,16 +1,21 @@
 ## G12 Debugging
  - we added several debugging features
  - in order to enable them you have to call their respective init functions from `Init_Global();` function in `Startup.d` file:
-  
+
 ### Console commands:
   * legend: `<mandatory parameter>` `[optional parameter]`
-  
-  * `show AI` --> `G12_ConsoleHistory_Init();` 
+
+  * `show AI` --> `G12_ConsoleHistory_Init();`
       *   will display AI of Npc in focus
 
   * `debug dialogues` --> `CC_DebugDialogues_Init();`
       * will give you access to all dialogues which are assigned to the Npc
       * will allow you to change dialogues to told/untold
+
+	 There are 3 'modes':
+	  * calling function with Npc if focus will allow you to debug dialogues associated with that Npc
+	  * calling function with no Npc if focus will allow you to debug dialogues associated with hero
+	  * calling function with Mob in focus will allow you to debug dialogues associated with mob
 
     [![G1&2 Debugging](https://img.youtube.com/vi/T0Dm3VQXX40/0.jpg)](https://www.youtube.com/watch?v=T0Dm3VQXX40)
 
@@ -30,7 +35,7 @@
 
   * `set sleepingMode` --> `CC_SetSleepingMode_Init();`
       * puts vob in focus into sleeping / awake mode
-	  
+
   * `create <ItemInstanceName> [qty]` --> `CC_Create_Init();`
       * creates specified amount of items in inventory of Npc in your focus or hero's inventory if no Npc is in focus
 
@@ -64,7 +69,7 @@
   * `print pos [objectName]` & `print trafo [objectName]` --> `CC_PrintPos_Init();`
       * `print pos [objectName]` prints position of object in focus in Daedalus format to zSpy so that it can be copy-pasted to the code
         *`const float pos_[objectName][3] = {x, y, z};`
-		
+
       * `print trafo [objectName]` will print both rotation and position of object in focus in Daedalus format to zSpy so that it can be copy-pasted to the code
         * `const string descRot = "1.000394e-025 1.2990037e-042 0 0 1.4012985e-045 0 5.8889526e-039 3.9913184e-041 1.4314439e+019";`
         * `const string descPot = "1.7656361e-043 7.8472714e-044 -9.8679836e-032";`
