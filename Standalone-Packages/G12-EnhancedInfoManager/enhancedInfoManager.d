@@ -61,8 +61,6 @@ const int ALIGN_TAB = 255;
 const int EIM_OVERLAY_MAX = 255;
 const int EIM_DIALOG_MAX = 255;
 
-instance zCViewText2@ (zCViewText2);
-
 /*
  *	Default values / 'API' customizaton
  */
@@ -533,6 +531,8 @@ func void EIM_ParseDescription(var int strPtr) {
 		return;
 	};
 
+	var int color;
+
 	var int overlayAlignment;
 	var int overlayColor;
 	var int overlayColorSelected;
@@ -683,19 +683,20 @@ func void EIM_ParseDescription(var int strPtr) {
 						};
 
 						//Create new zCViewText2 instance for overlay
-						ptr = create(zCViewText2@);
+						//Copy properties from 'parent' dialogue view
+
+						//Update color
+						if (eimDescription.isSelected) {
+							color = overlayColorSelected;
+						} else {
+							color = overlayColor;
+						};
+
+						//zCViewText2_Create(var string text, var int pposX, var int pposY, var int color, var int font, var int alpha, var int funcAlphaBlend)
+						ptr = zCViewText2_Create(overlayText, 0, 0, thisView.font, color, GetAlpha(color), thisView.funcAlphaBlend);
 						overlayView = _^(ptr);
 
-						//Copy properties from 'parent' dialogue view
-						overlayView.enabledColor = thisView.enabledColor;
-						overlayView.font = thisView.font;
-
-						overlayView.enabledBlend = thisView.enabledBlend;
-						overlayView.funcAlphaBlend = thisView.funcAlphaBlend;
-
-						//Update text
-						overlayView.text = overlayText;
-
+						//Update position
 						//In line with text
 						if (overlayAlignment == -1) {
 							overlayView.pixelPositionX = overlayPosX;
@@ -745,18 +746,7 @@ func void EIM_ParseDescription(var int strPtr) {
 
 						//MEM_WriteIntArray(_@(eimOverlays.overlayPosX), eimOverlays.nextAvailableOverlayIndex, overlayView.pixelPositionX);
 
-						//-->
 						overlayView.pixelPositionY = thisView.pixelPositionY;
-
-						//Update color
-						if (eimDescription.isSelected) {
-							overlayView.color = overlayColorSelected;
-							overlayView.alpha = GetAlpha(overlayColorSelected);
-						} else {
-							overlayView.color = overlayColor;
-							overlayView.alpha = GetAlpha(overlayColor);
-						};
-						//<--
 
 						//Reset values for next overlay
 						if (eimOverlays.overlayCount < EIM_OVERLAY_MAX) {
@@ -2435,19 +2425,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 			if (eim.autoConfirmationIndicatorPtr) {
 				autoConfirmationIndicator = _^(eim.autoConfirmationIndicatorPtr);
 			} else {
-				eim.autoConfirmationIndicatorPtr = create(zCViewText2@);
+				//zCViewText2_Create(var string text, var int pposX, var int pposY, var int color, var int font, var int alpha, var int funcAlphaBlend)
+				eim.autoConfirmationIndicatorPtr = zCViewText2_Create("", 0, 0, txt.font, eimDefaults.indicatorColor, eimDefaults.indicatorAlpha, txt.funcAlphaBlend);
 				autoConfirmationIndicator = _^(eim.autoConfirmationIndicatorPtr);
-
-				autoConfirmationIndicator.font = txt.font;
-
-				autoConfirmationIndicator.enabledColor = txt.enabledColor;
-				autoConfirmationIndicator.font = txt.font;
-
-				autoConfirmationIndicator.enabledBlend = txt.enabledBlend;
-				autoConfirmationIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-
-				autoConfirmationIndicator.color = eimDefaults.indicatorColor;
-				autoConfirmationIndicator.alpha = eimDefaults.indicatorAlpha;
 
 				MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.autoConfirmationIndicatorPtr);
 			};
@@ -2466,19 +2446,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 					answerIndicator = _^ (eim.answerIndicatorPtr);
 				} else {
 					//Create new zCViewText2 instance for our indicator
-					eim.answerIndicatorPtr = create (zCViewText2@);
+					//zCViewText2_Create(var string text, var int pposX, var int pposY, var int color, var int font, var int alpha, var int funcAlphaBlend)
+					eim.answerIndicatorPtr = zCViewText2_Create(eimDefaults.answerIndicatorString, 0, 0, txt.font, eimDefaults.indicatorColor, eimDefaults.indicatorAlpha, txt.funcAlphaBlend);
 					answerIndicator = _^(eim.answerIndicatorPtr);
-
-					answerIndicator.text = eimDefaults.answerIndicatorString;
-
-					answerIndicator.enabledColor = txt.enabledColor;
-					answerIndicator.font = txt.font;
-
-					answerIndicator.enabledBlend = txt.enabledBlend;
-					answerIndicator.funcAlphaBlend = txt.funcAlphaBlend;
-
-					answerIndicator.color = eimDefaults.indicatorColor;
-					answerIndicator.alpha = eimDefaults.indicatorAlpha;
 
 					//Insert indicator to dialog choices
 					MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.answerIndicatorPtr);
@@ -2495,25 +2465,15 @@ func void _hook_oCInformationManager_Update_EIM () {
 			if (eim.leftSpinnerIndicatorPtr) {
 				spinnerIndicatorL = _^(eim.leftSpinnerIndicatorPtr);
 			} else {
-				eim.leftSpinnerIndicatorPtr = create(zCViewText2@);
-
+				//zCViewText2_Create(var string text, var int pposX, var int pposY, var int color, var int font, var int alpha, var int funcAlphaBlend)
+				eim.leftSpinnerIndicatorPtr = zCViewText2_Create("", 0, 0, txt.font, eimDefaults.indicatorColor, eimDefaults.indicatorAlpha, txt.funcAlphaBlend);
 				spinnerIndicatorL = _^(eim.leftSpinnerIndicatorPtr);
-				spinnerIndicatorL.font = txt.font;
 
 				if (eimDefaults.spinnerIndicatorAnimation) {
 					spinnerIndicatorL.text = "<--";
 				} else {
 					spinnerIndicatorL.text = eimDefaults.spinnerIndicatorString;
 				};
-
-				spinnerIndicatorL.enabledColor = txt.enabledColor;
-				spinnerIndicatorL.font = txt.font;
-
-				spinnerIndicatorL.enabledBlend = txt.enabledBlend;
-				spinnerIndicatorL.funcAlphaBlend = txt.funcAlphaBlend;
-
-				spinnerIndicatorL.color = eimDefaults.indicatorColor;
-				spinnerIndicatorL.alpha = eimDefaults.indicatorAlpha;
 
 				MEM_ArrayInsert(_@ (dlgChoice.listTextLines_array), eim.leftSpinnerIndicatorPtr);
 
@@ -2525,10 +2485,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 			if (eim.rightSpinnerIndicatorPtr) {
 				spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
 			} else {
-				eim.rightSpinnerIndicatorPtr = create(zCViewText2@);
-
+				//zCViewText2_Create(var string text, var int pposX, var int pposY, var int color, var int font, var int alpha, var int funcAlphaBlend)
+				eim.rightSpinnerIndicatorPtr = zCViewText2_Create("", 0, 0, txt.font, eimDefaults.indicatorColor, eimDefaults.indicatorAlpha, txt.funcAlphaBlend);
 				spinnerIndicatorR = _^ (eim.rightSpinnerIndicatorPtr);
-				spinnerIndicatorR.font = txt.font;
 
 				if (eimDefaults.spinnerIndicatorAnimation) {
 					spinnerIndicatorR.text = "-->";
@@ -2536,15 +2495,6 @@ func void _hook_oCInformationManager_Update_EIM () {
 					//blank
 					spinnerIndicatorR.text = STR_EMPTY;
 				};
-
-				spinnerIndicatorR.enabledColor = txt.enabledColor;
-				spinnerIndicatorR.font = txt.font;
-
-				spinnerIndicatorR.enabledBlend = txt.enabledBlend;
-				spinnerIndicatorR.funcAlphaBlend = txt.funcAlphaBlend;
-
-				spinnerIndicatorR.color = eimDefaults.indicatorColor;
-				spinnerIndicatorR.alpha = eimDefaults.indicatorAlpha;
 
 				MEM_ArrayInsert(_@(dlgChoice.listTextLines_array), eim.rightSpinnerIndicatorPtr);
 			};

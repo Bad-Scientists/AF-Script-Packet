@@ -96,6 +96,7 @@ ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
 ObjectFactory\oCSpell.d
 
+ObjectFactory\zCViewText2.d
 
 mobFunctions.d
 
