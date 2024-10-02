@@ -650,14 +650,14 @@ func void EIM_ParseDescription(var int strPtr) {
 									overlayView.pixelPositionX = defaultPosX;
 								} else
 								if (overlayAlignment == ALIGN_CENTER) {
-									overlayView.pixelPositionX = (dlgChoice.pixelSizeX / 2) - (Font_GetStringWidthPtr(overlayText, fontPtr) / 2) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+									overlayView.pixelPositionX = dlgChoice.sizeMargin_0[0] + (((dlgChoice.pixelSizeX - dlgChoice.sizeMargin_0[0] - dlgChoice.sizeMargin_1[0] - dlgChoice.offsetTextPixelX) / 2) - (Font_GetStringWidthPtr(overlayText, fontPtr) / 2));
 
 									if (overlayView.pixelPositionX < defaultPosX) {
 										overlayView.pixelPositionX = defaultPosX;
 									};
 								} else
 								if (overlayAlignment == ALIGN_RIGHT) {
-									overlayView.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(overlayText, fontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+									overlayView.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(overlayText, fontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
 
 									if (overlayView.pixelPositionX < defaultPosX) {
 										overlayView.pixelPositionX = defaultPosX;
@@ -709,7 +709,7 @@ func void EIM_ParseDescription(var int strPtr) {
 						} else
 						//align center
 						if (overlayAlignment == ALIGN_CENTER) {
-							overlayView.pixelPositionX = (dlgChoice.pixelSizeX / 2) - (Font_GetStringWidthPtr(overlayText, fontPtr) / 2) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+							overlayView.pixelPositionX = dlgChoice.sizeMargin_0[0] + (((dlgChoice.pixelSizeX - dlgChoice.sizeMargin_0[0] - dlgChoice.sizeMargin_1[0] - dlgChoice.offsetTextPixelX) / 2) - (Font_GetStringWidthPtr(overlayText, fontPtr) / 2));
 
 							if (overlayView.pixelPositionX < defaultPosX) {
 								overlayView.pixelPositionX = defaultPosX;
@@ -717,7 +717,7 @@ func void EIM_ParseDescription(var int strPtr) {
 						} else
 						//align right
 						if (overlayAlignment == ALIGN_RIGHT) {
-							overlayView.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(overlayText, fontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+							overlayView.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(overlayText, fontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
 
 							if (overlayView.pixelPositionX < defaultPosX) {
 								overlayView.pixelPositionX = defaultPosX;
@@ -2237,14 +2237,14 @@ func void _hook_oCInformationManager_Update_EIM () {
 						txt.pixelPositionX = defaultPosX;
 					} else
 					if (eimDescription.alignment == ALIGN_CENTER) {
-						txt.pixelPositionX = (dlgChoice.pixelSizeX / 2) - (Font_GetStringWidthPtr (txt.text, dlgFontPtr) / 2) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+						txt.pixelPositionX = dlgChoice.sizeMargin_0[0] + (((dlgChoice.pixelSizeX - dlgChoice.sizeMargin_0[0] - dlgChoice.sizeMargin_1[0] - dlgChoice.offsetTextPixelX) / 2) - (Font_GetStringWidthPtr(txt.text, dlgFontPtr) / 2));
 
 						if (txt.pixelPositionX < defaultPosX) {
 							txt.pixelPositionX = defaultPosX;
 						};
 					} else
 					if (eimDescription.alignment == ALIGN_RIGHT) {
-						txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, dlgFontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_0[0];
+						txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, dlgFontPtr) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
 
 						if (txt.pixelPositionX < defaultPosX) {
 							txt.pixelPositionX = defaultPosX;
@@ -2664,14 +2664,14 @@ func void _hook_oCInformationManager_Update_EIM () {
 					txt.pixelPositionX = defaultPosX;
 				} else
 				if (eim.alignment == ALIGN_CENTER) {
-					txt.pixelPositionX = (dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, txt.font) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_0[0]) / 2;
+					txt.pixelPositionX = dlgChoice.sizeMargin_0[0] + (((dlgChoice.pixelSizeX - dlgChoice.sizeMargin_0[0] - dlgChoice.sizeMargin_1[0] - dlgChoice.offsetTextPixelX) / 2) - (Font_GetStringWidthPtr(txt.text, txt.font) / 2));
 
 					if (txt.pixelPositionX < defaultPosX) {
 						txt.pixelPositionX = defaultPosX;
 					};
 				} else
 				if (eim.alignment == ALIGN_RIGHT) {
-					txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr (txt.text, txt.font) /*- dlgChoice.offsetTextPixelX*/ - dlgChoice.sizeMargin_0[0];
+					txt.pixelPositionX = dlgChoice.pixelSizeX - Font_GetStringWidthPtr(txt.text, txt.font) - dlgChoice.offsetTextPixelX - dlgChoice.sizeMargin_1[0];
 
 					if (txt.pixelPositionX < defaultPosX) {
 						txt.pixelPositionX = defaultPosX;
