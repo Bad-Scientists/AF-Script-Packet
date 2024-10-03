@@ -751,7 +751,6 @@ func void NPC_TorchSwitchOn (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC(slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-	Npc_TorchSwitchOff(slf);
 
 	var int ptr;
 
