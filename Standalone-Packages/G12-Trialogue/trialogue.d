@@ -15,6 +15,7 @@ instance trialogueLastSelf (C_NPC);
 
 //override camera target when ActivateDialogCam is called (AI_Output will always update .talkOther target)
 var int trialogueOverrideCameraTarget;
+var int trialogueIsActive;
 
 //Backup default dialogue distance
 var int trialogueBackupDiaDistance;
@@ -74,6 +75,8 @@ func void Trialogue_Start () {
 	//Add self & hero to list of Npcs
 	Trialogue_AddNpcPtr (_@ (self));
 	Trialogue_AddNpcPtr (_@ (hero));
+
+	trialogueIsActive = TRUE;
 };
 
 /*
@@ -201,6 +204,8 @@ func void Trialogue_SetCamera (var int slfInstance, var int othInstance) {
 func void _Trialogue_Finish () {
 	//Reset pointer
 	trialogueOverrideCameraTarget = 0;
+
+	trialogueIsActive = FALSE;
 
 	//Restore default dialogue distance
 	G12_SetDisplayDialogueDistance (trialogueBackupDiaDistance);

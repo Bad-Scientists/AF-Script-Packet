@@ -1,9 +1,14 @@
 /*
- *	Gothic Debug Dialogues v0.1
+ *	Gothic Debug Dialogues
  *
  *	This feature allows you to access all NPC's dialogues:
  *	 - with spinner (left/right arrow) you can change .told property of each dialogue (if you need to re-test dialogues). If dialogues was already told, then its instance name will have green color
  *	 - you can select dialogue and call its .information function directly
+ *
+ *	There are in total 3 modes:
+ *	 - call it with Npc in focus to debug focused Npc dialogues
+ *	 - call it with no Npc in focus to debug dialogues associated with hero
+ *	 - call it with Mob in focus to debug dialogues associated with mob (**ideally** [depends on how it is implemented, so this might not work 100% of the time] dialogues are associated with Npc via onState function)
  *
  *	Requires LeGo Console commands & EnhancedInfoManager
  *
@@ -15,6 +20,8 @@ var int debugDialoguesEnabled;
 var int debugDialoguesTold[255]; //Told properties for dialogue instances
 var int debugDialoguesDialogInstPtr[255]; //pointers to Info instances
 var int debugDialoguesChoiceCount;
+var int debugDialoguesNpc;
+var int debugDialoguesMode; //0 - npc, 1 - mob
 
 func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int index) {
 	var string s;
@@ -62,12 +69,64 @@ func void DebugDialogues_ExitDialogue () {
 };
 
 func void DebugDialogues_BuildChoiceList () {
-	//Double check if focus_vob is NPC
-	var oCNPC her; her = Hlp_GetNPC (hero);
-	if (!Hlp_Is_oCNpc (her.focus_vob)) { return; };
+	var oCInfo dlgInstance;
+	var zCListSort list;
 
-	var oCNpc npc; npc = _^ (her.focus_vob);
-	var int npcInstance; npcInstance = Hlp_GetInstanceID (npc);
+	var int infoPtr;
+
+	var int debugDialoguesDialogInstPtrBackup[255]; //pointers to Info instances
+	var int debugDialoguesBackupChoiceCount; debugDialoguesBackupChoiceCount = 0;
+
+	//If oCMobInter is in focus:
+	// - backup and clear dialogues that have hero set as Npc
+	// - call onState function - this should enable dialogues assiocated with mob
+	// - restore dialogues that have hero set as Npc
+
+	//mob
+	if (debugDialoguesMode == 1) {
+		//Backup dialogues with hero set as Npc
+		infoPtr = MEM_InfoMan.infoList_next;
+
+		while (infoPtr);
+			list = _^ (infoPtr);
+			dlgInstance = _^ (list.data);
+			if (dlgInstance.npc == debugDialoguesNpc) {
+				//Ignore debug dialog instance :)
+				if (!Hlp_StrCmp (dlgInstance.name, "DIA_DEBUG_DIALOGUES")) {
+					if (debugDialoguesBackupChoiceCount < 255) {
+						//Backup dialog instance (info) pointer
+						MEM_WriteIntArray (_@ (debugDialoguesDialogInstPtrBackup), debugDialoguesBackupChoiceCount, list.data);
+
+						//Clear Npc
+						dlgInstance.npc = -1;
+
+						debugDialoguesBackupChoiceCount += 1;
+					};
+				};
+			};
+
+			infoPtr = list.next;
+		end;
+
+		//Call onState function - this should (... it really depends on implementation of mobsi dialogues ... some mods will probably use different logic) assign required dialogues to Npc
+		var oCNpc her; her = Hlp_GetNpc(hero);
+		var oCMobInter mobInter; mobInter = _^(her.focus_vob);
+		var string onStateFuncName; onStateFuncName = mobInter.onStateFuncName;
+		onStateFuncName = ConcatStrings(onStateFuncName, "_S1");
+
+		//--
+		var C_NPC bSelf; bSelf = Hlp_GetNpc(self);
+
+		self = Hlp_GetNpc(hero);
+
+		var int symbID; symbID = MEM_GetSymbolIndex(onStateFuncName);
+		if (symbID > 0) {
+			MEM_CallByID(symbID);
+		};
+
+		self = Hlp_GetNpc(bSelf);
+		//--
+	};
 
 	debugDialoguesChoiceCount = 0;
 
@@ -79,15 +138,12 @@ func void DebugDialogues_BuildChoiceList () {
 
 //--
 
-	var oCInfo dlgInstance;
-	var zCListSort list;
-
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+	infoPtr = MEM_InfoMan.infoList_next;
 
 	while (infoPtr);
 		list = _^ (infoPtr);
 		dlgInstance = _^ (list.data);
-		if (dlgInstance.npc == npcInstance) {
+		if (dlgInstance.npc == debugDialoguesNpc) {
 			//Ignore debug dialog instance :)
 			if (!Hlp_StrCmp (dlgInstance.name, "DIA_DEBUG_DIALOGUES")) {
 				if (debugDialoguesChoiceCount < 255) {
@@ -106,6 +162,17 @@ func void DebugDialogues_BuildChoiceList () {
 
 		infoPtr = list.next;
 	end;
+
+	//Restore Npc for backed up dialogues
+	if (debugDialoguesMode == 1) {
+		repeat(i, debugDialoguesBackupChoiceCount); var int i;
+			infoPtr = MEM_ReadIntArray (_@(debugDialoguesDialogInstPtrBackup), i);
+			if (infoPtr) {
+				dlgInstance = _^ (infoPtr);
+				dlgInstance.npc = debugDialoguesNpc;
+			};
+		end;
+	};
 };
 
 func void DebugDialogues_CallInfo () {
@@ -243,26 +310,59 @@ func void DIA_Debug_Dialogues_Info () {
 };
 
 func string CC_DebugDialogues (var string param) {
-	var oCNPC her; her = Hlp_GetNPC (hero);
-	if (!Hlp_Is_oCNpc (her.focus_vob)) { return "hero.focus_vob is not an NPC."; };
+	var oCNPC her; her = Hlp_GetNPC(hero);
 
-	var oCNpc npc; npc = _^ (her.focus_vob);
-	var int npcInstance; npcInstance = Hlp_GetInstanceID (npc);
+	//Default - npc
+	debugDialoguesMode = 0;
+	debugDialoguesNpc = Hlp_GetInstanceID(hero);
 
-	//Hide console
-	zCConsole_Hide ();
+	if (Hlp_Is_oCMobInter(her.focus_vob)) {
+		//mob
+		debugDialoguesMode = 1;
 
-	//Enable DIA_Debug_Dialogues
-	debugDialoguesEnabled = TRUE;
+		debugDialoguesEnabled = TRUE;
+		DIA_Debug_Dialogues.npc = debugDialoguesNpc;
+		AI_ProcessInfos(hero);
 
-	//Assign npc instance to our dialog instance
-	DIA_Debug_Dialogues.npc = npcInstance;
+		//Hide console
+		zCConsole_Hide ();
+		return "ok";
+	};
 
-	NPC_ClearAIQueue (npc);
-	AI_StandUpQuick (npc);
+	//If there is nothing in focus - then we will debug dialogues assiociated with hero
+	if (!Hlp_Is_oCNpc(her.focus_vob)) {
 
-	AI_StartState (npc, ZS_Talk, 1, STR_EMPTY);
-	return "ok";
+		//Assign npc instance to our dialog instance
+		debugDialoguesEnabled = TRUE;
+		DIA_Debug_Dialogues.npc = debugDialoguesNpc;
+		AI_ProcessInfos(hero);
+
+		//Hide console
+		zCConsole_Hide ();
+		return "ok";
+	};
+
+	debugDialoguesNpc = -1;
+
+	//If npc is in focus - debug its dialogues
+	if (Hlp_Is_oCNpc(her.focus_vob)) {
+		var oCNpc npc; npc = _^ (her.focus_vob);
+		debugDialoguesNpc = Hlp_GetInstanceID(npc);
+
+		//Assign npc instance to our dialog instance
+		debugDialoguesEnabled = TRUE;
+		DIA_Debug_Dialogues.npc = debugDialoguesNpc;
+
+		NPC_ClearAIQueue(npc);
+		AI_StandUpQuick(npc);
+		AI_StartState(npc, ZS_Talk, 1, STR_EMPTY);
+
+		//Hide console
+		zCConsole_Hide ();
+		return "ok";
+	};
+
+	return "This command can be used only with no focus or Npc / Mob in focus.";
 };
 
 func void CC_DebugDialogues_Init () {

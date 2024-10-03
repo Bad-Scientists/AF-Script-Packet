@@ -13,7 +13,6 @@ func void Init_Global () {
 	//Default turn speed is 0.1
 	G12_SetPlayerTurnSpeed(castToIntF (0.18));
 };
-
 */
 
 var int PLAYER_TURNSPEED;

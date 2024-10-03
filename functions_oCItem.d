@@ -223,6 +223,13 @@ func int oCItem_IsOneHanded(var int itemPtr) {
 	return (oCItem_HasFlag(itemPtr, ITM_FLAG_DAG) | oCItem_HasFlag(itemPtr, ITM_FLAG_SWD) | oCItem_HasFlag(itemPtr, ITM_FLAG_AXE));
 };
 
+func int oCItem_IsTwoHanded(var int itemPtr) {
+	const int ITM_FLAG_2HD_SWD = 1 << 16;
+	const int ITM_FLAG_2HD_AXE = 1 << 17;
+
+	return (oCItem_HasFlag(itemPtr, ITM_FLAG_2HD_SWD) | oCItem_HasFlag(itemPtr, ITM_FLAG_2HD_AXE));
+};
+
 func string oCItem_GetInvSlotName(var int itemPtr) {
 	if (!Hlp_Is_oCItem (itemPtr)) { return STR_EMPTY; };
 	var oCItem itm; itm = _^(itemPtr);

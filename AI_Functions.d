@@ -197,7 +197,7 @@ func void AI_GotoPos_Ext (var int slfInstance, var int posPtr, var int maxTarget
 
 	slf.rbt_bitfield = slf.rbt_bitfield | oTRobustTrace_bitfield_standIfTargetReached;
 	slf.rbt_bitfield = slf.rbt_bitfield & ~ oTRobustTrace_bitfield_exactPosition;
-	slf.rbt_maxTargetDist = mkf (maxTargetDist * maxTargetDist);
+	slf.rbt_maxTargetDist = mkf(maxTargetDist * maxTargetDist);
 
 	//Set inUse
 	oCNpcMessage_SetInUse (eMsg, 1);
@@ -597,8 +597,6 @@ func void AI_GotoVobPtr (var int slfInstance, var int vobPtr) {
 };
 
 func void _AI_TeleportKeepQueue (var string vobName) {
-	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
-
 	Npc_BeamToKeepQueue (self, vobName);
 	Wld_PlayEffect ("SPELLFX_TELEPORT_RING", self, self, 0, 0, 0, FALSE);
 	Snd_Play ("MFX_TELEPORT_CAST");
@@ -637,7 +635,6 @@ func void AI_TeleportKeepQueue (var int slfInstance, var string vobName) {
 };
 
 func void _AI_BeamToKeepQueue (var string vobName) {
-	self = _^ (ECX); //wont be required with future LeGo version (> 2.7.1)
 	Npc_BeamToKeepQueue (self, vobName);
 };
 
@@ -826,8 +823,7 @@ func int AI_GotoMobPtr (var int slfInstance, var int mobPtr) {
 	if (!retVal) { return FALSE; };
 
 	AI_GotoVobPtr_EvalWaynetUse (slfInstance, mobPtr);
-	AI_GotoPos (slfInstance, _@ (pos));
-
+	AI_GotoPos(slfInstance, _@ (pos));
 	return TRUE;
 };
 
@@ -1246,7 +1242,7 @@ func void AI_DiaSync () {
 func void _AI_PutInSlot (var string slotName, var int itemInstanceID) {
 	if (Npc_GetInvItem (self, itemInstanceID)) {
 		var oCNpc slf; slf = Hlp_GetNpc(self);
-		if (!slf.interactItem) {
+		if (slf.interactItem) {
 			oCNpc_SetInteractItem(self, _@(item));
 		};
 
@@ -1277,7 +1273,7 @@ func void _AI_CreateItemInSlot (var string slotName, var int itemInstanceID) {
 	var int itemPtr; itemPtr = InsertItem (itemName, 1, _@ (trafo));
 
 	var oCNpc slf; slf = Hlp_GetNpc(self);
-	if (!slf.interactItem) {
+	if (slf.interactItem) {
 		oCNpc_SetInteractItem(self, itemPtr);
 	};
 
@@ -1391,4 +1387,107 @@ func void AI_GotoNpc_Ext (var int slfInstance, var int othInstance, var int maxT
 	if (zCVob_GetPositionWorldToPos (_@ (oth), _@ (pos))) {
 		AI_GotoPos_Ext (slf, _@ (pos), maxTargetDist);
 	};
+};
+
+/*
+ *	AI_ActivateDialogCam
+ *	 - to be used in dialogues, switches camera target to oth (gives you control to switch camera at will)
+ */
+func void _AI_ActivateDialogCam(var int slfPtr, var int othPtr) {
+	var oCNpc slf; slf = _^(slfPtr);
+	var oCNpc oth; oth = _^(othPtr);
+
+	var int retVal; retVal = oCNpc_ActivateDialogCam(oth, slf, FLOATNULL);
+	var int aiPtr; aiPtr = zCSession_GetCameraAI ();
+	zCAICamera_ReceiveMsg (aiPtr, _@ (zPLAYER_BEAMED));
+};
+
+func void AI_ActivateDialogCam(var int slfInstance, var int othInstance) {
+	var C_NPC slf; slf = Hlp_GetNPC(slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNPC(othInstance);
+	if (!Hlp_IsValidNPC(oth)) { return; };
+
+	AI_Function_II(slf, _AI_ActivateDialogCam, _@(slf), _@(oth));
+};
+
+/*
+ *	AI queue 'injection'
+ *	 - allows you to inject AI functions from executed ai_function
+ *
+ *	Example:
+ *	--------
+ *	func void AIQ_GotoWp_OC3() {
+ *		AI_Inject(self)
+ *		AI_GotoWp(self, "OC3");
+ *		AI_InjectEnd(self);
+ *	};
+ *
+ *	func void main() {
+ *		AI_GotoWp(self, "OC1";
+ *		AI_Function(hero, AIQ_GotoWp_OC3);
+ *		AI_GotoWp(self, "OC2";
+ *	};
+ *
+ *	Will on execution of function AIQ_GotoWp_OC3 translate in AI queue into:
+ *		AI_GotoWp(self, "OC3");
+ *		AI_GotoWp(self, "OC2";
+ */
+const int _AI_Inject_Index = -1;
+const int _AI_Inject_NumInArray = 0;
+
+func void AI_Inject(var int slfInstance) {
+	if (_AI_Inject_Index != -1) {
+		_AI_Inject_Index = -1;
+
+		zSpy_Info("AI_Inject called without AI_InjectEnd! Injection aborted.");
+		return;
+	};
+
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int emPtr; emPtr = zCVob_GetEM(_@(slf));
+	if (!emPtr) { return; };
+	var zCEventManager em; em = _^(emPtr);
+
+	if (em.messageList_numInArray) {
+		_AI_Inject_Index = 0;
+		_AI_Inject_NumInArray = em.messageList_numInArray;
+	};
+};
+
+func void AI_InjectEnd(var int slfInstance) {
+	if (_AI_Inject_Index == -1) {
+		zSpy_Info("AI_InjectEnd no AI queue available for injection.");
+		return;
+	};
+
+	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+
+	var int emPtr; emPtr = zCVob_GetEM(_@(slf));
+	if (!emPtr) { return; };
+	var zCEventManager em; em = _^(emPtr);
+
+	var int numInArray; numInArray = em.messageList_numInArray - _AI_Inject_NumInArray;
+	if (numInArray <= 0) { return; };
+
+	while(numInArray);
+		var int i; i = em.messageList_numInArray - 1;
+		var int e; e = MEM_ArrayRead(_@(em.messageList_array), i);
+
+		while(i > _AI_Inject_Index);
+			MEM_ArrayWrite(_@(em.messageList_array), i, MEM_ArrayRead(_@(em.messageList_array), i - 1));
+			i -= 1;
+		end;
+
+		MEM_ArrayWrite(_@(em.messageList_array), _AI_Inject_Index, e);
+
+		numInArray -= 1;
+	end;
+
+	_AI_Inject_Index = -1;
+	_AI_Inject_NumInArray = 0;
 };
