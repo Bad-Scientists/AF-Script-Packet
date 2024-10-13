@@ -1,50 +1,6 @@
-/*
- *	Credits: functions Trade_SetBuyMultiplier & Trade_SetSellMultiplier originally created by OrcWarriorPL
- *	https://forum.worldofplayers.de/forum/threads/879891-Skriptpaket-Ikarus-2/page12?p=14836995&viewfull=1#post14836995
- *
- *	They were modified to change multipliers for both inventory containers in case of both buying / selling containers.
- */
-
 //-- Internal variables
 var int _TradeForceTransferAccept; //Variable indicating that player forced trading
 
-func void Trade_SetBuyMultiplier (var int mulF) {
-	var oCViewDialogTrade dialogTrade;
-	var oCViewDialogItemContainer itemCont;
-
-	if (MEM_InformationMan.DlgTrade) {
-		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
-
-		if (dialogTrade.dlgInventoryNpc) {
-			itemCont = _^ (dialogTrade.dlgInventoryNpc);
-			itemCont.valueMultiplier = mulF;
-		};
-
-		if (dialogTrade.dlgContainerNpc) {
-			itemCont = _^ (dialogTrade.dlgContainerNpc);
-			itemCont.valueMultiplier = mulF;
-		};
-	};
-};
-
-func void Trade_SetSellMultiplier (var int mulF) {
-	var oCViewDialogTrade dialogTrade;
-	var oCViewDialogItemContainer itemCont;
-
-	if (MEM_InformationMan.DlgTrade) {
-		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
-
-		if (dialogTrade.dlgContainerPlayer) {
-			itemCont = _^ (dialogTrade.dlgContainerPlayer);
-			itemCont.valueMultiplier = mulF;
-		};
-
-		if (dialogTrade.dlgInventoryPlayer) {
-			itemCont = _^ (dialogTrade.dlgInventoryPlayer);
-			itemCont.valueMultiplier = mulF;
-		};
-	};
-};
 
 /*
  *	Function forces item transfer in trading
@@ -131,38 +87,6 @@ func void Trade_SetNpcContainerValue (var int value) {
 
 		oCViewDialogItemContainer_UpdateValue (dialogTrade.dlgContainerNpc);
 	};
-};
-
-func int Trade_GetBuyMultiplier () {
-	var oCViewDialogTrade dialogTrade;
-	var oCViewDialogItemContainer itemCont;
-
-	if (MEM_InformationMan.DlgTrade) {
-		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
-
-		if (dialogTrade.dlgContainerNpc) {
-			itemCont = _^ (dialogTrade.dlgContainerNpc);
-			return itemCont.valueMultiplier;
-		};
-	};
-
-	return FLOATNULL;
-};
-
-func int Trade_GetSellMultiplier () {
-	var oCViewDialogTrade dialogTrade;
-	var oCViewDialogItemContainer itemCont;
-
-	if (MEM_InformationMan.DlgTrade) {
-		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
-
-		if (dialogTrade.dlgContainerPlayer) {
-			itemCont = _^ (dialogTrade.dlgContainerPlayer);
-			return itemCont.valueMultiplier;
-		};
-	};
-
-	return FLOATNULL;
 };
 
 /*
