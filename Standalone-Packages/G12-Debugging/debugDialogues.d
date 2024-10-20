@@ -22,6 +22,7 @@ var int debugDialoguesDialogInstPtr[255]; //pointers to Info instances
 var int debugDialoguesChoiceCount;
 var int debugDialoguesNpc;
 var int debugDialoguesMode; //0 - npc, 1 - mob
+var int debugDialoguesHideDialogueInstances; //hide/show dialogue instances (credits: thank you Plasquar for the idea :))
 
 func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int index) {
 	var string s;
@@ -31,27 +32,39 @@ func string DebugDialogues_BuildChoiceTextFromInfo (var int infoPtr, var int ind
 
 	dlgInstance = _^ (infoPtr);
 
-	//Add green overlay to instance name if told
-	if (dlgInstance.told) {
-		s = ConcatStrings ("o@h@00CC66 hs@66FFB2:", dlgInstance.name);
-		s = ConcatStrings (s, "~");
+	//Important dialogues will always display instance name
+	if ((!debugDialoguesHideDialogueInstances) || (dlgInstance.important))
+	{
+		//Add green overlay to instance name if told
+		if (dlgInstance.told) {
+			s = ConcatStrings ("o@h@00CC66 hs@66FFB2:", dlgInstance.name);
+			s = ConcatStrings (s, "~");
+		} else {
+			s = dlgInstance.name;
+		};
+
+		//Add flags: Important, Trade or Permanent dialogue
+		var string flags; flags = STR_EMPTY;
+		if (dlgInstance.important) { flags = STR_AddString (flags, "I", ","); };
+		if (dlgInstance.trade) { flags = STR_AddString (flags, "T", ","); };
+		if (dlgInstance.permanent) { flags = STR_AddString (flags, "P", ","); };
+
+		if (STR_Len (flags) > 0) {
+			s = ConcatStrings (s, " (");
+			s = ConcatStrings (s, flags);
+			s = ConcatStrings (s, ")");
+		};
+
+		s = ConcatStrings (s, STR_SPACE);
 	} else {
-		s = dlgInstance.name;
+		//Green color for told dialogues
+		if (dlgInstance.told) {
+			s = "h@00CC66 hs@66FFB2 ";
+		} else {
+			s = "";
+		};
 	};
 
-	//Add flags: Important, Trade or Permanent dialogue
-	var string flags; flags = STR_EMPTY;
-	if (dlgInstance.important) { flags = STR_AddString (flags, "I", ","); };
-	if (dlgInstance.trade) { flags = STR_AddString (flags, "T", ","); };
-	if (dlgInstance.permanent) { flags = STR_AddString (flags, "P", ","); };
-
-	if (STR_Len (flags) > 0) {
-		s = ConcatStrings (s, " (");
-		s = ConcatStrings (s, flags);
-		s = ConcatStrings (s, ")");
-	};
-
-	s = ConcatStrings (s, STR_SPACE);
 	s = ConcatStrings (s, dlgInstance.description);
 
 	//Add spinner --> option to switch dialogues (told/untold)
@@ -134,7 +147,14 @@ func void DebugDialogues_BuildChoiceList () {
 	Info_ClearChoices (DIA_Debug_Dialogues);
 
 	//Exit dialogue
-	Info_AddChoice (DIA_Debug_Dialogues, "h@FF8000 hs@FFFF00 Exit.", DebugDialogues_ExitDialogue);
+	Info_AddChoice (DIA_Debug_Dialogues, "h@FF8000 hs@FFFF00 (exit)", DebugDialogues_ExitDialogue);
+
+	//Toggle display instance
+	if (debugDialoguesHideDialogueInstances) {
+		Info_AddChoice (DIA_Debug_Dialogues, "h@FF8000 hs@FFFF00 (show dialogue instances)", DebugDialogues_ToggleDisplayDialogueInstances);
+	} else {
+		Info_AddChoice (DIA_Debug_Dialogues, "h@FF8000 hs@FFFF00 (hide dialogue instances)", DebugDialogues_ToggleDisplayDialogueInstances);
+	};
 
 //--
 
@@ -173,6 +193,11 @@ func void DebugDialogues_BuildChoiceList () {
 			};
 		end;
 	};
+};
+
+func void DebugDialogues_ToggleDisplayDialogueInstances() {
+	debugDialoguesHideDialogueInstances = !debugDialoguesHideDialogueInstances;
+	DebugDialogues_BuildChoiceList ();
 };
 
 func void DebugDialogues_CallInfo () {
