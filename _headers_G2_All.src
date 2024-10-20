@@ -209,6 +209,7 @@ Standalone-Packages\G12-Debugging\consoleHistory.d
 
 Standalone-Packages\G12-Debugging\vobsCheckProperties.d
 Standalone-Packages\G12-Debugging\testSuite.d
+Standalone-Packages\G12-Debugging\despawn.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 
