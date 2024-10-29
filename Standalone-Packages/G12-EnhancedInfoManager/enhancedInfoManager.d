@@ -1224,75 +1224,12 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 			s = STR_EMPTY;
 
 			if (eim.answerMode) {
-				var int keyStateLShift; keyStateLShift = MEM_KeyState(KEY_LSHIFT);
-				var int keyStateRShift; keyStateRShift = MEM_KeyState(KEY_RSHIFT);
-				var int keyStateShift; keyStateShift = ((keyStateLShift == KEY_PRESSED) | (keyStateLShift == KEY_HOLD) | (keyStateRShift == KEY_PRESSED) | (keyStateRShift == KEY_HOLD));
+				//Get localized key
+				s = GetKeyLocalized(key);
 
-				var int keyStateLAlt; keyStateLAlt = MEM_KeyState(KEY_LMENU);
-				var int keyStateRAlt; keyStateRAlt = MEM_KeyState(KEY_RMENU);
-				var int keyStateAlt; keyStateAlt = ((keyStateLAlt == KEY_PRESSED) | (keyStateLAlt == KEY_HOLD) | (keyStateRAlt == KEY_PRESSED) | (keyStateRAlt == KEY_HOLD));
-
-				//US keyboard layout by default
-				if (key == KEY_GRAVE) { if (keyStateShift) { s = "~"; } else { s = "`"; }; };
-
-				if (key == KEY_1) { if (keyStateShift) { s = "!"; } else { s = "1"; }; };
-				if (key == KEY_2) { if (keyStateShift) { s = "@"; } else { s = "2"; }; };
-				if (key == KEY_3) { if (keyStateShift) { s = "#"; } else { s = "3"; }; };
-				if (key == KEY_4) { if (keyStateShift) { s = "$"; } else { s = "4"; }; };
-				if (key == KEY_5) { if (keyStateShift) { s = "%"; } else { s = "5"; }; };
-				if (key == KEY_6) { if (keyStateShift) { s = "^"; } else { s = "6"; }; };
-				if (key == KEY_7) { if (keyStateShift) { s = "&"; } else { s = "7"; }; };
-				if (key == KEY_8) { if (keyStateShift) { s = "*"; } else { s = "8"; }; };
-				if (key == KEY_9) { if (keyStateShift) { s = "("; } else { s = "9"; }; };
-				if (key == KEY_0) { if (keyStateShift) { s = ")"; } else { s = "0"; }; };
-
-				if (key == KEY_MINUS) { if (keyStateShift) { s = "-"; } else { s = "_"; }; };
-				if (key == KEY_EQUALS) { if (keyStateShift) { s = "+"; } else { s = "="; }; };
-
-				if (key == KEY_LBRACKET) { if (keyStateShift) { s = "{"; } else { s = "["; }; };
-				if (key == KEY_RBRACKET) { if (keyStateShift) { s = "}"; } else { s = "]"; }; };
-
-				//I left backslash commented out, because it is escape character that caused my N++ to format rest of the code 'incorrectly' :)
-				//So this way we will have both nice code format as well as an option to write backslash :)
-				if (key == KEY_BACKSLASH) {
-					if (keyStateShift) {
-						s = STR_PIPE;
-					} else {
-						//Backslash
-						s = BtoC(92);
-					};
+				if (STR_Len(s) > 0) {
+					InfoManagerAnswer = ConcatStrings (InfoManagerAnswer, s);
 				};
-
-				if (key == KEY_SEMICOLON) { if (keyStateShift) { s = ":"; } else { s = ";"; }; };
-				if (key == KEY_APOSTROPHE) { if (keyStateShift) {
-						//Double quote
-						s = BtoC(34);
-					} else {
-						s = "'";
-					};
-				};
-
-				if (key == KEY_COMMA) { if (keyStateShift) { s = "<"; } else { s = ","; }; };
-				if (key == KEY_PERIOD) { if (keyStateShift) { s = ">"; } else { s = "."; }; };
-				if (key == KEY_SLASH) { if (keyStateShift) { s = "?"; } else { s = "/"; }; };
-
-				if (key == KEY_SPACE) { s = STR_SPACE; };
-
-				if (key == KEY_NUMPAD0) { s = "0"; };
-				if (key == KEY_NUMPAD1) { s = "1"; };
-				if (key == KEY_NUMPAD2) { s = "2"; };
-				if (key == KEY_NUMPAD3) { s = "3"; };
-				if (key == KEY_NUMPAD4) { s = "4"; };
-				if (key == KEY_NUMPAD5) { s = "5"; };
-				if (key == KEY_NUMPAD6) { s = "6"; };
-				if (key == KEY_NUMPAD7) { s = "7"; };
-				if (key == KEY_NUMPAD8) { s = "8"; };
-				if (key == KEY_NUMPAD9) { s = "9"; };
-
-				if (key == KEY_MULTIPLY) { s = "*"; };
-				if (key == KEY_SUBTRACT) { s = "-"; };
-				if (key == KEY_ADD) { s = "+"; };
-				if (key == KEY_DECIMAL) { s = "."; };
 
 				//Backspace
 				if (key == KEY_BACK) {
@@ -1309,16 +1246,6 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 				//Delete
 				if (key == KEY_DELETE) {
 					InfoManagerAnswer = STR_EMPTY;
-				};
-
-				//A..Z a..z
-				key = GetCharFromDIK(key, keyStateShift * KEY_LSHIFT, keyStateAlt);
-				if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122)) {
-					s = BtoC(key);
-				};
-
-				if (STR_Len (s) > 0) {
-					InfoManagerAnswer = ConcatStrings (InfoManagerAnswer, s);
 				};
 
 				cancel = TRUE; //cancel input
