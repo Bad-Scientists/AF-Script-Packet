@@ -267,6 +267,11 @@ func void _hook_oCMobLockable_Interact__PickLockHelper () {
 		pickLockHelper_CurrentCombination = STR_EMPTY;
 	};
 
+	//Reset last combination if it has changed meanwhile
+	if (!STR_StartsWith(mob.pickLockStr, pickLockHelper_LastCombination)) {
+		pickLockHelper_LastCombination = STR_EMPTY;
+	};
+
 //-- Update PickLockHelper view
 
 	if (!pickLockHelper_Visible) { return; };
