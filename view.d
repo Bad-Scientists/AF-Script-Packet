@@ -274,7 +274,7 @@ func void zCViewPtr_PrintTimedCX(var int viewPtr, var int posY, var string s, va
 	CALL_PtrParam(colorPtr);
 	CALL_FloatParam(timeF);
 	CALL_zStringPtrParam(s);
-	CALL_PtrParam(posY);
+	CALL_IntParam(posY);
 	CALL__thiscall(viewPtr, MEMINT_SwitchG1G2 (zCView__PrintTimedCX_G1, zCView__PrintTimedCX_G2));
 };
 
@@ -301,8 +301,8 @@ func void zCViewPtr_PrintTimed(var int viewPtr, var int posX, var int posY, var 
 	CALL_PtrParam(colorPtr);
 	CALL_FloatParam(timeF);
 	CALL_zStringPtrParam(s);
-	CALL_PtrParam(posY);
-	CALL_PtrParam(posX);
+	CALL_IntParam(posY);
+	CALL_IntParam(posX);
 	CALL__thiscall(viewPtr, MEMINT_SwitchG1G2 (zCView__PrintTimed_G1, zCView__PrintTimed_G2));
 };
 
