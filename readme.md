@@ -117,3 +117,8 @@ Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged 
 ## Debugging:
 
 [G12 Debugging](Readme/G12_Debugging.md)
+
+## Powered by AFSP:
+*Features that are not included in script packet*
+
+[G12 Custom item description](Readme/G12_CustomItemDescription.md)
