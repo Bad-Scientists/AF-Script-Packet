@@ -176,10 +176,6 @@ func int Hlp_GetOpenInventoryType () {
 
 //-- 1. check - game mode
 
-	const int NPC_GAME_NORMAL = 0; //When player is taking item
-	const int NPC_GAME_PLUNDER = 1; //When player is looting and Npc
-	const int NPC_GAME_STEAL = 2; //When player is stealing from Npc
-
 	var int game_mode; game_mode = oCNpc_Get_Game_Mode();
 
 	if (game_mode == NPC_GAME_PLUNDER) {
