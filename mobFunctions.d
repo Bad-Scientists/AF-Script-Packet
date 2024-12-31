@@ -94,6 +94,9 @@ func void oCMobLockable_UpdateLock (var int mobPtr) {
 		//Lock chest
 		mob.bitfield = (mob.bitfield | oCMobLockable_bitfield_locked);
 	};
+
+	//Reset picklockNr
+	mob.bitfield = mob.bitfield & 3;
 };
 
 func void oCMobLockable_SetKeyInstance (var int mobPtr, var string keyInstance) {
