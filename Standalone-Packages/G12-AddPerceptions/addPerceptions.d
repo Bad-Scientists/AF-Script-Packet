@@ -146,7 +146,8 @@ func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
 
 	var int funcID; funcID = MEM_GetFuncID (percFunc);
 
-	repeat (i, slf.percActive); var int i;
+	var int i; i = slf.percActive;
+	while (i > 0);
 		var int percFuncID; percFuncID = MEM_ReadStatArr (_@ (slf.percList[0]), i * 2 + 1);
 
 		if (funcID == percFuncID) {
@@ -155,7 +156,34 @@ func void Npc_RemovePercFunc (var int slfInstance, var func percFunc) {
 
 			slf.percActive -= 1;
 		};
+
+		i -= 1;
 	end;
+};
+
+/*
+ *	Npc_ClearCustomPerceptions
+ *	 - removes ALL custom perception function
+ */
+func void Npc_ClearCustomPerceptions(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	var int i; i = slf.percActive;
+	while (i > 0);
+		var int percType; percType = MEM_ReadStatArr(_@(slf.percList[0]), i * 2);
+
+		if (percType > NPC_PERC_MAX) {
+			MEM_WriteStatArr(_@(slf.percList[0]), i * 2, 0);
+			MEM_WriteStatArr(_@(slf.percList[0]), i * 2 + 1, -1);
+
+			slf.percActive -= 1;
+		};
+
+		i -= 1;
+	end;
+
+	slf.percList[64] = 0;
 };
 
 /*

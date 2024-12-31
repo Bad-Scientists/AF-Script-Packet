@@ -27,7 +27,7 @@ func void zCCamera_Activate (var int camera) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__thiscall (camera, MEMINT_SwitchG1G2 (zCCamera__Activate_G1, zCCamera__Activate_G2));
+		CALL__thiscall (_@(camera), MEMINT_SwitchG1G2 (zCCamera__Activate_G1, zCCamera__Activate_G2));
 		call = CALL_End();
 	};
 };
@@ -50,7 +50,7 @@ func void zCCamera_ProjectF (var int camera, var int posPtr, var int xscrPtrF, v
 		CALL_PtrParam ( _@ (yscrPtrF));
 		CALL_PtrParam ( _@ (xscrPtrF));
 		CALL_PtrParam ( _@ (posPtr));
-		CALL__thiscall (camera, MEMINT_SwitchG1G2 (zCCamera__Project_G1, zCCamera__Project_G2));
+		CALL__thiscall (_@(camera), MEMINT_SwitchG1G2 (zCCamera__Project_G1, zCCamera__Project_G2));
 		call = CALL_End();
 	};
 };
@@ -73,7 +73,7 @@ func void zCCamera_Project (var int camera, var int posPtr, var int xscrPtr, var
 		CALL_PtrParam ( _@ (yscrPtr));
 		CALL_PtrParam ( _@ (xscrPtr));
 		CALL_PtrParam ( _@ (posPtr));
-		CALL__thiscall (camera, MEMINT_SwitchG1G2 (zCCamera__Project_G1, zCCamera__Project_G2));
+		CALL__thiscall (_@(camera), MEMINT_SwitchG1G2 (zCCamera__Project_G1, zCCamera__Project_G2));
 		call = CALL_End();
 	};
 };

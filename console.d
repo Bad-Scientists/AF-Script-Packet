@@ -124,7 +124,7 @@ func void zCConsole_Register (var string commandPrefix, var string description, 
 		CALL_IntParam(_@(param));
 		CALL_PtrParam(_@(descPtr));
 		CALL_PtrParam(_@(comPtr));
-		CALL__thiscall(_@(zcon_address_lego), MEMINT_SwitchG1G2 (zCConsole__Register_G1, zCConsole__Register_G2));
+		CALL__thiscall(_@(zcon_address), MEMINT_SwitchG1G2 (zCConsole__Register_G1, zCConsole__Register_G2));
 		call = CALL_End();
 	};
 };
@@ -147,7 +147,7 @@ func int zCConsole_Get_Cur_Console () {
  *	Update type for already existing console commands
  */
 func void zCConsole_UpdateType (var string command, var int type) {
-	var zCConsole console; console = _^ (zcon_address_lego);
+	var zCConsole console; console = _^ (zcon_address);
 
 	var int ptr; ptr = console.wurzel;
 
@@ -171,7 +171,7 @@ func void zCConsole_UpdateType (var string command, var int type) {
  *	Get type for already existing console commands
  */
 func int zCConsole_GetType (var string command) {
-	var zCConsole console; console = _^ (zcon_address_lego);
+	var zCConsole console; console = _^ (zcon_address);
 
 	var int ptr; ptr = console.wurzel;
 

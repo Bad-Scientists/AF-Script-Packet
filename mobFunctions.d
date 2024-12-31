@@ -94,6 +94,9 @@ func void oCMobLockable_UpdateLock (var int mobPtr) {
 		//Lock chest
 		mob.bitfield = (mob.bitfield | oCMobLockable_bitfield_locked);
 	};
+
+	//Reset picklockNr
+	mob.bitfield = mob.bitfield & 3;
 };
 
 func void oCMobLockable_SetKeyInstance (var int mobPtr, var string keyInstance) {
@@ -160,6 +163,15 @@ func void MOB_SetOwnerStr (var string mobName, var string ownerStr, var string o
 func void MOB_SetOnStateFuncName (var string mobName, var string onStateFuncName) {
 	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
 	oCMobInter_SetOnStateFuncName (mobPtr, onStateFuncName);
+};
+
+func int MOB_IsLocked (var string mobName) {
+	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
+
+	if (!mobPtr) { return FALSE; };
+
+	var oCMobLockable mob; mob = _^(mobPtr);
+	return ((mob.bitfield & oCMobLockable_bitfield_locked) == oCMobLockable_bitfield_locked);
 };
 
 /*

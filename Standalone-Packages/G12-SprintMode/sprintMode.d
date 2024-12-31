@@ -726,14 +726,15 @@ func void G12_SprintMode_Init () {
 
 	_PC_SprintModeTimedOverlayStacking = API_GetSymbolIntValue ("PC_SPRINTMODEBAR_TIMEDOVERLAY_STACKING", 0);
 
-	//Sprint mode - initial value
+	//Sprint mode - initial values (initialize only once)
 	var int sprintModeValuesInitialized;
 	if (!sprintModeValuesInitialized) {
 		PC_SprintModeStaminaMax = API_GetSymbolIntValue ("PC_SPRINTMODE_STAMINAMAX_DEFAULT", 80);
 		PC_SprintModeStamina = PC_SprintModeStaminaMax;
-
-		PC_SprintModeConsumeStamina = API_GetSymbolIntValue ("PC_SPRINTMODE_CONSUMESTAMINA_DEFAULT", TRUE);
+		sprintModeValuesInitialized = TRUE;
 	};
+
+	PC_SprintModeConsumeStamina = API_GetSymbolIntValue ("PC_SPRINTMODE_CONSUMESTAMINA_DEFAULT", TRUE);
 
 	//--
 
