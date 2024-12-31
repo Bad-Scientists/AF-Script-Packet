@@ -165,6 +165,15 @@ func void MOB_SetOnStateFuncName (var string mobName, var string onStateFuncName
 	oCMobInter_SetOnStateFuncName (mobPtr, onStateFuncName);
 };
 
+func int MOB_IsLocked (var string mobName) {
+	var int mobPtr; mobPtr = MEM_SearchVobByName (mobName);
+
+	if (!mobPtr) { return FALSE; };
+
+	var oCMobLockable mob; mob = _^(mobPtr);
+	return ((mob.bitfield & oCMobLockable_bitfield_locked) == oCMobLockable_bitfield_locked);
+};
+
 /*
  *	Function returns oCMobInter hitpoints
  */
