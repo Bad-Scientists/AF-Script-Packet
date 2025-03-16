@@ -328,7 +328,8 @@ func void EIM_ParseDescription(var int strPtr) {
 			j = i - 1;
 			while(j >= 0);
 				b = MEM_ReadInt(buf + j) & 255;
-				if ((b == 32) || (b == 126)) {
+				//Separators: space, brackets, ~
+				if ((b == 32) || (b == 40) || (b == 41) || (b == 126)) {
 					j += 1;
 					break;
 				};
