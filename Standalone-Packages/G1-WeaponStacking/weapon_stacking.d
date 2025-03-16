@@ -7,3 +7,8 @@
  *	You can then sell 9 unequipped items without additional hassle of well ... unequipping :)
  */
 
+//Backwards compatibility (bruh)
+func void G1_WeaponStacking_Init() {
+	//Item-splitting is doing same thing - but it works for weapons, amulets, rings & potentially belts
+	G1_ItemSplitting_Init();
+};
