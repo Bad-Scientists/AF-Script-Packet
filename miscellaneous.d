@@ -1087,6 +1087,72 @@ func void Wld_EnableNpc (var int slfInstance) {
 };
 
 /*
+ *	Wld_DespawnNpc
+ */
+func void Wld_DespawnNpc(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	zSpy_Info(ConcatStrings("Wld_DespawnNpc: despawning: ", GetSymbolName(Hlp_GetInstanceID(slf))));
+
+	slf._zCVob_groundPoly = 0;
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	//Remove as enemy... if any Npc has this npc as enemy then game would crash (there is no safety check in engine)
+	repeat(i, MEM_World.activeVobList_numInArray); var int i;
+		var int ptr; ptr = MEM_ReadIntArray(MEM_World.activeVobList_array, i);
+
+		if (Hlp_Is_oCNpc (ptr)) {
+			var oCNpc npc; npc = _^ (ptr);
+			if (Hlp_IsValidNpc(npc)) {
+				if (npc.enemy == slfPtr) {
+					//Remove enemy
+					oCNpc_SetEnemy(npc, 0);
+
+					//Remove hitTarget
+					if (npc.aniCtrl) {
+						var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (npc.aniCtrl);
+						aniCtrl.hitTarget = 0;
+					};
+				};
+			};
+		};
+	end;
+
+	//Stop all effects
+	//var int retVal; retVal = Wld_StopEffect_Ext (STR_EMPTY, 0, slf, TRUE);
+
+
+	//Remove routines
+	oCRtnManager_RemoveRoutine(slfPtr);
+
+	//Remove from players focus
+	var oCNpc her; her = Hlp_GetNpc(hero);
+	if (her.focus_vob == slfPtr) {
+		oCNpc_SetFocusVob(her, 0);
+	};
+
+	//Remove focus_vob
+	//oCNpc_SetFocusVob(slf, 0);
+
+	//Clear voblist
+	//oCNpc_ClearVobList(slf);
+
+	//Remove enemy reference
+	oCNpc_SetEnemy(slf, 0);
+
+	//Clear event manager
+	oCNpc_ClearEM(slf);
+
+	//Disable npc (ClearVobList, AvoidShrink, Interrupt, ClearPerceptionLists(ClearFocusVob, ClearVobList), SetSleeping true, state.CloseCutscenes,
+	oCNpc_Disable(slf);
+
+	//Delete npc
+	oCSpawnManager_DeleteNpc(slfPtr);
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
