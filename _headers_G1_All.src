@@ -179,7 +179,8 @@ Standalone-Packages\G1-EnhancedTrading\enhancedTrading.d
 
 Standalone-Packages\G12-PickLockHelper\pickLockHelper.d
 
-Standalone-Packages\G1-WeaponStacking\inventory.d
+Standalone-Packages\G1-ItemSplitting\itemSplitting.d
+
 Standalone-Packages\G1-WeaponStacking\weapon_stacking.d
 
 Standalone-Packages\G12-PreventLooting\preventLooting.d
