@@ -148,6 +148,7 @@ menu.d
 vobThrowing.d
 
 files.d
+archiver.d
 miscellaneous.d
 
 magic.d
