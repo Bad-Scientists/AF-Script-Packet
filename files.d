@@ -255,3 +255,121 @@ func void zFILE_FILE_Release(var int filePtr) {
 	MEM_Free(filePtr);
 };
 
+//-- zFILE_VDFS functions
+
+/*
+ *	zFILE_VDFS_GetByFilePath
+ */
+func int zFILE_VDFS_GetByFilePath(var string filePath) {
+	//0x00444D90 public: __thiscall zFILE_VDFS::zFILE_VDFS(class zSTRING const &)
+	const int zFILE_VDFS__zFILE_VDFS_G1 = 4476304;
+
+	//0x00448E20 public: __thiscall zFILE_VDFS::zFILE_VDFS(class zSTRING const &)
+	const int zFILE_VDFS__zFILE_VDFS_G2 = 4492832;
+
+	//This does not work - we have to allocate memory by ourselves
+	//var int ptr; ptr = CreateNewInstanceByString("zFILE_VDFS");
+
+	//Same for G1 & G2A
+	const int sizeof_zFILE_VDFS = 10808;
+	var int ptr; ptr = MEM_Alloc(sizeof_zFILE_VDFS);
+
+	CALL_zStringPtrParam(filePath);
+	CALL__thiscall(ptr, MEMINT_SwitchG1G2(zFILE_VDFS__zFILE_VDFS_G1, zFILE_VDFS__zFILE_VDFS_G1));
+
+	return + ptr;
+};
+
+/*
+ *	zFILE_VDFS_Exists
+ */
+func int zFILE_VDFS_Exists(var int filePtr) {
+	//0x00444F90 public: virtual bool __thiscall zFILE_VDFS::Exists(void)
+	const int zFILE_VDFS__Exists_G1 = 4476816;
+
+	//0x00449020 public: virtual bool __thiscall zFILE_VDFS::Exists(void)
+	const int zFILE_VDFS__Exists_G2 = 4493344;
+
+	if (!filePtr) { return FALSE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall(_@(filePtr), MEMINT_SwitchG1G2(zFILE_VDFS__Exists_G1, zFILE_VDFS__Exists_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	zFILE_VDFS_Open
+ */
+func int zFILE_VDFS_Open(var int filePtr, var int writeMode) {
+	//0x00445090 public: virtual int __thiscall zFILE_VDFS::Open(bool)
+	const int zFILE_VDFS__Open_G1 = 4477072;
+
+	//0x00449120 public: virtual int __thiscall zFILE_VDFS::Open(bool)
+	const int zFILE_VDFS__Open_G2 = 4493600;
+
+	if (!filePtr) { return FALSE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL_IntParam(_@(writeMode));
+		CALL__thiscall(_@(filePtr), MEMINT_SwitchG1G2(zFILE_VDFS__Open_G1, zFILE_VDFS__Open_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	zFILE_VDFS_Close
+ */
+func int zFILE_VDFS_Close(var int filePtr) {
+	//0x00445310 public: virtual int __thiscall zFILE_VDFS::Close(void)
+	const int zFILE_VDFS__Close_G1 = 4477712;
+
+	//0x004493A0 public: virtual int __thiscall zFILE_VDFS::Close(void)
+	const int zFILE_VDFS__Close_G2 = 4494240;
+
+	if (!filePtr) { return FALSE; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall(_@(filePtr), MEMINT_SwitchG1G2(zFILE_VDFS__Close_G1, zFILE_VDFS__Close_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
+ *	zFILE_VDFS_Release
+ */
+func void zFILE_VDFS_Release(var int filePtr) {
+	//0x00444E40 public: virtual __thiscall zFILE_VDFS::~zFILE_VDFS(void)
+	const int zFILE_VDFS___zFILE_VDFS_G1 = 4476480;
+
+	//0x00448ED0 public: virtual __thiscall zFILE_VDFS::~zFILE_VDFS(void)
+	const int zFILE_VDFS___zFILE_VDFS_G2 = 4493008;
+
+	if (!filePtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(filePtr), MEMINT_SwitchG1G2(zFILE_VDFS___zFILE_VDFS_G1, zFILE_VDFS___zFILE_VDFS_G2));
+		call = CALL_End();
+	};
+
+	MEM_Free(filePtr);
+};
