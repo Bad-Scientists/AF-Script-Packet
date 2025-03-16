@@ -197,7 +197,7 @@ func void oCRtnManager_RemoveRoutine (var int npcPtr) {
 /*
  *	oCRtnManager_FindRoutine
  */
-func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnBeforePtr, var int rtnNowPtr) {
+func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnNowPtr, var int rtnBeforePtr) {
 	//0x006CD720 public: int __thiscall oCRtnManager::FindRoutine(class oCNpc *,class oCRtnEntry * &,class oCRtnEntry * &)
 	const int oCRtnManager__FindRoutine_G1 = 7132960;
 
@@ -225,8 +225,8 @@ func int oCRtnManager_FindRoutine (var int slfInstance, var int rtnBeforePtr, va
 
 		CALL_PutRetValTo (_@ (retVal));
 
-		CALL_PtrParam (_@ (rtnNowPtr));
 		CALL_PtrParam (_@ (rtnBeforePtr));
+		CALL_PtrParam (_@ (rtnNowPtr));
 		CALL_PtrParam (_@ (slfPtr));
 		CALL__thiscall (_@ (rtnManPtr), MEMINT_SwitchG1G2 (oCRtnManager__FindRoutine_G1, oCRtnManager__FindRoutine_G2));
 		call = CALL_End ();
