@@ -1177,6 +1177,30 @@ func void Wld_DespawnNpc(var int slfInstance) {
 };
 
 /*
+ *	Wld_ClearNpcBeforeExport
+ *	 - function removes redundant information from Npc before exporting to .ZEN file
+ */
+func void Wld_ClearNpcBeforeExport(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	//Clear event manager
+	//oCNpc_SetFocusVob(slf, 0);
+
+	//Clear voblist
+	//oCNpc_ClearVobList(slf);
+
+	//Remove enemy reference
+	oCNpc_SetEnemy(slf, 0);
+
+	//Clear event manager
+	oCNpc_ClearEM(slf);
+
+	//Disable npc (ClearVobList, AvoidShrink, Interrupt, ClearPerceptionLists(ClearFocusVob, ClearVobList), SetSleeping true, state.CloseCutscenes,
+	oCNpc_Disable(slf);
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
