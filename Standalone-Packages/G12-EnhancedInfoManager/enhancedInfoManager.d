@@ -179,6 +179,10 @@ class zEIM {
 
 	var int answerMode;
 
+	var int isAnswer;
+
+	var int isSpinner;
+
 	var int displayAnswerIndicator;
 	var int displaySpinnerIndicator;
 	var int displayItemPreview;
@@ -1186,7 +1190,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 
 		//G2A tweak - dialog confirmation with SPACE
 		//Additionally we will allow confirmation via numpad enter
-		if (!eim.displayAnswerIndicator) {
+		if (!eim.isAnswer) {
 			if ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; update = TRUE; };
 		} else {
 			if (!eim.answerMode)
@@ -1196,7 +1200,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 		//-- Answer
 
 		//eim.displayAnswerIndicator is set by _hook_oCInformationManager_Update_EnhancedInfoManager
-		if (eim.displayAnswerIndicator) {
+		if (eim.isAnswer) {
 			//cancel answer mode
 			if (eim.answerMode) {
 				if (key == KEY_ESCAPE) {
@@ -1254,7 +1258,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 
 		//-- Spinner
 
-		if (eim.displaySpinnerIndicator) {
+		if (eim.isSpinner) {
 			var int lastSpinnerValue; lastSpinnerValue = InfoManagerSpinnerValue;
 
 			//Default value if not set
@@ -1762,7 +1766,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 		if (eim.infosCollected) || (eim.choicesCollected)
 		{
 			if (eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_All)
-			|| ((eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (eim.displaySpinnerIndicator))
+			|| ((eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (eim.isSpinner))
 			{
 				if (eim.lastChoiceSelectedMode != dlgChoice.ChoiceSelected) {
 					if (eim.lastChoiceSelectedMode < dlgChoice.choices) {
@@ -1793,6 +1797,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 		eim.displayAnswerIndicator = FALSE;
 		eim.displaySpinnerIndicator = FALSE;
 		eim.displayItemPreview = FALSE;
+
+		eim.isAnswer = FALSE;
+		eim.isSpinner = FALSE;
 
 		//Auto-scrolling for disabled dialog choices
 		InfoManager_SkipDisabledDialogChoices (-1);
@@ -2133,9 +2140,16 @@ func void _hook_oCInformationManager_Update_EIM () {
 
 							//Spinner
 							if (eimDescription.isSpinner) {
-								InfoManagerSpinnerID = eimDescription.spinnerID;
 								eim.displaySpinnerIndicator = TRUE;
 							};
+						};
+
+						eim.isAnswer = eimDescription.isAnswer;
+						eim.isSpinner = eimDescription.isSpinner;
+
+						//Spinner ID update
+						if (eimDescription.isSpinner) {
+							InfoManagerSpinnerID = eimDescription.spinnerID;
 						};
 
 						//Update font ptr
