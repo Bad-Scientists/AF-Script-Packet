@@ -500,11 +500,8 @@ func int DIA_PuppetMaster_Main_Condition () {
 			};
 
 			//Page Up/Down quantity
-			InfoManagerSpinnerPageSize = 5;
-
 			//Min/max value (Home/End keys)
-			InfoManagerSpinnerValueMin = min;
-			InfoManagerSpinnerValueMax = max;
+			EIM_ActiveSpinnerSetBoundaries(min, max, 5);
 
 			//Update
 			value2 = InfoManagerSpinnerValue;

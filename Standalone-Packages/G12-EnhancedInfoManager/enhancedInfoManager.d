@@ -951,6 +951,17 @@ func void EIM_Reset () {
 	eim.autoConfirm = FALSE;
 };
 
+func void EIM_ActiveSpinnerSetBoundaries (var int min, var int max, var int pageSize) {
+	InfoManagerSpinnerPageSize = pageSize;
+
+	InfoManagerSpinnerValueMin = min;
+	InfoManagerSpinnerValueMax = max;
+
+	//Update InfoManagerSpinnerValue
+	if (InfoManagerSpinnerValue < min) { InfoManagerSpinnerValue = min; };
+	if (InfoManagerSpinnerValue > max) { InfoManagerSpinnerValue = max; };
+};
+
 func int EIM_GetInfoPtr (var int index) {
 	if ((index < 0) || (index >= eim.diaInstancePtrCount)) {
 		return 0;

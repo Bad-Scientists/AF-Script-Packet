@@ -293,11 +293,8 @@ func int DIA_Debug_Dialogues_Condition() {
 			};
 
 			//Page Up/Down quantity
-			InfoManagerSpinnerPageSize = 1;
-
 			//Min/max value (Home/End keys)
-			InfoManagerSpinnerValueMin = min;
-			InfoManagerSpinnerValueMax = max;
+			EIM_ActiveSpinnerSetBoundaries(min, max, 1);
 
 			//Update
 			value = InfoManagerSpinnerValue;
