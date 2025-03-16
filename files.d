@@ -2,6 +2,8 @@
  *	File functions
  */
 
+var int Files_LookAtVDFS;
+
 /*
  *	zCOption_ChangeDir
  */

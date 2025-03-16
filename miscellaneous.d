@@ -1297,6 +1297,107 @@ func void Wld_ExportVobPtr(var int vobPtr, var string fileName, var int appendMo
 };
 
 /*
+ *	Wld_ImportVobPtr
+ *	 - function imports vobs from .ZEN file
+ *	 - function creates array and returns in the array all loaded vobs
+ */
+func int Wld_ImportVobPtr(var string fileName) {
+	zSpy_Info("Wld_ImportVobPtr");
+
+	var int arrPtr; arrPtr = MEM_ArrayCreate();
+
+	var int filePtr;
+
+	if (Files_LookAtVDFS) {
+		filePtr = zFILE_VDFS_GetByFilePath(fileName);
+	} else {
+		filePtr = zFILE_FILE_GetByFilePath(fileName);
+	};
+
+	var int fileExists;
+
+	if (Files_LookAtVDFS) {
+		fileExists = zFILE_VDFS_Exists(filePtr);
+	} else {
+		fileExists = zFILE_FILE_Exists(filePtr);
+	};
+
+	if (!fileExists) {
+		zSpy_Info("   fatal: file does not exist!");
+		zSpy_Info(fileName);
+
+		if (Files_LookAtVDFS) {
+			zFILE_VDFS_Release(filePtr);
+		} else {
+			zFILE_FILE_Release(filePtr);
+		};
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return 0;
+	};
+
+	var int fileOpened;
+
+	if (Files_LookAtVDFS) {
+		//Read-only mode
+		fileOpened = zFILE_VDFS_Open(filePtr, 0);
+	} else {
+		fileOpened = zFILE_FILE_Open(filePtr, 0);
+	};
+
+	//Non-zero is error
+	if (fileOpened != 0) {
+		zSpy_Info("   fatal: file could not be open!");
+		zSpy_Info(fileName);
+
+		if (Files_LookAtVDFS) {
+			zFILE_VDFS_Release(filePtr);
+		} else {
+			zFILE_FILE_Release(filePtr);
+		};
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return 0;
+	};
+
+	var int arch; arch = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
+	var int vobPtr; vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
+
+	var int count; count = 0;
+
+	zSpy_Info("   reading objects:");
+	while(vobPtr);
+		//First set world position otherwise zCVob::BeginMovement crashes when vob is added to the world
+		var int retVal;
+		var int pos[3];
+
+		var int trafo[16];
+		zCVob_GetTrafo(vobPtr, _@(trafo));
+		zCVob_SetTrafo(vobPtr, _@(trafo));
+
+		oCWorld_EnableVob(vobPtr, 0);
+
+		vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
+		count += 1;
+	end;
+
+	zSpy_Info(ConcatStrings("   ", IntToString(count)));
+
+	zCArchiverGeneric_Close(arch);
+
+	if (Files_LookAtVDFS) {
+		zFILE_VDFS_Release(filePtr);
+	} else {
+		zFILE_FILE_Release(filePtr);
+	};
+
+	zSpy_Info("   imported.");
+	zSpy_Info(fileName);
+
+	return + arrPtr;
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
