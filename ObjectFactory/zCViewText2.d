@@ -28,7 +28,7 @@ func int zCViewText2_Create(var string text, var int pposX, var int pposY, var i
 		v.alpha = alpha;
 	};
 
-	if (funcAlphaBlend != -1) {
+	if (funcAlphaBlend > 0) {
 		v.enabledBlend = TRUE;
 		v.funcAlphaBlend = funcAlphaBlend;
 	};
