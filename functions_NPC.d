@@ -206,21 +206,9 @@ func string Npc_GetRoutineBaseName (var int slfInstance)
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	rtnName = STR_Upper (rtnName);
 
-	//RTN_ rtnName _ID    
-    var string curRtnName; curRtnName = Npc_GetRoutineBaseName(slfInstance);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (rtnName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
-
-		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
-	};
-
-	return + (Hlp_StrCmp (rtnName, curRtnName));
+	//RTN_ rtnName _ID
+	var string curRtnName; curRtnName = Npc_GetRoutineBaseName(slfInstance);
+	return + (STR_WildMatch(rtnName, curRtnName));
 };
 
 func string NPC_GetStartAIStateName (var int slfInstance) {
@@ -760,7 +748,6 @@ func void NPC_TorchSwitchOn (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC(slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-
 	var int ptr;
 
 	//Check fight mode!
@@ -1038,19 +1025,7 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	if (!STR_Len (stateName)) { return TRUE; };
 
 	stateName = STR_Upper (stateName);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (stateName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
-
-		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
-	};
-
-	return + (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	return + (STR_WildMatch(slf.state_curState_name, stateName) && (slf.state_curState_valid));
 };
 
 func int NPC_WasInStateName (var int slfInstance, var string stateName) {
@@ -1063,19 +1038,7 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 
 	var string lastStateName;
 	lastStateName = GetSymbolName (slf.state_lastAIState);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (stateName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
-
-		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
-	};
-
-	return + (Hlp_StrCmp (lastStateName, stateName));
+	return + (STR_WildMatch(lastStateName, stateName));
 };
 
 func int NPC_GetDailyRoutineFuncID (var int slfInstance) {

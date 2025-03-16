@@ -343,17 +343,7 @@ func int Npc_IsInRtnStateName (var int slfInstance, var string stateName) {
 	MEM_ArrayFree (rtnArrayPtr);
 
 	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (stateName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
-
-		return + (STR_StartsWith (rtnStateName, s1) && STR_EndsWith (rtnStateName, s2));
-	};
-
-	return + (Hlp_StrCmp (rtnStateName, stateName));
+	return + (STR_WildMatch(rtnStateName, stateName));
 };
 
 /*
