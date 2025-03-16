@@ -373,3 +373,15 @@ func void zFILE_VDFS_Release(var int filePtr) {
 
 	MEM_Free(filePtr);
 };
+
+/*
+ *	FileExists
+ *	 - wrapper function checking if file exists
+ */
+func int FileExists(var string filePath) {
+	var int retVal;
+	var int filePtr; filePtr = zFILE_FILE_GetByFilePath(filePath);
+	retVal = zFILE_FILE_Exists(filePtr);
+	zFILE_FILE_Release(filePtr);
+	return + retVal;
+};
