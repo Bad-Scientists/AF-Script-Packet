@@ -30,6 +30,30 @@ func void zCWorld_RemoveVob (var int vobPtr) {
 };
 
 /*
+ *	oCWorld_EnableVob
+ *	can replace oCWorld_AddVobAsChild ?
+ */
+func void oCWorld_EnableVob (var int vobPtr, var int parentPtr) {
+
+	//0x006D7130 public: virtual void __thiscall oCWorld::EnableVob(class zCVob *,class zCVob *)
+	const int oCWorld__EnableVob_G1 = 7172400;
+
+	//0x00780340 public: virtual void __thiscall oCWorld::EnableVob(class zCVob *,class zCVob *)
+	const int oCWorld__EnableVob_G2 = 7865152;
+
+	var int worldPtr; worldPtr = MEM_Game._zCSession_world;
+	if (!worldPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(parentPtr));
+		CALL_PtrParam(_@(vobPtr));
+		CALL__thiscall(_@(worldPtr), MEMINT_SwitchG1G2(oCWorld__EnableVob_G1, oCWorld__EnableVob_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *	Author: Mud-freak
  */
 func int oCWorld_AddVobAsChild (var int vobPtr, var int parentPtr) {
