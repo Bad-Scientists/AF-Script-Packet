@@ -168,7 +168,7 @@ class zEIM {
 	var int dialogColor[EIM_DIALOG_MAX];
 	var int dialogColorSelected[EIM_DIALOG_MAX];
 
-	var int dialogDisabled[EIM_DIALOG_MAX]; //track which dialogues are disabledd
+	var int dialogDisabled[EIM_DIALOG_MAX]; //track which dialogues are disabled
 	//1 - disabled
 	//2 - disabled and too long
 
