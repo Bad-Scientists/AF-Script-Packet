@@ -1526,6 +1526,7 @@ func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
 		if (index == -5) { stateName = "ZS_FADEAWAY"; };
 		if (index == -6) { stateName = "ZS_FOLLOW"; };
 
+		state.curState_name = stateName;
 		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
 		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
 	};
