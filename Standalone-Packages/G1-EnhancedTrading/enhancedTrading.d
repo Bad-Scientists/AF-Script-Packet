@@ -454,6 +454,12 @@ func void _eventTradeOnExit__EnhancedTrading (var int dummyVariable) {
 	_TradeForceTransferAccept = 0;
 };
 
+func void _eventTradeTransferReset__EnhancedTrading (var int dummyVariable) {
+	//Reset values
+	Trade_SetNpcContainerValue (0);
+	Trade_SetPlayerContainerValue (0);
+};
+
 /*
  *	Hook handles trade confirmation
  *	 - Enter confirms trade
@@ -639,6 +645,7 @@ func void G1_EnhancedTrading_Init(){
 	G1_TradeEvents_Init ();
 
 	TradeOnExitEvent_AddListener (_eventTradeOnExit__EnhancedTrading);
+	TradeTransferResetEvent_AddListener (_eventTradeTransferReset__EnhancedTrading);
 	TradeOnAcceptEvent_AddListener (_eventTradeOnAccept__EnhancedTrading);
 	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
 
