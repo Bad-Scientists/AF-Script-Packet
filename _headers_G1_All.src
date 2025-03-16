@@ -52,6 +52,7 @@ EngineClasses_G1\oCMagFrontier.d
 
 ScriptBin\strings.d
 ScriptBin\convert.d
+ScriptBin\removeoCVobSafe.d
 
 list.d
 
@@ -61,7 +62,6 @@ draw3D.d
 
 strings.d
 utils.d
-files.d
 
 fonts.d
 
@@ -76,7 +76,6 @@ spatialState.d
 
 ScriptBin\insertAnything.d
 ScriptBin\searchVobs.d
-ScriptBin\removeoCVobSafe.d
 ScriptBin\trafo.d
 
 ObjectFactory\zCDecal.d
@@ -153,6 +152,8 @@ sound.d
 menu.d
 
 vobThrowing.d
+
+files.d
 miscellaneous.d
 
 magic.d
