@@ -158,7 +158,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	};
 
 	//Transfer items
-	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE)) {
+	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE) || (key == MOUSE_BUTTON_LEFT)) {
 
 		openInvType = Hlp_GetOpenInventoryType ();
 
@@ -181,7 +181,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 					};
 
 					//Left ctrl moves a single piece
-					if (key == KEY_LCONTROL) { amount = 1; };
+					if ((key == KEY_LCONTROL) || (key == MOUSE_BUTTON_LEFT)) { amount = 1; };
 
 					//Spacebar moves 10 pieces
 					if (key == KEY_SPACE) { amount = 10; };
