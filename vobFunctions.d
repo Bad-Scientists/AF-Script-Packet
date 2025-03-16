@@ -1581,7 +1581,6 @@ func void zCVob_SetAI (var int vobPtr, var int ai) {
 	//0x005FE8F0 public: void __thiscall zCVob::SetAI(class zCAIBase *)
 	const int zCVob__SetAI_G2 = 6285552;
 
-	if (!ai) { return; };
 	if (!vobPtr) { return; };
 
 	const int call = 0;
