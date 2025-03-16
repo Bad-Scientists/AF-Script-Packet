@@ -1398,6 +1398,21 @@ func int Wld_ImportVobPtr(var string fileName) {
 };
 
 /*
+ *	Wld_ImportVobPtr_VDFS
+ *	 - same as Wld_ImportVobPtr, but looks at VDF files
+ */
+func int Wld_ImportVobPtr_VDFS(var string fileName) {
+	var int arrPtr;
+
+	var int b; b = Files_LookAtVDFS;
+	Files_LookAtVDFS = TRUE;
+	arrPtr = Wld_ImportVobPtr(fileName);
+	Files_LookAtVDFS = b;
+
+	return + arrPtr;
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
