@@ -9,7 +9,7 @@ func int zCCamera_Get_activeCam () {
 	//0x008D7F94 public: static class zCCamera * zCCamera::activeCam
 	const int activeCam_addr_G2 = 9273236;
 
-	return + MEMINT_SwitchG1G2 (activeCam_addr_G1, activeCam_addr_G2);
+	return + MEM_ReadInt(MEMINT_SwitchG1G2 (activeCam_addr_G1, activeCam_addr_G2));
 };
 
 /*
