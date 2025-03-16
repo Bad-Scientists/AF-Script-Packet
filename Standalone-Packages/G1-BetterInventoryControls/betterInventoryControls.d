@@ -619,7 +619,7 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	};
 };
 
-func void _eventDoTakeVob_SwitchCategory () {
+func void _eventDoTakeVob__SwitchCategory () {
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!Hlp_Is_oCNpc (ECX)) || (!Hlp_Is_oCItem (itemPtr))) { return; };
 
@@ -633,7 +633,7 @@ func void _eventDoTakeVob_SwitchCategory () {
 	};
 };
 
-func void _eventOpenInventory_SwitchToCategory () {
+func void _eventOpenInventory__SwitchToCategory () {
 	//Only if not in dialogue - otherwise this collides with EIM item preview feature
 	if (!InfoManager_HasFinished()) {
 		return;
@@ -664,8 +664,8 @@ func void G1_BetterInventoryControls_Init(){
 	DoDropVobEvent_AddListener (_eventDoDropVob__BetterInvControls);
 
 	G12_DoTakeVobEvent_Init ();
-	DoTakeVobEvent_AddListener (_eventDoTakeVob_SwitchCategory);
+	DoTakeVobEvent_AddListener (_eventDoTakeVob__SwitchCategory);
 
 	G12_OpenInventoryEvent_Init ();
-	OpenInventoryEvent_AddListener (_eventOpenInventory_SwitchToCategory);
+	OpenInventoryEvent_AddListener (_eventOpenInventory__SwitchToCategory);
 };
