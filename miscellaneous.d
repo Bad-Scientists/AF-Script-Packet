@@ -1123,6 +1123,30 @@ func void Wld_DespawnNpc(var int slfInstance) {
 	//Stop all effects
 	//var int retVal; retVal = Wld_StopEffect_Ext (STR_EMPTY, 0, slf, TRUE);
 
+	//Remove horcruxes!
+	var int vobListPtr; vobListPtr = MEM_ArrayCreate();
+
+	if (SearchVobsByClass("zCVob", vobListPtr)) {
+		var zCArray vobList; vobList = _^(vobListPtr);
+
+		repeat(i, vobList.numInArray);
+			var int vobPtr; vobPtr = MEM_ArrayRead(vobListPtr, i);
+
+			if (vobPtr) {
+				var zCVob vob; vob = _^(vobPtr);
+
+				if (Hlp_Is_oCAIVobMove(vob.callback_ai)) {
+					var oCAIVobMove ai; ai = _^(vob.callback_ai);
+
+					if (ai.owner == slfPtr) {
+						zCVob_SetAI(vobPtr, 0);
+					};
+				};
+			};
+		end;
+	};
+
+	MEM_ArrayFree(vobListPtr);
 
 	//Remove routines
 	oCRtnManager_RemoveRoutine(slfPtr);
