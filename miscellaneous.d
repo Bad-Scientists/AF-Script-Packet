@@ -1201,6 +1201,102 @@ func void Wld_ClearNpcBeforeExport(var int slfInstance) {
 };
 
 /*
+ *	Wld_ExportVobPtr
+ *	 - function exports vob to .ZEN file
+ *	 - appendMode allows you to append objects into single file
+ */
+func void Wld_ExportVobPtr(var int vobPtr, var string fileName, var int appendMode) {
+	if (!vobPtr) { return; };
+
+	var int arrPtr; arrPtr = 0;
+
+	zSpy_Info("Wld_ExportVobPtr");
+
+	var int filePtr; filePtr = zFILE_FILE_GetByFilePath(fileName);
+	if (zFILE_FILE_Exists(filePtr)) {
+		//Load all objects
+		if (appendMode) {
+			//Open for reading
+			if (zFILE_FILE_Open(filePtr, 0) != 0) {
+				zSpy_Info("   fatal: file could not be open!");
+				zSpy_Info(fileName);
+				zFILE_FILE_Release(filePtr);
+				return;
+			};
+
+			//Create array
+			arrPtr = MEM_ArrayCreate();
+
+			//Read objects and insert them into an array
+			zSpy_Info("   reading array.");
+			var int archR; archR = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
+			var int vobPtrR; vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
+
+			while(vobPtrR);
+				MEM_ArrayInsert(arrPtr, vobPtrR);
+				vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
+			end;
+
+			//Close archiver
+			zCArchiverGeneric_Close(arch);
+			if (zFILE_FILE_Close(filePtr) != 0) {
+				zSpy_Info("   fatal: file couldn't be closed.");
+				zSpy_Info(fileName);
+				if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+				return;
+			};
+		};
+
+		//Delete file
+		if (zFILE_FILE_FileDelete(filePtr)) {
+			zSpy_Info("   deleting file.");
+			zSpy_Info(fileName);
+		};
+	};
+
+	//Create new file
+	if (zFILE_FILE_Create(filePtr) != 0) {
+		zSpy_Info("   fatal: file couldn't be created.");
+		zSpy_Info(fileName);
+		zFILE_FILE_Release(filePtr);
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return;
+	};
+
+	//Create archiver for writing
+	var int arch; arch = zCArchiverFactory_CreateArchiverWrite(filePtr, zARC_MODE_ASCII, 1, zARC_FLAG_WRITE_HEADER);
+
+	zSpy_Info("   writing objects:");
+
+	var int count; count = 0;
+
+	//Write array first
+	if (arrPtr) {
+		var zCArray arr; arr = _^(arrPtr);
+
+		repeat(i, arr.numInArray); var int i;
+			vobPtrR = MEM_ArrayRead(arrPtr, i);
+			zCArchiverGeneric_WriteObject(arch, vobPtrR);
+			count += 1;
+		end;
+
+		MEM_ArrayFree(arrPtr); arrPtr = 0;
+	};
+
+	//Write new object
+	zCArchiverGeneric_WriteObject(arch, vobPtr);
+	zCArchiverGeneric_Close(arch);
+	zFILE_FILE_Release(filePtr);
+
+	count += 1;
+	zSpy_Info(ConcatStrings("   ", IntToString(count)));
+
+	zSpy_Info("   exported.");
+	zSpy_Info(fileName);
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
