@@ -168,6 +168,82 @@ func void inventory2_inventory1_Compare_SortingLogic () {
 };
 
 /*
+ *	INV_MAGIC
+ *		Amulets > Rings > Belts
+ */
+func void inventory2_inventory4_Compare_SortingLogic () {
+	var int itmPtr1; itmPtr1 = MEM_ReadInt(ESP + 4);
+	var int itmPtr2; itmPtr2 = MEM_ReadInt(ESP + 8);
+
+	if (!itmPtr1) || (!itmPtr2) { return; };
+
+	var oCItem itm1; itm1 = _^(itmPtr1);
+	var oCItem itm2; itm2 = _^(itmPtr2);
+
+	const int ITM_FLAG_BELT = 1 << 24; //G2A only - available for G1 tho :)
+
+	//Amulets > Rings > Belts
+	if (itm1.flags & ITEM_AMULET) {
+		if (itm2.flags & ITM_FLAG_BELT) {
+			EAX = -1; return;
+		};
+
+		if (itm2.flags & ITEM_RING) {
+			EAX = -1; return;
+		};
+	};
+
+	if (itm1.flags & ITEM_RING) {
+		if (itm2.flags & ITM_FLAG_BELT) {
+			EAX = -1; return;
+		};
+
+		if (itm2.flags & ITEM_AMULET) {
+			EAX = 1; return;
+		};
+	};
+
+	if (itm1.flags & ITM_FLAG_BELT) {
+		if (itm2.flags & ITEM_AMULET) {
+			EAX = 1; return;
+		};
+
+		if (itm2.flags & ITEM_RING) {
+			EAX = 1; return;
+		};
+	};
+
+	//Value
+	if (itm1.value > itm2.value) {
+		EAX = -1; return;
+	};
+
+	if (itm1.value < itm2.value) {
+		EAX = 1; return;
+	};
+
+	//Instance ID
+	if (Hlp_GetInstanceID(itm1) > Hlp_GetInstanceID(itm2)) {
+		EAX = -1; return;
+	};
+
+	if (Hlp_GetInstanceID(itm1) < Hlp_GetInstanceID(itm2)) {
+		EAX = 1; return;
+	};
+
+	//Equipped first
+	if (itm1.flags & ITEM_ACTIVE_LEGO) {
+		EAX = -1; return;
+	};
+
+	if (itm2.flags & ITEM_ACTIVE_LEGO) {
+		EAX = 1; return;
+	};
+
+	EAX = 1;
+};
+
+/*
  *	INV_MISC
  *	New sorting logic
  *		itMiNugget > ItKeLockpick > ItLsTorch* > ITEM_MISSION > $$$
@@ -240,6 +316,9 @@ func void G1_EnhancedInventorySorting_Init (){
 		//INV_WEAPON
 		//Makes sure that weapons inventory is sorted consistently.
 		ReplaceEngineFunc (inventory2_inventory1_Compare, 0, "inventory2_inventory1_Compare_SortingLogic");
+
+		//INV_MAGIC
+		ReplaceEngineFunc (inventory2_inventory4_Compare, 0, "inventory2_inventory4_Compare_SortingLogic");
 
 		//INV_MISC
 		ReplaceEngineFunc (inventory2_inventory8_Compare, 0, "inventory2_inventory8_Compare_SortingLogic");
