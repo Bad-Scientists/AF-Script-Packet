@@ -554,6 +554,12 @@ func void G12_OpenDeadNPCEvent_Init () {
 };
 
 func void G12_GameState_Extended_Init () {
+	if (_LeGo_Flags & LeGo_Gamestate) {
+		//Everything ok...
+	} else {
+		zSpy_Info("G12_GameState_Extended_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
+	};
+
 	const int once = 0;
 	if (!once) {
 

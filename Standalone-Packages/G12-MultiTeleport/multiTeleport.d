@@ -374,7 +374,12 @@ func void G12_MultiTeleport_Init () {
 	//Add listener for game states
 
 	G12_GameState_Extended_Init();
-	GameState_AddListener(_eventGameState__MultiTeleport);
+
+	if (_LeGo_Flags & LeGo_Gamestate) {
+		GameState_AddListener(_eventGameState__MultiTeleport);
+	} else {
+		zSpy_Info("G12_MultiTeleport_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
+	};
 
 	if (!once) {
 /*

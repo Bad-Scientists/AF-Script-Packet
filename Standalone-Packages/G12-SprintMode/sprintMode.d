@@ -781,6 +781,8 @@ func void G12_SprintMode_Init () {
 	//Add listener for loaded game
 	if (_LeGo_Flags & LeGo_Gamestate) {
 		Gamestate_AddListener (_eventGameStateLoaded__SprintMode);
+	} else {
+		zSpy_Info("G12_SprintMode_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
 	};
 
 	//--
