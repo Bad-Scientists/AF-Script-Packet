@@ -9,6 +9,8 @@ var int _TradeOnAccept_Event_Break;
 var int _TradeOnExit_Event;
 var int _TradeOnExit_Event_Break;
 
+var int _TradeTransferReset_Event;
+
 var int _TradeHandleEvent_Event;
 var int _TradeHandleEvent_Event_Break;
 
@@ -32,6 +34,14 @@ func void TradeOnExitEvent_AddListener (var func f) {
 
 func void TradeOnExitEvent_RemoveListener (var func f) {
 	Event_Remove (_TradeOnExit_Event, f);
+};
+
+func void TradeTransferResetEvent_AddListener (var func f) {
+	Event_AddOnce (_TradeTransferReset_Event, f);
+};
+
+func void TradeTransferResetEvent_RemoveListener (var func f) {
+	Event_Remove (_TradeTransferReset_Event, f);
 };
 
 func void TradeHandleEvent_AddListener (var func f) {
@@ -94,6 +104,10 @@ func void _hook_oCViewDialogTrade_OnExit () {
 	Event_Execute (_TradeOnExit_Event, 0);
 };
 
+func void _hook_oCViewDialogTrade_TransferReset () {
+	Event_Execute (_TradeTransferReset_Event, 0);
+};
+
 func void _hook_oCViewDialogTrade_HandleEvent () {
 	//--> Safety check
 	if (!MEM_InformationMan.DlgTrade) { return; };
@@ -141,6 +155,10 @@ func void G1_TradeEvents_Init () {
 		_TradeOnExit_Event = Event_Create ();
 	};
 
+	if (!_TradeTransferReset_Event) {
+		_TradeTransferReset_Event = Event_Create ();
+	};
+
 	if (!_TradeHandleEvent_Event) {
 		_TradeHandleEvent_Event = Event_Create ();
 	};
@@ -151,6 +169,8 @@ func void G1_TradeEvents_Init () {
 		HookEngine (oCViewDialogTrade__OnAccept, 6, "_hook_oCViewDialogTrade_OnAccept");
 
 		HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit");
+
+		HookEngine (oCViewDialogTrade__TransferReset, 9, "_hook_oCViewDialogTrade_TransferReset");
 
 		HookEngine (oCViewDialogTrade__HandleEvent, 7, "_hook_oCViewDialogTrade_HandleEvent");
 
