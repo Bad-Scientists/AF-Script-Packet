@@ -1538,6 +1538,14 @@ func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
  */
 func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	var int index; index = MEM_FindParserSymbol (stateName);
+
+	//Special logic for by engine recognized ZS states
+	if (Hlp_StrCmp(stateName, "ZS_ANSWER")) { index = -2; } else
+	if (Hlp_StrCmp(stateName, "ZS_DEAD")) { index = -3; } else
+	if (Hlp_StrCmp(stateName, "ZS_UNCONSCIOUS")) { index = -4; } else
+	if (Hlp_StrCmp(stateName, "ZS_FADEAWAY")) { index = -5; } else
+	if (Hlp_StrCmp(stateName, "ZS_FOLLOW")) { index = -6; };
+
 	Npc_SetAIState_ByIndex(slfInstance, index);
 };
 
