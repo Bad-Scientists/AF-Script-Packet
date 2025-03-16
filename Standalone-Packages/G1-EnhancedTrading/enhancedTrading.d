@@ -408,15 +408,15 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 	var oCNpcInventory npcInventory;
 
-	var int npcsContainer;
+	var int npcContainer;
 
 	//Update buy/sell multipliers
 	if (!Trade_ValidateTransfer(itmPtr, TRADE_SECTION_LEFT_CONTAINER_G1)) {
 		return;
 	};
 
-	npcsContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
-	itmPtr = oCItemContainer_RemoveByPtr (npcsContainer, itmPtr, amount);
+	npcContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
+	itmPtr = oCItemContainer_RemoveByPtr (npcContainer, itmPtr, amount);
 
 	//Insert item to inventory
 	if (!MEM_InformationMan.DlgTrade) { return; };
@@ -589,8 +589,6 @@ func void _eventTradeOnAccept__EnhancedTrading (var int dummyVariable) {
 
 //--- Get Item containers (oCItemContainer)
 
-	//Get item containers (oCItemContainer)
-
 	var int ptr;
 
 	//Get NPCs inventory
@@ -652,6 +650,8 @@ func void G1_EnhancedTrading_Init(){
 	if (!once) {
 		//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
 		//const int oCItemContainer__Draw_G2 = 7370416;
+
+		//I decided to change trading multiplier value every time container is drawn (because I want to have it updated immediately) not only on transfer
 
 		//0066768b
 		const int oCItemContainer__Draw_IsOpen_G1 = 6715019;
