@@ -408,15 +408,15 @@ func void Trade_MoveToContainerNpc (var int itmPtr, var int amount) {
 func void Trade_MoveToInventoryNpc (var int itmPtr, var int amount) {
 	var oCNpcInventory npcInventory;
 
-	var int npcsContainer;
+	var int npcContainer;
 
 	//Update buy/sell multipliers
 	if (!Trade_ValidateTransfer(itmPtr, TRADE_SECTION_LEFT_CONTAINER_G1)) {
 		return;
 	};
 
-	npcsContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
-	itmPtr = oCItemContainer_RemoveByPtr (npcsContainer, itmPtr, amount);
+	npcContainer = Hlp_Trade_GetContainerNpcContainer (); //oCItemContainer*
+	itmPtr = oCItemContainer_RemoveByPtr (npcContainer, itmPtr, amount);
 
 	//Insert item to inventory
 	if (!MEM_InformationMan.DlgTrade) { return; };
@@ -452,6 +452,12 @@ func void _eventTradeOnExit__EnhancedTrading (var int dummyVariable) {
 	Trade_SetPlayerContainerValue (0);
 
 	_TradeForceTransferAccept = 0;
+};
+
+func void _eventTradeTransferReset__EnhancedTrading (var int dummyVariable) {
+	//Reset values
+	Trade_SetNpcContainerValue (0);
+	Trade_SetPlayerContainerValue (0);
 };
 
 /*
@@ -583,8 +589,6 @@ func void _eventTradeOnAccept__EnhancedTrading (var int dummyVariable) {
 
 //--- Get Item containers (oCItemContainer)
 
-	//Get item containers (oCItemContainer)
-
 	var int ptr;
 
 	//Get NPCs inventory
@@ -639,12 +643,15 @@ func void G1_EnhancedTrading_Init(){
 	G1_TradeEvents_Init ();
 
 	TradeOnExitEvent_AddListener (_eventTradeOnExit__EnhancedTrading);
+	TradeTransferResetEvent_AddListener (_eventTradeTransferReset__EnhancedTrading);
 	TradeOnAcceptEvent_AddListener (_eventTradeOnAccept__EnhancedTrading);
 	TradeHandleEvent_AddListener (_eventTradeHandleEvent__EnhancedTrading);
 
 	if (!once) {
 		//0x007076B0 protected: virtual void __thiscall oCItemContainer::Draw(void)
 		//const int oCItemContainer__Draw_G2 = 7370416;
+
+		//I decided to change trading multiplier value every time container is drawn (because I want to have it updated immediately) not only on transfer
 
 		//0066768b
 		const int oCItemContainer__Draw_IsOpen_G1 = 6715019;
@@ -653,6 +660,24 @@ func void G1_EnhancedTrading_Init(){
 		const int oCItemContainer__Draw_IsOpen_G2 = 7370463;
 
 		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__Draw_IsOpen_G1, oCItemContainer__Draw_IsOpen_G2), MEMINT_SwitchG1G2(10, 6), "_hook_oCItemContainer_Draw__EnhancedTrading");
+
+		//Nuke engine functions for item transfer - we have to remove these otherwise SystemPack will override our trading multiplier value from SystemPack.ini [PARAMETERS.TRADE_VALUE_MULTIPLIER] in combination with [PARAMETERS.Gothic2_Control]
+
+		//0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
+		/*
+        00729b38 e8  f3  09       CALL       oCViewDialogTrade::OnTransferRight               int OnTransferRight(int param_1)
+                 00  00
+		*/
+		const int oCViewDialogTrade__HandleEvent_OnTransferRight_G1 = 7510840;
+		MEM_WriteNOP(oCViewDialogTrade__HandleEvent_OnTransferRight_G1, 5);
+
+		/*
+        00729b99 e8  12  07       CALL       oCViewDialogTrade::OnTransferLeft                int OnTransferLeft(int param_1)
+                 00  00
+		*/
+
+		const int oCViewDialogTrade__HandleEvent_OnTransferLeft_G1 = 7510937;
+		MEM_WriteNOP(oCViewDialogTrade__HandleEvent_OnTransferLeft_G1, 5);
 
 		once = 1;
 	};

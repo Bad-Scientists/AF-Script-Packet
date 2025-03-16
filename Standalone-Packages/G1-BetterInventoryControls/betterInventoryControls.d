@@ -158,7 +158,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	};
 
 	//Transfer items
-	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE)) {
+	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE) || (key == MOUSE_BUTTON_LEFT)) {
 
 		openInvType = Hlp_GetOpenInventoryType ();
 
@@ -181,7 +181,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 					};
 
 					//Left ctrl moves a single piece
-					if (key == KEY_LCONTROL) { amount = 1; };
+					if ((key == KEY_LCONTROL) || (key == MOUSE_BUTTON_LEFT)) { amount = 1; };
 
 					//Spacebar moves 10 pieces
 					if (key == KEY_SPACE) { amount = 10; };
@@ -619,7 +619,7 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	};
 };
 
-func void _eventDoTakeVob_SwitchCategory () {
+func void _eventDoTakeVob__SwitchCategory () {
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!Hlp_Is_oCNpc (ECX)) || (!Hlp_Is_oCItem (itemPtr))) { return; };
 
@@ -633,7 +633,7 @@ func void _eventDoTakeVob_SwitchCategory () {
 	};
 };
 
-func void _eventOpenInventory_SwitchToCategory () {
+func void _eventOpenInventory__SwitchToCategory () {
 	//Only if not in dialogue - otherwise this collides with EIM item preview feature
 	if (!InfoManager_HasFinished()) {
 		return;
@@ -664,8 +664,8 @@ func void G1_BetterInventoryControls_Init(){
 	DoDropVobEvent_AddListener (_eventDoDropVob__BetterInvControls);
 
 	G12_DoTakeVobEvent_Init ();
-	DoTakeVobEvent_AddListener (_eventDoTakeVob_SwitchCategory);
+	DoTakeVobEvent_AddListener (_eventDoTakeVob__SwitchCategory);
 
 	G12_OpenInventoryEvent_Init ();
-	OpenInventoryEvent_AddListener (_eventOpenInventory_SwitchToCategory);
+	OpenInventoryEvent_AddListener (_eventOpenInventory__SwitchToCategory);
 };

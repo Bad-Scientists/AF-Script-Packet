@@ -42,7 +42,7 @@
   * `goto npc <NpcName>` & `bring npc <NpcName>` --> `CC_GotoNpc_Init();`
       * `goto Npc <NpcName>` teleports player to Npc
       * `bring Npc <NpcName>` teleports Npc to player
-	  * `<NpcName<` is Npc name or global `C_Npc` variable which points to Npc
+	  * `<NpcName>` is Npc name or global `C_Npc` variable which points to Npc
 
   * `goto ZEN <ZenName> [StartVob]` --> `CC_GotoZEN_Init();`
       * triggers level change to specified zen and StartVob
@@ -54,9 +54,9 @@
 
     [![G1&2 Debugging](https://img.youtube.com/vi/aP23vubB6Mc/0.jpg)](https://www.youtube.com/watch?v=aP23vubB6Mc)
 
-  * `focus play ani <AniName>` & `focus play effect VFXName` --> `CC_FocusPlay_Init();`
-      * `focus play <Ani aniName>` plays specified animation on Npc in focus
-      * `focus play <VFXName>` plays specified effect on Npc in focus
+  * `focus play ani <AniName>` & `focus play effect <VFXName>` --> `CC_FocusPlay_Init();`
+      * `focus play ani <AniName>` plays specified animation on Npc in focus
+      * `focus play effect <VFXName>` plays specified vfx effect on Npc in focus
 
   * `puppetMaster` --> `CC_PuppetMaster_Init();`
       * allows you to change position & rotation of model nodes on Npc

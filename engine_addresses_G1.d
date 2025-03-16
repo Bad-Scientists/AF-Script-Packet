@@ -104,6 +104,9 @@ const int oCViewDialogTrade__OnAccept = 7514224;
 //0x0072AAB0 protected: void __fastcall oCViewDialogTrade::OnExit(void)
 const int oCViewDialogTrade__OnExit = 7514800;
 
+//0x007293F0 protected: void __fastcall oCViewDialogTrade::TransferReset(void)
+const int oCViewDialogTrade__TransferReset = 7508976;
+
 //0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
 const int oCViewDialogTrade__HandleEvent = 7510432;
 

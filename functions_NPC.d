@@ -206,21 +206,9 @@ func string Npc_GetRoutineBaseName (var int slfInstance)
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
 	rtnName = STR_Upper (rtnName);
 
-	//RTN_ rtnName _ID    
-    var string curRtnName; curRtnName = Npc_GetRoutineBaseName(slfInstance);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (rtnName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (rtnName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (rtnName, indexWildcard + 1, STR_Len (rtnName));
-
-		return + (STR_StartsWith (curRtnName, s1) && STR_EndsWith (curRtnName, s2));
-	};
-
-	return + (Hlp_StrCmp (rtnName, curRtnName));
+	//RTN_ rtnName _ID
+	var string curRtnName; curRtnName = Npc_GetRoutineBaseName(slfInstance);
+	return + (STR_WildMatch(rtnName, curRtnName));
 };
 
 func string NPC_GetStartAIStateName (var int slfInstance) {
@@ -760,7 +748,6 @@ func void NPC_TorchSwitchOn (var int slfInstance) {
 	var oCNpc slf; slf = Hlp_GetNPC(slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
 
-
 	var int ptr;
 
 	//Check fight mode!
@@ -1038,19 +1025,7 @@ func int NPC_IsInStateName (var int slfInstance, var string stateName) {
 	if (!STR_Len (stateName)) { return TRUE; };
 
 	stateName = STR_Upper (stateName);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (stateName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
-
-		return + (STR_StartsWith (slf.state_curState_name, s1) && STR_EndsWith (slf.state_curState_name, s2) && (slf.state_curState_valid));
-	};
-
-	return + (Hlp_StrCmp (slf.state_curState_name, stateName) && (slf.state_curState_valid));
+	return + (STR_WildMatch(slf.state_curState_name, stateName) && (slf.state_curState_valid));
 };
 
 func int NPC_WasInStateName (var int slfInstance, var string stateName) {
@@ -1063,19 +1038,7 @@ func int NPC_WasInStateName (var int slfInstance, var string stateName) {
 
 	var string lastStateName;
 	lastStateName = GetSymbolName (slf.state_lastAIState);
-
-	//We will allow single wild-card '*'
-	var int indexWildcard;
-	indexWildcard = STR_IndexOf (stateName, "*");
-
-	if (indexWildcard > -1) {
-		var string s1; s1 = mySTR_SubStr (stateName, 0, indexWildcard);
-		var string s2; s2 = mySTR_SubStr (stateName, indexWildcard + 1, STR_Len (stateName));
-
-		return + (STR_StartsWith (lastStateName, s1) && STR_EndsWith (lastStateName, s2) && (slf.state_curState_valid));
-	};
-
-	return + (Hlp_StrCmp (lastStateName, stateName));
+	return + (STR_WildMatch(lastStateName, stateName));
 };
 
 func int NPC_GetDailyRoutineFuncID (var int slfInstance) {
@@ -1251,6 +1214,8 @@ func void NPC_SetWalkMode (var int slfInstance, var int walkMode) {
 func int NPC_CanChangeOverlay (var int slfInstance) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 
+	if (Npc_GetBitfield(slf, oCNpc_bitfield0_movlock)) { return FALSE; };
+
 	//[C_BodyStateContains (hero, BS_JUMP)]
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_JUMP & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_FALL & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
@@ -1259,6 +1224,7 @@ func int NPC_CanChangeOverlay (var int slfInstance) {
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_SWIM & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_DIVE & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_LIE & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
+	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_SIT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_INVENTORY & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_MOBINTERACT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
 	if ((NPC_GetBodyState (slf) & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS)) == (BS_MOBINTERACT_INTERRUPT & (BS_MAX | BS_FLAG_INTERRUPTABLE | BS_FLAG_FREEHANDS))) { return FALSE; };
@@ -1523,6 +1489,7 @@ func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
 		if (index == -5) { stateName = "ZS_FADEAWAY"; };
 		if (index == -6) { stateName = "ZS_FOLLOW"; };
 
+		state.curState_name = stateName;
 		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
 		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
 	};
@@ -1534,6 +1501,14 @@ func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
  */
 func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	var int index; index = MEM_FindParserSymbol (stateName);
+
+	//Special logic for by engine recognized ZS states
+	if (Hlp_StrCmp(stateName, "ZS_ANSWER")) { index = -2; } else
+	if (Hlp_StrCmp(stateName, "ZS_DEAD")) { index = -3; } else
+	if (Hlp_StrCmp(stateName, "ZS_UNCONSCIOUS")) { index = -4; } else
+	if (Hlp_StrCmp(stateName, "ZS_FADEAWAY")) { index = -5; } else
+	if (Hlp_StrCmp(stateName, "ZS_FOLLOW")) { index = -6; };
+
 	Npc_SetAIState_ByIndex(slfInstance, index);
 };
 

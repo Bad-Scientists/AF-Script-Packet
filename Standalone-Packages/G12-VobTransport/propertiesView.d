@@ -42,6 +42,7 @@ func void DisplayProperties__VobTransport () {
 
 		//lastVobTPtr = vobTransportVobPtr;		//zCObject
 
+		var string s;
 		var string s_vtbl; s_vtbl = STR_EMPTY;
 		var string s_objectName; s_objectName = STR_EMPTY;
 		var string s_visualName; s_visualName = STR_EMPTY;
@@ -307,98 +308,6 @@ func void DisplayProperties__VobTransport () {
 		//Default - white color
 		var int titleColor; titleColor = RGBA (255, 255, 255, 255);
 
-		//Properties
-		var int stringBuilder; stringBuilder = SB_New();
-
-		if (vobTransportMode == vobTransportMode_SelectVob) {
-			s_Title = vobTransportView_TitleSelection;
-
-			SB (vobTransportView_InstructionMove);
-			SB (Print_LineSeperator);
-
-			SB (vobTransportView_InstructionClone);
-			SB (Print_LineSeperator);
-
-			SB (vobTransportView_InstructionTransform);
-			SB (Print_LineSeperator);
-
-			//-->
-			//These instructions are pretty much pointless - everyone knows this :)
-			//SB (vobTransportView_InstructionDelete);
-			//SB (Print_LineSeperator);
-
-			//SB (vobTransportView_InstructionCancel);
-			//SB (Print_LineSeperator);
-			//<--
-
-			//Will be displayed only for items (further below)
-			//SB (vobTransportView_InstructionDropItem);
-			//SB (Print_LineSeperator);
-		};
-
-		if (vobTransportMode == vobTransportMode_Movement) {
-			s_Title = vobTransportView_TitleMovement;
-
-			SB (vobTransportView_InstructionConfirm);
-			SB (Print_LineSeperator);
-
-			SB (vobTransportView_InstructionTransform);
-			SB (Print_LineSeperator);
-
-			//Align to surface only in case that elevation mode is off ...
-			if (vobTransportAlignObject == vobTransportAlignObject_Dont) {
-				SB (vobTransportView_InstructionDontAlign);
-				SB (Print_LineSeperator);
-			} else
-			if (vobTransportAlignObject == vobTransportAlignObject_InFront) {
-				SB (vobTransportView_InstructionAlignInFront);
-				SB (Print_LineSeperator);
-			} else
-			if (vobTransportAlignObject == vobTransportAlignObject_SetToFloor) {
-				SB (vobTransportView_InstructionAlignToFloor);
-				SB (Print_LineSeperator);
-			};
-		};
-
-		if (vobTransportMode == vobTransportMode_Transform) {
-			s_Title = vobTransportView_TitleTransform;
-
-			var string s;
-			s = ConcatStrings (vobTransportView_InstructionRotateXYZ, " (");
-			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-				s = ConcatStrings (s, "X");
-			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-				s = ConcatStrings (s, "Y");
-			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-				s = ConcatStrings (s, "Z");
-			};
-			s = ConcatStrings (s, ")");
-
-			SB (s);
-			SB (Print_LineSeperator);
-
-			SB (vobTransportView_InstructionSpeed);
-			SBi (vobTransportMovementSpeed);
-			SB (Print_LineSeperator);
-
-			//X axis
-			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
-				titleColor = RGBA (255, 128, 000, 255);
-			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
-				titleColor = RGBA (255, 255, 255, 255);
-			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
-				titleColor = RGBA (255, 255, 000, 255);
-			};
-
-			SetFontColor (titleColor);
-		};
-
-		if ((vobTransportMode == vobTransportMode_SelectVob) || (vobTransportMode == vobTransportMode_Movement)) {
-			if (Hlp_Is_oCItem (vobTransportVobPtr)) {
-				SB (vobTransportView_InstructionDropItem);
-				SB (Print_LineSeperator);
-			};
-		};
 
 		//Create
 		if (!vobTransportPropertiesViewVisible) {
@@ -474,6 +383,103 @@ func void DisplayProperties__VobTransport () {
 		//View_SetFontColor (hVobTransportPropertiesViewHeader, titleColor);
 		View_SetTextMarginAndFontColor (hVobTransportPropertiesViewHeader, s_Title, titleColor, spaceWidth * 2);
 
+		//Properties
+		var int sbb; sbb = SB_Get();
+		const int sb0 = 0;
+		if (!sb0) {
+			sb0 = SB_New();
+		};
+
+		SB_Use(sb0);
+		if (vobTransportMode == vobTransportMode_SelectVob) {
+			s_Title = vobTransportView_TitleSelection;
+
+			SB (vobTransportView_InstructionMove);
+			SB (Print_LineSeperator);
+
+			SB (vobTransportView_InstructionClone);
+			SB (Print_LineSeperator);
+
+			SB (vobTransportView_InstructionTransform);
+			SB (Print_LineSeperator);
+
+			//-->
+			//These instructions are pretty much pointless - everyone knows this :)
+			//SB (vobTransportView_InstructionDelete);
+			//SB (Print_LineSeperator);
+
+			//SB (vobTransportView_InstructionCancel);
+			//SB (Print_LineSeperator);
+			//<--
+
+			//Will be displayed only for items (further below)
+			//SB (vobTransportView_InstructionDropItem);
+			//SB (Print_LineSeperator);
+		};
+
+		if (vobTransportMode == vobTransportMode_Movement) {
+			s_Title = vobTransportView_TitleMovement;
+
+			SB (vobTransportView_InstructionConfirm);
+			SB (Print_LineSeperator);
+
+			SB (vobTransportView_InstructionTransform);
+			SB (Print_LineSeperator);
+
+			//Align to surface only in case that elevation mode is off ...
+			if (vobTransportAlignObject == vobTransportAlignObject_Dont) {
+				SB (vobTransportView_InstructionDontAlign);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportAlignObject == vobTransportAlignObject_InFront) {
+				SB (vobTransportView_InstructionAlignInFront);
+				SB (Print_LineSeperator);
+			} else
+			if (vobTransportAlignObject == vobTransportAlignObject_SetToFloor) {
+				SB (vobTransportView_InstructionAlignToFloor);
+				SB (Print_LineSeperator);
+			};
+		};
+
+		if (vobTransportMode == vobTransportMode_Transform) {
+			s_Title = vobTransportView_TitleTransform;
+
+			s = ConcatStrings (vobTransportView_InstructionRotateXYZ, " (");
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
+				s = ConcatStrings (s, "X");
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				s = ConcatStrings (s, "Y");
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				s = ConcatStrings (s, "Z");
+			};
+			s = ConcatStrings (s, ")");
+
+			SB (s);
+			SB (Print_LineSeperator);
+
+			SB (vobTransportView_InstructionSpeed);
+			SBi (vobTransportMovementSpeed);
+			SB (Print_LineSeperator);
+
+			//X axis
+			if (vobTransportTransformationMode == vobTransportTransformation_RotX) {
+				titleColor = RGBA (255, 128, 000, 255);
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotY) {
+				titleColor = RGBA (255, 255, 255, 255);
+			} else if (vobTransportTransformationMode == vobTransportTransformation_RotZ) {
+				titleColor = RGBA (255, 255, 000, 255);
+			};
+
+			SetFontColor (titleColor);
+		};
+
+		if ((vobTransportMode == vobTransportMode_SelectVob) || (vobTransportMode == vobTransportMode_Movement)) {
+			if (Hlp_Is_oCItem (vobTransportVobPtr)) {
+				SB (vobTransportView_InstructionDropItem);
+				SB (Print_LineSeperator);
+			};
+		};
+
 		SB (Print_LineSeperator);
 		SB (Print_LineSeperator);
 		SB (s_vtbl);
@@ -537,9 +543,11 @@ func void DisplayProperties__VobTransport () {
 			SB (Print_LineSeperator);
 		};
 
-		View_SetTextMargin (hVobTransportPropertiesView, SB_ToString (), spaceWidth * 2);
+		s = SB_ToString();
+		SB_Clear();
+		SB_Use(sbb);
 
-		SB_Destroy();
+		View_SetTextMargin (hVobTransportPropertiesView, s, spaceWidth * 2);
 
 	} else {
 		if (vobTransportPropertiesViewVisible) {

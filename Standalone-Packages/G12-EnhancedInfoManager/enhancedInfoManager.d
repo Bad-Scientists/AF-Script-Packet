@@ -168,7 +168,7 @@ class zEIM {
 	var int dialogColor[EIM_DIALOG_MAX];
 	var int dialogColorSelected[EIM_DIALOG_MAX];
 
-	var int dialogDisabled[EIM_DIALOG_MAX]; //track which dialogues are disabledd
+	var int dialogDisabled[EIM_DIALOG_MAX]; //track which dialogues are disabled
 	//1 - disabled
 	//2 - disabled and too long
 
@@ -178,6 +178,10 @@ class zEIM {
 	var int wasUpdated;
 
 	var int answerMode;
+
+	var int isAnswer;
+
+	var int isSpinner;
 
 	var int displayAnswerIndicator;
 	var int displaySpinnerIndicator;
@@ -324,7 +328,8 @@ func void EIM_ParseDescription(var int strPtr) {
 			j = i - 1;
 			while(j >= 0);
 				b = MEM_ReadInt(buf + j) & 255;
-				if ((b == 32) || (b == 126)) {
+				//Separators: space, brackets, ~
+				if ((b == 32) || (b == 40) || (b == 41) || (b == 126)) {
 					j += 1;
 					break;
 				};
@@ -946,6 +951,17 @@ func void EIM_Reset () {
 	eim.autoConfirm = FALSE;
 };
 
+func void EIM_ActiveSpinnerSetBoundaries (var int min, var int max, var int pageSize) {
+	InfoManagerSpinnerPageSize = pageSize;
+
+	InfoManagerSpinnerValueMin = min;
+	InfoManagerSpinnerValueMax = max;
+
+	//Update InfoManagerSpinnerValue
+	if (InfoManagerSpinnerValue < min) { InfoManagerSpinnerValue = min; };
+	if (InfoManagerSpinnerValue > max) { InfoManagerSpinnerValue = max; };
+};
+
 func int EIM_GetInfoPtr (var int index) {
 	if ((index < 0) || (index >= eim.diaInstancePtrCount)) {
 		return 0;
@@ -1186,7 +1202,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 
 		//G2A tweak - dialog confirmation with SPACE
 		//Additionally we will allow confirmation via numpad enter
-		if (!eim.displayAnswerIndicator) {
+		if (!eim.isAnswer) {
 			if ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; update = TRUE; };
 		} else {
 			if (!eim.answerMode)
@@ -1196,7 +1212,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 		//-- Answer
 
 		//eim.displayAnswerIndicator is set by _hook_oCInformationManager_Update_EnhancedInfoManager
-		if (eim.displayAnswerIndicator) {
+		if (eim.isAnswer) {
 			//cancel answer mode
 			if (eim.answerMode) {
 				if (key == KEY_ESCAPE) {
@@ -1254,7 +1270,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 
 		//-- Spinner
 
-		if (eim.displaySpinnerIndicator) {
+		if (eim.isSpinner) {
 			var int lastSpinnerValue; lastSpinnerValue = InfoManagerSpinnerValue;
 
 			//Default value if not set
@@ -1762,7 +1778,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 		if (eim.infosCollected) || (eim.choicesCollected)
 		{
 			if (eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_All)
-			|| ((eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (eim.displaySpinnerIndicator))
+			|| ((eimDefaults.rememberSelectedChoice == cIM_RememberSelectedChoice_Spinners) && (eim.isSpinner))
 			{
 				if (eim.lastChoiceSelectedMode != dlgChoice.ChoiceSelected) {
 					if (eim.lastChoiceSelectedMode < dlgChoice.choices) {
@@ -1793,6 +1809,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 		eim.displayAnswerIndicator = FALSE;
 		eim.displaySpinnerIndicator = FALSE;
 		eim.displayItemPreview = FALSE;
+
+		eim.isAnswer = FALSE;
+		eim.isSpinner = FALSE;
 
 		//Auto-scrolling for disabled dialog choices
 		InfoManager_SkipDisabledDialogChoices (-1);
@@ -2133,9 +2152,16 @@ func void _hook_oCInformationManager_Update_EIM () {
 
 							//Spinner
 							if (eimDescription.isSpinner) {
-								InfoManagerSpinnerID = eimDescription.spinnerID;
 								eim.displaySpinnerIndicator = TRUE;
 							};
+						};
+
+						eim.isAnswer = eimDescription.isAnswer;
+						eim.isSpinner = eimDescription.isSpinner;
+
+						//Spinner ID update
+						if (eimDescription.isSpinner) {
+							InfoManagerSpinnerID = eimDescription.spinnerID;
 						};
 
 						//Update font ptr

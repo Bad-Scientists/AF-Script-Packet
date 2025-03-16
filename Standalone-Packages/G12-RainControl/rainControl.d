@@ -570,9 +570,13 @@ func void _eventGameState__RainControl (var int state) {
 };
 
 func void G12_RainControl_Init () {
-	//Add listener for loaded game
+	//Add listener for game state
 	if (_LeGo_Flags & LeGo_Gamestate) {
 		Gamestate_AddListener (_eventGameState__RainControl);
+	} else {
+		zSpy_Info("G12_RainControl_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
+	};
+
 	};
 
 	const int once = 0;

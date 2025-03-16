@@ -312,6 +312,8 @@ func void G12_TorchHotKey_Init () {
 	//Add listener for saving/world change/loaded game
 	if (_LeGo_Flags & LeGo_Gamestate) {
 		Gamestate_AddListener (_eventGameState__TorchHotKey);
+	} else {
+		zSpy_Info("G12_TorchHotKey_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
 	};
 
 	//-- Load API values / init default values

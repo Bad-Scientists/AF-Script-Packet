@@ -1273,7 +1273,7 @@ func void _AI_CreateItemInSlot (var string slotName, var int itemInstanceID) {
 	var int itemPtr; itemPtr = InsertItem (itemName, 1, _@ (trafo));
 
 	var oCNpc slf; slf = Hlp_GetNpc(self);
-	if (slf.interactItem) {
+	if (slf.interactMob) {
 		oCNpc_SetInteractItem(self, itemPtr);
 	};
 
