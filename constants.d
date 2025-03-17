@@ -50,6 +50,63 @@ const string ANINAME_S_HEASHOOT = "S_HEASHOOT";
 const string ANINAME_T_TELEPORT_2_STAND = "T_TELEPORT_2_STAND";
 const string ANINAME_T_HEASHOOT_2_STAND = "T_HEASHOOT_2_STAND";
 
+//zCOption dirs
+
+//G1
+const int DIR_G1_SYSTEM = 0;
+const int DIR_G1_WEB = 1;
+const int DIR_G1_SAVEGAMES = 2;
+const int DIR_G1_DATA = 3;
+const int DIR_G1_ANIMS = 4;
+const int DIR_G1_CUTSCENES = 5;
+const int DIR_G1_MESHES = 6;
+const int DIR_G1_SCRIPTS = 7;
+const int DIR_G1_SOUND = 8;
+const int DIR_G1_VIDEO = 9;
+const int DIR_G1_MUSIC = 10;
+const int DIR_G1_TEX = 11;
+const int DIR_G1_TEX_DESKTOP = 12;
+const int DIR_G1_WORLD = 13;
+const int DIR_G1_PRESETS = 14;
+const int DIR_G1_TOOLS_DATA = 15;
+const int DIR_G1_COMPILED_ANIMS = 16;
+const int DIR_G1_COMPILED_MESHES = 17;
+const int DIR_G1_COMPILED_SCRIPTS = 18;
+const int DIR_G1_COMPILED_TEXTURES = 19;
+const int DIR_G1_TOOLS_CONFIG = 20;
+const int DIR_G1_SUBDIR_INTERN = 21;
+const int DIR_G1_NUM_PATHS = 22;
+const int DIR_G1_ROOT = 23;
+const int DIR_G1_EXECUTABLE = 24;
+
+//G2 NoTR
+const int DIR_G2_SYSTEM = 0;
+const int DIR_G2_WEB = 1;
+const int DIR_G2_SAVEGAMES = 2;
+const int DIR_G2_DATA = 3;
+const int DIR_G2_ANIMS = 4;
+const int DIR_G2_CUTSCENES = 5;
+const int DIR_G2_OUTPUTUNITS = 6;
+const int DIR_G2_MESHES = 7;
+const int DIR_G2_SCRIPTS = 8;
+const int DIR_G2_SOUND = 9;
+const int DIR_G2_VIDEO = 10;
+const int DIR_G2_MUSIC = 11;
+const int DIR_G2_TEX = 12;
+const int DIR_G2_TEX_DESKTOP = 13;
+const int DIR_G2_WORLD = 14;
+const int DIR_G2_PRESETS = 15;
+const int DIR_G2_TOOLS_DATA = 16;
+const int DIR_G2_COMPILED_ANIMS = 17;
+const int DIR_G2_COMPILED_MESHES = 18;
+const int DIR_G2_COMPILED_SCRIPTS = 19;
+const int DIR_G2_COMPILED_TEXTURES = 20;
+const int DIR_G2_TOOLS_CONFIG = 21;
+const int DIR_G2_SUBDIR_INTERN = 22;
+const int DIR_G2_NUM_PATHS = 23;
+const int DIR_G2_ROOT = 24;
+const int DIR_G2_EXECUTABLE = 25;
+
 //fight mode
 const int NPC_WEAPON_NONE = 0;
 const int NPC_WEAPON_FIST = 1;

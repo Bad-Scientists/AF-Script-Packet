@@ -31,6 +31,7 @@ var int RainControl_StopRainOverride;
 var int RainControl_WeatherType;
 var int RainControl_WeatherOverride;
 
+var int RainControl_WeatherTypeFirstInit;
 /*
  *	Engine function that sets rain weight and duration (not yet compatible, hook _hook_zSkyCtrlOtdr_RenderSkyPre__RainControl overrides values without taking into consideration this function)
  */
@@ -577,6 +578,10 @@ func void G12_RainControl_Init () {
 		zSpy_Info("G12_RainControl_Init: warning this feature required LeGo_Gamestate flag to be enabled!");
 	};
 
+	//One-time weather setup (set to default rain)
+	if (!RainControl_WeatherTypeFirstInit) {
+		RainControl_WeatherType = zTWEATHER_RAIN;
+		RainControl_WeatherTypeFirstInit = TRUE;
 	};
 
 	const int once = 0;

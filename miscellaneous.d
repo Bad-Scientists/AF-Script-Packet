@@ -1087,6 +1087,345 @@ func void Wld_EnableNpc (var int slfInstance) {
 };
 
 /*
+ *	Wld_DespawnNpc
+ */
+func void Wld_DespawnNpc(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	zSpy_Info(ConcatStrings("Wld_DespawnNpc: despawning: ", GetSymbolName(Hlp_GetInstanceID(slf))));
+
+	slf._zCVob_groundPoly = 0;
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	//Remove as enemy... if any Npc has this npc as enemy then game would crash (there is no safety check in engine)
+	repeat(i, MEM_World.activeVobList_numInArray); var int i;
+		var int ptr; ptr = MEM_ReadIntArray(MEM_World.activeVobList_array, i);
+
+		if (Hlp_Is_oCNpc (ptr)) {
+			var oCNpc npc; npc = _^ (ptr);
+			if (Hlp_IsValidNpc(npc)) {
+				if (npc.enemy == slfPtr) {
+					//Remove enemy
+					oCNpc_SetEnemy(npc, 0);
+
+					//Remove hitTarget
+					if (npc.aniCtrl) {
+						var oCAniCtrl_Human aniCtrl; aniCtrl = _^ (npc.aniCtrl);
+						aniCtrl.hitTarget = 0;
+					};
+				};
+			};
+		};
+	end;
+
+	//Stop all effects
+	//var int retVal; retVal = Wld_StopEffect_Ext (STR_EMPTY, 0, slf, TRUE);
+
+	//Remove horcruxes!
+	var int vobListPtr; vobListPtr = MEM_ArrayCreate();
+
+	if (SearchVobsByClass("zCVob", vobListPtr)) {
+		var zCArray vobList; vobList = _^(vobListPtr);
+
+		repeat(i, vobList.numInArray);
+			var int vobPtr; vobPtr = MEM_ArrayRead(vobListPtr, i);
+
+			if (vobPtr) {
+				var zCVob vob; vob = _^(vobPtr);
+
+				if (Hlp_Is_oCAIVobMove(vob.callback_ai)) {
+					var oCAIVobMove ai; ai = _^(vob.callback_ai);
+
+					if (ai.owner == slfPtr) {
+						zCVob_SetAI(vobPtr, 0);
+					};
+				};
+			};
+		end;
+	};
+
+	MEM_ArrayFree(vobListPtr);
+
+	//Remove routines
+	oCRtnManager_RemoveRoutine(slfPtr);
+
+	//Remove from players focus
+	var oCNpc her; her = Hlp_GetNpc(hero);
+	if (her.focus_vob == slfPtr) {
+		oCNpc_SetFocusVob(her, 0);
+	};
+
+	//Remove focus_vob
+	//oCNpc_SetFocusVob(slf, 0);
+
+	//Clear voblist
+	//oCNpc_ClearVobList(slf);
+
+	//Remove enemy reference
+	oCNpc_SetEnemy(slf, 0);
+
+	//Clear event manager
+	oCNpc_ClearEM(slf);
+
+	//Disable npc (ClearVobList, AvoidShrink, Interrupt, ClearPerceptionLists(ClearFocusVob, ClearVobList), SetSleeping true, state.CloseCutscenes,
+	oCNpc_Disable(slf);
+
+	//Delete npc
+	oCSpawnManager_DeleteNpc(slfPtr);
+};
+
+/*
+ *	Wld_ClearNpcBeforeExport
+ *	 - function removes redundant information from Npc before exporting to .ZEN file
+ */
+func void Wld_ClearNpcBeforeExport(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	//Clear event manager
+	//oCNpc_SetFocusVob(slf, 0);
+
+	//Clear voblist
+	//oCNpc_ClearVobList(slf);
+
+	//Remove enemy reference
+	oCNpc_SetEnemy(slf, 0);
+
+	//Clear event manager
+	oCNpc_ClearEM(slf);
+
+	//Disable npc (ClearVobList, AvoidShrink, Interrupt, ClearPerceptionLists(ClearFocusVob, ClearVobList), SetSleeping true, state.CloseCutscenes,
+	oCNpc_Disable(slf);
+};
+
+/*
+ *	Wld_ExportVobPtr
+ *	 - function exports vob to .ZEN file
+ *	 - appendMode allows you to append objects into single file
+ */
+func void Wld_ExportVobPtr(var int vobPtr, var string fileName, var int appendMode) {
+	if (!vobPtr) { return; };
+
+	var int arrPtr; arrPtr = 0;
+
+	zSpy_Info("Wld_ExportVobPtr");
+
+	var int filePtr; filePtr = zFILE_FILE_GetByFilePath(fileName);
+	if (zFILE_FILE_Exists(filePtr)) {
+		//Load all objects
+		if (appendMode) {
+			//Open for reading
+			if (zFILE_FILE_Open(filePtr, 0) != 0) {
+				zSpy_Info("   fatal: file could not be open!");
+				zSpy_Info(fileName);
+				zFILE_FILE_Release(filePtr);
+				return;
+			};
+
+			//Create array
+			arrPtr = MEM_ArrayCreate();
+
+			//Read objects and insert them into an array
+			zSpy_Info("   reading array.");
+			var int archR; archR = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
+			var int eoa; eoa = zCArchiverGeneric_EndOfArchive(archR);
+
+			if (eoa) {
+				zSpy_Info("   archive is empty.");
+			} else {
+				while(!eoa);
+					var int vobPtrR; vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
+					MEM_ArrayInsert(arrPtr, vobPtrR);
+					eoa = zCArchiverGeneric_EndOfArchive(archR);
+				end;
+			};
+
+			//Close archiver
+			zCArchiverGeneric_Close(arch);
+			if (zFILE_FILE_Close(filePtr) != 0) {
+				zSpy_Info("   fatal: file couldn't be closed.");
+				zSpy_Info(fileName);
+				if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+				return;
+			};
+		};
+
+		//Delete file
+		if (zFILE_FILE_FileDelete(filePtr)) {
+			zSpy_Info("   deleting file.");
+			zSpy_Info(fileName);
+		};
+	};
+
+	//Create new file
+	if (zFILE_FILE_Create(filePtr) != 0) {
+		zSpy_Info("   fatal: file couldn't be created.");
+		zSpy_Info(fileName);
+		zFILE_FILE_Release(filePtr);
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return;
+	};
+
+	//Create archiver for writing
+	var int arch; arch = zCArchiverFactory_CreateArchiverWrite(filePtr, zARC_MODE_ASCII, 1, zARC_FLAG_WRITE_HEADER);
+
+	zSpy_Info("   writing objects:");
+
+	var int count; count = 0;
+
+	//Write array first
+	if (arrPtr) {
+		var zCArray arr; arr = _^(arrPtr);
+
+		repeat(i, arr.numInArray); var int i;
+			vobPtrR = MEM_ArrayRead(arrPtr, i);
+			zCArchiverGeneric_WriteObject(arch, vobPtrR);
+			count += 1;
+		end;
+
+		MEM_ArrayFree(arrPtr); arrPtr = 0;
+	};
+
+	//Write new object
+	zCArchiverGeneric_WriteObject(arch, vobPtr);
+	zCArchiverGeneric_Close(arch);
+	zFILE_FILE_Release(filePtr);
+
+	count += 1;
+	zSpy_Info(ConcatStrings("   ", IntToString(count)));
+
+	zSpy_Info("   exported.");
+	zSpy_Info(fileName);
+};
+
+/*
+ *	Wld_ImportVobPtr
+ *	 - function imports vobs from .ZEN file
+ *	 - function creates array and returns in the array all loaded vobs
+ */
+func int Wld_ImportVobPtr(var string fileName) {
+	zSpy_Info("Wld_ImportVobPtr");
+
+	var int arrPtr; arrPtr = MEM_ArrayCreate();
+
+	var int filePtr;
+
+	if (Files_LookAtVDFS) {
+		filePtr = zFILE_VDFS_GetByFilePath(fileName);
+	} else {
+		filePtr = zFILE_FILE_GetByFilePath(fileName);
+	};
+
+	var int fileExists;
+
+	if (Files_LookAtVDFS) {
+		fileExists = zFILE_VDFS_Exists(filePtr);
+	} else {
+		fileExists = zFILE_FILE_Exists(filePtr);
+	};
+
+	if (!fileExists) {
+		zSpy_Info("   fatal: file does not exist!");
+		zSpy_Info(fileName);
+
+		if (Files_LookAtVDFS) {
+			zFILE_VDFS_Release(filePtr);
+		} else {
+			zFILE_FILE_Release(filePtr);
+		};
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return 0;
+	};
+
+	var int fileOpened;
+
+	if (Files_LookAtVDFS) {
+		//Read-only mode
+		fileOpened = zFILE_VDFS_Open(filePtr, 0);
+	} else {
+		fileOpened = zFILE_FILE_Open(filePtr, 0);
+	};
+
+	//Non-zero is error
+	if (fileOpened != 0) {
+		zSpy_Info("   fatal: file could not be open!");
+		zSpy_Info(fileName);
+
+		if (Files_LookAtVDFS) {
+			zFILE_VDFS_Release(filePtr);
+		} else {
+			zFILE_FILE_Release(filePtr);
+		};
+
+		if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+		return 0;
+	};
+
+	var int arch; arch = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
+	var int eoa; eoa = zCArchiverGeneric_EndOfArchive(arch);
+
+	var int count; count = 0;
+
+	if (eoa) {
+		zSpy_Info("   archive is empty.");
+	} else {
+		zSpy_Info("   reading objects:");
+		while(!eoa);
+			var int vobPtr; vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
+			//First set world position otherwise zCVob::BeginMovement crashes when vob is added to the world
+			var int retVal;
+			var int pos[3];
+
+			var int trafo[16];
+			zCVob_GetTrafo(vobPtr, _@(trafo));
+			zCVob_SetTrafo(vobPtr, _@(trafo));
+
+			count += 1;
+			zSpy_Info(ConcatStrings("   enabling vob: ", IntToString(count)));
+
+			oCWorld_EnableVob(vobPtr, 0);
+			MEM_ArrayInsert(arrPtr, vobPtr);
+
+			eoa = zCArchiverGeneric_EndOfArchive(arch);
+		end;
+
+		zSpy_Info(ConcatStrings("   total: ", IntToString(count)));
+	};
+
+	zCArchiverGeneric_Close(arch);
+
+	if (Files_LookAtVDFS) {
+		zFILE_VDFS_Release(filePtr);
+	} else {
+		zFILE_FILE_Release(filePtr);
+	};
+
+	zSpy_Info("   done.");
+	zSpy_Info(fileName);
+
+	return + arrPtr;
+};
+
+/*
+ *	Wld_ImportVobPtr_VDFS
+ *	 - same as Wld_ImportVobPtr, but looks at VDF files
+ */
+func int Wld_ImportVobPtr_VDFS(var string fileName) {
+	var int arrPtr;
+
+	var int b; b = Files_LookAtVDFS;
+	Files_LookAtVDFS = TRUE;
+	arrPtr = Wld_ImportVobPtr(fileName);
+	Files_LookAtVDFS = b;
+
+	return + arrPtr;
+};
+
+/*
  *	NPC_TeleportToNpc
  *	 - function teleports one Npc to another Npc
  */
