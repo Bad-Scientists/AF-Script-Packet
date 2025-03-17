@@ -87,7 +87,7 @@ func int zFILE_FILE_GetByFilePath(var string filePath) {
 	var int ptr; ptr = MEM_Alloc(sizeof_zFILE_FILE);
 
 	CALL_zStringPtrParam(filePath);
-	CALL__thiscall(ptr, MEMINT_SwitchG1G2(zFILE_FILE__zFILE_FILE_G1, zFILE_FILE__zFILE_FILE_G1));
+	CALL__thiscall(ptr, MEMINT_SwitchG1G2(zFILE_FILE__zFILE_FILE_G1, zFILE_FILE__zFILE_FILE_G2));
 
 	return + ptr;
 };
@@ -277,7 +277,7 @@ func int zFILE_VDFS_GetByFilePath(var string filePath) {
 	var int ptr; ptr = MEM_Alloc(sizeof_zFILE_VDFS);
 
 	CALL_zStringPtrParam(filePath);
-	CALL__thiscall(ptr, MEMINT_SwitchG1G2(zFILE_VDFS__zFILE_VDFS_G1, zFILE_VDFS__zFILE_VDFS_G1));
+	CALL__thiscall(ptr, MEMINT_SwitchG1G2(zFILE_VDFS__zFILE_VDFS_G1, zFILE_VDFS__zFILE_VDFS_G2));
 
 	return + ptr;
 };
