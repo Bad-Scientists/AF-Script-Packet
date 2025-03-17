@@ -76,6 +76,13 @@
 
    * Note: string descRot and descPos can be converted back to trafo using functions: `Vob_SetByDescriptionRot` and `Vob_SetByDescriptionPos`
 
+  * `focus export` & `focus import` --> `CC_Focus_ExportImport_Init();`
+      * `focus export` exports object in focus to `.ZEN` file `_work\Data\Worlds\EXPORTED_VOBS.ZEN`
+      * `focus import` imports object from `.ZEN` file `_work\Data\Worlds\EXPORTED_VOBS.ZEN` to the world
+
+    [![G1&2 Debugging](https://img.youtube.com/vi/kwfGfZ1mM8Q/0.jpg)](https://www.youtube.com/watch?v=kwfGfZ1mM8Q)
+
+
 ### Features:
 
   * Console history --> `G12_ConsoleHistory_Init();`
