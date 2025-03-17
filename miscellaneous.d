@@ -1230,12 +1230,17 @@ func void Wld_ExportVobPtr(var int vobPtr, var string fileName, var int appendMo
 			//Read objects and insert them into an array
 			zSpy_Info("   reading array.");
 			var int archR; archR = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
-			var int vobPtrR; vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
+			var int eoa; eoa = zCArchiverGeneric_EndOfArchive(archR);
 
-			while(vobPtrR);
-				MEM_ArrayInsert(arrPtr, vobPtrR);
-				vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
-			end;
+			if (eoa) {
+				zSpy_Info("   archive is empty.");
+			} else {
+				while(!eoa);
+					var int vobPtrR; vobPtrR = zCArchiverGeneric_ReadObject(archR, 0);
+					MEM_ArrayInsert(arrPtr, vobPtrR);
+					eoa = zCArchiverGeneric_EndOfArchive(archR);
+				end;
+			};
 
 			//Close archiver
 			zCArchiverGeneric_Close(arch);
@@ -1361,27 +1366,35 @@ func int Wld_ImportVobPtr(var string fileName) {
 	};
 
 	var int arch; arch = zCArchiverFactory_CreateArchiverRead(filePtr, zARC_MODE_ASCII);
-	var int vobPtr; vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
+	var int eoa; eoa = zCArchiverGeneric_EndOfArchive(arch);
 
 	var int count; count = 0;
 
-	zSpy_Info("   reading objects:");
-	while(vobPtr);
-		//First set world position otherwise zCVob::BeginMovement crashes when vob is added to the world
-		var int retVal;
-		var int pos[3];
+	if (eoa) {
+		zSpy_Info("   archive is empty.");
+	} else {
+		zSpy_Info("   reading objects:");
+		while(!eoa);
+			var int vobPtr; vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
+			//First set world position otherwise zCVob::BeginMovement crashes when vob is added to the world
+			var int retVal;
+			var int pos[3];
 
-		var int trafo[16];
-		zCVob_GetTrafo(vobPtr, _@(trafo));
-		zCVob_SetTrafo(vobPtr, _@(trafo));
+			var int trafo[16];
+			zCVob_GetTrafo(vobPtr, _@(trafo));
+			zCVob_SetTrafo(vobPtr, _@(trafo));
 
-		oCWorld_EnableVob(vobPtr, 0);
+			count += 1;
+			zSpy_Info(ConcatStrings("   enabling vob: ", IntToString(count)));
 
-		vobPtr = zCArchiverGeneric_ReadObject(arch, 0);
-		count += 1;
-	end;
+			oCWorld_EnableVob(vobPtr, 0);
+			MEM_ArrayInsert(arrPtr, vobPtr);
 
-	zSpy_Info(ConcatStrings("   ", IntToString(count)));
+			eoa = zCArchiverGeneric_EndOfArchive(arch);
+		end;
+
+		zSpy_Info(ConcatStrings("   total: ", IntToString(count)));
+	};
 
 	zCArchiverGeneric_Close(arch);
 
@@ -1391,7 +1404,7 @@ func int Wld_ImportVobPtr(var string fileName) {
 		zFILE_FILE_Release(filePtr);
 	};
 
-	zSpy_Info("   imported.");
+	zSpy_Info("   done.");
 	zSpy_Info(fileName);
 
 	return + arrPtr;

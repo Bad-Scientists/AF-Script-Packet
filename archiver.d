@@ -175,6 +175,33 @@ func void zCArchiverGeneric_WriteObject(var int archiverPtr, var int objectPtr)
 };
 
 /*
+ *	zCArchiverGeneric_EndOfArchive
+ */
+func int zCArchiverGeneric_EndOfArchive(var int archiverPtr)
+{
+	//0x00512200 public: virtual int __fastcall zCArchiverGeneric::EndOfArchive(void)
+	const int zCArchiverGeneric__EndOfArchive_G1 = 5317120;
+
+	//0x00522650 public: virtual int __fastcall zCArchiverGeneric::EndOfArchive(void)
+	const int zCArchiverGeneric__EndOfArchive_G2 = 5383760;
+
+	if (!archiverPtr) { return 0; };
+
+	var int retVal;
+	
+	const int null = 0;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__fastcall(_@(archiverPtr), _@(null), MEMINT_SwitchG1G2(zCArchiverGeneric__EndOfArchive_G1, zCArchiverGeneric__EndOfArchive_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
+/*
  *	zCArchiverGeneric_ReadObject
  */
 func int zCArchiverGeneric_ReadObject(var int archiverPtr, var int objectPtr)
