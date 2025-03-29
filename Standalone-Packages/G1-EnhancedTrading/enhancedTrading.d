@@ -661,24 +661,6 @@ func void G1_EnhancedTrading_Init(){
 
 		HookEngine (MEMINT_SwitchG1G2 (oCItemContainer__Draw_IsOpen_G1, oCItemContainer__Draw_IsOpen_G2), MEMINT_SwitchG1G2(10, 6), "_hook_oCItemContainer_Draw__EnhancedTrading");
 
-		//Nuke engine functions for item transfer - we have to remove these otherwise SystemPack will override our trading multiplier value from SystemPack.ini [PARAMETERS.TRADE_VALUE_MULTIPLIER] in combination with [PARAMETERS.Gothic2_Control]
-
-		//0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
-		/*
-        00729b38 e8  f3  09       CALL       oCViewDialogTrade::OnTransferRight               int OnTransferRight(int param_1)
-                 00  00
-		*/
-		const int oCViewDialogTrade__HandleEvent_OnTransferRight_G1 = 7510840;
-		MEM_WriteNOP(oCViewDialogTrade__HandleEvent_OnTransferRight_G1, 5);
-
-		/*
-        00729b99 e8  12  07       CALL       oCViewDialogTrade::OnTransferLeft                int OnTransferLeft(int param_1)
-                 00  00
-		*/
-
-		const int oCViewDialogTrade__HandleEvent_OnTransferLeft_G1 = 7510937;
-		MEM_WriteNOP(oCViewDialogTrade__HandleEvent_OnTransferLeft_G1, 5);
-
 		once = 1;
 	};
 };
