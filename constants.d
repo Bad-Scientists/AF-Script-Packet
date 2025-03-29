@@ -17,6 +17,43 @@ const int CHR_SPACE = 32;
 
 //-- Engine constants
 
+//-- Logical key IDs
+
+//Same for G1 & G2 NoTR
+
+const int GAME_LEFT = 1;
+const int GAME_RIGHT = 2;
+const int GAME_UP = 3;
+const int GAME_DOWN = 4;
+const int GAME_ACTION = 5;
+const int GAME_SLOW = 6;
+const int GAME_ACTION2 = 7;
+const int GAME_WEAPON = 8;
+const int GAME_SMOVE = 11;
+const int GAME_SMOVE2 = 12;
+const int GAME_SHIFT = 13;
+const int GAME_END = 14;
+const int GAME_INVENTORY = 15;
+const int GAME_LOOK = 16;
+const int GAME_SNEAK = 17;
+const int GAME_STRAFELEFT = 18;
+const int GAME_STRAFERIGHT = 19;
+const int GAME_SCREEN_STATUS = 20;
+const int GAME_SCREEN_LOG = 21;
+const int GAME_SCREEN_MAP = 22;
+const int GAME_LOOK_FP = 23;
+
+//G2 NoTR only
+
+const int GAME_LOCK_TARGET = 24;
+const int GAME_PARADE = 25;
+const int GAME_ACTIONLEFT = 26;
+const int GAME_ACTIONRIGHT = 27;
+const int GAME_LAME_POTION = 28;
+const int GAME_LAME_HEAL = 29;
+
+//--
+
 const int INFO_MGR_MODE_IMPORTANT = 0;
 const int INFO_MGR_MODE_INFO = 1;
 const int INFO_MGR_MODE_CHOICE = 2;
