@@ -230,6 +230,9 @@ func int Trade_ValidateTransfer(var int itmPtr, var int sectionTrade) {
  *	Function calculates total value of an item
  */
 func int Trade_CalculateTotalValue (var int itemValue, var int amount, var int multiplierF) {
+	//Allow free item transfer when multiplier is 0
+	if (multiplierF == FLOATNULL) { return 0; };
+
 	var int itemValueF; itemValueF = mulf (mkf (itemValue), multiplierF);
 	var int newValue; newValue = RoundF (itemValueF);
 
