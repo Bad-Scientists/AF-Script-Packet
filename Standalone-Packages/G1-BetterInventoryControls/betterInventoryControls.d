@@ -47,6 +47,16 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 	if (!ptr) { return 0; };
 
+	//Override binded keys internally for purposes of this function
+
+	if (zCInput_IsBinded(GAME_ACTION, key)) {
+		key = KEY_LCONTROL;
+	};
+
+	if (zCInput_IsBinded(GAME_SMOVE, key)) {
+		key = KEY_LMENU;
+	};
+
 	//Quick loot
 	if (key == KEY_Q) {
 		openInvType = Hlp_GetOpenInventoryType ();
@@ -96,6 +106,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 		};
 	};
 
+	//Navigation
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
@@ -471,10 +482,10 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 //-- Player's inventory - additional controls
 
 	if (openInvType == OpenInvType_Player) {
-		const int action_Nothing	= 0;
-		const int action_PutInHand	= 1;
-		const int action_DropItem	= 2;
-		const int action_DropAllItems	= 3;
+		const int action_Nothing = 0;
+		const int action_PutInHand = 1;
+		const int action_DropItem = 2;
+		const int action_DropAllItems = 3;
 
 		var int action; action = action_Nothing;
 
