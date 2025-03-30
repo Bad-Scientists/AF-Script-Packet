@@ -33,14 +33,14 @@ func void Trade_SetBuyMultiplier (var int mulF) {
 	if (MEM_InformationMan.DlgTrade) {
 		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
-		//G1
 		if (dialogTrade.dlgInventoryNpc) {
 			itemCont = _^ (dialogTrade.dlgInventoryNpc);
 			itemCont.valueMultiplier = mulF;
 		};
 
+		//G1
 		if (MEMINT_SwitchG1G2(1, 0)) {
-			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 252;
+			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 252; //dlgContainerNpc
 			if (ptr) {
 				itemCont = _^ (ptr);
 				itemCont.valueMultiplier = mulF;
@@ -57,8 +57,9 @@ func void Trade_SetSellMultiplier (var int mulF) {
 	if (MEM_InformationMan.DlgTrade) {
 		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
+		//G1
 		if (MEMINT_SwitchG1G2(1, 0)) {
-			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 260;
+			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 260; //dlgContainerPlayer
 			if (ptr) {
 				itemCont = _^ (ptr);
 				itemCont.valueMultiplier = mulF;
@@ -254,9 +255,7 @@ func int Hlp_Trade_GetInventoryNpcContainer () {
 		dialogStealContainer = _^ (dialogTrade.dlgInventoryNpc);
 
 		//oCStealContainer
-		if (dialogStealContainer.stealContainer) {
-			return dialogStealContainer.stealContainer;
-		};
+		return + dialogStealContainer.stealContainer;
 	};
 
 	return 0;
@@ -284,9 +283,7 @@ func int Hlp_Trade_GetContainerNpcContainer () {
 		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
-		if (dialogItemContainer.itemContainer) {
-			return dialogItemContainer.itemContainer;
-		};
+		return + dialogItemContainer.itemContainer;
 	};
 
 	return 0;
@@ -314,9 +311,7 @@ func int Hlp_Trade_GetContainerPlayerContainer () {
 		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
-		if (dialogItemContainer.itemContainer) {
-			return dialogItemContainer.itemContainer;
-		};
+		return + dialogItemContainer.itemContainer;
 	};
 
 	return 0;
@@ -333,9 +328,7 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 		dialogInventory = _^ (dialogTrade.dlgInventoryPlayer);
 
 		//oCNpcInventory
-		if (dialogInventory.inventory) {
-			return dialogInventory.inventory;
-		};
+		return + dialogInventory.inventory;
 	};
 
 	return 0;
@@ -866,6 +859,9 @@ func int oCNpcInventory_GetCategory (var int ptr, var int itemPtr) {
 	return +retVal;
 };
 
+/*
+ *	Does not actually remove item by ptr... bruuuuuuuuuuuuuuh
+ */
 func int oCNpcInventory_RemoveByPtr (var int ptr, var int itemPtr, var int amount) {
 	//0x0066CF10 public: virtual class oCItem * __thiscall oCNpcInventory::RemoveByPtr(class oCItem *,int)
 	const int oCNpcInventory__RemoveByPtr_G1 = 6737680;
