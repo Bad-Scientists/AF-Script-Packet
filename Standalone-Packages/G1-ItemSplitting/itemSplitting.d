@@ -91,6 +91,21 @@ func void DoMergeInventoryItems__ItemSplitting() {
 func void DoSplitInventoryItems__ItemSplitting() {
 	const int ITM_FLAG_BELT = 1 << 24; //G2A only - available for G1 tho :)
 
+	//-- If Union MultiSlotWeapons feature is enabled - exit
+	//(even tho my implementation is slightly better because of inventory sorting ;-P )
+
+	const int unionMultiSlotEnabled = -1;
+
+	if (unionMultiSlotEnabled == -1) {
+		unionMultiSlotEnabled = STR_ToInt(zCOption_SystemPack_GetOption("PARAMETERS", "MultiSlotWeapons")) | STR_ToInt(zCOption_SystemPack_GetOption("PARAMETERS", "MultiSlotMagic"));
+	};
+
+	if (unionMultiSlotEnabled) {
+		return;
+	};
+
+	//--
+
 	DoMergeInventoryItems__ItemSplitting();
 
 	var oCNpc slf; slf = Hlp_GetNpc(hero);
