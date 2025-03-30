@@ -1801,10 +1801,12 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCat, var 
 
 		oCNPC_UnequipItemPtr (slf, _@ (item));
 
+		var int retVal;
+
 		if (amount == 1) {
-			NPC_RemoveInvItem (slf, itemInstanceID);
+			retVal = NPC_RemoveInvItem (slf, itemInstanceID);
 		} else {
-			NPC_RemoveInvItems (slf, itemInstanceID, amount);
+			retVal = NPC_RemoveInvItems (slf, itemInstanceID, amount);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1910,12 +1912,14 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 			Event_Execute (_NpcTransferItem_Event, _@ (item));
 		};
 
+		var int retVal;
+
 		if (item.flags & ITEM_MULTI) {
 			CreateInvItems(oth, itemInstanceID, amount);
-			NPC_RemoveInvItems(slf, itemInstanceID, amount);
+			retVal = NPC_RemoveInvItems(slf, itemInstanceID, amount);
 		} else {
 			CreateInvItem(oth, itemInstanceID);
-			NPC_RemoveInvItem(slf, itemInstanceID);
+			retVal = NPC_RemoveInvItem(slf, itemInstanceID);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
