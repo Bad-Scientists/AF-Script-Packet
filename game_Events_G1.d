@@ -1,18 +1,12 @@
 /*
- *
+ *	Game events for Gothic 1
  */
 
 //[Internal variables]
 var int _TradeOnAccept_Event;
-var int _TradeOnAccept_Event_Break;
-
 var int _TradeOnExit_Event;
-var int _TradeOnExit_Event_Break;
-
 var int _TradeTransferReset_Event;
-
 var int _TradeHandleEvent_Event;
-var int _TradeHandleEvent_Event_Break;
 
 var int _ItemContainerActivate_Event;
 var int _ItemContainerHandleEvent_Event;
@@ -95,12 +89,10 @@ func void NpcInventoryHandleEvent_RemoveListener (var func f) {
 //---
 
 func void _hook_oCViewDialogTrade_OnAccept () {
-	_TradeOnAccept_Event_Break = FALSE;
 	Event_Execute (_TradeOnAccept_Event, 0);
 };
 
 func void _hook_oCViewDialogTrade_OnExit () {
-	_TradeOnExit_Event_Break = FALSE;
 	Event_Execute (_TradeOnExit_Event, 0);
 };
 
@@ -196,31 +188,36 @@ func void _hook_oCNpcInventory_HandleEvent () {
 //---
 
 func void G1_TradeEvents_Init () {
-	if (!_TradeOnAccept_Event) {
+	if (!Hlp_IsValidHandle(_TradeOnAccept_Event)) {
 		_TradeOnAccept_Event = Event_Create ();
 	};
 
-	if (!_TradeOnExit_Event) {
+	if (!Hlp_IsValidHandle(_TradeOnExit_Event)) {
 		_TradeOnExit_Event = Event_Create ();
 	};
 
-	if (!_TradeTransferReset_Event) {
+	if (!Hlp_IsValidHandle(_TradeTransferReset_Event)) {
 		_TradeTransferReset_Event = Event_Create ();
 	};
 
-	if (!_TradeHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_TradeHandleEvent_Event)) {
 		_TradeHandleEvent_Event = Event_Create ();
 	};
 
 	const int once = 0;
 	if (!once) {
 		//[Trade events]
+		//0x0072A870 protected: void __fastcall oCViewDialogTrade::OnAccept(void)
 		HookEngine (oCViewDialogTrade__OnAccept, 6, "_hook_oCViewDialogTrade_OnAccept");
 
+		//0x0072AAB0 protected: void __fastcall oCViewDialogTrade::OnExit(void)
 		HookEngine (oCViewDialogTrade__OnExit, 5, "_hook_oCViewDialogTrade_OnExit");
 
+		//0x007293F0 protected: void __fastcall oCViewDialogTrade::TransferReset(void)
 		HookEngine (oCViewDialogTrade__TransferReset, 9, "_hook_oCViewDialogTrade_TransferReset");
 
+		//0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
+		//G2A len 10
 		HookEngine (oCViewDialogTrade__HandleEvent, 7, "_hook_oCViewDialogTrade_HandleEvent");
 
 		once = 1;
@@ -228,7 +225,7 @@ func void G1_TradeEvents_Init () {
 };
 
 func void G1_ItemContainerActivateEvent_Init () {
-	if (!_ItemContainerActivate_Event) {
+	if (!Hlp_IsValidHandle(_ItemContainerActivate_Event)) {
 		_ItemContainerActivate_Event = Event_Create ();
 	};
 
@@ -242,19 +239,19 @@ func void G1_ItemContainerActivateEvent_Init () {
 func void G1_InventoryEvents_Init () {
 	G1_ItemContainerActivateEvent_Init ();
 
-	if (!_ItemContainerHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_ItemContainerHandleEvent_Event)) {
 		_ItemContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!_StealContainerHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_StealContainerHandleEvent_Event)) {
 		_StealContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!_NpcContainerHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_NpcContainerHandleEvent_Event)) {
 		_NpcContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!_NpcInventoryHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_NpcInventoryHandleEvent_Event)) {
 		_NpcInventoryHandleEvent_Event = Event_Create ();
 	};
 
@@ -287,4 +284,3 @@ func void G1_GameEvents_Init () {
 	G1_TradeEvents_Init ();
 	G1_InventoryEvents_Init ();
 };
-

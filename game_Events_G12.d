@@ -16,7 +16,7 @@ var int _DoTakeVob_Event;
 var int _DoDropVob_Event;
 var int _DropFromSlot_Event;
 var int _DoThrowVob_Event;
-var int _OpenDeadNPC_Event;
+var int _OpenDeadNpc_Event;
 var int _MobStartStateChange_Event;
 var int _GameHandleEvent_Event;
 var int _PlayerPortalRoomChange_Event;
@@ -101,11 +101,11 @@ func void DoThrowVobEvent_RemoveListener (var func f) {
 };
 
 func void OpenDeadNPCEvent_AddListener (var func f) {
-	Event_AddOnce (_OpenDeadNPC_Event, f);
+	Event_AddOnce (_OpenDeadNpc_Event, f);
 };
 
 func void OpenDeadNPCEvent_RemoveListener (var func f) {
-	Event_Remove (_OpenDeadNPC_Event, f);
+	Event_Remove (_OpenDeadNpc_Event, f);
 };
 
 func void MobStartStateChangeEvent_AddListener (var func f) {
@@ -186,36 +186,28 @@ func void MenuHandleEventEvent_RemoveListener (var func f) {
 
 func void _hook_oCItemContainer_TransferItem () {
 	if (!Hlp_Is_oCNpcContainer (ECX)) { return; };
-	if (_TransferItem_Event) {
-		Event_Execute (_TransferItem_Event, 0);
-	};
+	Event_Execute (_TransferItem_Event, 0);
 };
 
 func void _hook_oCNPC_Equip () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_EquipItem_Event) {
-		Event_Execute (_EquipItem_Event, 0);
-	};
+	Event_Execute (_EquipItem_Event, 0);
 };
 
 func void _hook_oCNPC_UnEquipItem () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_UnEquipItem_Event) {
-		Event_Execute (_UnEquipItem_Event, 0);
-	};
+	Event_Execute (_UnEquipItem_Event, 0);
 };
 
 func void _hook_oCNpc_DoTakeVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_DoTakeVob_Event) {
-		Event_Execute (_DoTakeVob_Event, 0);
-	};
+	Event_Execute (_DoTakeVob_Event, 0);
 };
 
 /*
@@ -235,9 +227,7 @@ func void _hook_oCNpc_DoDropVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_DoDropVob_Event) {
-		Event_Execute (_DoDropVob_Event, 0);
-	};
+	Event_Execute (_DoDropVob_Event, 0);
 };
 
 //0x006A6270 public: class oCVob * __thiscall oCNpc::DropFromSlot(struct TNpcSlot *)
@@ -248,9 +238,7 @@ func void _hook_oCNpc_DropFromSlot () {
 
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_DropFromSlot_Event) {
-		Event_Execute (_DropFromSlot_Event, 0);
-	};
+	Event_Execute (_DropFromSlot_Event, 0);
 };
 
 //0x006A13C0 public: virtual int __thiscall oCNpc::DoThrowVob(class zCVob *,float)
@@ -258,9 +246,7 @@ func void _hook_oCNpc_DoThrowVob () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_DoThrowVob_Event) {
-		Event_Execute (_DoThrowVob_Event, 0);
-	};
+	Event_Execute (_DoThrowVob_Event, 0);
 };
 
 //0x006BB890 public: void __thiscall oCNpc::OpenDeadNpc(void)
@@ -268,17 +254,13 @@ func void _hook_oCNPC_OpenDeadNPC () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
 	var oCNPC slf; slf = _^ (ECX);
 	if (!Hlp_IsValidNPC (slf)) { return; };
-	if (_OpenDeadNPC_Event) {
-		Event_Execute (_OpenDeadNPC_Event, 0);
-	};
+	Event_Execute (_OpenDeadNpc_Event, 0);
 };
 
 //protected: virtual void __thiscall oCMobInter::StartStateChange(class oCNpc *,int,int)
 func void _hook_oCMobInter_StartStateChange () {
 	if (!Hlp_Is_oCMobInter (ECX)) { return; };
-	if (_MobStartStateChange_Event) {
-		Event_Execute (_MobStartStateChange_Event, 0);
-	};
+	Event_Execute (_MobStartStateChange_Event, 0);
 };
 
 //--- LeGo is 'detecting' following game states
@@ -292,7 +274,7 @@ func void _hook_oCMobInter_StartStateChange () {
 
 const int Gamestate_PreSaveGameProcessing = 256;	//right before game saving
 const int Gamestate_PostSaveGameProcessing = 257;	//right after game saving
-const int Gamestate_ChangeLevel = 258;			//on level change
+const int Gamestate_ChangeLevel = 258;				//on level change
 
 func void _hook_oCNpc_PreSaveGameProcessing () {
 	if (!Hlp_Is_oCNpc (ECX)) { return; };
@@ -324,11 +306,7 @@ func void _hook_oCGame_ChangeLevel () {
 
 func void _hook_oCGame_HandleEvent () {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	var int cancel; cancel = FALSE;
-
-	if (_GameHandleEvent_Event) {
-		Event_Execute (_GameHandleEvent_Event, key);
-	};
+	Event_Execute (_GameHandleEvent_Event, key);
 };
 
 //var int PC_PortalManager_OldPlayerRoom;
@@ -344,9 +322,7 @@ func void _hook_oCPortalRoomManager_HasPlayerChangedPortalRoom () {
 
 	if (portalManager.curPlayerPortal != PC_PortalManager_CurPlayerPortal) {
 		PC_PortalManager_CurPlayerPortal = portalManager.curPlayerPortal;
-		if (_PlayerPortalRoomChange_Event) {
-			Event_Execute (_PlayerPortalRoomChange_Event, 0);
-		};
+		Event_Execute (_PlayerPortalRoomChange_Event, 0);
 	};
 };
 
@@ -363,9 +339,7 @@ func void _hook_oCItemContainer_OpenPassive () {
 
 	if (!NPC_IsPlayer (slf)) { return; };
 
-	if (_OpenInventory_Event) {
-		Event_Execute (_OpenInventory_Event, 0);
-	};
+	Event_Execute (_OpenInventory_Event, 0);
 };
 
 func void _hook_oCMobInter_StartInteraction () {
@@ -374,13 +348,11 @@ func void _hook_oCMobInter_StartInteraction () {
 	var int slfPtr; slfPtr = MEM_ReadInt (ESP + 4);
 	if (!Hlp_Is_oCNpc (slfPtr)) { return; };
 
-	if (_MobStartInteraction_Event) {
-		Event_Execute (_MobStartInteraction_Event, 0);
-	};
+	Event_Execute (_MobStartInteraction_Event, 0);
 };
 
 func void G12_OpenInventoryEvent_Init () {
-	if (!_OpenInventory_Event) {
+	if (!Hlp_IsValidHandle(_OpenInventory_Event)) {
 		_OpenInventory_Event = Event_Create ();
 	};
 
@@ -409,13 +381,11 @@ func void _hook_oCItemContainer_Close () {
 
 	if (!NPC_IsPlayer (slf)) { return; };
 
-	if (_CloseInventory_Event) {
-		Event_Execute (_CloseInventory_Event, 0);
-	};
+	Event_Execute (_CloseInventory_Event, 0);
 };
 
 func void G12_CloseInventoryEvent_Init () {
-	if (!_CloseInventory_Event) {
+	if (!Hlp_IsValidHandle(_CloseInventory_Event)) {
 		_CloseInventory_Event = Event_Create ();
 	};
 
@@ -434,7 +404,7 @@ func void G12_CloseInventoryEvent_Init () {
 };
 
 func void G12_TransferItemEvent_Init () {
-	if (!_TransferItem_Event) {
+	if (!Hlp_IsValidHandle(_TransferItem_Event)) {
 		_TransferItem_Event = Event_Create ();
 	};
 
@@ -448,7 +418,7 @@ func void G12_TransferItemEvent_Init () {
 };
 
 func void G12_EquipItemEvent_Init () {
-	if (!_EquipItem_Event) {
+	if (!Hlp_IsValidHandle(_EquipItem_Event)) {
 		_EquipItem_Event = Event_Create ();
 	};
 
@@ -461,7 +431,7 @@ func void G12_EquipItemEvent_Init () {
 };
 
 func void G12_UnEquipItemEvent_Init () {
-	if (!_UnEquipItem_Event) {
+	if (!Hlp_IsValidHandle(_UnEquipItem_Event)) {
 		_UnEquipItem_Event = Event_Create ();
 	};
 
@@ -475,7 +445,7 @@ func void G12_UnEquipItemEvent_Init () {
 };
 
 func void G12_DoTakeVobEvent_Init () {
-	if (!_DoTakeVob_Event) {
+	if (!Hlp_IsValidHandle(_DoTakeVob_Event)) {
 		_DoTakeVob_Event = Event_Create ();
 	};
 
@@ -488,11 +458,11 @@ func void G12_DoTakeVobEvent_Init () {
 };
 
 func void G12_DoDropVobEvent_Init () {
-	if (!_DoDropVob_Event) {
+	if (!Hlp_IsValidHandle(_DoDropVob_Event)) {
 		_DoDropVob_Event = Event_Create ();
 	};
 
-	if (!_DropFromSlot_Event) {
+	if (!Hlp_IsValidHandle(_DropFromSlot_Event)) {
 		_DropFromSlot_Event = Event_Create ();
 	};
 
@@ -522,7 +492,7 @@ func void G12_DoDropVobEvent_Init () {
 };
 
 func void G12_DoThrowVobEvent_Init () {
-	if (!_DoThrowVob_Event) {
+	if (!Hlp_IsValidHandle(_DoThrowVob_Event)) {
 		_DoThrowVob_Event = Event_Create ();
 	};
 
@@ -540,8 +510,8 @@ func void G12_DoThrowVobEvent_Init () {
 };
 
 func void G12_OpenDeadNPCEvent_Init () {
-	if (!_OpenDeadNPC_Event) {
-		_OpenDeadNPC_Event = Event_Create ();
+	if (!Hlp_IsValidHandle(_OpenDeadNpc_Event)) {
+		_OpenDeadNpc_Event = Event_Create ();
 	};
 
 	const int once = 0;
@@ -562,7 +532,6 @@ func void G12_GameState_Extended_Init () {
 
 	const int once = 0;
 	if (!once) {
-
 		//Called before game save
 		HookEngine (oCNpc__PreSaveGameProcessing, 7, "_hook_oCNpc_PreSaveGameProcessing");
 
@@ -598,7 +567,7 @@ func void G12_GameState_Extended_Init () {
 };
 
 func void G12_MobStartStateChangeEvent_Init () {
-	if (!_MobStartStateChange_Event) {
+	if (!Hlp_IsValidHandle(_MobStartStateChange_Event)) {
 		_MobStartStateChange_Event = Event_Create ();
 	};
 
@@ -617,7 +586,7 @@ func void G12_MobStartStateChangeEvent_Init () {
 };
 
 func void G12_GameHandleEvent_Init () {
-	if (!_GameHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_GameHandleEvent_Event)) {
 		_GameHandleEvent_Event = Event_Create ();
 	};
 
@@ -639,12 +608,13 @@ func void G12_GameHandleEvent_Init () {
 };
 
 func void G12_PlayerPortalRoomChangeEvent_Init () {
-	if (!_PlayerPortalRoomChange_Event) {
+	if (!Hlp_IsValidHandle(_PlayerPortalRoomChange_Event)) {
 		_PlayerPortalRoomChange_Event = Event_Create ();
 	};
 
 	const int once = 0;
 	if (!once) {
+		//TODO: we can call this from return portion of the engine function
 		//Is there a better method? this function seems to be called constantly (so far I didn't notice any performance impact)
 
 		//0x006CB630 public: int __thiscall oCPortalRoomManager::HasPlayerChangedPortalRoom(void)
@@ -659,7 +629,7 @@ func void G12_PlayerPortalRoomChangeEvent_Init () {
 };
 
 func void G12_MobStartInterationEvent_Init () {
-	if (!_MobStartInteraction_Event) {
+	if (!Hlp_IsValidHandle(_MobStartInteraction_Event)) {
 		_MobStartInteraction_Event = Event_Create ();
 	};
 
@@ -689,14 +659,12 @@ func void _hook_oCGame_GetFocusVob () {
 	if (PC_FocusVob != her.focus_vob) {
 		PC_FocusVob = her.focus_vob;
 
-		if (_FocusChange_Event) {
-			Event_Execute (_FocusChange_Event, PC_FocusVob);
-		};
+		Event_Execute (_FocusChange_Event, PC_FocusVob);
 	};
 };
 
 func void G12_FocusChangeEvent_Init () {
-	if (!_FocusChange_Event) {
+	if (!Hlp_IsValidHandle(_FocusChange_Event)) {
 		_FocusChange_Event = Event_Create ();
 	};
 
@@ -726,47 +694,37 @@ const int OpenLockableEvent_PickLockFailure = 4;
 const int OpenLockableEvent_PickLockFailureBroken = 5;
 
 func void _hook_oCMobLockable_UnlockWithKey () {
-	if (_OpenLockable_Event) {
-		//EBP 0x007DDF34 const oCNpc::`vftable'
-		self = _^(EBP);
-		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithKey);
-	};
+	//EBP 0x007DDF34 const oCNpc::`vftable'
+	self = _^(EBP);
+	Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithKey);
 };
 
 func void _hook_oCMobLockable_UnlockWithPickLock () {
-	if (_OpenLockable_Event) {
-		//EBP 0x007DDF34 const oCNpc::`vftable'
-		self = _^(EBP);
-		Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithPicklock);
-	};
+	//EBP 0x007DDF34 const oCNpc::`vftable'
+	self = _^(EBP);
+	Event_Execute (_OpenLockable_Event, OpenLockableEvent_UnlockWithPicklock);
 };
 
 func void _hook_oCMobLockable_PickLockSuccess () {
-	if (_OpenLockable_Event) {
-		//EBP 0x007DDF34 const oCNpc::`vftable'
-		self = _^(EBP);
-		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockSuccess);
-	};
+	//EBP 0x007DDF34 const oCNpc::`vftable'
+	self = _^(EBP);
+	Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockSuccess);
 };
 
 func void _hook_oCMobLockable_PickLockFailure () {
-	if (_OpenLockable_Event) {
-		//EBP 0x007DDF34 const oCNpc::`vftable'
-		self = _^(EBP);
-		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailure);
-	};
+	//EBP 0x007DDF34 const oCNpc::`vftable'
+	self = _^(EBP);
+	Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailure);
 };
 
 func void _hook_oCMobLockable_PickLockFailureBroken () {
-	if (_OpenLockable_Event) {
-		//EBP 0x007DDF34 const oCNpc::`vftable'
-		self = _^(EBP);
-		Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailureBroken);
-	};
+	//EBP 0x007DDF34 const oCNpc::`vftable'
+	self = _^(EBP);
+	Event_Execute (_OpenLockable_Event, OpenLockableEvent_PickLockFailureBroken);
 };
 
 func void G12_OpenLockableEvent_Init () {
-	if (!_OpenLockable_Event) {
+	if (!Hlp_IsValidHandle(_OpenLockable_Event)) {
 		_OpenLockable_Event = Event_Create ();
 	};
 
@@ -827,36 +785,28 @@ func void G12_OpenLockableEvent_Init () {
  */
 
 func void _hook_zCMenu_Enter__GameEvent () {
-	if (_MenuEnter_Event) {
-		Event_Execute (_MenuEnter_Event, 0);
-	};
+	Event_Execute (_MenuEnter_Event, 0);
 };
 
 func void _hook_zCMenu_Leave__GameEvent () {
-	if (_MenuLeave_Event) {
-		Event_Execute (_MenuLeave_Event, 0);
-	};
+	Event_Execute (_MenuLeave_Event, 0);
 };
 
 func void _hook_zCMenu_HandleEvent__GameEvent () {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	var int cancel; cancel = FALSE;
-
-	if (_MenuHandleEvent_Event) {
-		Event_Execute (_MenuHandleEvent_Event, key);
-	};
+	Event_Execute (_MenuHandleEvent_Event, key);
 };
 
 func void G12_MenuEvent_Init () {
-	if (!_MenuEnter_Event) {
+	if (!Hlp_IsValidHandle(_MenuEnter_Event)) {
 		_MenuEnter_Event = Event_Create ();
 	};
 
-	if (!_MenuLeave_Event) {
+	if (!Hlp_IsValidHandle(_MenuLeave_Event)) {
 		_MenuLeave_Event = Event_Create ();
 	};
 
-	if (!_MenuHandleEvent_Event) {
+	if (!Hlp_IsValidHandle(_MenuHandleEvent_Event)) {
 		_MenuHandleEvent_Event = Event_Create ();
 	};
 
