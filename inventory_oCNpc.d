@@ -344,30 +344,41 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 /*
  *	Returns pointer to active oCItemContainer
  */
-/*
-Not required ... we can get same result using Hlp_GetActiveOpenInvContainer
 func int Hlp_Trade_GetActiveTradeContainer () {
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
-	var oCViewDialogTrade dialogTrade;
-	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+	var oCViewDialogTrade dialogTrade; dialogTrade = _^(MEM_InformationMan.DlgTrade);
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_INVENTORY_G1) {
-		return +Hlp_Trade_GetInventoryNpcContainer ();
-	} else
+		//dlgInventoryNpc; //oCViewDialogStealContainer* // sizeof 04h offset F8h
+		var oCViewDialogStealContainer dlgInventoryNpc; dlgInventoryNpc = _^(dialogTrade.dlgInventoryNpc);
+		//stealContainer; //oCStealContainer* // sizeof 04h offset 100h
+		return + dlgInventoryNpc.stealContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_CONTAINER_G1) {
-		return +Hlp_Trade_GetContainerNpcContainer ();
-	} else
+		//dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
+		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
+		return + dlgContainerNpc.itemContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1) {
-		return +Hlp_Trade_GetContainerPlayerContainer ();
-	} else
+		//dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
+		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
+		return + dlgContainerPlayer.itemContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
-		return +Hlp_Trade_GetInventoryPlayerContainer ();
+		//dlgInventoryPlayer; //oCViewDialogInventory* // sizeof 04h offset 108h
+		var oCViewDialogInventory dlgInventoryPlayer; dlgInventoryPlayer = _^(dialogTrade.dlgInventoryPlayer);
+		//inventory; //oCNpcInventory* // sizeof 04h offset 100h
+		return + dlgInventoryPlayer.inventory;
 	};
 
 	return 0;
 };
-*/
 
 /*
  *	Returns pointer to active oCItemContainer
