@@ -109,17 +109,24 @@ func void _hook_oCViewDialogTrade_TransferReset () {
 };
 
 func void _hook_oCViewDialogTrade_HandleEvent () {
-	//--> Safety check
-	if (!MEM_InformationMan.DlgTrade) { return; };
+	//Is active?
+	var int ptr; ptr = MEMINT_oCInformationManager_Address;
+	if (ptr) {
+		//Exit if not in trade mode
+		//zTInfoMgrMode Mode; // sizeof 04h offset 54h
+		var int mode; mode = MEM_ReadInt(ptr + 84);
+		if (mode != INFO_MGR_MODE_TRADE) { return; };
 
-	var oCViewDialogTrade dialogTrade;
-	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
-
-	if (!dialogTrade.IsActivated) { return; };
-	//<--
-
-	_TradeHandleEvent_Event_Break = FALSE;
-	Event_Execute (_TradeHandleEvent_Event, 0);
+		//oCInformationManager.DlgTrade; // sizeof 04h offset 18h
+		var int dlgTradePtr; dlgTradePtr = MEM_ReadInt(ptr + 28);
+		if (dlgTradePtr) {
+			//IsActivated; // sizeof 04h offset F4h
+			var int isActivated; isActivated = MEM_ReadInt(dlgTradePtr + 244);
+			if (isActivated) {
+				Event_Execute(_TradeHandleEvent_Event, 0);
+			};
+		};
+	};
 };
 
 //---
@@ -129,19 +136,61 @@ func void _hook_oCItemContainer_Activate () {
 };
 
 func void _hook_oCItemContainer_HandleEvent () {
-	Event_Execute (_ItemContainerHandleEvent_Event, 0);
+	//Is active?
+	if (ECX) {
+		//oCItemContainer.frame; // sizeof 04h offset 1Ch
+		var int isActive; isActive = MEM_ReadInt(ECX + 28);
+		if (isActive) {
+			Event_Execute(_ItemContainerHandleEvent_Event, 0);
+		};
+	};
 };
 
 func void _hook_oCStealContainer_HandleEvent () {
-	Event_Execute (_StealContainerHandleEvent_Event, 0);
+	//Is active?
+	if (ECX) {
+		//Exit if not in steal mode
+		if (oCNpc_Get_Game_Mode() != NPC_GAME_STEAL) { return; };
+
+		//class oCStealContainer : public oCItemContainer {
+		//Same offset as oCItemContainer
+		//oCStealContainer.frame; // sizeof 04h offset 1Ch
+		var int isActive; isActive = MEM_ReadInt(ECX + 28);
+		if (isActive) {
+			Event_Execute(_StealContainerHandleEvent_Event, 0);
+		};
+	};
 };
 
 func void _hook_oCNpcContainer_HandleEvent () {
-	Event_Execute (_NpcContainerHandleEvent_Event, 0);
+	//Is active?
+	var int ptr; ptr = ECX;
+	if (ECX) {
+		//Exit if not in plunder mode
+		if (oCNpc_Get_Game_Mode() != NPC_GAME_PLUNDER) { return; };
+
+		//class oCNpcContainer : public oCStealContainer {
+		//class oCStealContainer : public oCItemContainer {
+		//Same offset as oCItemContainer
+		//oCNpcContainer.frame; // sizeof 04h offset 1Ch
+		var int isActive; isActive = MEM_ReadInt(ECX + 28);
+		if (isActive) {
+			Event_Execute(_NpcContainerHandleEvent_Event, 0);
+		};
+	};
 };
 
 func void _hook_oCNpcInventory_HandleEvent () {
-	Event_Execute (_NpcInventoryHandleEvent_Event, 0);
+	//Is active?
+	if (ECX) {
+		//class oCNpcInventory : public oCItemContainer {
+		//Same offset as oCItemContainer
+		//oCNpcContainer.frame; // sizeof 04h offset 1Ch
+		var int isActive; isActive = MEM_ReadInt(ECX + 28);
+		if (isActive) {
+			Event_Execute(_NpcInventoryHandleEvent_Event, 0);
+		};
+	};
 };
 
 //---
