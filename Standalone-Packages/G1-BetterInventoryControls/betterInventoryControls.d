@@ -603,7 +603,7 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	};
 };
 
-func void _eventDoTakeVob__SwitchCategory () {
+func void _eventDoTakeVob__SwitchCategory (var int dummyVariable) {
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!Hlp_Is_oCNpc (ECX)) || (!Hlp_Is_oCItem (itemPtr))) { return; };
 
@@ -617,7 +617,7 @@ func void _eventDoTakeVob__SwitchCategory () {
 	};
 };
 
-func void _eventOpenInventory__SwitchToCategory () {
+func void _eventOpenInventory__SwitchToCategory (var int dummyVariable) {
 	//Only if not in dialogue - otherwise this collides with EIM item preview feature
 	if (!InfoManager_HasFinished()) {
 		return;
@@ -629,7 +629,7 @@ func void _eventOpenInventory__SwitchToCategory () {
 	};
 };
 
-func void G1_BetterInventoryControls_Init(){
+func void G1_BetterInventoryControls_Init() {
 	G1_TradeEvents_Init ();
 
 	G1_InventoryEvents_Init ();
