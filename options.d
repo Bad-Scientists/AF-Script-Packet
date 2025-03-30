@@ -93,3 +93,33 @@ func void zCOption_SetOption(var int ptr, var string searchSecName, var string s
 		};
 	end;
 };
+
+/*
+ *	SystempPack API
+ */
+
+const int options_SP = 0;
+
+func void zCOption_SystemPack_Load() {
+	//Load SystemPack.ini
+	if (!options_SP) {
+		zCOption_ChangeDir(MEMINT_SwitchG1G2(DIR_G1_SYSTEM, DIR_G2_SYSTEM));
+		options_SP = zCOption_Create();
+		if (!zCOption_Load(options_SP, "SystemPack.ini")) {
+			zSpy_Info("SystemPack.ini could not be loaded.");
+		};
+	};
+};
+
+func string zCOption_SystemPack_GetOption(var string sectionName, var string entryName) {
+	zCOption_SystemPack_Load();
+	return zCOption_GetOption(options_SP, sectionName, entryName);
+};
+
+func void zCOption_SystemPack_SetOption(var string sectionName, var string entryName, var string newValue) {
+	zCOption_SystemPack_Load();
+	zCOption_SetOption(options_SP, sectionName, entryName, newValue);
+	if (!zCOption_Save(options_SP, "SystemPack.ini")) {
+		zSpy_Info("SystemPack.ini could not be saved.");
+	};
+};
