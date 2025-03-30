@@ -86,7 +86,7 @@ func void G12_GetActionKey_Init () {
 	const int once = 0;
 	if (!once) {
 		//G1 hook len 13, G2A hook len = 9
-		HookEngine (oCAIHuman__PC_ActionMove, MEMINT_SwitchG1G2 (13, 9), "_hook_oCAIHuman_PC_ActionMove");
+		HookEngine (oCAIHuman__PC_ActionMove, MEMINT_SwitchG1G2 (7, 9), "_hook_oCAIHuman_PC_ActionMove");
 		once = 1;
 	};
 };

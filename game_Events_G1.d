@@ -261,13 +261,21 @@ func void G1_InventoryEvents_Init () {
 	const int once = 0;
 	if (!once) {
 		//G2A HookLen 6
+		//0x00669DD0 protected: virtual int __thiscall oCItemContainer::HandleEvent(int)
 		HookEngine (oCItemContainer__HandleEvent, 7, "_hook_oCItemContainer_HandleEvent");
 
+		//class oCStealContainer : public oCItemContainer {
+		//class oCNpcContainer : public oCStealContainer {
+		//class oCNpcInventory : public oCItemContainer {
+
+		//0x0066A730 public: virtual int __thiscall oCStealContainer::HandleEvent(int)
 		HookEngine (oCStealContainer__HandleEvent, 6, "_hook_oCStealContainer_HandleEvent");
 
 		//G2A HookLen 7
-		HookEngine (oCNpcContainer__HandleEvent, 8, "_hook_oCNpcContainer_HandleEvent");
+		//0x0066ACD0 public: virtual int __thiscall oCNpcContainer::HandleEvent(int)
+		HookEngine (oCNpcContainer__HandleEvent, 6, "_hook_oCNpcContainer_HandleEvent");
 
+		//0x0066E390 public: virtual int __thiscall oCNpcInventory::HandleEvent(int)
 		HookEngine (oCNpcInventory__HandleEvent, 6, "_hook_oCNpcInventory_HandleEvent");
 
 		once = 1;
