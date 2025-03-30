@@ -232,14 +232,11 @@ func void _hook_zCConsole_HandleEvent () {
 	};
 
 	if (update) {
-		MEM_WriteInt (ESP + 4, key);
-		EDI = key;
+		zCInputCallback_SetKey(key);
 	};
 
 	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		zCInputCallback_SetKey(0);
 	};
 };
 

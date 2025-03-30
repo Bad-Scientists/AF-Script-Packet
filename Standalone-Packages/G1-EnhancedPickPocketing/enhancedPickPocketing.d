@@ -426,28 +426,24 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 };
 
 func void _eventStealContainerHandleEvent__EnhancedPickPocketing (var int dummyVariable) {
-	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCStealContainer
-	var int cancel; cancel = oCItemContainer_HandleKey__EnhancedPickPocketing (ECX, key);
+	if (oCNpc_Get_Game_Mode() != NPC_GAME_STEAL) { return; };
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	var int key; key = MEM_ReadInt(ESP + 4);
+
+	//oCStealContainer
+	if (oCItemContainer_HandleKey__EnhancedPickPocketing(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventNpcInventoryHandleEvent__EnhancedPickPocketing (var int dummyVariable) {
-	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
+	if (oCNpc_Get_Game_Mode() != NPC_GAME_STEAL) { return; };
 
-	var int key; key = MEM_ReadInt (ESP + 4);
+	var int key; key = MEM_ReadInt(ESP + 4);
+
 	//oCNpcInventory
-	var int cancel; cancel = oCItemContainer_HandleKey__EnhancedPickPocketing (ECX, key);
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	if (oCItemContainer_HandleKey__EnhancedPickPocketing(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 

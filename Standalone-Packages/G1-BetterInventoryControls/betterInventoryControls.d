@@ -380,23 +380,16 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	return FALSE;
 };
 
+//0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
 func void _eventTradeHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	var int cancel; cancel = FALSE;
 
-	var int ptr;
-	//ptr = Hlp_Trade_GetActiveTradeContainer ();
-	ptr = Hlp_GetActiveOpenInvContainer ();
-
+	//Get trading container
+	var int ptr; ptr = Hlp_Trade_GetActiveTradeContainer();
 	if (ptr) {
-		//oCViewDialogTrade
-		cancel = oCItemContainer_HandleKey (ptr, key);
-	};
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		if (oCItemContainer_HandleKey(ptr, key)) {
+			zCInputCallback_SetKey(0);
+		};
 	};
 };
 
@@ -404,36 +397,26 @@ func void _eventItemContainerHandleEvent__BetterInvControls (var int dummyVariab
 	var int key; key = MEM_ReadInt (ESP + 4);
 
 	//oCItemContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventStealContainerHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCStealContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	//oCStealContainer
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventNpcContainerHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCNpcContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	//oCNpcContainer
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
@@ -462,11 +445,14 @@ func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 */
 
 func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariable) {
-	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
-
+	var int cancel; cancel = FALSE;
 	var int key; key = MEM_ReadInt (ESP + 4);
+
 	//oCNpcInventory
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
+		return;
+	};
 
 	var oCNpcInventory npcInventory;
 
@@ -589,9 +575,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	};
 
 	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		zCInputCallback_SetKey(0);
 	};
 };
 
