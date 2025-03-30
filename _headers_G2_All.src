@@ -92,6 +92,7 @@ ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
 ObjectFactory\zCViewText2.d
+ObjectFactory\zCOption.d
 
 mobFunctions.d
 
@@ -148,6 +149,7 @@ menu.d
 vobThrowing.d
 
 files.d
+options.d
 archiver.d
 miscellaneous.d
 
