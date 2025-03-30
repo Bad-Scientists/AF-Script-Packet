@@ -207,14 +207,14 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							itmPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itmPtr, amount);
 
 							containerPtr = Hlp_GetOpenContainer_oCItemContainer ();
-							oCItemContainer_Insert (containerPtr, itmPtr);
+							itmPtr = oCItemContainer_Insert (containerPtr, itmPtr);
 						} else {
 							containerPtr = Hlp_GetOpenContainer_oCItemContainer ();
 							itmPtr = oCItemContainer_RemoveByPtr (containerPtr, itmPtr, amount);
 
 							npc = Hlp_GetNPC (hero);
 							npcInventoryPtr = _@ (npc.inventory2_vtbl);
-							oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
+							itmPtr = oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
 						};
 
 						return TRUE;
@@ -254,7 +254,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							//Insert item to players inventory
 							npc = Hlp_GetNPC (hero);
 							npcInventoryPtr = _@ (npc.inventory2_vtbl);
-							oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
+							itmPtr = oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
 
 							//Re-create list - this will add to the item container all items from NPCs inventory
 							//We have to use oCStealContainer_CreateList, because oCNpcContainer_CreateList will not delete list in oCItemContainer (and would cause item duplication)
