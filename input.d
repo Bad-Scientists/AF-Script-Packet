@@ -60,6 +60,57 @@ func int zCInput_IsBinded (var int logicalID, var int key) {
 };
 
 /*
+ *	zCInput_ClearKeyBuffer
+ */
+func void zCInput_ClearKeyBuffer() {
+	//0x0086CCA0 class zCInput * zinput
+	const int zinput_addr_G1 = 8834208;
+
+	//0x008D1650 class zCInput * zinput
+	const int zinput_addr_G2 = 9246288;
+
+	//0x004C2950 public: virtual void __thiscall zCInput::ClearKeyBuffer(void)
+	const int zCInput__ClearKeyBuffer_G1 = 4991312;
+
+	//0x004CBC90 public: virtual void __thiscall zCInput::ClearKeyBuffer(void)
+	const int zCInput__ClearKeyBuffer_G2 = 5029008;
+
+	var int zinputPtr; zinputPtr = MEM_ReadInt(MEMINT_SwitchG1G2(zinput_addr_G1, zinput_addr_G2));
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(zinputPtr), MEMINT_SwitchG1G2(zCInput__ClearKeyBuffer_G1, zCInput__ClearKeyBuffer_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	zCInput_ResetRepeatKey
+ */
+func void zCInput_ResetRepeatKey(var int resetLastKey) {
+	//0x0086CCA0 class zCInput * zinput
+	const int zinput_addr_G1 = 8834208;
+
+	//0x008D1650 class zCInput * zinput
+	const int zinput_addr_G2 = 9246288;
+
+	//0x004C2910 public: virtual void __thiscall zCInput::ResetRepeatKey(int)
+	const int zCInput__ResetRepeatKey_G1 = 4991248;
+
+	//0x004CBC50 public: virtual void __thiscall zCInput::ResetRepeatKey(int)
+	const int zCInput__ResetRepeatKey_G2 = 5028944;
+
+	var int zinputPtr; zinputPtr = MEM_ReadInt(MEMINT_SwitchG1G2(zinput_addr_G1, zinput_addr_G2));
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(resetLastKey));
+		CALL__thiscall(_@(zinputPtr), MEMINT_SwitchG1G2(zCInput__ResetRepeatKey_G1, zCInput__ResetRepeatKey_G2));
+		call = CALL_End();
+	};
+};
+
+/*
  *	zCInput_Win32_GetToggled
  *	 - consecutive calls return FALSE
  */
@@ -88,6 +139,57 @@ func int zCInput_Win32_GetToggled(var int logicalID) {
 	};
 
 	return + retVal;
+};
+
+/*
+ *	zCInput_Win32_ResetRepeatKey
+ */
+func void zCInput_Win32_ResetRepeatKey(var int resetLastKey) {
+	//0x0086CCA0 class zCInput * zinput
+	const int zinput_addr_G1 = 8834208;
+
+	//0x008D1650 class zCInput * zinput
+	const int zinput_addr_G2 = 9246288;
+
+	//0x004C8860 public: virtual void __thiscall zCInput_Win32::ResetRepeatKey(int)
+	const int zCInput_Win32__ResetRepeatKey_G1 = 5015648;
+
+	//0x004D5330 public: virtual void __thiscall zCInput_Win32::ResetRepeatKey(int)
+	const int zCInput_Win32__ResetRepeatKey_G2 = 5067568;
+
+	var int zinputPtr; zinputPtr = MEM_ReadInt(MEMINT_SwitchG1G2(zinput_addr_G1, zinput_addr_G2));
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(resetLastKey));
+		CALL__thiscall(_@(zinputPtr), MEMINT_SwitchG1G2(zCInput_Win32__ResetRepeatKey_G1, zCInput_Win32__ResetRepeatKey_G2));
+		call = CALL_End();
+	};
+};
+
+/*
+ *	zCInput_Win32_ClearKeyBuffer
+ */
+func void zCInput_Win32_ClearKeyBuffer() {
+	//0x0086CCA0 class zCInput * zinput
+	const int zinput_addr_G1 = 8834208;
+
+	//0x008D1650 class zCInput * zinput
+	const int zinput_addr_G2 = 9246288;
+
+	//0x004C8AE0 public: virtual void __thiscall zCInput_Win32::ClearKeyBuffer(void)
+	const int zCInput_Win32__ClearKeyBuffer_G1 = 5016288;
+
+	//0x004D55D0 public: virtual void __thiscall zCInput_Win32::ClearKeyBuffer(void)
+	const int zCInput_Win32__ClearKeyBuffer_G2 = 5068240;
+
+	var int zinputPtr; zinputPtr = MEM_ReadInt(MEMINT_SwitchG1G2(zinput_addr_G1, zinput_addr_G2));
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL__thiscall(_@(zinputPtr), MEMINT_SwitchG1G2(zCInput_Win32__ClearKeyBuffer_G1, zCInput_Win32__ClearKeyBuffer_G2));
+		call = CALL_End();
+	};
 };
 
 /*
