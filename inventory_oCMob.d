@@ -217,11 +217,15 @@ func void MobTransferItemEvent_Init () {
 };
 
 func void MobTransferItemEvent_AddListener (var func f) {
-	Event_AddOnce (_MobTransferItem_Event, f);
+	if (_MobTransferItem_Event) {
+		Event_AddOnce(_MobTransferItem_Event, f);
+	};
 };
 
 func void MobTransferItemEvent_RemoveListener (var func f) {
-	Event_Remove (_MobTransferItem_Event, f);
+	if (_MobTransferItem_Event) {
+		Event_Remove(_MobTransferItem_Event, f);
+	};
 };
 
 func void Mob_TransferItemsToNPC (var int mobPtr, var int slfInstance){

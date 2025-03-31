@@ -15,89 +15,131 @@ var int _NpcContainerHandleEvent_Event;
 var int _NpcInventoryHandleEvent_Event;
 
 func void TradeOnAcceptEvent_AddListener (var func f) {
-	Event_AddOnce (_TradeOnAccept_Event, f);
+	if (_TradeOnAccept_Event) {
+		Event_AddOnce(_TradeOnAccept_Event, f);
+	};
 };
 
 func void TradeOnAcceptEvent_RemoveListener (var func f) {
-	Event_Remove (_TradeOnAccept_Event, f);
+	if (_TradeOnAccept_Event) {
+		Event_Remove(_TradeOnAccept_Event, f);
+	};
 };
 
 func void TradeOnExitEvent_AddListener (var func f) {
-	Event_AddOnce (_TradeOnExit_Event, f);
+	if (_TradeOnExit_Event) {
+		Event_AddOnce(_TradeOnExit_Event, f);
+	};
 };
 
 func void TradeOnExitEvent_RemoveListener (var func f) {
-	Event_Remove (_TradeOnExit_Event, f);
+	if (_TradeOnExit_Event) {
+		Event_Remove(_TradeOnExit_Event, f);
+	};
 };
 
 func void TradeTransferResetEvent_AddListener (var func f) {
-	Event_AddOnce (_TradeTransferReset_Event, f);
+	if (_TradeTransferReset_Event) {
+		Event_AddOnce(_TradeTransferReset_Event, f);
+	};
 };
 
 func void TradeTransferResetEvent_RemoveListener (var func f) {
-	Event_Remove (_TradeTransferReset_Event, f);
+	if (_TradeTransferReset_Event) {
+		Event_Remove(_TradeTransferReset_Event, f);
+	};
 };
 
 func void TradeHandleEvent_AddListener (var func f) {
-	Event_AddOnce (_TradeHandleEvent_Event, f);
+	if (_TradeHandleEvent_Event) {
+		Event_AddOnce(_TradeHandleEvent_Event, f);
+	};
 };
 
 func void TradeHandleEvent_RemoveListener (var func f) {
-	Event_Remove (_TradeHandleEvent_Event, f);
+	if (_TradeHandleEvent_Event) {
+		Event_Remove(_TradeHandleEvent_Event, f);
+	};
 };
 
 func void ItemContainerActivate_AddListener (var func f) {
-	Event_AddOnce (_ItemContainerActivate_Event, f);
+	if (_ItemContainerActivate_Event) {
+		Event_AddOnce(_ItemContainerActivate_Event, f);
+	};
 };
 
 func void ItemContainerActivate_RemoveListener (var func f) {
-	Event_Remove (_ItemContainerActivate_Event, f);
+	if (_ItemContainerActivate_Event) {
+		Event_Remove(_ItemContainerActivate_Event, f);
+	};
 };
 
 func void ItemContainerHandleEvent_AddListener (var func f) {
-	Event_AddOnce (_ItemContainerHandleEvent_Event, f);
+	if (_ItemContainerHandleEvent_Event) {
+		Event_AddOnce(_ItemContainerHandleEvent_Event, f);
+	};
 };
 
 func void ItemContainerHandleEvent_RemoveListener (var func f) {
-	Event_Remove (_ItemContainerHandleEvent_Event, f);
+	if (_ItemContainerHandleEvent_Event) {
+		Event_Remove(_ItemContainerHandleEvent_Event, f);
+	};
 };
 
 func void StealContainerHandleEvent_AddListener (var func f) {
-	Event_AddOnce (_StealContainerHandleEvent_Event, f);
+	if (_StealContainerHandleEvent_Event) {
+		Event_AddOnce(_StealContainerHandleEvent_Event, f);
+	};
 };
 
 func void StealContainerHandleEvent_RemoveListener (var func f) {
-	Event_Remove (_StealContainerHandleEvent_Event, f);
+	if (_StealContainerHandleEvent_Event) {
+		Event_Remove(_StealContainerHandleEvent_Event, f);
+	};
 };
 
 func void NpcContainerHandleEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcContainerHandleEvent_Event, f);
+	if (_NpcContainerHandleEvent_Event) {
+		Event_AddOnce(_NpcContainerHandleEvent_Event, f);
+	};
 };
 
 func void NpcContainerHandleEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcContainerHandleEvent_Event, f);
+	if (_NpcContainerHandleEvent_Event) {
+		Event_Remove(_NpcContainerHandleEvent_Event, f);
+	};
 };
 
 func void NpcInventoryHandleEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcInventoryHandleEvent_Event, f);
+	if (_NpcInventoryHandleEvent_Event) {
+		Event_AddOnce(_NpcInventoryHandleEvent_Event, f);
+	};
 };
 
 func void NpcInventoryHandleEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcInventoryHandleEvent_Event, f);
+	if (_NpcInventoryHandleEvent_Event) {
+		Event_Remove(_NpcInventoryHandleEvent_Event, f);
+	};
 };
 
 //---
 
 func void _hook_oCViewDialogTrade_OnAccept () {
-	Event_Execute (_TradeOnAccept_Event, 0);
+	if (_TradeOnAccept_Event) {
+		Event_Execute(_TradeOnAccept_Event, 0);
+	};
 };
 
 func void _hook_oCViewDialogTrade_OnExit () {
-	Event_Execute (_TradeOnExit_Event, 0);
+	if (_TradeOnExit_Event) {
+		Event_Execute(_TradeOnExit_Event, 0);
+	};
 };
 
 func void _hook_oCViewDialogTrade_TransferReset () {
-	Event_Execute (_TradeTransferReset_Event, 0);
+	if (_TradeTransferReset_Event) {
+		Event_Execute(_TradeTransferReset_Event, 0);
+	};
 };
 
 func void _hook_oCViewDialogTrade_HandleEvent () {
@@ -115,7 +157,9 @@ func void _hook_oCViewDialogTrade_HandleEvent () {
 			//IsActivated; // sizeof 04h offset F4h
 			var int isActivated; isActivated = MEM_ReadInt(dlgTradePtr + 244);
 			if (isActivated) {
-				Event_Execute(_TradeHandleEvent_Event, 0);
+				if (_TradeHandleEvent_Event) {
+					Event_Execute(_TradeHandleEvent_Event, 0);
+				};
 			};
 		};
 	};
@@ -124,7 +168,9 @@ func void _hook_oCViewDialogTrade_HandleEvent () {
 //---
 
 func void _hook_oCItemContainer_Activate () {
-	Event_Execute (_ItemContainerActivate_Event, 0);
+	if (_ItemContainerActivate_Event) {
+		Event_Execute(_ItemContainerActivate_Event, 0);
+	};
 };
 
 func void _hook_oCItemContainer_HandleEvent () {
@@ -133,7 +179,9 @@ func void _hook_oCItemContainer_HandleEvent () {
 		//oCItemContainer.frame; // sizeof 04h offset 1Ch
 		var int isActive; isActive = MEM_ReadInt(ECX + 28);
 		if (isActive) {
-			Event_Execute(_ItemContainerHandleEvent_Event, 0);
+			if (_ItemContainerHandleEvent_Event) {
+				Event_Execute(_ItemContainerHandleEvent_Event, 0);
+			};
 		};
 	};
 };
@@ -149,7 +197,9 @@ func void _hook_oCStealContainer_HandleEvent () {
 		//oCStealContainer.frame; // sizeof 04h offset 1Ch
 		var int isActive; isActive = MEM_ReadInt(ECX + 28);
 		if (isActive) {
-			Event_Execute(_StealContainerHandleEvent_Event, 0);
+			if (_StealContainerHandleEvent_Event) {
+				Event_Execute(_StealContainerHandleEvent_Event, 0);
+			};
 		};
 	};
 };
@@ -167,7 +217,9 @@ func void _hook_oCNpcContainer_HandleEvent () {
 		//oCNpcContainer.frame; // sizeof 04h offset 1Ch
 		var int isActive; isActive = MEM_ReadInt(ECX + 28);
 		if (isActive) {
-			Event_Execute(_NpcContainerHandleEvent_Event, 0);
+			if (_NpcContainerHandleEvent_Event) {
+				Event_Execute(_NpcContainerHandleEvent_Event, 0);
+			};
 		};
 	};
 };
@@ -180,7 +232,9 @@ func void _hook_oCNpcInventory_HandleEvent () {
 		//oCNpcContainer.frame; // sizeof 04h offset 1Ch
 		var int isActive; isActive = MEM_ReadInt(ECX + 28);
 		if (isActive) {
-			Event_Execute(_NpcInventoryHandleEvent_Event, 0);
+			if (_NpcInventoryHandleEvent_Event) {
+				Event_Execute(_NpcInventoryHandleEvent_Event, 0);
+			};
 		};
 	};
 };
@@ -188,19 +242,19 @@ func void _hook_oCNpcInventory_HandleEvent () {
 //---
 
 func void G1_TradeEvents_Init () {
-	if (!Hlp_IsValidHandle(_TradeOnAccept_Event)) {
+	if (!_TradeOnAccept_Event) {
 		_TradeOnAccept_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_TradeOnExit_Event)) {
+	if (!_TradeOnExit_Event) {
 		_TradeOnExit_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_TradeTransferReset_Event)) {
+	if (!_TradeTransferReset_Event) {
 		_TradeTransferReset_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_TradeHandleEvent_Event)) {
+	if (!_TradeHandleEvent_Event) {
 		_TradeHandleEvent_Event = Event_Create ();
 	};
 
@@ -225,7 +279,7 @@ func void G1_TradeEvents_Init () {
 };
 
 func void G1_ItemContainerActivateEvent_Init () {
-	if (!Hlp_IsValidHandle(_ItemContainerActivate_Event)) {
+	if (!_ItemContainerActivate_Event) {
 		_ItemContainerActivate_Event = Event_Create ();
 	};
 
@@ -239,19 +293,19 @@ func void G1_ItemContainerActivateEvent_Init () {
 func void G1_InventoryEvents_Init () {
 	G1_ItemContainerActivateEvent_Init ();
 
-	if (!Hlp_IsValidHandle(_ItemContainerHandleEvent_Event)) {
+	if (!_ItemContainerHandleEvent_Event) {
 		_ItemContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_StealContainerHandleEvent_Event)) {
+	if (!_StealContainerHandleEvent_Event) {
 		_StealContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_NpcContainerHandleEvent_Event)) {
+	if (!_NpcContainerHandleEvent_Event) {
 		_NpcContainerHandleEvent_Event = Event_Create ();
 	};
 
-	if (!Hlp_IsValidHandle(_NpcInventoryHandleEvent_Event)) {
+	if (!_NpcInventoryHandleEvent_Event) {
 		_NpcInventoryHandleEvent_Event = Event_Create ();
 	};
 

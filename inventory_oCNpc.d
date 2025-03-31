@@ -1843,11 +1843,15 @@ func void NpcTransferItemEvent_Init () {
 };
 
 func void NpcTransferItemEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcTransferItem_Event, f);
+	if (_NpcTransferItem_Event) {
+		Event_AddOnce(_NpcTransferItem_Event, f);
+	};
 };
 
 func void NpcTransferItemEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcTransferItem_Event, f);
+	if (_NpcTransferItem_Event) {
+		Event_Remove(_NpcTransferItem_Event, f);
+	};
 };
 
 func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCat, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
@@ -1909,7 +1913,7 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 
 		//Custom prints for transferred items
 		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
-			Event_Execute (_NpcTransferItem_Event, _@ (item));
+			Event_Execute(_NpcTransferItem_Event, _@ (item));
 		};
 
 		var int retVal;

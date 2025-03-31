@@ -21,14 +21,14 @@ func void FF_CheckActionKey () {
 	if (PC_ActionKeyPressed != PC_ActionKeyPressedLast) {
 		if (!PC_ActionKeyPressed) {
 			if (_PlayerActionKeyReleased_Event) {
-				Event_Execute (_PlayerActionKeyReleased_Event, 0);
+				Event_Execute(_PlayerActionKeyReleased_Event, 0);
 			};
 		};
 	} else {
 		if (PC_ActionKeyPressed) {
 			PC_ActionKeyHeld = TRUE;
 			if (_PlayerActionKeyHeld_Event) {
-				Event_Execute (_PlayerActionKeyHeld_Event, 0);
+				Event_Execute(_PlayerActionKeyHeld_Event, 0);
 			};
 		};
 	};
@@ -56,19 +56,27 @@ func void _hook_oCAIHuman_PC_ActionMove () {
 };
 
 func void PlayerActionKeyHeldEvent_AddListener (var func f) {
-	Event_AddOnce (_PlayerActionKeyHeld_Event, f);
+	if (_PlayerActionKeyHeld_Event) {
+		Event_AddOnce(_PlayerActionKeyHeld_Event, f);
+	};
 };
 
 func void PlayerActionKeyHeldEvent_RemoveListener (var func f) {
-	Event_Remove (_PlayerActionKeyHeld_Event, f);
+	if (_PlayerActionKeyHeld_Event) {
+		Event_Remove(_PlayerActionKeyHeld_Event, f);
+	};
 };
 
 func void PlayerActionKeyReleasedEvent_AddListener (var func f) {
-	Event_AddOnce (_PlayerActionKeyReleased_Event, f);
+	if (_PlayerActionKeyReleased_Event) {
+		Event_AddOnce(_PlayerActionKeyReleased_Event, f);
+	};
 };
 
 func void PlayerActionKeyReleasedEvent_RemoveListener (var func f) {
-	Event_Remove (_PlayerActionKeyReleased_Event, f);
+	if (_PlayerActionKeyReleased_Event) {
+		Event_Remove(_PlayerActionKeyReleased_Event, f);
+	};
 };
 
 func void G12_GetActionKey_Init () {
@@ -239,7 +247,7 @@ func void _hook_oCNpc_OnMessage () {
 					if (eventUseItemToState == 0) {
 						eventUseItemToState = 1;
 						if (_PlayerUseItemToStateStart_Event) {
-							Event_Execute (_PlayerUseItemToStateStart_Event, 0);
+							Event_Execute(_PlayerUseItemToStateStart_Event, 0);
 						};
 					};
 				} else
@@ -247,7 +255,7 @@ func void _hook_oCNpc_OnMessage () {
 					if (eventUseItemToState == 1) {
 						eventUseItemToState = 0;
 						if (_PlayerUseItemToStateUse_Event) {
-							Event_Execute (_PlayerUseItemToStateUse_Event, 0);
+							Event_Execute(_PlayerUseItemToStateUse_Event, 0);
 						};
 					};
 				};
@@ -301,19 +309,27 @@ func void _hook_oCNpc_OnMessage () {
 };
 
 func void PlayerUseItemToStateStartEvent_AddListener (var func f) {
-	Event_AddOnce (_PlayerUseItemToStateStart_Event, f);
+	if (_PlayerUseItemToStateStart_Event) {
+		Event_AddOnce(_PlayerUseItemToStateStart_Event, f);
+	};
 };
 
 func void PlayerUseItemToStateStartEvent_RemoveListener (var func f) {
-	Event_Remove (_PlayerUseItemToStateStart_Event, f);
+	if (_PlayerUseItemToStateStart_Event) {
+		Event_Remove(_PlayerUseItemToStateStart_Event, f);
+	};
 };
 
 func void PlayerUseItemToStateUseEvent_AddListener (var func f) {
-	Event_AddOnce (_PlayerUseItemToStateUse_Event, f);
+	if (_PlayerUseItemToStateUse_Event) {
+		Event_AddOnce(_PlayerUseItemToStateUse_Event, f);
+	};
 };
 
 func void PlayerUseItemToStateUseEvent_RemoveListener (var func f) {
-	Event_Remove (_PlayerUseItemToStateUse_Event, f);
+	if (_PlayerUseItemToStateUse_Event) {
+		Event_Remove(_PlayerUseItemToStateUse_Event, f);
+	};
 };
 
 func void G12_InterceptNpcEventMessages_Init () {
@@ -343,16 +359,20 @@ func void G12_InterceptNpcEventMessages_Init () {
 var int _MouseUpdate_Event;
 
 func void MouseUpdateEvent_AddListener (var func f) {
-	Event_AddOnce (_MouseUpdate_Event, f);
+	if (_MouseUpdate_Event) {
+		Event_AddOnce(_MouseUpdate_Event, f);
+	};
 };
 
 func void MouseUpdateEvent_RemoveListener (var func f) {
-	Event_Remove (_MouseUpdate_Event, f);
+	if (_MouseUpdate_Event) {
+		Event_Remove(_MouseUpdate_Event, f);
+	};
 };
 
 func void _hook_mouseUpdate_Event () {
 	if (_MouseUpdate_Event) {
-		Event_Execute (_MouseUpdate_Event, 0);
+		Event_Execute(_MouseUpdate_Event, 0);
 	};
 };
 
