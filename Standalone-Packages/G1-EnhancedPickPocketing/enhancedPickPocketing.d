@@ -459,21 +459,12 @@ func void _eventNpcInventoryHandleEvent__EnhancedPickPocketing (var int dummyVar
 	};
 };
 
-func void _eventOpenInventory__EnhancedPickPocketing (var int dummyVariable) {
-	//Flush keys to prevent accidental inventory movements (while stealing)
-	zCInput_Win32_ClearKeyBuffer();
-	zCInput_Win32_ResetRepeatKey(true);
-};
-
 func void G1_EnhancedPickPocketing_Init () {
 	G1_InventoryEvents_Init ();
 
 	StealContainerHandleEvent_AddListener (_eventStealContainerHandleEvent__EnhancedPickPocketing);
 
 	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__EnhancedPickPocketing);
-
-	G12_OpenInventoryEvent_Init ();
-	OpenInventoryEvent_AddListener (_eventOpenInventory__EnhancedPickPocketing);
 
 	//-- Load API values / init default values
 

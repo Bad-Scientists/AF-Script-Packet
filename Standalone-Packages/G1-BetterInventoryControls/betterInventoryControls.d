@@ -640,12 +640,6 @@ func void _eventOpenInventory__SwitchToCategory (var int dummyVariable) {
 	};
 };
 
-func void _eventOpenInventory__BetterInvControls (var int dummyVariable) {
-	//Flush keys to prevent accidental inventory movements (while stealing)
-	zCInput_Win32_ClearKeyBuffer();
-	zCInput_Win32_ResetRepeatKey(true);
-};
-
 func void G1_BetterInventoryControls_Init() {
 	G1_TradeEvents_Init ();
 
@@ -669,5 +663,4 @@ func void G1_BetterInventoryControls_Init() {
 
 	G12_OpenInventoryEvent_Init ();
 	OpenInventoryEvent_AddListener (_eventOpenInventory__SwitchToCategory);
-	OpenInventoryEvent_AddListener (_eventOpenInventory__BetterInvControls);
 };

@@ -443,7 +443,10 @@ func void _hook_oCItemContainer_OpenPassive () {
 
 	if (!NPC_IsPlayer (slf)) { return; };
 
-	//TODO: flush keys here
+	//Flush keys to prevent accidental inventory movements (while stealing)
+	zCInput_Win32_ClearKeyBuffer();
+	zCInput_Win32_ResetRepeatKey(true);
+
 	if (_OpenInventory_Event) {
 		Event_Execute(_OpenInventory_Event, 0);
 	};
