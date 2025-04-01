@@ -228,8 +228,7 @@ func void _eventGameHandleEvent__MultiTeleport (var int key) {
 
 		//Cancel key input
 		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		zCInputCallback_SetKey(0);
 
 		return;
 	};
@@ -327,9 +326,7 @@ func void _eventGameHandleEvent__MultiTeleport (var int key) {
 	_multiTeleportModeActive = TRUE;
 
 	//Cancel key input
-	//EDI has to be also nulled
-	MEM_WriteInt (ESP + 4, 0);
-	EDI = 0;
+	zCInputCallback_SetKey(0);
 };
 
 /*

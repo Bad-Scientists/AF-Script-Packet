@@ -10,14 +10,14 @@ We are using a collection of many scripts from the entire Gothic community.
 
 None of this would be possible without Ikarus & LeGo and without modders willing to share their amazing works & ideas.
 
-<ins>Thank you</ins>: **Sektenspinner**, **Lehona**, **Gottfried**, **mud-freak**(Szapp), **Neconspictor**, **OrcWarrior**, **Dalai Zoll**, **Cryp18Struct**, **L-Titan** (Gelaos) (we will try to keep list up to date :smile: )
+<ins>Thank you</ins>: **Sektenspinner**, **Lehona**, **Gottfried**, **mud-freak**(Szapp), **Neconspictor**, **OrcWarrior**, **Dalai Zoll**, **Cryp18Struct**, **L-Titan** (Gelaos), **Damianut**, **Neocromicon**, **rezu93** (we will try to keep list up to date :smile: )
 Special thanks goes to: **helpo1** :crown: & **Kaiser**, who endlessly debugged many features :sparkles:
 </details>
 
 ## Requirements:
 
-1. [Ikarus](https://github.com/Lehona/Ikarus) (1.2.2 <ins>master</ins> branch) 
-1. [LeGo](https://github.com/Lehona/LeGo) (2.8.0)
+1. [Ikarus](https://github.com/Lehona/Ikarus) (1.2.3)
+1. [LeGo](https://github.com/Lehona/LeGo) (2.9.0)
 
 <details><summary>AFSP Initialization</summary>
 

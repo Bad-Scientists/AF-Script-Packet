@@ -57,11 +57,12 @@ utils.d
 
 fonts.d
 
+zError_engine.d
+
 input.d
 keys.d
 
 vectors.d
-zError_engine.d
 vobFunctions.d
 
 spatialState.d
@@ -92,6 +93,7 @@ ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
 ObjectFactory\zCViewText2.d
+ObjectFactory\zCOption.d
 
 mobFunctions.d
 
@@ -148,6 +150,7 @@ menu.d
 vobThrowing.d
 
 files.d
+options.d
 archiver.d
 miscellaneous.d
 
@@ -213,6 +216,7 @@ Standalone-Packages\G12-Debugging\vobsCheckProperties.d
 Standalone-Packages\G12-Debugging\testSuite.d
 Standalone-Packages\G12-Debugging\despawn.d
 Standalone-Packages\G12-Debugging\compileTex.d
+Standalone-Packages\G12-Debugging\exportImport.d
 
 Standalone-Packages\G12-LogDialogues\logDialogues.d
 

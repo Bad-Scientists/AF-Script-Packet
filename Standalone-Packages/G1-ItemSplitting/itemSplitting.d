@@ -91,6 +91,21 @@ func void DoMergeInventoryItems__ItemSplitting() {
 func void DoSplitInventoryItems__ItemSplitting() {
 	const int ITM_FLAG_BELT = 1 << 24; //G2A only - available for G1 tho :)
 
+	//-- If Union MultiSlotWeapons feature is enabled - exit
+	//(even tho my implementation is slightly better because of inventory sorting ;-P )
+
+	const int unionMultiSlotEnabled = -1;
+
+	if (unionMultiSlotEnabled == -1) {
+		unionMultiSlotEnabled = STR_ToInt(zCOption_SystemPack_GetOption("PARAMETERS", "MultiSlotWeapons")) | STR_ToInt(zCOption_SystemPack_GetOption("PARAMETERS", "MultiSlotMagic"));
+	};
+
+	if (unionMultiSlotEnabled) {
+		return;
+	};
+
+	//--
+
 	DoMergeInventoryItems__ItemSplitting();
 
 	var oCNpc slf; slf = Hlp_GetNpc(hero);
@@ -164,44 +179,24 @@ func void DoSplitInventoryItems__ItemSplitting() {
 
 //0x006968F0 public: void __thiscall oCNpc::Equip(class oCItem *)
 func void _eventEquipItem__ItemSplitting (var int dummyVariable){
-	const int ITM_FLAG_BELT = 1 << 24; //G2A only - available for G1 tho :)
-
 	if (!Hlp_Is_oCNpc(ECX)) { return; };
-
-	var int itemPtr; itemPtr = MEM_ReadInt(ESP + 4);
-	if (!Hlp_Is_oCItem(itemPtr)) { return; };
-
 	var oCNPC slf; slf = _^(ECX);
 	if (!Npc_IsPlayer(slf)) { return; };
 
-	var oCItem itm; itm = _^(itemPtr);
-	if (!Hlp_IsValidItem (itm)) { return; };
-
-	//Only weapons, amulets & rings
-	if ((itm.mainflag & ITEM_KAT_NF) || (itm.mainflag & ITEM_KAT_FF) || (itm.flags & ITEM_AMULET) || (itm.flags & ITEM_RING) || (itm.flags & ITM_FLAG_BELT))
-	{
+	//INV_WEAPON or INV_MAGIC
+	if ((slf.inventory2_invnr == 1) || (slf.inventory2_invnr == 4)) {
 		AI_Function(hero, DoSplitInventoryItems__ItemSplitting);
 	};
 };
 
 //0x0068FBC0 public: void __thiscall oCNpc::UnequipItem(class oCItem *)
 func void _eventUnEquipItem__ItemSplitting (var int dummyVariable){
-	const int ITM_FLAG_BELT = 1 << 24; //G2A only - available for G1 tho :)
-
 	if (!Hlp_Is_oCNpc(ECX)) { return; };
-
-	var int itemPtr; itemPtr = MEM_ReadInt(ESP + 4);
-	if (!Hlp_Is_oCItem(itemPtr)) { return; };
-
 	var oCNPC slf; slf = _^(ECX);
 	if (!Npc_IsPlayer(slf)) { return; };
 
-	var oCItem itm; itm = _^(itemPtr);
-	if (!Hlp_IsValidItem (itm)) { return; };
-
-	//Only weapons, amulets, rings & belts
-	if ((itm.mainflag & ITEM_KAT_NF) || (itm.mainflag & ITEM_KAT_FF) || (itm.flags & ITEM_AMULET) || (itm.flags & ITEM_RING) || (itm.flags & ITM_FLAG_BELT))
-	{
+	//INV_WEAPON or INV_MAGIC
+	if ((slf.inventory2_invnr == 1) || (slf.inventory2_invnr == 4)) {
 		AI_Function(hero, DoSplitInventoryItems__ItemSplitting);
 	};
 };

@@ -33,14 +33,14 @@ func void Trade_SetBuyMultiplier (var int mulF) {
 	if (MEM_InformationMan.DlgTrade) {
 		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
-		//G1
 		if (dialogTrade.dlgInventoryNpc) {
 			itemCont = _^ (dialogTrade.dlgInventoryNpc);
 			itemCont.valueMultiplier = mulF;
 		};
 
+		//G1
 		if (MEMINT_SwitchG1G2(1, 0)) {
-			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 252;
+			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 252; //dlgContainerNpc
 			if (ptr) {
 				itemCont = _^ (ptr);
 				itemCont.valueMultiplier = mulF;
@@ -57,8 +57,9 @@ func void Trade_SetSellMultiplier (var int mulF) {
 	if (MEM_InformationMan.DlgTrade) {
 		dialogTrade = _^ (MEM_InformationMan.DlgTrade);
 
+		//G1
 		if (MEMINT_SwitchG1G2(1, 0)) {
-			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 260;
+			var int ptr; ptr = _@(dialogTrade.dlgInventoryNpc) + 260; //dlgContainerPlayer
 			if (ptr) {
 				itemCont = _^ (ptr);
 				itemCont.valueMultiplier = mulF;
@@ -254,9 +255,7 @@ func int Hlp_Trade_GetInventoryNpcContainer () {
 		dialogStealContainer = _^ (dialogTrade.dlgInventoryNpc);
 
 		//oCStealContainer
-		if (dialogStealContainer.stealContainer) {
-			return dialogStealContainer.stealContainer;
-		};
+		return + dialogStealContainer.stealContainer;
 	};
 
 	return 0;
@@ -284,9 +283,7 @@ func int Hlp_Trade_GetContainerNpcContainer () {
 		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
-		if (dialogItemContainer.itemContainer) {
-			return dialogItemContainer.itemContainer;
-		};
+		return + dialogItemContainer.itemContainer;
 	};
 
 	return 0;
@@ -314,9 +311,7 @@ func int Hlp_Trade_GetContainerPlayerContainer () {
 		dialogItemContainer = _^ (itemContainerPtr);
 
 		//oCItemContainer
-		if (dialogItemContainer.itemContainer) {
-			return dialogItemContainer.itemContainer;
-		};
+		return + dialogItemContainer.itemContainer;
 	};
 
 	return 0;
@@ -333,9 +328,7 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 		dialogInventory = _^ (dialogTrade.dlgInventoryPlayer);
 
 		//oCNpcInventory
-		if (dialogInventory.inventory) {
-			return dialogInventory.inventory;
-		};
+		return + dialogInventory.inventory;
 	};
 
 	return 0;
@@ -344,30 +337,41 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 /*
  *	Returns pointer to active oCItemContainer
  */
-/*
-Not required ... we can get same result using Hlp_GetActiveOpenInvContainer
 func int Hlp_Trade_GetActiveTradeContainer () {
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
-	var oCViewDialogTrade dialogTrade;
-	dialogTrade = _^ (MEM_InformationMan.DlgTrade);
+	var oCViewDialogTrade dialogTrade; dialogTrade = _^(MEM_InformationMan.DlgTrade);
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_INVENTORY_G1) {
-		return +Hlp_Trade_GetInventoryNpcContainer ();
-	} else
+		//dlgInventoryNpc; //oCViewDialogStealContainer* // sizeof 04h offset F8h
+		var oCViewDialogStealContainer dlgInventoryNpc; dlgInventoryNpc = _^(dialogTrade.dlgInventoryNpc);
+		//stealContainer; //oCStealContainer* // sizeof 04h offset 100h
+		return + dlgInventoryNpc.stealContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_CONTAINER_G1) {
-		return +Hlp_Trade_GetContainerNpcContainer ();
-	} else
+		//dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
+		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
+		return + dlgContainerNpc.itemContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1) {
-		return +Hlp_Trade_GetContainerPlayerContainer ();
-	} else
+		//dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
+		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
+		return + dlgContainerPlayer.itemContainer;
+	};
+
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_INVENTORY_G1) {
-		return +Hlp_Trade_GetInventoryPlayerContainer ();
+		//dlgInventoryPlayer; //oCViewDialogInventory* // sizeof 04h offset 108h
+		var oCViewDialogInventory dlgInventoryPlayer; dlgInventoryPlayer = _^(dialogTrade.dlgInventoryPlayer);
+		//inventory; //oCNpcInventory* // sizeof 04h offset 100h
+		return + dlgInventoryPlayer.inventory;
 	};
 
 	return 0;
 };
-*/
 
 /*
  *	Returns pointer to active oCItemContainer
@@ -855,6 +859,9 @@ func int oCNpcInventory_GetCategory (var int ptr, var int itemPtr) {
 	return +retVal;
 };
 
+/*
+ *	Does not actually remove item by ptr... bruuuuuuuuuuuuuuh
+ */
 func int oCNpcInventory_RemoveByPtr (var int ptr, var int itemPtr, var int amount) {
 	//0x0066CF10 public: virtual class oCItem * __thiscall oCNpcInventory::RemoveByPtr(class oCItem *,int)
 	const int oCNpcInventory__RemoveByPtr_G1 = 6737680;
@@ -1794,10 +1801,12 @@ func void NPC_RemoveInventoryCategory (var int slfInstance, var int invCat, var 
 
 		oCNPC_UnequipItemPtr (slf, _@ (item));
 
+		var int retVal;
+
 		if (amount == 1) {
-			NPC_RemoveInvItem (slf, itemInstanceID);
+			retVal = NPC_RemoveInvItem (slf, itemInstanceID);
 		} else {
-			NPC_RemoveInvItems (slf, itemInstanceID, amount);
+			retVal = NPC_RemoveInvItems (slf, itemInstanceID, amount);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
@@ -1834,11 +1843,15 @@ func void NpcTransferItemEvent_Init () {
 };
 
 func void NpcTransferItemEvent_AddListener (var func f) {
-	Event_AddOnce (_NpcTransferItem_Event, f);
+	if (_NpcTransferItem_Event) {
+		Event_AddOnce(_NpcTransferItem_Event, f);
+	};
 };
 
 func void NpcTransferItemEvent_RemoveListener (var func f) {
-	Event_Remove (_NpcTransferItem_Event, f);
+	if (_NpcTransferItem_Event) {
+		Event_Remove(_NpcTransferItem_Event, f);
+	};
 };
 
 func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstance, var int invCat, var int transferEquippedArmor, var int transferEquippedItems, var int transferMissionItems) {
@@ -1900,15 +1913,17 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 
 		//Custom prints for transferred items
 		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
-			Event_Execute (_NpcTransferItem_Event, _@ (item));
+			Event_Execute(_NpcTransferItem_Event, _@ (item));
 		};
+
+		var int retVal;
 
 		if (item.flags & ITEM_MULTI) {
 			CreateInvItems(oth, itemInstanceID, amount);
-			NPC_RemoveInvItems(slf, itemInstanceID, amount);
+			retVal = NPC_RemoveInvItems(slf, itemInstanceID, amount);
 		} else {
 			CreateInvItem(oth, itemInstanceID);
-			NPC_RemoveInvItem(slf, itemInstanceID);
+			retVal = NPC_RemoveInvItem(slf, itemInstanceID);
 		};
 
 		amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);

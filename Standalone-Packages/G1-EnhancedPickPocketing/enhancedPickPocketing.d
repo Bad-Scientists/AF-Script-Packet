@@ -266,8 +266,26 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 	var int amount;
 	var int retVal;
 
+	//Override binded keys internally for purposes of this function
+
+	if (zCInput_IsBinded(GAME_ACTION, key)) {
+		key = KEY_LCONTROL;
+	};
+
+	if (zCInput_IsBinded(GAME_SMOVE, key)) {
+		key = KEY_LMENU;
+	};
+
+	if (zCInput_IsBinded(GAME_RIGHT, key)) {
+		key = KEY_RIGHTARROW;
+	};
+
+	if (zCInput_IsBinded(GAME_STRAFERIGHT, key)) {
+		key = KEY_RIGHTARROW;
+	};
+
 	//Transfer items
-	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE)) {
+	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE) || (key == MOUSE_BUTTON_LEFT)) {
 
 		openInvType = Hlp_GetOpenInventoryType ();
 
@@ -392,10 +410,7 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 	};
 
 	//Allow switching to player's inventory (not allowed in vanilla) ... we allow it in order to move items from player's inventory to steal victim
-	if ((key == MEM_GetKey ("keyRight"))
-	|| (key == MEM_GetSecondaryKey ("keyRight"))
-	|| (key == MEM_GetKey ("keyStrafeRight"))
-	|| (key == MEM_GetSecondaryKey ("keyRight")))
+	if (key == KEY_RIGHTARROW)
 	{
 		openInvType = Hlp_GetOpenInventoryType ();
 
@@ -406,15 +421,6 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 			const int oCStealContainer_vtbl_G1 = 8244900;
 
 			if (MEM_ReadInt (openInvContainerPtr) == oCStealContainer_vtbl_G1) {
-				//Get action key state
-				var int actionKey; actionKey = MEM_GetKey ("keyAction"); actionKey = MEM_KeyState (actionKey);
-				var int secondaryActionKey; secondaryActionKey = MEM_GetSecondaryKey ("keyAction"); secondaryActionKey = MEM_KeyState (secondaryActionKey);
-
-				//Cancel default Ctrl + right arrow (in vanilla it would transfer an item)
-				if (((actionKey == KEY_PRESSED) || (actionKey == KEY_HOLD)) || ((secondaryActionKey == KEY_PRESSED) || (secondaryActionKey == KEY_HOLD))) {
-					return TRUE;
-				};
-
 				//Switch to next category
 				//-1 to left, 1 to right
 				return + oCItemContainer_ActivateNextContainer (ptr, 1);
@@ -426,28 +432,30 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 };
 
 func void _eventStealContainerHandleEvent__EnhancedPickPocketing (var int dummyVariable) {
-	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCStealContainer
-	var int cancel; cancel = oCItemContainer_HandleKey__EnhancedPickPocketing (ECX, key);
+	if (oCNpc_Get_Game_Mode() != NPC_GAME_STEAL) { return; };
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	var int key; key = MEM_ReadInt(ESP + 4);
+
+	//oCStealContainer
+	if (oCItemContainer_HandleKey__EnhancedPickPocketing(ECX, key)) {
+		//Flush keys to prevent accidental item transfer
+		zCInput_Win32_ClearKeyBuffer();
+		zCInput_Win32_ResetRepeatKey(true);
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventNpcInventoryHandleEvent__EnhancedPickPocketing (var int dummyVariable) {
-	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
+	if (oCNpc_Get_Game_Mode() != NPC_GAME_STEAL) { return; };
 
-	var int key; key = MEM_ReadInt (ESP + 4);
+	var int key; key = MEM_ReadInt(ESP + 4);
+
 	//oCNpcInventory
-	var int cancel; cancel = oCItemContainer_HandleKey__EnhancedPickPocketing (ECX, key);
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	if (oCItemContainer_HandleKey__EnhancedPickPocketing(ECX, key)) {
+		//Flush keys to prevent accidental item transfer
+		zCInput_Win32_ClearKeyBuffer();
+		zCInput_Win32_ResetRepeatKey(true);
+		zCInputCallback_SetKey(0);
 	};
 };
 

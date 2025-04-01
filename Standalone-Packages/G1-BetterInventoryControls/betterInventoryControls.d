@@ -47,6 +47,16 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 
 	if (!ptr) { return 0; };
 
+	//Override binded keys internally for purposes of this function
+
+	if (zCInput_IsBinded(GAME_ACTION, key)) {
+		key = KEY_LCONTROL;
+	};
+
+	if (zCInput_IsBinded(GAME_SMOVE, key)) {
+		key = KEY_LMENU;
+	};
+
 	//Quick loot
 	if (key == KEY_Q) {
 		openInvType = Hlp_GetOpenInventoryType ();
@@ -96,6 +106,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 		};
 	};
 
+	//Navigation
 	if ((key == KEY_PRIOR) || (key == KEY_NEXT) || (key == KEY_HOME) || (key == KEY_END)) {
 		container = _^ (ptr);
 
@@ -207,14 +218,14 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							itmPtr = oCNpcInventory_RemoveByPtr (npcInventoryPtr, itmPtr, amount);
 
 							containerPtr = Hlp_GetOpenContainer_oCItemContainer ();
-							oCItemContainer_Insert (containerPtr, itmPtr);
+							itmPtr = oCItemContainer_Insert (containerPtr, itmPtr);
 						} else {
 							containerPtr = Hlp_GetOpenContainer_oCItemContainer ();
 							itmPtr = oCItemContainer_RemoveByPtr (containerPtr, itmPtr, amount);
 
 							npc = Hlp_GetNPC (hero);
 							npcInventoryPtr = _@ (npc.inventory2_vtbl);
-							oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
+							itmPtr = oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
 						};
 
 						return TRUE;
@@ -254,7 +265,7 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 							//Insert item to players inventory
 							npc = Hlp_GetNPC (hero);
 							npcInventoryPtr = _@ (npc.inventory2_vtbl);
-							oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
+							itmPtr = oCNpcInventory_Insert (npcInventoryPtr, itmPtr);
 
 							//Re-create list - this will add to the item container all items from NPCs inventory
 							//We have to use oCStealContainer_CreateList, because oCNpcContainer_CreateList will not delete list in oCItemContainer (and would cause item duplication)
@@ -380,23 +391,16 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	return FALSE;
 };
 
+//0x007299A0 public: virtual int __thiscall oCViewDialogTrade::HandleEvent(int)
 func void _eventTradeHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	var int cancel; cancel = FALSE;
 
-	var int ptr;
-	//ptr = Hlp_Trade_GetActiveTradeContainer ();
-	ptr = Hlp_GetActiveOpenInvContainer ();
-
+	//Get trading container
+	var int ptr; ptr = Hlp_Trade_GetActiveTradeContainer();
 	if (ptr) {
-		//oCViewDialogTrade
-		cancel = oCItemContainer_HandleKey (ptr, key);
-	};
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		if (oCItemContainer_HandleKey(ptr, key)) {
+			zCInputCallback_SetKey(0);
+		};
 	};
 };
 
@@ -404,36 +408,26 @@ func void _eventItemContainerHandleEvent__BetterInvControls (var int dummyVariab
 	var int key; key = MEM_ReadInt (ESP + 4);
 
 	//oCItemContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
-
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventStealContainerHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCStealContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	//oCStealContainer
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
 func void _eventNpcContainerHandleEvent__BetterInvControls (var int dummyVariable) {
 	var int key; key = MEM_ReadInt (ESP + 4);
-	//oCNpcContainer
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
 
-	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+	//oCNpcContainer
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
 	};
 };
 
@@ -462,11 +456,14 @@ func void oCNpc_RemoveFromHand__BetterInvControls (var int slfInstance) {
 */
 
 func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariable) {
-	if (!Hlp_Is_oCNpcInventory (ECX)) { return; };
-
+	var int cancel; cancel = FALSE;
 	var int key; key = MEM_ReadInt (ESP + 4);
+
 	//oCNpcInventory
-	var int cancel; cancel = oCItemContainer_HandleKey (ECX, key);
+	if (oCItemContainer_HandleKey(ECX, key)) {
+		zCInputCallback_SetKey(0);
+		return;
+	};
 
 	var oCNpcInventory npcInventory;
 
@@ -485,10 +482,10 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 //-- Player's inventory - additional controls
 
 	if (openInvType == OpenInvType_Player) {
-		const int action_Nothing	= 0;
-		const int action_PutInHand	= 1;
-		const int action_DropItem	= 2;
-		const int action_DropAllItems	= 3;
+		const int action_Nothing = 0;
+		const int action_PutInHand = 1;
+		const int action_DropItem = 2;
+		const int action_DropAllItems = 3;
 
 		var int action; action = action_Nothing;
 
@@ -589,9 +586,7 @@ func void _eventNpcInventoryHandleEvent__BetterInvControls (var int dummyVariabl
 	};
 
 	if (cancel) {
-		//EDI has to be also nulled
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		zCInputCallback_SetKey(0);
 	};
 };
 
@@ -619,7 +614,7 @@ func void _eventDoDropVob__BetterInvControls (var int eventType) {
 	};
 };
 
-func void _eventDoTakeVob__SwitchCategory () {
+func void _eventDoTakeVob__SwitchCategory (var int dummyVariable) {
 	var int itemPtr; itemPtr = MEM_ReadInt (ESP + 4);
 	if ((!Hlp_Is_oCNpc (ECX)) || (!Hlp_Is_oCItem (itemPtr))) { return; };
 
@@ -633,7 +628,7 @@ func void _eventDoTakeVob__SwitchCategory () {
 	};
 };
 
-func void _eventOpenInventory__SwitchToCategory () {
+func void _eventOpenInventory__SwitchToCategory (var int dummyVariable) {
 	//Only if not in dialogue - otherwise this collides with EIM item preview feature
 	if (!InfoManager_HasFinished()) {
 		return;
@@ -645,7 +640,7 @@ func void _eventOpenInventory__SwitchToCategory () {
 	};
 };
 
-func void G1_BetterInventoryControls_Init(){
+func void G1_BetterInventoryControls_Init() {
 	G1_TradeEvents_Init ();
 
 	G1_InventoryEvents_Init ();

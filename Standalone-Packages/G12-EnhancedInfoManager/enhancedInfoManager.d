@@ -1542,14 +1542,11 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 	};
 
 	if (cancel) {
-		//EDI has to be also nulled --> otherwise for example with Backspace Inventory opens up
-		MEM_WriteInt (ESP + 4, 0);
-		EDI = 0;
+		zCInputCallback_SetKey(0);
 	};
 
 	if (update) {
-		MEM_WriteInt (ESP + 4, key);
-		EDI = key;
+		zCInputCallback_SetKey(key);
 	};
 };
 
