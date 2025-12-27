@@ -33,7 +33,7 @@ func string CC_ImportFocusVob (var string param) {
 
 	var int arrPtr; arrPtr = Wld_ImportVobPtr(filePath); //function creates an array
 	if (!arrPtr) { return "Nothing was imported."; };
-	if (arrPtr) { MEM_ArrayFree(arrPtr); arrPtr = 0; };
+	MEM_ArrayFree(arrPtr); arrPtr = 0;
 	return "Done.";
 };
 
