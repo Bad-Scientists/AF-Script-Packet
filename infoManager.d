@@ -859,6 +859,8 @@ func void Info_InjectChoices (var int infoInstance) {
 
 	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
 
+	var int retVal;
+
 	while (infoPtr);
 		list = _^(infoPtr);
 
@@ -866,11 +868,21 @@ func void Info_InjectChoices (var int infoInstance) {
 			info = _^(list.data);
 			//if (info.npc == info.npc) {
 				if (STR_StartsWith(STR_Upper(info.name), injectName)) {
-					MEM_CallByID(info.information);
+					if ((!info.told) || info.permanent) {
+						msg = ConcatStrings(" - found: ", info.name);
+						MEM_Info(msg);
 
-					injected = TRUE;
-					msg = ConcatStrings(" - found ", info.name);
-					MEM_Info(msg);
+						MEM_CallByID(info.conditions);
+						retVal = MEM_PopIntResult();
+
+						msg = ConcatStrings(" - condition: ", IntToString(retVal));
+						MEM_Info(msg);
+
+						if (retVal) {
+							MEM_CallByID(info.information);
+							injected = TRUE;
+						};
+					};
 				};
 			//};
 		};
