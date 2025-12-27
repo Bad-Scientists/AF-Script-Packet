@@ -340,6 +340,7 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 func int Hlp_Trade_GetActiveTradeContainer () {
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
+	var int ptr;
 	var oCViewDialogTrade dialogTrade; dialogTrade = _^(MEM_InformationMan.DlgTrade);
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_INVENTORY_G1) {
@@ -351,14 +352,20 @@ func int Hlp_Trade_GetActiveTradeContainer () {
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_CONTAINER_G1) {
 		//dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
-		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		//We have to use offsets for compilation compatibility
+		//var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		ptr = _@(dialogTrade.dlgInventoryNpc) + 252; //dlgContainerNpc
+		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(ptr);
 		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
 		return + dlgContainerNpc.itemContainer;
 	};
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1) {
 		//dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
-		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		//We have to use offsets for compilation compatibility
+		//var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		ptr = _@(dialogTrade.dlgInventoryNpc) + 260; //dlgContainerPlayer
+		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(ptr);
 		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
 		return + dlgContainerPlayer.itemContainer;
 	};
