@@ -97,6 +97,8 @@ const string ANINAME_S_HEASHOOT = "S_HEASHOOT";
 const string ANINAME_T_TELEPORT_2_STAND = "T_TELEPORT_2_STAND";
 const string ANINAME_T_HEASHOOT_2_STAND = "T_HEASHOOT_2_STAND";
 
+const string ANINAME_T_DONTKNOW = "T_DONTKNOW";
+
 //zCOption dirs
 
 //G1
