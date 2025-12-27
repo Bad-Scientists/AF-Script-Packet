@@ -154,7 +154,10 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 
 //-- Check if Npc detected thief (through perceptions, SENSE_SMELL will always detect thief if Npc is within npc.senses_range distance!)
 
-	if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
+	//If Npc has closed eyes... we assume they are not aware of the theft :)
+	if (!oCNpc_IsFaceAniActive(slf, "S_EYESCLOSED")) {
+		if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
+	};
 
 //-- Check game mode - if we are in steal mode - check body state
 
