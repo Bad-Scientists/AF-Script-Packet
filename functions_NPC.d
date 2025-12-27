@@ -1610,6 +1610,21 @@ func int Npc_HasAnyOU (var int slfInstance) {
 			{
 				count += 1;
 			};
+
+			if (subType == EV_PLAYANISOUND)
+			{
+				var oCMsgConversation msg; msg = _^ (eMsg);
+				var string name; name = msg.name;
+
+				var int index; index = STR_IndexOf (name, ".");
+				if (index > -1) {
+					name = mySTR_SubStr (name, 0, index);
+				};
+
+				if (zCCSManager_LibValidateOU_ByName(name)) {
+					count += 1;
+				};
+			};
 		};
 	end;
 
@@ -1639,6 +1654,7 @@ func int Npc_HasOU (var int slfInstance, var int ou) {
 			if (subType == EV_OUTPUT)
 			|| (subType == EV_OUTPUTSVM)
 			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			|| (subType == EV_PLAYANISOUND)
 			{
 				var oCMsgConversation msg; msg = _^ (eMsg);
 
