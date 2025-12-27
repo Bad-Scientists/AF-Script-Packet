@@ -100,8 +100,8 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
-				AI_PlayAni (slf, "T_DONTKNOW");
+			if (!Npc_HasAni (slf, ANINAME_T_DONTKNOW)) {
+				AI_PlayAni (slf, ANINAME_T_DONTKNOW);
 			};
 			return;
 		};
@@ -119,8 +119,8 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
-				AI_PlayAni (slf, "T_DONTKNOW");
+			if (!Npc_HasAni (slf, ANINAME_T_DONTKNOW)) {
+				AI_PlayAni (slf, ANINAME_T_DONTKNOW);
 			};
 			return;
 		};
@@ -140,8 +140,8 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
-				AI_PlayAni (slf, "T_DONTKNOW");
+			if (!Npc_HasAni (slf, ANINAME_T_DONTKNOW)) {
+				AI_PlayAni (slf, ANINAME_T_DONTKNOW);
 			};
 			return;
 		};
@@ -175,8 +175,8 @@ func void _hook_oCMobLockable_CanOpen () {
 			};
 
 			oCNpc_SetFocusVob (slf, 0);
-			if (!Npc_HasAni (slf, "T_DONTKNOW")) {
-				AI_PlayAni (slf, "T_DONTKNOW");
+			if (!Npc_HasAni (slf, ANINAME_T_DONTKNOW)) {
+				AI_PlayAni (slf, ANINAME_T_DONTKNOW);
 			};
 			return;
 		};

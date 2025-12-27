@@ -204,7 +204,7 @@ func void _hook_oCNpc_OnMessage () {
 				//EV_PLAYANI
 				if (eMsg_MD_GetSubType (eMsg) == 1) {
 					var oCMsgConversation msgConversation; msgConversation = _^ (eMsg);
-					//&& (Hlp_StrCmp (msgConversation.name, "T_DONTKNOW")) {
+					//&& (Hlp_StrCmp (msgConversation.name, ANINAME_T_DONTKNOW)) {
 					PC_IgnoreAnimations -= 1;
 					msgConversation.name = STR_EMPTY;
 				};
