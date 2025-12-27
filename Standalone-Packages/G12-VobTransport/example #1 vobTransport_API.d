@@ -7,7 +7,9 @@
  * 	 - items cannot be cloned
  */
 
-const string vobTransportFontName			= "font_old_10_white.tga";
+const string vobTransportPortalName				= "HÜTTE26";
+
+const string vobTransportFontName				= "font_old_10_white.tga";
 const string vobTransportViewTexture			= "DLG_NOISE.TGA";
 
 //Default values
@@ -187,6 +189,19 @@ const string VOBTRANSPORT_CANBUY_VOBLIST_DECORATION [7] = {
 	"VOB_BUY_OC_FIREPLACE_V1"			//FIREPLACE_MIDDLE.ASC
 };
 
+func int BuildBuyVobListGetCategoryCount () {
+	if (vobTransportShowcaseVobVerticalIndex >= VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX) {
+		vobTransportShowcaseVobVerticalIndex = 0;
+	};
+
+	if (vobTransportShowcaseVobVerticalIndex == 0) { return VOBTRANSPORT_CANBUY_VOBLIST_MAX; }; //VOBTRANSPORT_CANBUY_VOBLIST
+	if (vobTransportShowcaseVobVerticalIndex == 1) { return 6; };	//VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE
+	if (vobTransportShowcaseVobVerticalIndex == 2) { return 10; };	//VOBTRANSPORT_CANBUY_VOBLIST_CHESTS
+	if (vobTransportShowcaseVobVerticalIndex == 3) { return 7; };	//VOBTRANSPORT_CANBUY_VOBLIST_DECORATION
+
+	return 0;
+};
+
 func void BuildBuyVobList__VobTransport (var int key) {
 	//Clear voblist
 	oCNpc_ClearVobList (hero);
@@ -215,11 +230,12 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	var int i;
+	var int vobCount; vobCount = BuildBuyVobListGetCategoryCount();
 
 	//All
 
 	if (vobTransportShowcaseVobVerticalIndex == 0) {
-		repeat (i, VOBTRANSPORT_CANBUY_VOBLIST_MAX);
+		repeat (i, vobCount);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -229,7 +245,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	//Special categories
 
 	if (vobTransportShowcaseVobVerticalIndex == 1) {
-		repeat (i, 6);
+		repeat (i, vobCount);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_FURNITURE, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -237,7 +253,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 2) {
-		repeat (i, 10);
+		repeat (i, vobCount);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_CHESTS, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -245,7 +261,7 @@ func void BuildBuyVobList__VobTransport (var int key) {
 	};
 
 	if (vobTransportShowcaseVobVerticalIndex == 3) {
-		repeat (i, 7);
+		repeat (i, vobCount);
 			vobName = MEM_ReadStatStringArr (VOBTRANSPORT_CANBUY_VOBLIST_DECORATION, i);
 			vobPtr = MEM_SearchVobByName (vobName);
 			oCNpc_InsertInVobList (hero, vobPtr);
@@ -295,11 +311,24 @@ func int VobCanBeBought__VobTransport_API (var int vobPtr) {
 			sVobTransportBuyVobView_Line2 = "Your ore: ";
 			sVobTransportBuyVobView_Count2 = IntToString (oreTotal);
 
-			sVobTransportBuyVobView_Line4 = "Press L Bracket to select.";
-			sVobTransportBuyVobView_Line5 = "<-- Use arrows to change selection -->";
-			sVobTransportBuyVobView_Count5 = IntToString (i + 1); //index starts with 0
+			sVobTransportBuyVobView_Line3 = "Press L Bracket to select.";
+
+			var string s; s = "Category: ";
+			var int vobCount; vobCount = BuildBuyVobListGetCategoryCount ();
+			if (vobTransportShowcaseVobVerticalIndex == 0) { s = ConcatStrings (s, "All objects"); };
+			if (vobTransportShowcaseVobVerticalIndex == 1) { s = ConcatStrings (s, "Furniture"); };
+			if (vobTransportShowcaseVobVerticalIndex == 2) { s = ConcatStrings (s, "Chests"); };
+			if (vobTransportShowcaseVobVerticalIndex == 3) { s = ConcatStrings (s, "Decorations"); };
+
+			sVobTransportBuyVobView_Line4 = s;
+			sVobTransportBuyVobView_Count4 = IntToString (vobTransportShowcaseVobVerticalIndex + 1); //index starts with 0
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, "/");
+			sVobTransportBuyVobView_Count4 = ConcatStrings (sVobTransportBuyVobView_Count4, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_CATEGORIES_MAX));
+
+			sVobTransportBuyVobView_Line5 = "Vob:";
+			sVobTransportBuyVobView_Count5 = IntToString (vobTransportShowcaseVobIndex + 1); //index starts with 0
 			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, "/");
-			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (VOBTRANSPORT_CANBUY_VOBLIST_MAX));
+			sVobTransportBuyVobView_Count5 = ConcatStrings (sVobTransportBuyVobView_Count5, IntToString (vobCount));
 
 			colorVobTransportBuyVobView_Count1 = RGBA (255, 255, 255, 255);
 			colorVobTransportBuyVobView_Count2 = RGBA (255, 255, 255, 255);
@@ -329,7 +358,7 @@ func int VobTransportCanBeActivated__VobTransport_API () {
 
 	//Here I will allow vob transport only in player's hut
 	var string portalName; portalName = Vob_GetPortalName (_@ (hero));
-	if (Hlp_StrCmp (portalName, "hütte26")) { return TRUE; };
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) { return TRUE; };
 
 	return FALSE;
 };
@@ -341,7 +370,7 @@ func int VobTransportCanBeActivated__VobTransport_API () {
 func int VobCanBeDeleted__VobTransport_API (var int vobPtr) {
 	//Anything in this hut can be deleted ... well player has to be careful ! :)
 	var string portalName; portalName = Vob_GetPortalName (vobPtr);
-	if (Hlp_StrCmp (portalName, "hütte26")) { return TRUE; };
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) { return TRUE; };
 
 	return FALSE;
 };
@@ -353,7 +382,7 @@ func int VobCanBeDeleted__VobTransport_API (var int vobPtr) {
 func int FocusVobCanBeSelected__VobTransport_API (var int vobPtr) {
 	//By default we will allow manipulation of everything that is inside player's hut
 	var string portalName; portalName = Vob_GetPortalName (vobPtr);
-	if (Hlp_StrCmp (portalName, "hütte26")) {
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) {
 		//We wont allow NPC movement in this example (feature allows it!)
 		if (!Hlp_Is_oCNpc (vobPtr)) {
 			return TRUE;
@@ -370,7 +399,7 @@ func int FocusVobCanBeSelected__VobTransport_API (var int vobPtr) {
 func int VobCanBeSelected__VobTransport_API (var int vobPtr) {
 	//By default we will allow manipulation of everything that is inside player's hut
 	var string portalName; portalName = Vob_GetPortalName (vobPtr);
-	if (Hlp_StrCmp (portalName, "hütte26")) {
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) {
 		return TRUE;
 	};
 
@@ -390,7 +419,7 @@ func int VobCanBeMovedAround__VobTransport_API (var int vobPtr) {
 		return TRUE;
 	};
 
-	if (Hlp_StrCmp (portalName, "hütte26")) {
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) {
 		return TRUE;
 	};
 
@@ -417,7 +446,7 @@ func int VobCanBeCloned__VobTransport_API (var int vobPtr) {
 func int VobCanBePlaced__VobTransport_API (var int vobPtr) {
 	var string portalName; portalName = Vob_GetPortalName (vobPtr);
 
-	if (Hlp_StrCmp (portalName, "hütte26")) {
+	if (Hlp_StrCmp (portalName, vobTransportPortalName)) {
 		//Allow object moving (pay only when cloning)
 		if (vobTransportActionMode == vobTransportActionMode_Move) {
 			return TRUE;
