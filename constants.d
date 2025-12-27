@@ -17,6 +17,16 @@ const int CHR_SPACE = 32;
 
 //-- Engine constants
 
+/*
+ *	Trade sections
+ */
+
+const int TRADE_SECTION_LEFT_INVENTORY_G1 = 0; //Move to container
+const int TRADE_SECTION_LEFT_CONTAINER_G1 = 1; //Move to inventory
+const int TRADE_SECTION_RIGHT_CONTAINER_G1 = 2; //Move to inventory
+const int TRADE_SECTION_RIGHT_INVENTORY_G1 = 3; //Move to container
+const int TRADE_SECTION_CHOICE_G1 = 4;
+
 //-- Logical key IDs
 
 //Same for G1 & G2 NoTR
