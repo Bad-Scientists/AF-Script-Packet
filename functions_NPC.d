@@ -1395,10 +1395,23 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
 
 		if (Hlp_Is_oCMsgConversation (eMsg)) {
-			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY) {
-				var oCMsgConversation msg; msg = _^ (eMsg);
+			var oCMsgConversation msg;
 
-				if (Hlp_StrCmp (msg.name, aniName)) {
+			//Extract ani name from AI queue events
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY)
+			{
+				msg = _^ (eMsg);
+				if (STR_WildMatch(msg.name, aniName)) {
+					count += 1;
+				};
+			};
+
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANISOUND)
+			{
+				msg = _^ (eMsg);
+
+				var string aniNameMsg; aniNameMsg = Npc_GetAniNameFromAniID(slf, msg.ani);
+				if (STR_WildMatch(aniNameMsg, aniName)) {
 					count += 1;
 				};
 			};

@@ -83,6 +83,35 @@ func int zCModel_GetAniFromAniID (var int modelPtr, var int aniID) { //zCModelAn
 };
 
 /*
+ *
+ */
+func string zCModel_GetAniNameFromAniID (var int modelPtr, var int aniID) {
+	//0x0057E360 public: class zSTRING const & __thiscall zCModelAni::GetAniName(void)const
+	const int zCModelAni__GetAniName_G1 = 5759840;
+
+	//0x0059D160 public: class zSTRING const & __thiscall zCModelAni::GetAniName(void)const
+	const int zCModelAni__GetAniName_G2 = 5886304;
+
+	var int modelAniPtr; modelAniPtr = zCModel_GetAniFromAniID(modelPtr, aniID);
+	if (!modelAniPtr) { return STR_EMPTY; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall(_@(modelAniPtr), MEMINT_SwitchG1G2(zCModelAni__GetAniName_G1, zCModelAni__GetAniName_G2));
+		call = CALL_End();
+	};
+
+	if (retVal) {
+		return MEM_ReadString(retVal);
+	};
+
+	return STR_EMPTY;
+};
+
+/*
  *    Plays animation using animation name
  *
  *    @param zCModel        	zCModelPtr
@@ -1046,4 +1075,9 @@ func int Npc_GetAniIDFromAniName (var int slfInstance, var string aniName) {
 	// getting zCModel
 	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
 	return + zCModel_GetAniIDFromAniName(modelPtr, aniName);
+};
+
+func string Npc_GetAniNameFromAniID(var int slfInstance, var int aniID) {
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
+	return zCModel_GetAniNameFromAniID(modelPtr, aniID);
 };
