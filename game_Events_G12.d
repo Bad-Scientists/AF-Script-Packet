@@ -17,6 +17,7 @@ var int _DoDropVob_Event;
 var int _DropFromSlot_Event;
 var int _DoThrowVob_Event;
 var int _OpenDeadNpc_Event;
+var int _OpenSteal_Event;
 var int _MobStartStateChange_Event;
 var int _GameHandleEvent_Event;
 var int _PlayerPortalRoomChange_Event;
@@ -145,6 +146,18 @@ func void OpenDeadNPCEvent_AddListener (var func f) {
 func void OpenDeadNPCEvent_RemoveListener (var func f) {
 	if (_OpenDeadNpc_Event) {
 		Event_Remove(_OpenDeadNpc_Event, f);
+	};
+};
+
+func void OpenStealEvent_AddListener (var func f) {
+	if (_OpenSteal_Event) {
+		Event_AddOnce(_OpenSteal_Event, f);
+	};
+};
+
+func void OpenStealEvent_RemoveListener (var func f) {
+	if (_OpenSteal_Event) {
+		Event_Remove(_OpenSteal_Event, f);
 	};
 };
 
@@ -346,6 +359,16 @@ func void _hook_oCNPC_OpenDeadNPC () {
 	if (!Hlp_IsValidNPC (slf)) { return; };
 	if (_OpenDeadNpc_Event) {
 		Event_Execute(_OpenDeadNpc_Event, 0);
+	};
+};
+
+//0x006BB350 public: int __thiscall oCNpc::OpenSteal(void)
+func void _hook_oCNpc_OpenSteal () {
+	if (!Hlp_Is_oCNpc (ECX)) { return; };
+	var oCNPC slf; slf = _^ (ECX);
+	if (!Hlp_IsValidNPC (slf)) { return; };
+	if (Hlp_IsValidHandle(_OpenSteal_Event)) {
+		Event_Execute(_OpenSteal_Event, 0);
 	};
 };
 
@@ -633,6 +656,24 @@ func void G12_OpenDeadNPCEvent_Init () {
 		//[OpenDeadNPC events]
 		//HookLen G2A 6
 		HookEngine (oCNPC__OpenDeadNpc, MEMINT_SwitchG1G2 (7, 6), "_hook_oCNPC_OpenDeadNPC");
+		once = 1;
+	};
+};
+
+func void G12_OpenStealEvent_Init () {
+	if (!_OpenSteal_Event) {
+		_OpenSteal_Event = Event_Create ();
+	};
+
+	const int once = 0;
+	if (!once) {
+		//0x006BB350 public: int __thiscall oCNpc::OpenSteal(void)
+		const int oCNpc__OpenSteal_G1 = 7058256;
+
+		//0x00762430 public: int __thiscall oCNpc::OpenSteal(void)
+		const int oCNpc__OpenSteal_G2 = 7742512;
+
+		HookEngine (MEMINT_SwitchG1G2(oCNpc__OpenSteal_G1, oCNpc__OpenSteal_G2), 7, "_hook_oCNpc_OpenSteal");
 		once = 1;
 	};
 };
@@ -984,6 +1025,7 @@ func void G12_GameEvents_Init () {
 	G12_DoDropVobEvent_Init ();
 	G12_DoThrowVobEvent_Init ();
 	G12_OpenDeadNPCEvent_Init ();
+	G12_OpenStealEvent_Init ();
 	G12_GameState_Extended_Init ();
 	G12_MobStartStateChangeEvent_Init ();
 	G12_PlayerPortalRoomChangeEvent_Init ();
