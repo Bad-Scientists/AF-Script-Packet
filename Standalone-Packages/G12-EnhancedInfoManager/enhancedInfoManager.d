@@ -1719,6 +1719,14 @@ func void _hook_oCInformationManager_Update_EIM () {
 	//Don't run during trading
 	if (MEM_InformationMan.Mode == INFO_MGR_MODE_TRADE) { return; };
 
+	//Mini-patch for G2
+	//Remove trading event handler (I would call this an oversight? engine should not be running events through this outside of trading...)
+	if (MEM_InformationMan.dlgTrade) {
+		var oCViewDialogTrade dlgTrade; dlgTrade = _^(MEM_InformationMan.dlgTrade);
+		var int inputCallBackPtr; inputCallBackPtr = _@(dlgTrade.zCInputCallback_vtbl);
+		zCInputCallback_SetEnableHandleEvent(inputCallBackPtr, 0);
+	};
+
 	//More safety checks
 	if (!MEM_InformationMan.dlgChoice) { return; };
 	var zCViewDialogChoice dlgChoice; dlgChoice = _^ (MEM_InformationMan.dlgChoice);
