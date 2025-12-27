@@ -99,6 +99,11 @@ const string ANINAME_T_HEASHOOT_2_STAND = "T_HEASHOOT_2_STAND";
 
 const string ANINAME_T_DONTKNOW = "T_DONTKNOW";
 
+//Hero status
+const int oHERO_STATUS_STD = 0;
+const int oHERO_STATUS_THR = 1;
+const int oHERO_STATUS_FGT = 2;
+
 //zCOption dirs
 
 //G1
