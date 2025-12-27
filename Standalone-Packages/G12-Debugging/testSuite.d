@@ -9,6 +9,7 @@ var int TestSuite_Active;
 var int TestSuite_DirectCall;
 var int TestSuite_ReportOnlyIssues;
 var int TestSuite_bErrorLevel;
+var int TestSuite_bSpawnTime;
 
 func void TestSuite_Init () {
 	//Set to true
@@ -26,11 +27,19 @@ func void TestSuite_Init () {
 	if (TestSuite_bErrorLevel < 1) {
 		zERROR_SetFilterLevel (1);
 	};
+
+	TestSuite_bSpawnTime = oCSpawnManager_GetSpawnTime();
+
+	//Spawn / delete dead Npcs immediately
+	oCSpawnManager_SetSpawnTime(FLOATNULL);
 };
 
 func void TestSuite_Stop () {
 	TestSuite_Active = FALSE;
+
+	//Restore original values
 	zERROR_SetFilterLevel (TestSuite_bErrorLevel);
+	oCSpawnManager_SetSpawnTime(TestSuite_bSpawnTime);
 };
 
 /*
