@@ -344,6 +344,7 @@ const int NPC_PERC_MAX = 33;
 const int zMDL_ANIEVENT_MAXSTRING = 4;
 const int zMAN_VERS = 12;
 const int zMDL_MAX_ANIS_PARALLEL = 6;
+const int zMDL_MAX_TEX = 4;
 const int zMDL_MAX_MESHLIBS_PARALLEL = 4;
 const int zMDL_VELRING_SIZE = 8;
 const int MAX_ANIHISTORY = 16;
