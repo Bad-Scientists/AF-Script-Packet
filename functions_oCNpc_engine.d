@@ -1347,6 +1347,38 @@ func int oCNpc_StopFaceAni (var int slfInstance, var string faceAni) {
 	return CALL_RetValAsInt();
 };
 
+/*
+ *	oCNpc_IsFaceAniActive
+ *	 - function checks if specified face-animation is active
+ */
+func int oCNpc_IsFaceAniActive(var int slfInstance, var string faceAni) {
+	//0x00583520 public: virtual int __thiscall zCMorphMesh::IsAnimationActive(class zSTRING const &)
+	const int zCMorphMesh__IsAnimationActive_G1 = 5780768;
+
+	//0x005A2FF0 public: virtual int __thiscall zCMorphMesh::IsAnimationActive(class zSTRING const &)
+	const int zCMorphMesh__IsAnimationActive_G2 = 5910512;
+
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
+
+	var int visualPtr; visualPtr = zCVob_GetVisual(_@(slf));
+
+	//zCModelNodeInst *
+	var int modelNodeInstPtr; modelNodeInstPtr = zCModel_SearchNode(visualPtr, "BIP01 HEAD");
+	if (!modelNodeInstPtr) { return FALSE; };
+
+	//var zCModelNodeInst modelNodeInst; modelNodeInst = _^(modelNodeInstPtr);
+	//if (!modelNodeInst.nodeVisual) { return FALSE; };
+
+	visualPtr = MEM_ReadInt(modelNodeInstPtr + 8);
+	if (!visualPtr) { return FALSE; };
+
+	CALL_zstringPtrParam(faceAni);
+	CALL__thiscall(visualPtr /*modelNodeInst.nodeVisual*/, MEMINT_SwitchG1G2 (zCMorphMesh__IsAnimationActive_G1, zCMorphMesh__IsAnimationActive_G2));
+
+	return CALL_RetValAsInt();
+};
+
 func int oCNpc_CanDrawWeapon (var int slfInstance) {
 	//0x0074B1F0 public: int __thiscall oCNpc::CanDrawWeapon(void)
 	const int oCNpc__CanDrawWeapon_G1 = 7647728;
