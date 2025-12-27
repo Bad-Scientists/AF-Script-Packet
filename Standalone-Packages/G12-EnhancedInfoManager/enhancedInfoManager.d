@@ -21,6 +21,8 @@
  *
  *		autoConfirm@	'autoConfirm@15'					 - will auto-confirm currently selected choice in 15 seconds
  *
+ *		multiConfirm@	'multiConfirm@'						 - will increase value of 'InfoManagerConfirmationLevel' on choice selection (will cancel choice selection)
+ *
  *		indOff@			'indOff@'							 - does not create spinner / answer indicators
  *		item@			'item@self:ItMiNugget'				 - creates 'item preview' - passively opens inventory for specified npc (default self) with focusing on specified item - will display item info
  *
@@ -41,6 +43,9 @@ var int InfoManagerSpinnerPageSize; //incremental increase (can be set by Page U
 
 var string InfoManagerSpinnerNumber;
 var int InfoManagerSpinnerNumberEditMode;
+
+//Confirmation-level
+var int InfoManagerConfirmationLevel;
 
 //Auto-confirmation
 var int InfoManagerAutoConfirmTime;
@@ -112,7 +117,7 @@ class zEIM_Description {
 	var int colorSelected;
 
 	var int isAnswer;
-
+	var int isMultiConfirmChoice;
 	var int isSpinner;
 	var string spinnerID;
 	var int spinnerLoopingOff;
@@ -180,8 +185,8 @@ class zEIM {
 	var int answerMode;
 
 	var int isAnswer;
-
 	var int isSpinner;
+	var int isMultiConfirmChoice;
 
 	var int displayAnswerIndicator;
 	var int displaySpinnerIndicator;
@@ -264,6 +269,27 @@ func void EIM_ParseDescription(var int strPtr) {
 	var int fromIndex; fromIndex = 0;
 	var int isOverlay; isOverlay = FALSE;
 
+	const int MODIFIER_INVALID = 0;
+	const int MODIFIER_FONT = 1;
+	const int MODIFIER_FONT_SELECTED = 2;
+	const int MODIFIER_HEXCOLOR = 3;
+	const int MODIFIER_HEXCOLOR_SELECTED = 4;
+	const int MODIFIER_SPINNER = 5;
+	const int MODIFIER_TAB = 6;
+	const int MODIFIER_ITEM_PREVIEW = 7;
+	const int MODIFIER_ANSWER = 8;
+	const int MODIFIER_DISABLED = 9;
+	const int MODIFIER_ALIGN_LEFT = 10;
+	const int MODIFIER_ALIGN_CENTER = 11;
+	const int MODIFIER_ALIGN_RIGHT = 12;
+	const int MODIFIER_AUTOCONFIRM = 13;
+	const int MODIFIER_MULTICONFIRM = 14;
+	const int MODIFIER_INDICATORS_OFF = 15;
+	const int MODIFIER_HIDDEN = 16;
+	const int MODIFIER_SPINNER_LOOPING_OFF = 17;
+
+	var int modifierType; modifierType = MODIFIER_INVALID;
+
 	//Reset modifier data
 	eimDescription.fontName = STR_EMPTY;
 	eimDescription.fontNameSelected = STR_EMPTY;
@@ -290,6 +316,8 @@ func void EIM_ParseDescription(var int strPtr) {
 
 	eimDescription.autoConfirm = FALSE;
 	eimDescription.autoConfirmTime = 0;
+
+	eimDescription.isMultiConfirmChoice = FALSE;
 
 	//Defaults
 	eimDescription.alignment = eimDefaults.alignment;
@@ -375,23 +403,62 @@ func void EIM_ParseDescription(var int strPtr) {
 			};
 
 			//Parse parameters
-			if (Hlp_StrCmp(modifier, "f"))
-			|| (Hlp_StrCmp(modifier, "fs"))
-			|| (Hlp_StrCmp(modifier, "h"))
-			|| (Hlp_StrCmp(modifier, "hs"))
-			|| (Hlp_StrCmp(modifier, "s"))
-			|| (Hlp_StrCmp(modifier, "tab"))
-			|| (Hlp_StrCmp(modifier, "item"))
+			modifierType = MODIFIER_INVALID;
 
-			|| (Hlp_StrCmp(modifier, "a"))
-			|| (Hlp_StrCmp(modifier, "d"))
-			|| (Hlp_StrCmp(modifier, "al"))
-			|| (Hlp_StrCmp(modifier, "ac"))
-			|| (Hlp_StrCmp(modifier, "ar"))
-			|| (Hlp_StrCmp(modifier, "autoConfirm"))
-			|| (Hlp_StrCmp(modifier, "spinnerLoopingOff"))
-			|| (Hlp_StrCmp(modifier, "hidden"))
-			|| (Hlp_StrCmp(modifier, "indOff"))
+			if (Hlp_StrCmp(modifier, "f")) {
+				modifierType = MODIFIER_FONT;
+			} else
+			if (Hlp_StrCmp(modifier, "fs")) {
+				modifierType = MODIFIER_FONT_SELECTED;
+			} else
+			if (Hlp_StrCmp(modifier, "h")) {
+				modifierType = MODIFIER_HEXCOLOR;
+			} else
+			if (Hlp_StrCmp(modifier, "hs")) {
+				modifierType = MODIFIER_HEXCOLOR_SELECTED;
+			} else
+			if (Hlp_StrCmp(modifier, "s")) {
+				modifierType = MODIFIER_SPINNER;
+			} else
+			if (Hlp_StrCmp(modifier, "tab")) {
+				modifierType = MODIFIER_TAB;
+			} else
+			if (Hlp_StrCmp(modifier, "item")) {
+				modifierType = MODIFIER_ITEM_PREVIEW;
+			} else
+			if (Hlp_StrCmp(modifier, "a")) {
+				modifierType = MODIFIER_ANSWER;
+			} else
+			if (Hlp_StrCmp(modifier, "d")) {
+				modifierType = MODIFIER_DISABLED;
+			} else
+			if (Hlp_StrCmp(modifier, "al")) {
+				modifierType = MODIFIER_ALIGN_LEFT;
+			} else
+			if (Hlp_StrCmp(modifier, "ac")) {
+				modifierType = MODIFIER_ALIGN_CENTER;
+			} else
+			if (Hlp_StrCmp(modifier, "ar")) {
+				modifierType = MODIFIER_ALIGN_RIGHT;
+			} else
+			if (Hlp_StrCmp(modifier, "autoConfirm")) {
+				modifierType = MODIFIER_AUTOCONFIRM;
+			} else
+			if (Hlp_StrCmp(modifier, "multiConfirm")) {
+				modifierType = MODIFIER_MULTICONFIRM;
+			} else
+			if (Hlp_StrCmp(modifier, "indOff")) {
+				modifierType = MODIFIER_INDICATORS_OFF;
+			} else
+			if (Hlp_StrCmp(modifier, "hidden")) {
+				modifierType = MODIFIER_HIDDEN;
+			} else
+			if (Hlp_StrCmp(modifier, "spinnerLoopingOff")) {
+				modifierType = MODIFIER_SPINNER_LOOPING_OFF;
+			};
+
+			//Valid modifier type?
+			if (modifierType)
 			{
 				k = i + 1;
 				b = 0;
@@ -421,100 +488,107 @@ func void EIM_ParseDescription(var int strPtr) {
 				wasUpdated = TRUE;
 			};
 
-			//Update modifier params
-			if (Hlp_StrCmp(modifier, "f")) {
+			//Get modifier params
+			if (modifierType == MODIFIER_FONT) {
 				eimDescription.fontName = modifierParams;
 				eimDescription.font = Print_GetFontPtr(eimDescription.fontName);
 			} else
-			if (Hlp_StrCmp(modifier, "fs")) {
-				eimDescription.fontNameSelected = modifierParams;
-				eimDescription.fontSelected = Print_GetFontPtr(eimDescription.fontNameSelected);
-			} else
-			if (Hlp_StrCmp(modifier, "h")) {
+			if (modifierType == MODIFIER_HEXCOLOR) {
 				eimDescription.color = HEX2RGBA(modifierParams);
 			} else
-			if (Hlp_StrCmp(modifier, "hs")) {
-				eimDescription.colorSelected = HEX2RGBA(modifierParams);
-			} else
-			if (Hlp_StrCmp(modifier, "s")) {
+			if (modifierType == MODIFIER_SPINNER) {
 				eimDescription.isSpinner = TRUE;
 				eimDescription.spinnerID = modifierParams;
 			} else
-			if (Hlp_StrCmp(modifier, "a")) {
+			if (modifierType == MODIFIER_ANSWER) {
 				eimDescription.isAnswer = TRUE;
 			} else
-			if (Hlp_StrCmp(modifier, "d")) {
+			if (modifierType == MODIFIER_DISABLED) {
 				eimDescription.isDisabled = TRUE;
 				eimDescription.color = eimDefaults.colorDisabled;
 				eimDescription.colorSelected = eimDefaults.colorDisabledSelected;
 			} else
-			if (Hlp_StrCmp(modifier, "al")) {
+			if (modifierType == MODIFIER_ALIGN_LEFT) {
 				eimDescription.alignment = ALIGN_LEFT;
 			} else
-			if (Hlp_StrCmp(modifier, "ac")) {
+			if (modifierType == MODIFIER_ALIGN_CENTER) {
 				eimDescription.alignment = ALIGN_CENTER;
 			} else
-			if (Hlp_StrCmp(modifier, "ar")) {
+			if (modifierType == MODIFIER_ALIGN_RIGHT) {
 				eimDescription.alignment = ALIGN_RIGHT;
 			} else
 			//if (Hlp_StrCmp(modifier, "tab")) {
 			//	eimDescription.alignment = ALIGN_TAB;
 			//	eimDescription.tabOffset = STR_ToInt(modifierParams);
 			//} else
-			if (Hlp_StrCmp(modifier, "item")) {
-				var string itemInstanceName;
-				var string npcInstanceName;
-
-				eimDescription.hasItemPreview = TRUE;
-
-				//Default self
-				var oCNpc npc; npc = _^(MEM_InformationMan.npc);
-
-				//Get item and npc instance
-				//item@self:ItMiNugget
-				l = STR_IndexOf(modifierParams, ":");
-				if (l > -1) {
-					npcInstanceName = mySTR_SubStr(modifierParams, 0, l);
-					itemInstanceName = mySTR_SubStr(modifierParams, l + 1, STR_Len(modifierParams) - (l + 1));
-
-					var int symbID; symbID = MEM_GetSymbolIndex(npcInstanceName);
-					if (symbID > -1) {
-						npc = Hlp_GetNpc(symbID);
-					};
-				} else {
-					itemInstanceName = modifierParams;
-				};
-
-				var int itemInstance; itemInstance = -1;
-				var int npcInstance; npcInstance = Hlp_GetInstanceID(npc);
-
-				if (Npc_HasItemInstanceName(npc, itemInstanceName)) {
-					itemInstance = Hlp_GetInstanceID(item);
-				};
-
-				if ((itemInstance > -1) && (npcInstance > -1))
-				{
-					if (eimDescription.itemInstance1 == -1) {
-						eimDescription.itemInstance1 = itemInstance;
-						eimDescription.npcInstance1 = npcInstance;
-					} else {
-						eimDescription.itemInstance2 = itemInstance;
-						eimDescription.npcInstance2 = npcInstance;
-					};
-				};
-			} else
-			if (Hlp_StrCmp(modifier, "autoConfirm")) {
+			if (modifierType == MODIFIER_AUTOCONFIRM) {
 				eimDescription.autoConfirmTime = STR_ToInt(modifierParams);
 				eimDescription.autoConfirm = (eimDescription.autoConfirmTime > 0);
 			} else
-			if (Hlp_StrCmp(modifier, "spinnerLoopingOff")) {
+			if (modifierType == MODIFIER_MULTICONFIRM) {
+				eimDescription.isMultiConfirmChoice = TRUE;
+			} else
+			if (modifierType == MODIFIER_SPINNER_LOOPING_OFF) {
 				eimDescription.spinnerLoopingOff = TRUE;
 			} else
-			if (Hlp_StrCmp(modifier, "hidden")) {
+			if (modifierType == MODIFIER_HIDDEN) {
 				eimDescription.isHidden = TRUE;
 			} else
-			if (Hlp_StrCmp(modifier, "indOff")) {
+			if (modifierType == MODIFIER_INDICATORS_OFF) {
 				eimDescription.indicatorsOff = TRUE;
+			};
+
+			//These params are relevant only when choice is selected
+			if (eimDescription.isSelected) {
+				if (modifierType == MODIFIER_FONT_SELECTED) {
+					eimDescription.fontNameSelected = modifierParams;
+					eimDescription.fontSelected = Print_GetFontPtr(eimDescription.fontNameSelected);
+				} else
+				if (modifierType == MODIFIER_HEXCOLOR_SELECTED) {
+					eimDescription.colorSelected = HEX2RGBA(modifierParams);
+				} else
+				if (modifierType == MODIFIER_ITEM_PREVIEW) {
+					var string itemInstanceName;
+					var string npcInstanceName;
+
+					eimDescription.hasItemPreview = TRUE;
+
+					//Default self
+					var oCNpc npc; npc = _^(MEM_InformationMan.npc);
+
+					//Get item and npc instance
+					//item@self:ItMiNugget
+					l = STR_IndexOf(modifierParams, ":");
+					if (l > -1) {
+						npcInstanceName = mySTR_SubStr(modifierParams, 0, l);
+						itemInstanceName = mySTR_SubStr(modifierParams, l + 1, STR_Len(modifierParams) - (l + 1));
+
+						var int symbID; symbID = MEM_GetSymbolIndex(npcInstanceName);
+						if (symbID > -1) {
+							npc = Hlp_GetNpc(symbID);
+						};
+					} else {
+						itemInstanceName = modifierParams;
+					};
+
+					var int itemInstance; itemInstance = -1;
+					var int npcInstance; npcInstance = Hlp_GetInstanceID(npc);
+
+					if (Npc_HasItemInstanceName(npc, itemInstanceName)) {
+						itemInstance = Hlp_GetInstanceID(item);
+					};
+
+					if ((itemInstance > -1) && (npcInstance > -1))
+					{
+						if (eimDescription.itemInstance1 == -1) {
+							eimDescription.itemInstance1 = itemInstance;
+							eimDescription.npcInstance1 = npcInstance;
+						} else {
+							eimDescription.itemInstance2 = itemInstance;
+							eimDescription.npcInstance2 = npcInstance;
+						};
+					};
+				};
 			};
 		};
 
@@ -861,14 +935,28 @@ func void EIM_ParseDescription(var int strPtr) {
 			};
 
 			if (isOverlay) {
-				if (Hlp_StrCmp(modifier, "h"))
-				|| (Hlp_StrCmp(modifier, "hs"))
+				modifierType = MODIFIER_INVALID;
 
-				|| (Hlp_StrCmp(modifier, "al"))
-				|| (Hlp_StrCmp(modifier, "ac"))
-				|| (Hlp_StrCmp(modifier, "ar"))
+				if (Hlp_StrCmp(modifier, "h")) {
+					modifierType = MODIFIER_HEXCOLOR;
+				} else
+				if (Hlp_StrCmp(modifier, "hs")) {
+					modifierType = MODIFIER_HEXCOLOR_SELECTED;
+				} else
+				if (Hlp_StrCmp(modifier, "al")) {
+					modifierType = MODIFIER_ALIGN_LEFT;
+				} else
+				if (Hlp_StrCmp(modifier, "ac")) {
+					modifierType = MODIFIER_ALIGN_CENTER;
+				} else
+				if (Hlp_StrCmp(modifier, "ar")) {
+					modifierType = MODIFIER_ALIGN_RIGHT;
+				} else
+				if (Hlp_StrCmp(modifier, "tab")) {
+					modifierType = MODIFIER_TAB;
+				};
 
-				|| (Hlp_StrCmp(modifier, "tab"))
+				if (modifierType)
 				{
 					k = i + 1;
 					b = 0;
@@ -886,22 +974,22 @@ func void EIM_ParseDescription(var int strPtr) {
 					end;
 				};
 
-				if (Hlp_StrCmp(modifier, "h")) {
+				if (modifierType == MODIFIER_HEXCOLOR) {
 					overlayColor = HEX2RGBA(modifierParams);
 				} else
-				if (Hlp_StrCmp(modifier, "hs")) {
+				if (modifierType == MODIFIER_HEXCOLOR_SELECTED) {
 					overlayColorSelected = HEX2RGBA(modifierParams);
 				} else
-				if (Hlp_StrCmp(modifier, "al")) {
+				if (modifierType == MODIFIER_ALIGN_LEFT) {
 					overlayAlignment = ALIGN_LEFT;
 				} else
-				if (Hlp_StrCmp(modifier, "ac")) {
+				if (modifierType == MODIFIER_ALIGN_CENTER) {
 					overlayAlignment = ALIGN_CENTER;
 				} else
-				if (Hlp_StrCmp(modifier, "ar")) {
+				if (modifierType == MODIFIER_ALIGN_RIGHT) {
 					overlayAlignment = ALIGN_RIGHT;
 				} else
-				if (Hlp_StrCmp(modifier, "tab")) {
+				if (modifierType == MODIFIER_TAB) {
 					overlayAlignment = ALIGN_TAB;
 					overlayTabOffset = STR_ToInt(modifierParams);
 				};
@@ -949,6 +1037,9 @@ func void EIM_Reset () {
 	eim.diaInstancePtrCount = 0;
 	eim.infosCollectedAllDisabled = FALSE;
 	eim.autoConfirm = FALSE;
+
+	//Reset confirmation level
+	InfoManagerConfirmationLevel = 0;
 };
 
 func void EIM_ActiveSpinnerSetBoundaries (var int min, var int max, var int pageSize) {
@@ -1209,10 +1300,46 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 			&& ((key == KEY_SPACE) || (key == KEY_NUMPADENTER)) { key = KEY_RETURN; };
 		};
 
+		//-- MultiConfirm choice
+
+		if (InfoManagerConfirmationLevel) {
+			if (key == KEY_ESCAPE) {
+				if (InfoManagerConfirmationLevel) {
+					InfoManagerConfirmationLevel -= 1;
+					cancel = TRUE;
+				};
+			};
+
+			//Prevent navigation
+			if ((key == MEM_GetKey ("keyUp")) || (key == MEM_GetSecondaryKey ("keyUp")) || (key == MOUSE_WHEEL_UP)
+			|| (key == MEM_GetKey ("keyDown")) || (key == MEM_GetSecondaryKey ("keyDown")) || (key == MOUSE_WHEEL_DOWN)
+			|| (key == KEY_GRAVE)
+			|| (key == KEY_0)
+			|| (key == KEY_1)
+			|| (key == KEY_2)
+			|| (key == KEY_3)
+			|| (key == KEY_4)
+			|| (key == KEY_5)
+			|| (key == KEY_6)
+			|| (key == KEY_7)
+			|| (key == KEY_8)
+			|| (key == KEY_9))
+			{
+				cancel = TRUE;
+			};
+		};
+
+		if (eim.isMultiConfirmChoice && !cancel) {
+			if (key == KEY_RETURN) {
+				InfoManagerConfirmationLevel += 1;
+				cancel = TRUE;
+			};
+		};
+
 		//-- Answer
 
 		//eim.displayAnswerIndicator is set by _hook_oCInformationManager_Update_EnhancedInfoManager
-		if (eim.isAnswer) {
+		if (eim.isAnswer && !cancel) {
 			//cancel answer mode
 			if (eim.answerMode) {
 				if (key == KEY_ESCAPE) {
@@ -1233,7 +1360,7 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 				//on/off
 				eim.answerMode = !eim.answerMode;
 
-				//Refresh all overlays (remove in answer more ... add when done)
+				//Refresh all overlays (remove in answer mode ... add when done)
 				eim.refresh = TRUE;
 			};
 
@@ -1266,11 +1393,11 @@ func void _hook_zCViewDialogChoice_HandleEvent_EIM () {
 
 				cancel = TRUE; //cancel input
 			};
-		} else
+		};
 
 		//-- Spinner
 
-		if (eim.isSpinner) {
+		if (eim.isSpinner && !cancel) {
 			var int lastSpinnerValue; lastSpinnerValue = InfoManagerSpinnerValue;
 
 			//Default value if not set
@@ -1808,6 +1935,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 		eim.displayItemPreview = FALSE;
 
 		eim.isAnswer = FALSE;
+		eim.isMultiConfirmChoice = FALSE;
 		eim.isSpinner = FALSE;
 
 		//Auto-scrolling for disabled dialog choices
@@ -2154,6 +2282,7 @@ func void _hook_oCInformationManager_Update_EIM () {
 						};
 
 						eim.isAnswer = eimDescription.isAnswer;
+						eim.isMultiConfirmChoice = eimDescription.isMultiConfirmChoice;
 						eim.isSpinner = eimDescription.isSpinner;
 
 						//Spinner ID update
