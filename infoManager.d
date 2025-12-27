@@ -1,6 +1,6 @@
 /*
- *	Function will return specific instance of dialog option (includes C_Info.important dialogs, which are not listed in Dialog choice box)
- *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
+ *	Function will return pointer to instance of dialogue option (includes C_Info.important dialogs, which are not listed in dialogue choice box)
+ *	Be careful - this can't be used with dialogue choices (Info_AddChoice ...)
  */
 func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int index) {
 	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
@@ -29,38 +29,18 @@ func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int in
 };
 
 func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
-	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
-	const int oCInfoManager__GetInfo_G1 = 6704720;
 
-	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
-	const int oCInfoManager__GetInfo_G2 = 7351648;
-
-	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNpc(slfinstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
 	var oCNPC oth; oth = Hlp_GetNpc(othinstance);
 	if (!Hlp_IsValidNpc(oth)) { return 0; };
 
-	var int slfPtr; slfPtr = _@(slf);
-	var int othPtr; othPtr = _@(oth);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(retVal));
-		CALL_IntParam(_@(index));
-		CALL_PtrParam(_@(slfPtr));
-		CALL_PtrParam(_@(othPtr));
-		CALL__thiscall(_@(MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfo_G1, oCInfoManager__GetInfo_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
+	return + oCInfoManager_GetInfo_ByPtr(_@(slf), _@(oth), index);
 };
 
 /*
- *	Function will return specific instance of dialog option (does not include C_Info.important dialogs. Will return only dialog which is listed Dialog choice box)
+ *	Function will return pointer to instance of dialogue option (does not include C_Info.important dialogs. Will return only dialogue which is listed Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
 func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr, var int index) {
@@ -90,34 +70,13 @@ func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr,
 };
 
 func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
-	//0x00665120 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNpc *,class oCNpc *,int)
-	const int oCInfoManager__GetInfoUnimportant_G1 = 6705440;
-
-	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
-	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
-
-	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNpc(slfinstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
 	var oCNPC oth; oth = Hlp_GetNpc(othinstance);
 	if (!Hlp_IsValidNpc(oth)) { return 0; };
 
-	var int slfPtr; slfPtr = _@(slf);
-	var int othPtr; othPtr = _@(oth);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(retVal));
-		CALL_IntParam(_@(index));
-		CALL_PtrParam(_@(slfPtr));
-		CALL_PtrParam(_@(othPtr));
-		CALL__thiscall(_@(MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoUnimportant_G1, oCInfoManager__GetInfoUnimportant_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
+	return + oCInfoManager_GetInfoUnimportant_ByPtr(_@(slf), _@(oth), index);
 };
 
 /*
