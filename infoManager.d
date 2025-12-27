@@ -80,7 +80,7 @@ func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinsta
 };
 
 /*
- *	Function returns number of dialog instances which are available between slfinstance & othinstance
+ *	Function returns number of dialogue instances which are available between slfinstance & othinstance
  */
 func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	//0x00664A30 public: int __thiscall oCInfoManager::GetInfoCount(class oCNpc *,class oCNpc *)
@@ -113,7 +113,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 };
 
 /*
- *	Toggles debug informations for dialogs
+ *	Toggles debug informations for dialogues
  */
 func void oCInformationManager_ToggleStatus () {
 	//0x0072B360 public: void __fastcall oCInformationManager::ToggleStatus(void)
@@ -297,7 +297,7 @@ func void zCViewDialogChoice_HighlightSelected () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2));
 		call = CALL_End();
 	};
 };
@@ -313,7 +313,7 @@ func void zCViewDialogChoice_ShowSelected () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__ShowSelected_G1, zCViewDialogChoice__ShowSelected_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__ShowSelected_G1, zCViewDialogChoice__ShowSelected_G2));
 		call = CALL_End();
 	};
 };
@@ -330,7 +330,7 @@ func void zCViewDialogChoice_BlitText () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__BlitText_G1, zCViewDialogChoice__BlitText_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__BlitText_G1, zCViewDialogChoice__BlitText_G2));
 		call = CALL_End();
 	};
 };
@@ -347,7 +347,7 @@ func void zCViewDialogChoice_Select (var int index) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__Select_G1, zCViewDialogChoice__Select_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__Select_G1, zCViewDialogChoice__Select_G2));
 		call = CALL_End();
 	};
 };
@@ -365,7 +365,7 @@ func void zCViewDialogChoice_SelectPrevious () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectPrevious_G1, zCViewDialogChoice__SelectPrevious_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectPrevious_G1, zCViewDialogChoice__SelectPrevious_G2));
 		call = CALL_End();
 	};
 };
@@ -383,7 +383,7 @@ func void zCViewDialogChoice_SelectNext () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
 		call = CALL_End();
 	};
 };
@@ -396,11 +396,11 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
 
-	if (!MEM_InformationMan.DlgChoice) { return; };
+	if (!MEM_InformationMan.dlgChoice) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
 		call = CALL_End();
 	};
 };
@@ -467,17 +467,18 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 func int NPC_GetInfoInstanceCount (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC(slfInstance);
 	if (!Hlp_IsValidNPC(slf)) { return 0; };
-	var int instID; instID = Hlp_GetInstanceID(slf);
 
 	var int count; count = 0;
 
+	var int infoPtr;
 	var oCInfo info;
+
 	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
+	var int instID; instID = Hlp_GetInstanceID(slf);
 
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
-
-	while(infoPtr);
-		ls = _^(infoPtr);
+	while(list);
+		ls = _^(list);
 
 		if (ls.data) {
 			info = _^(ls.data);
@@ -487,7 +488,7 @@ func int NPC_GetInfoInstanceCount (var int slfInstance) {
 			};
 		};
 
-		infoPtr = ls.next;
+		list = ls.next;
 	end;
 
 	return + count;
@@ -499,17 +500,18 @@ func int NPC_GetInfoInstanceCount (var int slfInstance) {
 func int NPC_GetInfoInstanceUntoldCount (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNpc(slfInstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
-	var int instID; instID = Hlp_GetInstanceID(slf);
 
 	var int count; count = 0;
 
+	var int infoPtr;
 	var oCInfo info;
+
 	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
+	var int instID; instID = Hlp_GetInstanceID(slf);
 
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
-
-	while (infoPtr);
-		ls = _^(infoPtr);
+	while(list);
+		ls = _^(list);
 		if (ls.data) {
 			info = _^(ls.data);
 
@@ -520,7 +522,7 @@ func int NPC_GetInfoInstanceUntoldCount (var int slfInstance) {
 			};
 		};
 
-		infoPtr = ls.next;
+		list = ls.next;
 	end;
 
 	return count;
