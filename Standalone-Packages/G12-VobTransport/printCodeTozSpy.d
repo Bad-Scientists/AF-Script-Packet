@@ -59,7 +59,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 //--- Print object trafo
 
 	var int vec[3];
-	if (zCVob_GetPositionWorldToPos (vobPtr, _@ (vec))) {
+	if (zCVob_GetPositionWorldToPos (vobPtr, _@(vec))) {
 		//...
 	};
 
@@ -77,7 +77,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 
 	MEM_Info (msg);
 
-	MEM_CopyBytes (zCVob_GetAtVectorWorld (vobPtr), _@ (vec), 12);
+	MEM_CopyBytes (zCVob_GetAtVectorWorld (vobPtr), _@(vec), 12);
 
 //---
 
@@ -94,7 +94,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 
 	MEM_Info (msg);
 
-	MEM_CopyBytes (zCVob_GetUpVectorWorld (vobPtr), _@ (vec), 12);
+	MEM_CopyBytes (zCVob_GetUpVectorWorld (vobPtr), _@(vec), 12);
 
 //---
 
@@ -113,7 +113,7 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 
 //---
 
-	MEM_CopyBytes (zCVob_GetRightVectorWorld (vobPtr), _@ (vec), 12);
+	MEM_CopyBytes (zCVob_GetRightVectorWorld (vobPtr), _@(vec), 12);
 
 	msg = "right[0] = ";
 
@@ -131,10 +131,10 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 //--- Put trafo together
 
 	MEM_Info (STR_EMPTY);
-	MEM_Info ("vectorPosToTrf (_@f (pos), _@ (trafo));");
-	MEM_Info ("zMAT4_SetAtVector (_@ (trafo), _@f (at));");
-	MEM_Info ("zMAT4_SetUpVector (_@ (trafo), _@f (up));");
-	MEM_Info ("zMAT4_SetRightVector (_@ (trafo), _@f (right));");
+	MEM_Info ("vectorPosToTrf(_@f(pos), _@(trafo));");
+	MEM_Info ("zMAT4_SetAtVector(_@(trafo), _@f(at));");
+	MEM_Info ("zMAT4_SetUpVector(_@(trafo), _@f(up));");
+	MEM_Info ("zMAT4_SetRightVector(_@(trafo), _@f(right));");
 
 	MEM_Info (STR_EMPTY);
 
@@ -150,8 +150,8 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		MEM_Info ("zCDecal not supported yet.");
 	} else
 	if (MEM_ReadInt (vobPtr) == MEMINT_SwitchG1G2 (zCVob_vtbl_G1, zCVob_vtbl_G2)) {
-		//InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
-		msg = "vobPtr = InsertObject (";
+		//InsertObject ("zCVob", objectName, visualName, _@(vob.trafoObjToWorld), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, "zCVob");
 		msg = ConcatStrings (msg, BtoC(34));
@@ -167,14 +167,14 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCItem (vobPtr)) {
 		//vobPtr = InsertItemPos ("ItFoMuttonRaw", 1, _@f(pos), 0);
 		itm = _^ (vobPtr);
 
-		msg = "vobPtr = InsertItem (";
+		msg = "vobPtr = InsertItem(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
@@ -182,12 +182,12 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, BtoC(34));
 		msg = ConcatStrings (msg, ", ");
 		msg = ConcatStrings (msg, IntToString (itm.amount));
-		msg = ConcatStrings (msg, ", _@ (trafo));");
+		msg = ConcatStrings (msg, ", _@(trafo));");
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobContainer (vobPtr)) {
-		//vobPtr = InsertMobContainer ("CRATE_ADDEDBYSCRIPT_01", "CHESTSMALL_OCCRATESMALL.MDS", _@ (trafo));
-		msg = "vobPtr = InsertMobContainer (";
+		//vobPtr = InsertMobContainer ("CRATE_ADDEDBYSCRIPT_01", "CHESTSMALL_OCCRATESMALL.MDS", _@(trafo));
+		msg = "vobPtr = InsertMobContainer(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
@@ -199,13 +199,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo));");
+		msg = ConcatStrings (msg, ", _@(trafo));");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobFire (vobPtr)) {
-		//vobPtr = InsertMobFire (s_objectName, s_visualName, _@ (trafo));
-		msg = "vobPtr = InsertMobFire (";
+		//vobPtr = InsertMobFire (s_objectName, s_visualName, _@(trafo));
+		msg = "vobPtr = InsertMobFire(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
@@ -217,13 +217,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo));");
+		msg = ConcatStrings (msg, ", _@(trafo));");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobDoor (vobPtr)) {
-		//vobPtr = InsertMobDoor (objectName, visualName, _@ (trafo));
-		msg = "vobPtr = InsertMobDoor (";
+		//vobPtr = InsertMobDoor (objectName, visualName, _@(trafo));
+		msg = "vobPtr = InsertMobDoor(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, s_objectName);
@@ -235,13 +235,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo));");
+		msg = ConcatStrings (msg, ", _@(trafo));");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobLadder (vobPtr)) {
-		//vobPtr = InsertObject ("oCMobLadder", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject ("oCMobLadder", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobLadder");
@@ -259,13 +259,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobSwitch (vobPtr)) {
-		//vobPtr = InsertObject ("oCMobSwitch", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject("oCMobSwitch", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobSwitch");
@@ -283,13 +283,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobWheel (vobPtr)) {
-		//vobPtr = InsertObject ("oCMobWheel", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject ("oCMobWheel", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobWheel");
@@ -307,13 +307,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobBed (vobPtr)) {
-		//vobPtr = InsertObject ("oCMobBed", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject ("oCMobBed", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobBed");
@@ -331,13 +331,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMobInter (vobPtr)) {
-		//vobPtr = InsertObject ("oCMobInter", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject ("oCMobInter", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMobInter");
@@ -355,13 +355,13 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	} else
 	if (Hlp_Is_oCMob (vobPtr)) {
-		//vobPtr = InsertObject ("oCMOB", objectName, visualName, _@ (trafo), 0);
-		msg = "vobPtr = InsertObject (";
+		//vobPtr = InsertObject ("oCMOB", objectName, visualName, _@(trafo), 0);
+		msg = "vobPtr = InsertObject(";
 		msg = ConcatStrings (msg, BtoC(34));
 
 		msg = ConcatStrings (msg, "oCMOB");
@@ -379,15 +379,35 @@ func void PrintCodeTozSpy__VobTransport ( var int vobPtr) {
 		msg = ConcatStrings (msg, s_visualName);
 
 		msg = ConcatStrings (msg, BtoC(34));
-		msg = ConcatStrings (msg, ", _@ (trafo), 0);");
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
 
 		MEM_Info (msg);
 	//} else
 	//if (Hlp_Is_zCTrigger (vobPtr)) {
 	//
-	//} else
-	//if (Hlp_Is_oCTriggerScript (vobPtr)) {
-	//
+	} else
+	if (Hlp_Is_oCTriggerScript (vobPtr)) {
+		msg = "vobPtr = InsertObject(";
+		msg = ConcatStrings (msg, BtoC(34));
+
+		msg = ConcatStrings (msg, "oCTriggerScript");
+
+		msg = ConcatStrings (msg, BtoC(34));
+		msg = ConcatStrings (msg, ", ");
+		msg = ConcatStrings (msg, BtoC(34));
+
+		msg = ConcatStrings (msg, s_objectName);
+
+		msg = ConcatStrings (msg, BtoC(34));
+		msg = ConcatStrings (msg, ", ");
+		msg = ConcatStrings (msg, BtoC(34));
+
+		msg = ConcatStrings (msg, s_visualName);
+
+		msg = ConcatStrings (msg, BtoC(34));
+		msg = ConcatStrings (msg, ", _@(trafo), 0);");
+
+		MEM_Info (msg);
 	} else {
 		MEM_Info ("This object is not yet supported.");
 	};
