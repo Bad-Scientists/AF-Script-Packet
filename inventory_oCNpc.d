@@ -139,10 +139,12 @@ func void oCNpc_Set_Game_Mode (var int newMode) {
 
 const int OpenInvType_None = 0;
 const int OpenInvType_Player = 1;
-const int OpenInvType_NPC = 2;
-const int OpenInvType_Chest = 3;
-const int OpenInvType_Trading = 4;
-const int OpenInvType_Stealing = 5;
+const int OpenInvType_Npc = 2;
+const int OpenInvType_NpcSneakPeak = 3;
+const int OpenInvType_Chest = 4;
+const int OpenInvType_ChestSneakPeak = 5;
+const int OpenInvType_Trading = 6;
+const int OpenInvType_Stealing = 7;
 
 func int Hlp_GetOpenInventoryType () {
 	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
@@ -180,7 +182,7 @@ func int Hlp_GetOpenInventoryType () {
 	var int game_mode; game_mode = oCNpc_Get_Game_Mode();
 
 	if (game_mode == NPC_GAME_PLUNDER) {
-		return OpenInvType_NPC;
+		return OpenInvType_Npc;
 	};
 	if (game_mode == NPC_GAME_STEAL) {
 		return OpenInvType_Stealing;
@@ -214,6 +216,7 @@ func int Hlp_GetOpenInventoryType () {
 		if (ptr) {
 			container = _^ (ptr);
 
+			//Only if inventory is really opened (if player controls an Npc and they open chest - Npcs inventory will not open)
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2)) { itemContainer = 1; };
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { stealContainer = 1; };
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { npcContainer = 1; };
@@ -230,10 +233,16 @@ func int Hlp_GetOpenInventoryType () {
 	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Player; };
 
 	//Looting NPC
-	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_NPC; };
+	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_Npc; };
+
+	//Sneak peak :)
+	if ((!playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_NpcSneakPeak; };
 
 	//Looting chest
 	if ((playerInventory) && (itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Chest; };
+
+	//Sneak peak :)
+	if ((!playerInventory) && (itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_ChestSneakPeak; };
 
 	//Trading inventory
 	if ((playerInventory) && (itemContainer) && (stealContainer) && (!npcContainer)) { return OpenInvType_Trading; };
