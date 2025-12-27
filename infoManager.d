@@ -939,3 +939,15 @@ func int Info_Injectable_GetChoiceCondition (var int infoInstance) {
 
 	return + isNonZero;
 };
+
+func int InfoManager_GetSelectedInfoInstance()
+{
+	var int infoPtr; infoPtr = InfoManager_GetSelectedInfo();
+
+	if (!infoPtr) {
+		return -1;
+	};
+
+	var oCInfo info; info = _^(infoPtr);
+	return + info._instance;
+};
