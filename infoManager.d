@@ -534,6 +534,9 @@ func int InfoManager_GetSelectedInfo () {
 	var zCArray arr; arr = _^(dlgChoice + 172);
 	if (!arr.array) { return 0; };
 
+	if (MEM_InformationMan.mode == INFO_MGR_MODE_IMPORTANT) {
+		return + oCInfoManager_GetInfo_ByPtr(MEM_InformationMan.npc, MEM_InformationMan.player, 0);
+	} else
 	if (MEM_InformationMan.mode == INFO_MGR_MODE_INFO) {
 		return + oCInfoManager_GetInfoUnimportant_ByPtr(MEM_InformationMan.npc, MEM_InformationMan.player, dlg.ChoiceSelected);
 	} else
