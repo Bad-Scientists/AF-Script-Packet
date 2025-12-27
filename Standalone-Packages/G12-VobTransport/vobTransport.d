@@ -1637,6 +1637,9 @@ func void G12_VobTransport_Init () {
 	//Frame function
 	FF_ApplyOnceExtGT (FrameFunction__VobTransport, 0, -1);
 
+	//Reset pointer
+	vobTransportVobPtr = 0;
+
 	//BBox draw hook
 	const int once = 0;
 	if (!once) {
