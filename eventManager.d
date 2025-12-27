@@ -825,6 +825,28 @@ func int zCEventManager_IsRunning (var int eMgr, var int eMsg) {
 	return CALL_RetValAsInt ();
 };
 
+func int zCEventManager_IsEmpty (var int eMgr, var int createEM) {
+	//0x006DE4F0 public: virtual int __thiscall zCEventManager::IsEmpty(int)
+	const int zCEventManager__IsEmpty_G1 = 7202032;
+
+	//0x00787780 public: virtual int __thiscall zCEventManager::IsEmpty(int)
+	const int zCEventManager__IsEmpty_G2 = 7894912;
+
+	if (!Hlp_Is_zCEventManager(eMgr)) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL_PtrParam(_@(createEM));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2(zCEventManager__IsEmpty_G1, zCEventManager__IsEmpty_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 func int zCEventManager_GetCutsceneMode (var int eMgr) {
 	//0x006DE2E0 public: virtual int __thiscall zCEventManager::GetCutsceneMode(void)
 	const int zCEventManager__GetCutsceneMode_G1 = 7201504;

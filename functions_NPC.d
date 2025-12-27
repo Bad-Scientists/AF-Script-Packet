@@ -1676,3 +1676,11 @@ func int Npc_BarrierIsWarning(var int slfInstance) {
 
 	return (slf.magFrontier_bitfield & oCMagFrontier_bitfield_isWarning);
 };
+
+func int Npc_EM_IsEmpty(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
+	var int eMgr; eMgr = zCVob_GetEM(_@(slf));
+	return + zCEventManager_IsEmpty(eMgr, TRUE);
+};
