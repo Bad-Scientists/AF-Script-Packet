@@ -1694,6 +1694,9 @@ func void _hook_oCInformationManager_Update_EIM () {
 	if (!MEM_Game.infoman) { return; };
 	if (MEM_Game.singleStep) { return; };
 
+	//For debugging
+	oCInformationManager_PrintStatus();
+
 	//Close item preview
 	if (MEM_InformationMan.IsDone)
 	|| (MEM_InformationMan.IsWaitingForClose)
