@@ -1479,35 +1479,6 @@ func int Npc_GetAIState(var int slfInstance) {
 	return state.curState_index;
 };
 
-func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
-	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
-	if (!statePtr) { return; };
-
-	var oCNPC_States state; state = _^ (statePtr);
-
-	state.curState_valid = TRUE;
-	state.curState_index = index;
-
-	state.curState_name = GetSymbolName(index);
-
-	//Special logic for by engine recognized ZS states
-	if (index < -1) {
-		state.curState_prgIndex = index;
-
-		var string stateName; stateName = STR_EMPTY;
-
-		if (index == -2) { stateName = "ZS_ANSWER"; };
-		if (index == -3) { stateName = "ZS_DEAD"; };
-		if (index == -4) { stateName = "ZS_UNCONSCIOUS"; };
-		if (index == -5) { stateName = "ZS_FADEAWAY"; };
-		if (index == -6) { stateName = "ZS_FOLLOW"; };
-
-		state.curState_name = stateName;
-		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
-		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
-	};
-};
-
 /*
  *	Npc_SetAIState
  *	 - function overrides curState.index (#hacker)
@@ -1522,7 +1493,25 @@ func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	if (Hlp_StrCmp(stateName, "ZS_FADEAWAY")) { index = -5; } else
 	if (Hlp_StrCmp(stateName, "ZS_FOLLOW")) { index = -6; };
 
-	Npc_SetAIState_ByIndex(slfInstance, index);
+	var int statePtr; statePtr = NPC_GetNpcState(slfInstance);
+	if (!statePtr) { return; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	state.curState_valid = TRUE;
+	state.curState_index = index;
+
+	state.curState_name = stateName;
+
+	//Special logic for by engine recognized ZS states
+	if (index < -1) {
+		state.curState_index = 0;
+		state.curState_prgIndex = index;
+
+		state.curState_name = stateName;
+		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
+		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
+	};
 };
 
 func string Npc_GetInteractMobName (var int slfInstance) {
