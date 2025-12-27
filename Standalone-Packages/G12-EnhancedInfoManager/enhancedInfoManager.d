@@ -2029,7 +2029,6 @@ func void _hook_oCInformationManager_Update_EIM () {
 		};
 
 		while (i < loop);
-
 			//Recalculate Y pos
 			var int ptr; ptr = MEM_ReadIntArray (arr.array, i);
 			txt = _^(ptr);
@@ -2267,11 +2266,28 @@ func void _hook_oCInformationManager_Update_EIM () {
 
 						//Setup item preview
 						if (eimDescription.hasItemPreview) {
-							//Close item preview
-							EIM_CloseItemPreview ();
+							//Close item preview if Npc changed
+							if (eim.itemPreviewVisible) {
+								if (eim.npcInstance1 != eimDescription.npcInstance1) {
+									Npc_CloseInventory(eim.npcInstance1);
+								};
+
+								if (eim.npcInstance2 != eimDescription.npcInstance2) {
+									Npc_CloseInventory(eim.npcInstance2);
+								};
+							};
+
 							//eim.properties = eim.properties | dialogChoiceType_ItemPreview;
 
 							eim.displayItemPreview = TRUE;
+
+							if (eim.itemInstance1 != eimDescription.itemInstance1)
+							|| (eim.npcInstance1 != eimDescription.npcInstance1)
+							|| (eim.itemInstance2 != eimDescription.itemInstance2)
+							|| (eim.npcInstance2 != eimDescription.npcInstance2)
+							{
+								eim.itemPreviewVisible = FALSE;
+							};
 
 							eim.itemInstance1 = eimDescription.itemInstance1;
 							eim.npcInstance1 = eimDescription.npcInstance1;
