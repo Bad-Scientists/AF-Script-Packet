@@ -2873,6 +2873,14 @@ func void _hook_oCInformationManager_Update_EIM () {
 						if ((eim.npcInstance2 > -1) && (eim.itemInstance2 > -1)) {
 							Npc_InvOpenPassive(eim.npcInstance2, eim.itemInstance2, FALSE);
 						};
+
+						//G1 - hide inventory arrows
+						if (MEMINT_SwitchG1G2(1, 0)) {
+							//008daa28
+							const int s_bShowArrows_addr_G1 = 9284136;
+							MemoryProtectionOverride(s_bShowArrows_addr_G1, 4);
+							MEM_WriteInt(s_bShowArrows_addr_G1, 0);
+						};
 					};
 				};
 			};
