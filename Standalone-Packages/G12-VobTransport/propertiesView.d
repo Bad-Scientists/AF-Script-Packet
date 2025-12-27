@@ -320,6 +320,7 @@ func void DisplayProperties__VobTransport () {
 
 			fontHeight = Print_GetFontHeight (vobTransportFontName);
 			fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+			fontHeight = roundf (mulf (mkf (fontHeight), scaleF));
 
 			if (vobTransportPropertiesView_PPosX == -1) {
 				posX = (PS_VMax - viewWidth) / 2;
@@ -571,6 +572,7 @@ func void DisplayProperties__VobTransport () {
 
 			fontHeight = Print_GetFontHeight (vobTransportFontName);
 			fontHeight = Print_ToVirtual (fontHeight, PS_Y);
+			fontHeight = roundf (mulf (mkf (fontHeight), scaleF));
 
 			if (vobTransportBuyVobViewPPosX == -1) {
 				posX = (PS_VMax - viewWidth) / 2;
