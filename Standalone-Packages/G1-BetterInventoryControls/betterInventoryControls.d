@@ -61,6 +61,12 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	if (key == KEY_Q) {
 		openInvType = Hlp_GetOpenInventoryType ();
 
+		if (openInvType == OpenInvType_NpcSneakPeak)
+		|| (openInvType == OpenInvType_ChestSneakPeak)
+		{
+			return TRUE;
+		};
+
 		if (openInvType == OpenInvType_Chest) {
 			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
 
@@ -172,6 +178,12 @@ func int oCItemContainer_HandleKey (var int ptr, var int key) {
 	if ((key == KEY_LMENU) || (key == KEY_LCONTROL) || (key == KEY_SPACE) || (key == MOUSE_BUTTON_LEFT)) {
 
 		openInvType = Hlp_GetOpenInventoryType ();
+
+		if (openInvType == OpenInvType_NpcSneakPeak)
+		|| (openInvType == OpenInvType_ChestSneakPeak)
+		{
+			return TRUE;
+		};
 
 		if ((openInvType == OpenInvType_Chest) || (openInvType == OpenInvType_NPC) || (openInvType == OpenInvType_Trading)) {
 			openInvContainerPtr = Hlp_GetActiveOpenInvContainer ();
