@@ -650,18 +650,17 @@ func int BuyingHandleKey__VobTransport (var int key) {
 			if (!vobTransportShowcaseVobPtr) {
 				//Create new vob
 				vobTransportShowcaseVobPtr = InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
-				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			} else {
 				//Update visual and objectName
 				zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
 				vob = _^ (vobTransportShowcaseVobPtr);
 				vob._zCObject_objectName = objectName;
-
-				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			};
 
 			var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (vobTransportShowcaseVobPtr);
 			Vob_RemoveCollBits (vobTransportShowcaseVobPtr, vobRemoveCollisions);
+
+			SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 
 			vobTransportVobChanged = TRUE;
 		} else {
