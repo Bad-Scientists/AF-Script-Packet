@@ -21,6 +21,13 @@ const int MOUSE_BUTTON_RIGHT = 2052;
 //528        - Backward button
 
 /*
+ *	Pickpocketing
+ */
+
+const int STEAL_TRANSFERTONPCINV_G1 = 1;
+const int STEAL_TRANSFERTOPLAYERINV_G1 = 2;
+
+/*
  *	Weapon stacking
  */
 

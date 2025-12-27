@@ -7,9 +7,6 @@
  *	4. Profit
  */
 
-//If this constant is set to true - then even if theft attempt has failed, hero will steal item (and will be caught)
-const int ENHANCEDPICKPOCKETING_STEALITEMANYWAY = 1;
-
 //API function
 //Called when victim is out of pickpocketing range
 func void EnhancedPickPocketing_TooFar () {
@@ -42,6 +39,20 @@ func int C_PP_CanBePutToInventory(var C_NPC npc, var int itemPtr) {
 //API function
 //This is where you can define Npc&Item-specific rules for pickpocketing - taking items from victim's inventory
 func int C_PP_CanBeStolenFromInventory(var C_NPC npc, var int itemPtr) {
+	var oCItem itm; itm = _^(itemPtr);
+
+	//Do not allow to steal ItMiNuggets
+	if (Hlp_GetInstanceID(itm) == ItMiNugget) {
+		return FALSE;
+	};
+
+	return TRUE;
+};
+
+//API function
+//This is where you can define Npc&Item-specific rules for pickpocketing - called when C_PP_CanBeStolenFromInventory returns FALSE
+//If function returns true - item will be stolen anyway - but player will get caught...
+func int C_PP_CanBeStolenWhenCaught(var C_NPC npc, var int itemPtr) {
 	var oCItem itm; itm = _^(itemPtr);
 
 	//Do not allow to steal ItMiNuggets
