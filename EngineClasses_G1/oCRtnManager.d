@@ -25,36 +25,36 @@ class oCRtnManager {
 	};
 */
 
-	var int indexStart[3];	//int
-	var int indexEnd[3];	//int
-	var int world;		//zCWorld*
-	var int nextEntryNode;	//zCListSort<oCRtnEntry>*
+	var int indexStart[3];	//int // sizeof 0Ch offset 00h
+	var int indexEnd[3];	//int // sizeof 0Ch offset 0Ch
+	var int world;		//zCWorld* // sizeof 04h offset 18h
+	var int nextEntryNode;	//zCListSort<oCRtnEntry>* // sizeof 04h offset 1Ch
 
-	//zCListSort<oCRtnEntry> rtnList;
+	//zCListSort<oCRtnEntry> rtnList; // sizeof 0Ch offset 20h
 	var int rtnList_compare;
 	var int rtnList_data;	//oCRtnEntry*
 	var int rtnList_next;
 
-	//zCListSort<TRtn_WayBox> wayboxListX;
+	//zCListSort<TRtn_WayBox> wayboxListX; // sizeof 0Ch offset 2Ch
 	var int wayboxListX_compare;
 	var int wayboxListX_data;
 	var int wayboxListX_next;
 
-	//zCListSort<TRtn_WayBox> wayboxListY;
+	//zCListSort<TRtn_WayBox> wayboxListY; // sizeof 0Ch offset 38h
 	var int wayboxListY_compare;
 	var int wayboxListY_data;
 	var int wayboxListY_next;
 
-	//zCListSort<TRtn_WayBox> wayboxListZ;
+	//zCListSort<TRtn_WayBox> wayboxListZ; // sizeof 0Ch offset 44h
 	var int wayboxListZ_compare;
 	var int wayboxListZ_datal;
 	var int wayboxListZ_next;
 
-	//zCList<oCNpc> activeList;
+	//zCList<oCNpc> activeList; // sizeof 08h offset 50h
 	var int activeList_data;
 	var int activeList_next;
 
-	//zCArraySort<TRtn_WayBoxLimit*> wayboxList[3];
+	//zCArraySort<TRtn_WayBoxLimit*> wayboxList[3]; // sizeof 30h offset 58h
 	var int wayboxList0_array;
 	var int wayboxList0_numAlloc;
 	var int wayboxList0_numInArray;

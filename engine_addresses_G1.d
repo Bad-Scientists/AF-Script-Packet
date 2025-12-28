@@ -59,15 +59,15 @@ const int oCNPC__DoTakeVob = 6950160;
 //0x0066B3D0 public: __thiscall oCNpcInventory::oCNpcInventory(void)
 //inventory2_inventory1_Compare int(_cdecl*)(oCItem*, OCItem*)
 
-const int inventory2_inventory0_Compare = 6732080;	//66B930	InventorySortDefault	??
-const int inventory2_inventory1_Compare = 6731024;	//66B510	InventorySortCombat	INV_WEAPON
-const int inventory2_inventory2_Compare = 6731488;	//66B6E0	InventorySortArmor	INV_ARMOR
-const int inventory2_inventory3_Compare = 6732080;	//66B930	InventorySortDefault	INV_RUNE
-const int inventory2_inventory4_Compare = 6732080;	//66B930	InventorySortDefault	INV_MAGIC
-const int inventory2_inventory5_Compare = 6731568;	//66B730	InventorySortFood	INV_FOOD
-const int inventory2_inventory6_Compare = 6732080;	//66B930	InventorySortDefault	INV_POTION
-const int inventory2_inventory7_Compare = 6731216;	//66B5D0	InventorySortDoc	INV_DOC
-const int inventory2_inventory8_Compare = 6731648;	//66B780	InventorySortOther	INV_MISC
+const int inventory2_inventory0_Compare = 6732080;	//66B930	INV_NONE		Sort_None (oCItem *item1, oCItem *item2)
+const int inventory2_inventory1_Compare = 6731024;	//66B510	INV_COMBAT		Sort_Weapons (oCItem *item1, oCItem *item2)
+const int inventory2_inventory2_Compare = 6731488;	//66B6E0	INV_ARMOR		Sort_Armor (oCItem *item1, oCItem *item2)
+const int inventory2_inventory3_Compare = 6732080;	//66B930	INV_RUNE		Sort_None (oCItem *item1, oCItem *item2)
+const int inventory2_inventory4_Compare = 6732080;	//66B930	INV_MAGIC		Sort_None (oCItem *item1, oCItem *item2)
+const int inventory2_inventory5_Compare = 6731568;	//66B730	INV_FOOD		Sort_Food (oCItem *item1, oCItem *item2)
+const int inventory2_inventory6_Compare = 6732080;	//66B930	INV_POTION		Sort_None (oCItem *item1, oCItem *item2)
+const int inventory2_inventory7_Compare = 6731216;	//66B5D0	INV_DOCS		Sort_Docs (oCItem *item1, oCItem *item2)
+const int inventory2_inventory8_Compare = 6731648;	//66B780	INV_OTHER		Sort_Other (oCItem *item1, oCItem *item2)
 
 /*
  *	Enhanced InfoManager
@@ -235,8 +235,8 @@ const int oCItemContainer__HandleEvent = 6725072;
 
 //0x0066A730 public: virtual int __thiscall oCStealContainer::HandleEvent(int)
 const int oCStealContainer__HandleEvent = 6727472;
-//0x0066ACD0 public: virtual int __thiscall oCNpcContainer::HandleEvent(int)
 
+//0x0066ACD0 public: virtual int __thiscall oCNpcContainer::HandleEvent(int)
 const int oCNpcContainer__HandleEvent = 6728912;
 //G2A HookLen 7
 

@@ -1,3 +1,7 @@
+//TODO: is this faster?
+//0x00671FE0 public: void __thiscall oCItem::ClearFlag(int)
+//0x00672000 public: void __thiscall oCItem::SetFlag(int)
+
 /*
  *	Removes flags from oCItem pointer
  *		itemPtr			item pointer
@@ -6,7 +10,7 @@
 func void oCItem_RemoveFlags (var int itemPtr, var int removeFlags) {
 	if (!itemPtr) { return; };
 	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags & ~ (removeFlags));
+	itm.flags = (itm.flags & ~ removeFlags);
 };
 
 /*
@@ -17,7 +21,7 @@ func void oCItem_RemoveFlags (var int itemPtr, var int removeFlags) {
 func void oCItem_AddFlags (var int itemPtr, var int addFlags) {
 	if (!itemPtr) { return; };
 	var oCItem itm; itm = _^ (itemPtr);
-	itm.flags = (itm.flags | (addFlags));
+	itm.flags = (itm.flags | addFlags);
 };
 
 func void oCItem_SetLightingSwell (var int value) {
@@ -237,15 +241,15 @@ func string oCItem_GetInvSlotName(var int itemPtr) {
 	if (!Hlp_Is_oCItem (itemPtr)) { return STR_EMPTY; };
 	var oCItem itm; itm = _^(itemPtr);
 
-	const int ITM_FLAG_DAG = 1<<13;
-	const int ITM_FLAG_SWD = 1<<14;
-	const int ITM_FLAG_AXE = 1<<15;
-	const int ITM_FLAG_2HD_SWD = 1<<16;
-	const int ITM_FLAG_2HD_AXE = 1<<17;
-	const int ITM_FLAG_SHIELD = 1<<18;
-	const int ITM_FLAG_BOW = 1<<19;
-	const int ITM_FLAG_CROSSBOW = 1<<20;
-	const int ITM_FLAG_MULTI = 1<<21;
+	const int ITM_FLAG_DAG = 1 << 13;
+	const int ITM_FLAG_SWD = 1 << 14;
+	const int ITM_FLAG_AXE = 1 << 15;
+	const int ITM_FLAG_2HD_SWD = 1 << 16;
+	const int ITM_FLAG_2HD_AXE = 1 << 17;
+	const int ITM_FLAG_SHIELD = 1 << 18;
+	const int ITM_FLAG_BOW = 1 << 19;
+	const int ITM_FLAG_CROSSBOW = 1 << 20;
+	const int ITM_FLAG_MULTI = 1 << 21;
 
 	if (oCItem_HasFlag(itemPtr, ITM_FLAG_SWD) || oCItem_HasFlag(itemPtr, ITM_FLAG_DAG) || oCItem_HasFlag(itemPtr, ITM_FLAG_AXE))
 	{

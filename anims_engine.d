@@ -3,7 +3,7 @@
  *	by Milgos, Fawkes and Auronen
  */
 
-func int oCNPC_GetModel (var int slfInstance) {
+func int oCNpc_GetModel(var int slfInstance) {
 	//0x00695300 public: class zCModel * __thiscall oCNpc::GetModel(void)
 	const int oCNPC__GetModel_G1 = 6902528;
 
@@ -862,7 +862,7 @@ func void zCModel_AttachChildVobToNode(var int modelPtr, var int vobNodePtr, var
  */
 func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var int progressF, var int aniDir) {
 	// getting zCModel
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	if (!modelPtr) { return STR_EMPTY; };
 
 	// getting animation ID
@@ -906,7 +906,7 @@ func string NPC_StartAniWithOffset(var int slfInstance, var string aniName, var 
  */
 func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName, var int aniFrame, var int aniDir) {
 	// getting zCModel
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	if (!modelPtr) { return STR_EMPTY; };
 
 	// getting animation ID
@@ -947,7 +947,7 @@ func string NPC_StartAniWithFrameOffset(var int slfInstance, var string aniName,
  *	NPC_AdvanceAnis
  */
 func void NPC_AdvanceAnis (var int slfInstance) {
-	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	zCModel_AdvanceAnis (modelPtr);
 };
 
@@ -964,12 +964,12 @@ func void NPC_AdvanceAnis (var int slfInstance) {
  */
 
 func int NPC_IsAniActive_ByAniName (var int slfInstance, var string aniName) {
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	return +zCModel_IsAniActive_ByAniName (modelPtr, aniName);
 };
 
 func int NPC_IsAniActive_ByID (var int slfInstance, var int aniID) {
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	return +zCModel_IsAniActive_ByAniID (modelPtr, aniID);
 };
 
@@ -981,7 +981,7 @@ func int NPC_IsAniActive_ByID (var int slfInstance, var int aniID) {
  */
 
 func int NPC_GetProgressPercent (var int slfInstance, var string aniName) {
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	if (!modelPtr) { return FLOATNULL; };
 	return +zCModel_GetProgressPercent_ByAniName (modelPtr, aniName);
 };
@@ -994,7 +994,7 @@ func int NPC_GetProgressPercent (var int slfInstance, var string aniName) {
  */
 
 func void NPC_StopAnimation_ByAniName (var int slfInstance, var string aniName){
-	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	var int aniID; aniID = zCModel_GetAniIdFromAniName (modelPtr, aniName);
 	var int modelAniActivePtr; modelAniActivePtr = zCModel_GetActiveAni_ByAniID (modelPtr, aniID);
 	zCModel_StopAni_ByModelAniActivePtr (modelPtr, modelAniActivePtr);
@@ -1008,7 +1008,7 @@ func void NPC_StopAnimation_ByAniName (var int slfInstance, var string aniName){
  */
 
 func void NPC_StartAnimation_ByAniName (var int slfInstance, var string aniName){
-	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	zCModel_StartAnimation (modelPtr, aniName);
 };
 
@@ -1043,7 +1043,7 @@ func string NPC_GetAniName (var int slfInstance) {
 
 //Name changed from NPC_StopAni to NPC_StopAni_ByAniName (NPC_StopAni is G2A default function)
 func void NPC_StopAni_ByAniName (var int slfInstance, var string aniName) {
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 
 	var int aniID; aniID = zCModel_GetAniIdFromAniName (modelPtr, aniName);
 	var int modelAniPtr; modelAniPtr = zCModel_GetAniFromAniID (modelPtr, aniID);
@@ -1053,7 +1053,7 @@ func void NPC_StopAni_ByAniName (var int slfInstance, var string aniName) {
 
 //Wrapper function to get current ani progress
 func int NPC_GetAniProgress (var int slfInstance) {
-	var int modelPtr; modelPtr = oCNpc_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	var string aniName; aniName = NPC_GetAniName (slfInstance);
 	var int aniID; aniID = zCModel_GetAniIDFromAniName (modelPtr, aniName);
 
@@ -1066,7 +1066,7 @@ func int NPC_GetAniProgress (var int slfInstance) {
 
 func void Npc_StartAni (var int slfInstance, var string aniName) {
 	// getting zCModel
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	if (!modelPtr) { return; };
 
 	// getting animation ID
@@ -1081,7 +1081,7 @@ func void Npc_StartAni (var int slfInstance, var string aniName) {
 };
 
 func void Npc_StartAnis (var int slfInstance, var string aniName1, var string aniName2) {
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	if (!modelPtr) { return; };
 
 	var int aniID1; aniID1 = zCModel_GetAniIDFromAniName(modelPtr, aniName1);
@@ -1092,8 +1092,7 @@ func void Npc_StartAnis (var int slfInstance, var string aniName1, var string an
 };
 
 func int Npc_GetAniIDFromAniName (var int slfInstance, var string aniName) {
-	// getting zCModel
-	var int modelPtr; modelPtr = oCNPC_GetModel (slfInstance);
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
 	return + zCModel_GetAniIDFromAniName(modelPtr, aniName);
 };
 

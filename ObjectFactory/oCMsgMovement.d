@@ -55,9 +55,11 @@ func int oCMsgMovement_Create (var int subType, var string targetName, var int t
 
 			//if (!vobPtr) { return 0; };
 
+			var int vobPosPtr;
+
 			CALL_RetValIsStruct (12);
 			CALL__thiscall (targetVob, MEMINT_SwitchG1G2 (zCVob__GetPositionWorld_G1, zCVob__GetPositionWorld_G2));
-			var int vobPosPtr; vobPosPtr = CALL_RetValAsPtr ();
+			vobPosPtr = CALL_RetValAsPtr ();
 
 			MEM_CopyBytes (vobPosPtr, _@ (msg.targetPos), 12);
 			MEM_Free (vobPosPtr);

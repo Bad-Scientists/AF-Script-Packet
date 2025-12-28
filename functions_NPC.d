@@ -193,14 +193,14 @@ func string Npc_GetRoutineBaseName (var int slfInstance)
 	};
 
 	//Double-check just in case
-    var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
 	var string suffix; suffix = ConcatStrings ("_", IntToString (slf.ID));
 	if (STR_EndsWith (rtnName, suffix)) {
 		//Remove suffix
 		rtnName = STR_Left (rtnName, STR_Len (rtnName) - STR_Len (suffix));
 	};
-    
-    return rtnName;
+
+	return rtnName;
 };
 
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
@@ -1576,8 +1576,8 @@ func int Npc_IsControlled (var int slfInstance) {
 	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_CONTROLLED);
 };
 
-func int NPC_IsTransformed (var int slfInstance) {
-	return + oCNPC_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
+func int Npc_IsTransformed (var int slfInstance) {
+	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
 };
 
 /*
@@ -1660,9 +1660,6 @@ func int Npc_HasOU (var int slfInstance, var int ou) {
 				if (index > -1) {
 					name = mySTR_SubStr (name, 0, index);
 				};
-
-				zSpy_Info (slf.Name);
-				zSpy_Info (name);
 
 				if (zCCSManager_LibValidateOU_ByName (name) == ou) {
 					return TRUE;

@@ -153,7 +153,6 @@ func int oCNpc_DeactivateDialogCam (var int slfInstance) {
 	return + retVal;
 };
 
-
 /*
  *	zCSession_GetCameraVob
  *	 - returns camera vob zCVob *
@@ -235,7 +234,7 @@ func int zCSession_GetCamera () {
 /*
  *	zCSession_GetCameraAI
  *	 - returns camera zCAICamera *
- * (same as zCSession_GetCameraAI)
+ * (same as zCAICamera_GetCurrent)
  */
 func int zCSession_GetCameraAI () {
 	//0x005B7280 public: virtual class zCAICamera * __thiscall zCSession::GetCameraAI(void)const
