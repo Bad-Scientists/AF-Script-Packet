@@ -1963,6 +1963,88 @@ func void NPC_TransferInventory (var int slfInstance, var int othInstance, var i
 	};
 };
 
+func void Npc_CopyInventoryCategory(var int slfInstance, var int othInstance, var int invCat, var int copyEquippedArmor, var int copyEquippedItems, var int copyMissionItems) {
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNpc(othInstance);
+	if (!Hlp_IsValidNpc(oth)) { return; };
+
+	var int armorItemID; armorItemID = Npc_GetArmor(slf);
+
+	var int itmSlot; itmSlot = 0;
+
+	var int itemInstanceID;
+	var int itemPtr; itemPtr = _@(item);
+
+	var int loop; loop = MEM_StackPos.position;
+
+	var int amount; amount = NPC_GetInvItemBySlot(slf, invCat, itmSlot);
+
+	if (amount > 0) {
+
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
+			if (Npc_ItemGetCategory(slfInstance, itemPtr) != invCat) {
+				itmSlot += 1;
+				MEM_StackPos.position = loop;
+			};
+		};
+
+		itemInstanceID = Hlp_GetInstanceID(item);
+
+		//Ignore equipped armor
+		if (invCat == INV_ARMOR) {
+			if ((!copyEquippedArmor) && (armorItemID == itemInstanceID) && (item.Flags & ITEM_ACTIVE_LEGO))
+			{
+				itmSlot += 1;
+				MEM_StackPos.position = loop;
+			};
+		};
+
+		//Ignore equipped items
+		if ((!copyEquippedItems) && (item.Flags & ITEM_ACTIVE_LEGO))
+		{
+			itmSlot += 1;
+			MEM_StackPos.position = loop;
+		};
+
+		//Ignore mission items
+		if ((!copyMissionItems) && (item.Flags & ITEM_MISSION))
+		{
+			itmSlot += 1;
+			MEM_StackPos.position = loop;
+		};
+
+		if (item.flags & ITEM_MULTI) {
+			CreateInvItems(oth, itemInstanceID, amount);
+		} else {
+			CreateInvItem(oth, itemInstanceID);
+		};
+
+		itmSlot += 1;
+		MEM_StackPos.position = loop;
+	};
+};
+
+func void Npc_CopyInventory(var int slfInstance, var int othInstance, var int copyEquippedArmor, var int copyEquippedItems, var int copyMissionItems) {
+	//G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_WEAPON, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_ARMOR, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_RUNE, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_MAGIC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_FOOD, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_POTION, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_DOC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_MISC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+	} else {
+	//G2A
+		Npc_CopyInventoryCategory(slfInstance, othInstance, 0, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+	};
+};
+
 func void NPC_UnEquipInventoryCategory (var int slfinstance, var int invCat) {
 	var C_NPC slf; slf = Hlp_GetNPC (slfInstance);
 	if (!Hlp_IsValidNPC (slf)) { return; };
