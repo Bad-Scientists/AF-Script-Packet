@@ -577,9 +577,23 @@ func int zCVob_HasParentVob (var int vobPtr) {
 	return CALL_RetValAsInt ();
 };
 
+func void zCVob_SetVisualByPtr (var int vobPtr, var int visualPtr) {
+	//0x005D6E10 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	const int zCVob__SetVisual_G1 = 6123024;
 
-//0x005D6E10 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
-//0x006024F0 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	//0x006024F0 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	const int zCVob__SetVisual_G2 = 6300912;
+
+	if (!visualPtr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(visualPtr));
+		CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__SetVisual_G1, zCVob__SetVisual_G2));
+		call = CALL_End();
+	};
+};
 
 func void zCVob_SetVisual (var int vobPtr, var string visualName) {
 	//0x005D6FA0 public: virtual void __thiscall zCVob::SetVisual(class zSTRING const &)
