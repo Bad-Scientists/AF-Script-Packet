@@ -802,6 +802,25 @@ func void Vob_PlayEffect (var string vobName, var string effectName)
 	MEM_ArrayFree (arr);
 };
 
+/*
+ *	Vob_Remove
+ *	 - function removes vobs
+ */
+func void Vob_Remove(var string vobName)
+{
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray (zarr.array, i);
+		RemoveoCVobSafe(vobPtr, 1);
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
 //0x005EF090 public: void __thiscall zCVob::SetHeadingLocal(class zVEC3 const &)
 //0x005EF150 public: void __thiscall zCVob::SetHeadingWorld(class zVEC3 const &)
 
