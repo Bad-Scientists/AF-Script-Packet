@@ -528,6 +528,42 @@ func int NPC_GetInfoInstanceUntoldCount (var int slfInstance) {
 	return count;
 };
 
+/*
+ *	Npc_IsTrader
+ *	 - do not use from inside of Npc instance
+ */
+func int Npc_IsTrader(var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
+
+	if (!MEM_InfoMan.infoList_next) { return FALSE; };
+
+	var int isTrader; isTrader = FALSE;
+
+	var int infoPtr;
+
+	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
+	var int instID; instID = Hlp_GetInstanceID(slf);
+
+	while(list);
+		ls = _^(list);
+
+		if (ls.data) {
+			var oCInfo info; info = _^(ls.data);
+			if (info.trade) {
+				if (info.npc == instID) {
+					isTrader = TRUE;
+				};
+			};
+		};
+
+		list = ls.next;
+	end;
+
+	return + isTrader;
+};
+
 func int InfoManager_GetSelectedInfo () {
 	if (InfoManager_HasFinished()) { return 0; };
 	var int dlgChoice; dlgChoice = MEM_InformationMan.dlgChoice;
