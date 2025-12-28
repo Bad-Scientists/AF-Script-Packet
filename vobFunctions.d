@@ -1696,8 +1696,6 @@ func void zCVob_SetTrafoObjToWorld (var int vobPtr, var int trafoPtr) {
 	if (!trafoPtr) { return; };
 	if (!vobPtr) { return; };
 
-	var int retVal;
-
 	const int call = 0;
 	if (CALL_Begin(call)) {
 		CALL_PtrParam (_@ (trafoPtr));
