@@ -1559,7 +1559,14 @@ func void Npc_StopLookAt (var int slfInstance) {
 	slf.lastLookMsg = 0;
 
 	//Stop look at animations
-	oCAniCtrl_Human_StopLookAtTarget (slf.aniCtrl);
+	oCAniCtrl_Human_StopLookAtTarget(slf.aniCtrl);
+
+	var int aniID; aniID = Npc_GetAniIDFromAniName(slf, "T_LOOK");
+	oCAniCtrl_Human_StopCombineAni(slf.aniCtrl, aniID);
+
+	//Stopped by oCAniCtrl_Human_StopLookAtTarget
+	//aniID = Npc_GetAniIDFromAniName(slf, "T_QLOOK");
+	//oCAniCtrl_Human_StopCombineAni(slf.aniCtrl, aniID)
 
 	//TODO: do we want to remove targetVob?
 	//oCAniCtrl_Human_SetLookAtTarget (slf.aniCtrl, 0);
