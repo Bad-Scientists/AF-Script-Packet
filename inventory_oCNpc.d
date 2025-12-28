@@ -1886,13 +1886,14 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 	var int amount; amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 
 	var int itemInstanceID;
+	var int itemPtr; itemPtr = _@(item);
 
 	while (amount > 0);
 		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
 		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
 		//we have to check invCat one more time here!
 		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
-			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
+			if (Npc_ItemGetCategory(slfInstance, itemPtr) != invCat) {
 				itmSlot += 1;
 				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 				continue;
@@ -1928,12 +1929,11 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Custom prints for transferred items
-		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
-			Event_Execute(_NpcTransferItem_Event, _@ (item));
+		if ((Hlp_IsValidHandle(_NpcTransferItem_Event)) && (_NpcTransferItem_Event_Enabled)) {
+			Event_Execute(_NpcTransferItem_Event, itemPtr);
 		};
 
 		var int retVal;
-
 		if (item.flags & ITEM_MULTI) {
 			CreateInvItems(oth, itemInstanceID, amount);
 			retVal = NPC_RemoveInvItems(slf, itemInstanceID, amount);
