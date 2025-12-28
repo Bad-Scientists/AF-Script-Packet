@@ -1096,6 +1096,30 @@ func void zCVob_GetTrafo (var int vobPtr, var int trafoPtr) {
 	MEM_CopyBytes(_@(vob.trafoObjToWorld), trafoPtr, 64);
 };
 
+//0x005EDBA0 public: class zMAT4 & __thiscall zCVob::GetNewTrafoObjToWorld(void)
+
+func void zCVob_GetNewTrafoObjToWorld(var int vobPtr, var int trafoPtr) {
+	//0x005EDB80 public: class zMAT4 const & __thiscall zCVob::GetNewTrafoObjToWorld(void)const
+	const int zCVob__GetNewTrafoObjToWorld_G1 = 6216576;
+
+	//
+	const int zCVob__GetNewTrafoObjToWorld_G2 = 0;
+
+	if (!vobPtr) { return; };
+	if (!trafoPtr) { return; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall (_@(vobPtr), MEMINT_SwitchG1G2(zCVob__GetNewTrafoObjToWorld_G1, zCVob__GetNewTrafoObjToWorld_G2));
+		call = CALL_End();
+	};
+
+	MEM_CopyBytes(retVal, trafoPtr, 64);
+};
+
 /*
  *
  */
