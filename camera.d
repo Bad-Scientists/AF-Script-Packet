@@ -367,7 +367,7 @@ func void Camera_SetTarget (var int vobPtr) {
 //
 //	//const int call = 0;
 //	//if (CALL_Begin(call)) {
-//		CALL__thiscall (gamePtr, MEMINT_SwitchG1G2 (oCGame_SwitchCamToNextNpc_G1, oCGame_SwitchCamToNextNpc_G2));
+//		CALL__thiscall (_@(gamePtr), MEMINT_SwitchG1G2 (oCGame_SwitchCamToNextNpc_G1, oCGame_SwitchCamToNextNpc_G2));
 //	//	call = CALL_End();
 //	//};
 //};
