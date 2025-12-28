@@ -1631,6 +1631,54 @@ func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string even
 };
 
 /*
+ *	Function moves event message to specified index
+ */
+func void NPC_EM_SetIndexByEventName (var int slfInstance, var string eventName, var int index) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!eMgr) { return; };
+
+	//Get index
+	var int replaceIndex; replaceIndex = zcEventManager_GetIndexByEventName(eMgr, eventName);
+	if (replaceIndex == -1) { return; };
+
+	//If message is already at specified index ... exit
+	if (index == replaceIndex) { return; };
+
+	var int eMsg1;
+	var int eMsg2;
+
+	var zCEventManager eventManager; eventManager = _^(eMgr);
+
+	//Move up
+	while(index < replaceIndex);
+		//Get messages
+		eMsg1 = zCEventManager_GetEventMessage(eMgr, replaceIndex);
+		eMsg2 = zCEventManager_GetEventMessage(eMgr, replaceIndex - 1);
+
+		//Swap messages
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex, eMsg2);
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex - 1, eMsg1);
+
+		replaceIndex -= 1;
+	end;
+
+	//Move down
+	while(((index > replaceIndex) && (replaceIndex + 1 < eventManager.messageList_numInArray)));
+		//Get messages
+		eMsg1 = zCEventManager_GetEventMessage(eMgr, replaceIndex);
+		eMsg2 = zCEventManager_GetEventMessage(eMgr, replaceIndex + 1);
+
+		//Swap messages
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex, eMsg2);
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex + 1, eMsg1);
+
+		replaceIndex += 1;
+	end;
+};
+
+/*
  *	Npc_EM_SendTozSpy
  *	 - list current events in AI queue to zSpy
  */
