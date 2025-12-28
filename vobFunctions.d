@@ -745,6 +745,10 @@ func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int c
 	var zCVob vob;
 	var int vobPtr;
 
+	if (!zarr.numInArray) {
+		zSpy_Info(ConcatStrings("Vob_ChangeDataByName: specified vobName not found ", vobName));
+	};
+
 	repeat (i, zarr.numInArray); var int i;
 		vobPtr = MEM_ReadIntArray (zarr.array, i);
 		vob = _^ (vobPtr);
