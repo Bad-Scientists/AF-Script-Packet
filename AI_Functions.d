@@ -51,6 +51,23 @@ func void AI_TurnToPos (var int slfInstance, var int posPtr) {
 };
 
 /*
+ *	AI_TurnAngle
+ */
+func void AI_TurnAngle (var int slfInstance, var int angle) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	//Create new message
+	var int eMsg; eMsg = oCMsgMovement_Create(EV_TURN, STR_EMPTY, 0, 0, mkf(angle), 0);
+
+	//Get Event Manager
+	var int eMgr; eMgr = zCVob_GetEM(_@(slf));
+
+	//Add new msg to Event Manager
+	zCEventManager_OnMessage(eMgr, eMsg, _@(slf));
+};
+
+/*
  *	AI_TurnAwayPos
  *	 - same as AI_TurnAway, but allows us to use position
  */
