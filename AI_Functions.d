@@ -1325,8 +1325,10 @@ func void AI_PutInInvFromSlot (var int slfInstance, var string slotName) {
 func void _AI_RemoveItemFromSlot (var string slotName) {
 	var int itemPtr; itemPtr = oCNpc_RemoveFromSlot_Fixed (self, slotName, 1, 1);
 	oCNpc_SetInteractItem(self, 0);
-	//var C_Item itm; itm = _^ (itemPtr);
-	//Wld_RemoveItem (itm);
+	//if (itemPtr) {
+	//	var C_Item itm; itm = _^ (itemPtr);
+	//	Wld_RemoveItem(itm);
+	//};
 	RemoveoCVobSafe (itemPtr, 0);
 };
 
