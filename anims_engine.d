@@ -828,6 +828,26 @@ func void zCModel_DoAniEvents (var int modelPtr, var int modelAniActivePtr) {
 	};
 };
 
+func void zCModel_AttachChildVobToNode(var int modelPtr, var int vobNodePtr, var int modelNodePtr) {
+	//0x005665B0 public: void __thiscall zCModel::AttachChildVobToNode(class zCVob *,class zCModelNodeInst *)
+	const int zCModel__AttachChildVobToNode_G1 = 5662128;
+
+	//0x005806A0 public: void __thiscall zCModel::AttachChildVobToNode(class zCVob *,class zCModelNodeInst *)
+	const int zCModel__AttachChildVobToNode_G2 = 5768864;
+
+	if (!modelPtr) { return; };
+	if (!vobNodePtr) { return; };
+	if (!modelNodePtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(modelNodePtr));
+		CALL_PtrParam(_@(vobNodePtr));
+		CALL__thiscall(_@(modelPtr), MEMINT_SwitchG1G2(zCModel__AttachChildVobToNode_G1, zCModel__AttachChildVobToNode_G2));
+		call = CALL_End();
+	};
+};
+
 ////////////////////////////////
 // Useful "wrapper" functions //
 ////////////////////////////////
