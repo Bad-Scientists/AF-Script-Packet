@@ -1463,3 +1463,52 @@ func void NPC_TeleportToNpc (var int slfInstance, var int npcInstance) {
 		oCNpc_Enable (npc, _@ (pos));
 	};
 };
+
+func void Npc_NodeAttachPfx(var int slfInstance, var string nodeName, var string emitterName) {
+	var int pos[3];
+
+	pos[0] = FLOATNULL;
+	pos[1] = FLOATNULL;
+	pos[2] = FLOATNULL;
+
+	//Create pfx
+	var int pfxPtr; pfxPtr = zCParticleFX_Create(emitterName);
+	if (!pfxPtr) {
+		zSpy_Info("Npc_NodeAttachPfx: PFX could not be created!");
+		zSpy_Info(emitterName);
+		return;
+	};
+
+	//Create vob
+	var int vobPtr; vobPtr = CreateNewInstanceByString("zCVob");
+	if (!vobPtr) {
+		zSpy_Info("Npc_NodeAttachPfx: zCVob could not be created!");
+		return;
+	};
+
+	//Setup vob
+	Vob_SetBitfield(vobPtr, zCVob_bitfield4_dontWriteIntoArchive, TRUE);
+	Vob_SetBitfield(vobPtr, zCVob_bitfield0_collDetectionStatic, FALSE);
+	Vob_SetBitfield(vobPtr, zCVob_bitfield0_collDetectionDynamic, FALSE);
+
+	zCVob_SetPositionWorld(vobPtr, _@(pos));
+	zCVob_SetVisualByPtr(vobPtr, pfxPtr);
+
+	//Get model
+	var int modelPtr; modelPtr = oCNpc_GetModel(slfInstance);
+	if (!modelPtr) { return; };
+	var zCModel model; model = _^(modelPtr);
+
+	//Get right hand model node
+	var int nodePtr; nodePtr = Npc_GetNode(slfInstance, nodeName);
+
+	//var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	//zCVob_BeginMovement(_@(slf));
+
+	//var int homeWorld; homeWorld = zCVob_GetHomeWorld(model.homeVob);
+
+	oCWorld_EnableVob(vobPtr, model.homeVob);
+
+	//Attach pfx node to model node
+	zCModel_AttachChildVobToNode(modelPtr, vobPtr, nodePtr);
+};
