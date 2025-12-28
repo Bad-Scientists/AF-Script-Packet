@@ -140,14 +140,17 @@ func int oCItem_SplitItemPtr (var int itemPtr, var int qty){
 
 	if (!itemPtr) { return 0; };
 
+	var int retVal;
+
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam (_@ (qty));
 		CALL__thiscall (_@ (itemPtr), MEMINT_SwitchG1G2 (oCItem__SplitItem_G1, oCItem__SplitItem_G2));
 		call = CALL_End();
 	};
 
-	return CALL_RetValAsPtr();
+	return + retVal;
 };
 
 func string GetItemTextByIndex (var int itemPtr, var int index) {
