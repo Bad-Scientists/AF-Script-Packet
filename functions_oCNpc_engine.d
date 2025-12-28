@@ -1624,3 +1624,31 @@ func int oCNpc_DoShootArrow(var int slfInstance, var int autoAim) {
 
 	return +retVal;
 };
+
+/*
+ *	oCNpc_AssessUseMob_S
+ */
+func int oCNpc_AssessUseMob_S(var int slfInstance, var int mobInterPtr) {
+	//0x006B69C0 public: int __thiscall oCNpc::AssessUseMob_S(class oCMobInter *)
+	const int oCNpc__AssessUseMob_S_G1 = 7039424;
+
+	//0x0075D300 public: int __thiscall oCNpc::AssessUseMob_S(class oCMobInter *)
+	const int oCNpc__AssessUseMob_S_G2 = 7721728;
+
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNPC(slf)) { return FALSE; };
+
+	var int slfPtr; slfPtr = _@(slf);
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@ (retVal));
+		CALL_IntParam(_@(mobInterPtr));
+		CALL__thiscall(_@(slfPtr), MEMINT_SwitchG1G2(oCNpc__AssessUseMob_S_G1, oCNpc__AssessUseMob_S_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
