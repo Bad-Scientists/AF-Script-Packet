@@ -69,6 +69,29 @@ func void zCConsole_Hide () {
 };
 
 /*
+ *	zCConsole_IsVisible
+ *	 - checks if console is visible
+ */
+func int zCConsole_IsVisible () {
+	//0x006DA710 public: int __thiscall zCConsole::IsVisible(void)
+	const int zCConsole__IsVisible_G1 = 7186192;
+
+	//0x00783890 public: int __thiscall zCConsole::IsVisible(void)
+	const int zCConsole__IsVisible_G2 = 7878800;
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall(_@(zcon_address), MEMINT_SwitchG1G2(zCConsole__IsVisible_G1, zCConsole__IsVisible_G2));
+		call = CALL_End();
+	};
+
+	return +retVal;
+};
+
+/*
  *	Emulates test mode key pressing
  *	Usage: oCGame_TestKeys (KEY_F6)
  */
