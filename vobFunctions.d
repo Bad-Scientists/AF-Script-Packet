@@ -1072,11 +1072,10 @@ func void zMAT4_SetByDescriptionPos (var int trafoPtr, var string desc) {
  */
 func void zCVob_GetTrafo (var int vobPtr, var int trafoPtr) {
 	if (!trafoPtr) { return; };
+	if (!Hlp_Is_zCVob(vobPtr)) { return; };
 
-	if (Hlp_Is_zCVob (vobPtr)) {
-		var zCVob vob; vob = _^ (vobPtr);
-		MEM_CopyBytes (_@ (vob.trafoObjToWorld), trafoPtr, 64);
-	};
+	var zCVob vob; vob = _^(vobPtr);
+	MEM_CopyBytes(_@(vob.trafoObjToWorld), trafoPtr, 64);
 };
 
 /*
