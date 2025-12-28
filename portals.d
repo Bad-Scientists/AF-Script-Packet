@@ -323,6 +323,18 @@ func int Vob_GetPortalGuild (var int vobPtr) {
 };
 
 /*
+ *	Npc_IsInPortalRoom
+ *	 - wrapper function checking portal name for Npc
+ */
+func int Npc_IsInPortalRoom(var int slfInstance, var string portalName) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
+
+	var string currentPortal; currentPortal = Vob_GetPortalName(_@(slf));
+	return + Hlp_StrCmp(currentPortal, portalName);
+};
+
+/*
  *	Checks whether portal is owned by specific NPC
  */
 func int Wld_PortalIsOwnedByNPC (var string portalName, var int slfInstance) {
