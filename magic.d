@@ -25,21 +25,26 @@ func void oCNpc_MakeSpellBook (var int slfInstance) {
  *	oCMag_Book_DeRegister
  *	 - deregisters spell from magbook
  */
-func void oCMag_Book_DeRegister (var int magBookPtr, var int index) {
+func int oCMag_Book_DeRegister (var int magBookPtr, var int index) {
 	//0x0046F1C0 public: int __thiscall oCMag_Book::DeRegister(int)
 	const int oCMag_Book__DeRegister_G1 = 4649408;
 
 	//0x00475DA0 public: int __thiscall oCMag_Book::DeRegister(int)
 	const int oCMag_Book__DeRegister_G2 = 4677024;
 
-	if (!magBookPtr) { return; };
+	if (!magBookPtr) { return FALSE; };
+
+	var int retVal;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
 		CALL_IntParam(_@(index));
 		CALL__thiscall (_@ (magBookPtr), MEMINT_SwitchG1G2 (oCMag_Book__DeRegister_G1, oCMag_Book__DeRegister_G2));
 		call = CALL_End();
 	};
+
+	return + retVal;
 };
 
 /*
@@ -61,7 +66,7 @@ func void oCNpc_DestroySpellBook (var int slfInstance) {
 	//Deregister all spells first
 	var oCMag_Book magBook; magBook = _^(slf.mag_book);
 	repeat(i, magBook.spellitems_numInArray); var int i;
-		oCMag_Book_DeRegister(slf.mag_book, i);
+		var int retVal; retVal = oCMag_Book_DeRegister(slf.mag_book, i);
 	end;
 
 	var int slfPtr; slfPtr = _@ (slf);

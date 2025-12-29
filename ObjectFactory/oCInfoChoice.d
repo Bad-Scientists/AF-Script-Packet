@@ -8,7 +8,7 @@ func int oCInfoChoice_New () {
 	//Same for G1 & G2A
 	const int sizeof_oCInfoChoice = 24;
 
-	var int ptr; ptr = MEM_Alloc (sizeof_oCInfoChoice);
+	var int ptr; ptr = MEM_Alloc(sizeof_oCInfoChoice);
 	return ptr;
 };
 

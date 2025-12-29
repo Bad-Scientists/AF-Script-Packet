@@ -83,3 +83,23 @@ func int CGameManager_GetChapterIntroduce()
 
 	return + MEM_ReadByte(MEMINT_SwitchG1G2(s_chapter_introduce_addr_G1, s_chapter_introduce_addr_G2));
 };
+
+/*
+0x0060F3A0 int __cdecl CapsLock(void)
+0x0060F420 void __cdecl ToggleCapsLock(void)
+*/
+
+func void Game_SetCapsLock(var int enabled) {
+	//0x0060F3C0 void __cdecl SetCapsLock(int)
+	const int SetCapsLock_G1 = 6353856;
+
+	//0x00694FE0 void __cdecl SetCapsLock(int)
+	const int SetCapsLock_G2 = 6901728;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_IntParam(_@(enabled));
+		CALL__cdecl(MEMINT_SwitchG1G2(SetCapsLock_G1, SetCapsLock_G2));
+		call = CALL_End();
+	};
+};

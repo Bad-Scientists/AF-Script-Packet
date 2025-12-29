@@ -17,14 +17,6 @@ func string CC_GotoNpc (var string param) {
 	if (STR_Len (objectName)) {
 		var oCNpc npc;
 
-		//Get vob
-		var int ptr; ptr = MEM_SearchVobByName (objectName);
-
-		if (ptr) {
-			oCNpc_BeamTo (hero, objectName);
-			return "Vob found.";
-		};
-
 		//Get variable name
 		var int symbID; symbID = MEM_GetSymbolIndex (objectName);
 
@@ -64,6 +56,14 @@ func string CC_GotoNpc (var string param) {
 
 				listPtr = list.next;
 			end;
+		};
+
+		//Get vob
+		var int ptr; ptr = MEM_SearchVobByName (objectName);
+
+		if (ptr) {
+			oCNpc_BeamTo (hero, objectName);
+			return "Vob found.";
 		};
 	};
 

@@ -197,11 +197,13 @@ func int CtoB (var string s) {
  *	Converts byte back to char, 97 to 'a', 65 to 'A'
  */
 func string BtoC (var int i) {
+	//Thanks mud-freak for the fix!
+	//We need to provide null-terminated char for STR_FromChar, thus we have to allocate 2 bytes with MEM_Alloc
 	const int mem = 0;
-	if (!mem) { mem = MEM_Alloc (1); };
+	if (!mem) { mem = MEM_Alloc(2); };
+	MEM_WriteByte(mem, i & 255);
 
-	MEM_WriteByte (mem, i);
-	return STR_FromChar (mem);
+	return STR_FromChar(mem);
 };
 
 func string STR_Left (var string s, var int count) {

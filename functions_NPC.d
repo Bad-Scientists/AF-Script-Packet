@@ -193,14 +193,14 @@ func string Npc_GetRoutineBaseName (var int slfInstance)
 	};
 
 	//Double-check just in case
-    var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
 	var string suffix; suffix = ConcatStrings ("_", IntToString (slf.ID));
 	if (STR_EndsWith (rtnName, suffix)) {
 		//Remove suffix
 		rtnName = STR_Left (rtnName, STR_Len (rtnName) - STR_Len (suffix));
 	};
-    
-    return rtnName;
+
+	return rtnName;
 };
 
 func int NPC_IsInRoutineName (var int slfInstance, var string rtnName) {
@@ -1395,10 +1395,23 @@ func int Npc_HasAni (var int slfInstance, var string aniName) {
 		var int eMsg; eMsg = zCEventManager_GetEventMessage (eMgr, i);
 
 		if (Hlp_Is_oCMsgConversation (eMsg)) {
-			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY) {
-				var oCMsgConversation msg; msg = _^ (eMsg);
+			var oCMsgConversation msg;
 
-				if (Hlp_StrCmp (msg.name, aniName)) {
+			//Extract ani name from AI queue events
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANI_NOOVERLAY)
+			{
+				msg = _^ (eMsg);
+				if (STR_WildMatch(msg.name, aniName)) {
+					count += 1;
+				};
+			};
+
+			if (zCEventMessage_GetSubType (eMsg) == EV_PLAYANISOUND)
+			{
+				msg = _^ (eMsg);
+
+				var string aniNameMsg; aniNameMsg = Npc_GetAniNameFromAniID(slf, msg.ani);
+				if (STR_WildMatch(aniNameMsg, aniName)) {
 					count += 1;
 				};
 			};
@@ -1466,35 +1479,6 @@ func int Npc_GetAIState(var int slfInstance) {
 	return state.curState_index;
 };
 
-func void Npc_SetAIState_ByIndex (var int slfInstance, var int index) {
-	var int statePtr; statePtr = NPC_GetNPCState (slfInstance);
-	if (!statePtr) { return; };
-
-	var oCNPC_States state; state = _^ (statePtr);
-
-	state.curState_valid = TRUE;
-	state.curState_index = index;
-
-	state.curState_name = GetSymbolName(index);
-
-	//Special logic for by engine recognized ZS states
-	if (index < -1) {
-		state.curState_prgIndex = index;
-
-		var string stateName; stateName = STR_EMPTY;
-
-		if (index == -2) { stateName = "ZS_ANSWER"; };
-		if (index == -3) { stateName = "ZS_DEAD"; };
-		if (index == -4) { stateName = "ZS_UNCONSCIOUS"; };
-		if (index == -5) { stateName = "ZS_FADEAWAY"; };
-		if (index == -6) { stateName = "ZS_FOLLOW"; };
-
-		state.curState_name = stateName;
-		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
-		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
-	};
-};
-
 /*
  *	Npc_SetAIState
  *	 - function overrides curState.index (#hacker)
@@ -1509,7 +1493,25 @@ func void Npc_SetAIState (var int slfInstance, var string stateName) {
 	if (Hlp_StrCmp(stateName, "ZS_FADEAWAY")) { index = -5; } else
 	if (Hlp_StrCmp(stateName, "ZS_FOLLOW")) { index = -6; };
 
-	Npc_SetAIState_ByIndex(slfInstance, index);
+	var int statePtr; statePtr = NPC_GetNpcState(slfInstance);
+	if (!statePtr) { return; };
+
+	var oCNPC_States state; state = _^ (statePtr);
+
+	state.curState_valid = TRUE;
+	state.curState_index = index;
+
+	state.curState_name = stateName;
+
+	//Special logic for by engine recognized ZS states
+	if (index < -1) {
+		state.curState_index = 0;
+		state.curState_prgIndex = index;
+
+		state.curState_name = stateName;
+		state.curState_loop = MEM_FindParserSymbol(ConcatStrings (stateName, "_LOOP"));
+		state.curState_end = MEM_FindParserSymbol(ConcatStrings (stateName, "_END"));
+	};
 };
 
 func string Npc_GetInteractMobName (var int slfInstance) {
@@ -1557,7 +1559,14 @@ func void Npc_StopLookAt (var int slfInstance) {
 	slf.lastLookMsg = 0;
 
 	//Stop look at animations
-	oCAniCtrl_Human_StopLookAtTarget (slf.aniCtrl);
+	oCAniCtrl_Human_StopLookAtTarget(slf.aniCtrl);
+
+	var int aniID; aniID = Npc_GetAniIDFromAniName(slf, "T_LOOK");
+	oCAniCtrl_Human_StopCombineAni(slf.aniCtrl, aniID);
+
+	//Stopped by oCAniCtrl_Human_StopLookAtTarget
+	//aniID = Npc_GetAniIDFromAniName(slf, "T_QLOOK");
+	//oCAniCtrl_Human_StopCombineAni(slf.aniCtrl, aniID)
 
 	//TODO: do we want to remove targetVob?
 	//oCAniCtrl_Human_SetLookAtTarget (slf.aniCtrl, 0);
@@ -1567,8 +1576,8 @@ func int Npc_IsControlled (var int slfInstance) {
 	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_CONTROLLED);
 };
 
-func int NPC_IsTransformed (var int slfInstance) {
-	return + oCNPC_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
+func int Npc_IsTransformed (var int slfInstance) {
+	return + oCNpc_HasBodyStateModifier (slfInstance, BS_MOD_TRANSFORMED);
 };
 
 /*
@@ -1596,6 +1605,21 @@ func int Npc_HasAnyOU (var int slfInstance) {
 			|| (subType == EV_OUTPUTSVM_OVERLAY)
 			{
 				count += 1;
+			};
+
+			if (subType == EV_PLAYANISOUND)
+			{
+				var oCMsgConversation msg; msg = _^ (eMsg);
+				var string name; name = msg.name;
+
+				var int index; index = STR_IndexOf (name, ".");
+				if (index > -1) {
+					name = mySTR_SubStr (name, 0, index);
+				};
+
+				if (zCCSManager_LibValidateOU_ByName(name)) {
+					count += 1;
+				};
 			};
 		};
 	end;
@@ -1626,6 +1650,7 @@ func int Npc_HasOU (var int slfInstance, var int ou) {
 			if (subType == EV_OUTPUT)
 			|| (subType == EV_OUTPUTSVM)
 			|| (subType == EV_OUTPUTSVM_OVERLAY)
+			|| (subType == EV_PLAYANISOUND)
 			{
 				var oCMsgConversation msg; msg = _^ (eMsg);
 
@@ -1635,9 +1660,6 @@ func int Npc_HasOU (var int slfInstance, var int ou) {
 				if (index > -1) {
 					name = mySTR_SubStr (name, 0, index);
 				};
-
-				zSpy_Info (slf.Name);
-				zSpy_Info (name);
 
 				if (zCCSManager_LibValidateOU_ByName (name) == ou) {
 					return TRUE;
@@ -1657,4 +1679,12 @@ func int Npc_BarrierIsWarning(var int slfInstance) {
 	if (!Hlp_IsValidNPC (slf)) { return FALSE; };
 
 	return (slf.magFrontier_bitfield & oCMagFrontier_bitfield_isWarning);
+};
+
+func int Npc_EM_IsEmpty(var int slfInstance) {
+	var oCNpc slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
+	var int eMgr; eMgr = zCVob_GetEM(_@(slf));
+	return + zCEventManager_IsEmpty(eMgr, TRUE);
 };

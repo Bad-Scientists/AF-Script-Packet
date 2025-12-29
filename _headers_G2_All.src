@@ -13,6 +13,8 @@ EngineClasses_G2\oSpell.d
 EngineClasses_G2\oNpcStates.d
 EngineClasses_G2\oNpc.d
 EngineClasses_G2\zCVisual.d
+EngineClasses_G2\oCDocumentManager.d
+EngineClasses_G2\oCViewDocument.d
 EngineClasses_G2\zPhysics.d
 EngineClasses_G2\oAiShoot.d
 EngineClasses_G2\TMobOptPos.d
@@ -92,6 +94,7 @@ ObjectFactory\oCMsgState.d
 ObjectFactory\oCInfoChoice.d
 
 ObjectFactory\oCSpell.d
+ObjectFactory\zCParticleFX.d
 ObjectFactory\zCViewText2.d
 ObjectFactory\zCOption.d
 

@@ -825,6 +825,28 @@ func int zCEventManager_IsRunning (var int eMgr, var int eMsg) {
 	return CALL_RetValAsInt ();
 };
 
+func int zCEventManager_IsEmpty (var int eMgr, var int createEM) {
+	//0x006DE4F0 public: virtual int __thiscall zCEventManager::IsEmpty(int)
+	const int zCEventManager__IsEmpty_G1 = 7202032;
+
+	//0x00787780 public: virtual int __thiscall zCEventManager::IsEmpty(int)
+	const int zCEventManager__IsEmpty_G2 = 7894912;
+
+	if (!Hlp_Is_zCEventManager(eMgr)) { return 0; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL_PtrParam(_@(createEM));
+		CALL__thiscall(_@(eMgr), MEMINT_SwitchG1G2(zCEventManager__IsEmpty_G1, zCEventManager__IsEmpty_G2));
+		call = CALL_End();
+	};
+
+	return + retVal;
+};
+
 func int zCEventManager_GetCutsceneMode (var int eMgr) {
 	//0x006DE2E0 public: virtual int __thiscall zCEventManager::GetCutsceneMode(void)
 	const int zCEventManager__GetCutsceneMode_G1 = 7201504;
@@ -1606,6 +1628,54 @@ func int NPC_EM_GetEventMessageByEventName (var int slfInstance, var string even
 
 	//Get Event Message
 	return +zcEventManager_GetEventByEventName (eMgr, eventName);
+};
+
+/*
+ *	Function moves event message to specified index
+ */
+func void NPC_EM_SetIndexByEventName (var int slfInstance, var string eventName, var int index) {
+	var oCNpc slf; slf = Hlp_GetNPC (slfInstance);
+
+	var int eMgr; eMgr = zCVob_GetEM (_@ (slf));
+	if (!eMgr) { return; };
+
+	//Get index
+	var int replaceIndex; replaceIndex = zcEventManager_GetIndexByEventName(eMgr, eventName);
+	if (replaceIndex == -1) { return; };
+
+	//If message is already at specified index ... exit
+	if (index == replaceIndex) { return; };
+
+	var int eMsg1;
+	var int eMsg2;
+
+	var zCEventManager eventManager; eventManager = _^(eMgr);
+
+	//Move up
+	while(index < replaceIndex);
+		//Get messages
+		eMsg1 = zCEventManager_GetEventMessage(eMgr, replaceIndex);
+		eMsg2 = zCEventManager_GetEventMessage(eMgr, replaceIndex - 1);
+
+		//Swap messages
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex, eMsg2);
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex - 1, eMsg1);
+
+		replaceIndex -= 1;
+	end;
+
+	//Move down
+	while(((index > replaceIndex) && (replaceIndex + 1 < eventManager.messageList_numInArray)));
+		//Get messages
+		eMsg1 = zCEventManager_GetEventMessage(eMgr, replaceIndex);
+		eMsg2 = zCEventManager_GetEventMessage(eMgr, replaceIndex + 1);
+
+		//Swap messages
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex, eMsg2);
+		MEM_WriteIntArray(eventManager.messageList_array, replaceIndex + 1, eMsg1);
+
+		replaceIndex += 1;
+	end;
 };
 
 /*

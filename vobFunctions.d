@@ -577,9 +577,23 @@ func int zCVob_HasParentVob (var int vobPtr) {
 	return CALL_RetValAsInt ();
 };
 
+func void zCVob_SetVisualByPtr (var int vobPtr, var int visualPtr) {
+	//0x005D6E10 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	const int zCVob__SetVisual_G1 = 6123024;
 
-//0x005D6E10 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
-//0x006024F0 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	//0x006024F0 public: virtual void __thiscall zCVob::SetVisual(class zCVisual *)
+	const int zCVob__SetVisual_G2 = 6300912;
+
+	if (!visualPtr) { return; };
+	if (!vobPtr) { return; };
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PtrParam(_@(visualPtr));
+		CALL__thiscall(_@(vobPtr), MEMINT_SwitchG1G2 (zCVob__SetVisual_G1, zCVob__SetVisual_G2));
+		call = CALL_End();
+	};
+};
 
 func void zCVob_SetVisual (var int vobPtr, var string visualName) {
 	//0x005D6FA0 public: virtual void __thiscall zCVob::SetVisual(class zSTRING const &)
@@ -731,6 +745,10 @@ func void Vob_ChangeDataByName (var string vobName, var int staticVob, var int c
 	var zCVob vob;
 	var int vobPtr;
 
+	if (!zarr.numInArray) {
+		zSpy_Info(ConcatStrings("Vob_ChangeDataByName: specified vobName not found ", vobName));
+	};
+
 	repeat (i, zarr.numInArray); var int i;
 		vobPtr = MEM_ReadIntArray (zarr.array, i);
 		vob = _^ (vobPtr);
@@ -779,6 +797,25 @@ func void Vob_PlayEffect (var string vobName, var string effectName)
 
 		Wld_PlayEffect (effectName, vob, vob, 0, 0, 0, FALSE);
 
+	end;
+
+	MEM_ArrayFree (arr);
+};
+
+/*
+ *	Vob_Remove
+ *	 - function removes vobs
+ */
+func void Vob_Remove(var string vobName)
+{
+	var int arr; arr = MEM_SearchAllVobsByName (vobName);
+	var zCArray zarr; zarr = _^ (arr);
+
+	var int vobPtr;
+
+	repeat (i, zarr.numInArray); var int i;
+		vobPtr = MEM_ReadIntArray (zarr.array, i);
+		RemoveoCVobSafe(vobPtr, 1);
 	end;
 
 	MEM_ArrayFree (arr);
@@ -1072,11 +1109,34 @@ func void zMAT4_SetByDescriptionPos (var int trafoPtr, var string desc) {
  */
 func void zCVob_GetTrafo (var int vobPtr, var int trafoPtr) {
 	if (!trafoPtr) { return; };
+	if (!Hlp_Is_zCVob(vobPtr)) { return; };
 
-	if (Hlp_Is_zCVob (vobPtr)) {
-		var zCVob vob; vob = _^ (vobPtr);
-		MEM_CopyBytes (_@ (vob.trafoObjToWorld), trafoPtr, 64);
+	var zCVob vob; vob = _^(vobPtr);
+	MEM_CopyBytes(_@(vob.trafoObjToWorld), trafoPtr, 64);
+};
+
+//0x005EDBA0 public: class zMAT4 & __thiscall zCVob::GetNewTrafoObjToWorld(void)
+
+func void zCVob_GetNewTrafoObjToWorld(var int vobPtr, var int trafoPtr) {
+	//0x005EDB80 public: class zMAT4 const & __thiscall zCVob::GetNewTrafoObjToWorld(void)const
+	const int zCVob__GetNewTrafoObjToWorld_G1 = 6216576;
+
+	//
+	const int zCVob__GetNewTrafoObjToWorld_G2 = 0;
+
+	if (!vobPtr) { return; };
+	if (!trafoPtr) { return; };
+
+	var int retVal;
+
+	const int call = 0;
+	if (CALL_Begin(call)) {
+		CALL_PutRetValTo(_@(retVal));
+		CALL__thiscall (_@(vobPtr), MEMINT_SwitchG1G2(zCVob__GetNewTrafoObjToWorld_G1, zCVob__GetNewTrafoObjToWorld_G2));
+		call = CALL_End();
 	};
+
+	MEM_CopyBytes(retVal, trafoPtr, 64);
 };
 
 /*
@@ -1695,8 +1755,6 @@ func void zCVob_SetTrafoObjToWorld (var int vobPtr, var int trafoPtr) {
 
 	if (!trafoPtr) { return; };
 	if (!vobPtr) { return; };
-
-	var int retVal;
 
 	const int call = 0;
 	if (CALL_Begin(call)) {

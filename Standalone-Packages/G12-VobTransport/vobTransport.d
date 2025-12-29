@@ -650,18 +650,17 @@ func int BuyingHandleKey__VobTransport (var int key) {
 			if (!vobTransportShowcaseVobPtr) {
 				//Create new vob
 				vobTransportShowcaseVobPtr = InsertObject ("zCVob", objectName, visualName, _@ (vob.trafoObjToWorld), 0);
-				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			} else {
 				//Update visual and objectName
 				zCVob_SetVisual (vobTransportShowcaseVobPtr, visualName);
 				vob = _^ (vobTransportShowcaseVobPtr);
 				vob._zCObject_objectName = objectName;
-
-				SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 			};
 
 			var int vobRemoveCollisions; vobRemoveCollisions = Vob_GetCollBits (vobTransportShowcaseVobPtr);
 			Vob_RemoveCollBits (vobTransportShowcaseVobPtr, vobRemoveCollisions);
+
+			SetupBuyVob__VobTransport (vobTransportShowcaseVobPtr);
 
 			vobTransportVobChanged = TRUE;
 		} else {
@@ -1637,6 +1636,9 @@ func void G12_VobTransport_Init () {
 
 	//Frame function
 	FF_ApplyOnceExtGT (FrameFunction__VobTransport, 0, -1);
+
+	//Reset pointer
+	vobTransportVobPtr = 0;
 
 	//BBox draw hook
 	const int once = 0;

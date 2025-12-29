@@ -139,10 +139,12 @@ func void oCNpc_Set_Game_Mode (var int newMode) {
 
 const int OpenInvType_None = 0;
 const int OpenInvType_Player = 1;
-const int OpenInvType_NPC = 2;
-const int OpenInvType_Chest = 3;
-const int OpenInvType_Trading = 4;
-const int OpenInvType_Stealing = 5;
+const int OpenInvType_Npc = 2;
+const int OpenInvType_NpcSneakPeak = 3;
+const int OpenInvType_Chest = 4;
+const int OpenInvType_ChestSneakPeak = 5;
+const int OpenInvType_Trading = 6;
+const int OpenInvType_Stealing = 7;
 
 func int Hlp_GetOpenInventoryType () {
 	//0x008DA998 class zCList<class oCItemContainer> s_openContainers
@@ -180,7 +182,7 @@ func int Hlp_GetOpenInventoryType () {
 	var int game_mode; game_mode = oCNpc_Get_Game_Mode();
 
 	if (game_mode == NPC_GAME_PLUNDER) {
-		return OpenInvType_NPC;
+		return OpenInvType_Npc;
 	};
 	if (game_mode == NPC_GAME_STEAL) {
 		return OpenInvType_Stealing;
@@ -214,6 +216,7 @@ func int Hlp_GetOpenInventoryType () {
 		if (ptr) {
 			container = _^ (ptr);
 
+			//Only if inventory is really opened (if player controls an Npc and they open chest - Npcs inventory will not open)
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCItemContainer_vtbl_G1, oCItemContainer_vtbl_G2)) { itemContainer = 1; };
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCStealContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { stealContainer = 1; };
 			if (container.inventory2_vtbl == MEMINT_SwitchG1G2(oCNpcContainer_vtbl_G1, oCStealContainer_vtbl_G2)) { npcContainer = 1; };
@@ -230,10 +233,16 @@ func int Hlp_GetOpenInventoryType () {
 	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Player; };
 
 	//Looting NPC
-	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_NPC; };
+	if ((playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_Npc; };
+
+	//Sneak peak :)
+	if ((!playerInventory) && (!itemContainer) && (!stealContainer) && (npcContainer)) { return OpenInvType_NpcSneakPeak; };
 
 	//Looting chest
 	if ((playerInventory) && (itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_Chest; };
+
+	//Sneak peak :)
+	if ((!playerInventory) && (itemContainer) && (!stealContainer) && (!npcContainer)) { return OpenInvType_ChestSneakPeak; };
 
 	//Trading inventory
 	if ((playerInventory) && (itemContainer) && (stealContainer) && (!npcContainer)) { return OpenInvType_Trading; };
@@ -340,6 +349,7 @@ func int Hlp_Trade_GetInventoryPlayerContainer () {
 func int Hlp_Trade_GetActiveTradeContainer () {
 	if (!MEM_InformationMan.DlgTrade) { return 0; };
 
+	var int ptr;
 	var oCViewDialogTrade dialogTrade; dialogTrade = _^(MEM_InformationMan.DlgTrade);
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_INVENTORY_G1) {
@@ -351,14 +361,20 @@ func int Hlp_Trade_GetActiveTradeContainer () {
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_LEFT_CONTAINER_G1) {
 		//dlgContainerNpc; //oCViewDialogItemContainer* // sizeof 04h offset FCh
-		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		//We have to use offsets for compilation compatibility
+		//var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(dialogTrade.dlgContainerNpc);
+		ptr = _@(dialogTrade.dlgInventoryNpc) + 252; //dlgContainerNpc
+		var oCViewDialogItemContainer dlgContainerNpc; dlgContainerNpc = _^(ptr);
 		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
 		return + dlgContainerNpc.itemContainer;
 	};
 
 	if (dialogTrade.sectionTrade == TRADE_SECTION_RIGHT_CONTAINER_G1) {
 		//dlgContainerPlayer; //oCViewDialogItemContainer* // sizeof 04h offset 104h
-		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		//We have to use offsets for compilation compatibility
+		//var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(dialogTrade.dlgContainerPlayer);
+		ptr = _@(dialogTrade.dlgInventoryNpc) + 260; //dlgContainerPlayer
+		var oCViewDialogItemContainer dlgContainerPlayer; dlgContainerPlayer = _^(ptr);
 		//itemContainer; //oCItemContainer* // sizeof 04h offset 100h
 		return + dlgContainerPlayer.itemContainer;
 	};
@@ -1870,13 +1886,14 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 	var int amount; amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 
 	var int itemInstanceID;
+	var int itemPtr; itemPtr = _@(item);
 
 	while (amount > 0);
 		//Fix logic for G2 NoTR (credits: Neocromicon & Damianut)
 		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
 		//we have to check invCat one more time here!
 		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
-			if (Npc_ItemGetCategory(slfInstance, _@(item)) != invCat) {
+			if (Npc_ItemGetCategory(slfInstance, itemPtr) != invCat) {
 				itmSlot += 1;
 				amount = NPC_GetInvItemBySlot (slf, invCat, itmSlot);
 				continue;
@@ -1912,12 +1929,11 @@ func void NPC_TransferInventoryCategory (var int slfInstance, var int othInstanc
 		};
 
 		//Custom prints for transferred items
-		if ((_NpcTransferItem_Event) && (_NpcTransferItem_Event_Enabled)) {
-			Event_Execute(_NpcTransferItem_Event, _@ (item));
+		if ((Hlp_IsValidHandle(_NpcTransferItem_Event)) && (_NpcTransferItem_Event_Enabled)) {
+			Event_Execute(_NpcTransferItem_Event, itemPtr);
 		};
 
 		var int retVal;
-
 		if (item.flags & ITEM_MULTI) {
 			CreateInvItems(oth, itemInstanceID, amount);
 			retVal = NPC_RemoveInvItems(slf, itemInstanceID, amount);
@@ -1944,6 +1960,88 @@ func void NPC_TransferInventory (var int slfInstance, var int othInstance, var i
 	} else {
 	//G2A
 		NPC_TransferInventoryCategory (slfInstance, othInstance, 0, transferEquippedArmor, transferEquippedItems, transferMissionItems);
+	};
+};
+
+func void Npc_CopyInventoryCategory(var int slfInstance, var int othInstance, var int invCat, var int copyEquippedArmor, var int copyEquippedItems, var int copyMissionItems) {
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return; };
+
+	var C_NPC oth; oth = Hlp_GetNpc(othInstance);
+	if (!Hlp_IsValidNpc(oth)) { return; };
+
+	var int armorItemID; armorItemID = Npc_GetArmor(slf);
+
+	var int itmSlot; itmSlot = 0;
+
+	var int itemInstanceID;
+	var int itemPtr; itemPtr = _@(item);
+
+	var int loop; loop = MEM_StackPos.position;
+
+	var int amount; amount = NPC_GetInvItemBySlot(slf, invCat, itmSlot);
+
+	if (amount > 0) {
+
+		//G2 does not have separate inventories for items - NPC_GetInvItemBySlot goes through whole inventory
+		//we have to check invCat one more time here!
+		if (MEMINT_SwitchG1G2(0, 1) && (invCat > 0)) {
+			if (Npc_ItemGetCategory(slfInstance, itemPtr) != invCat) {
+				itmSlot += 1;
+				MEM_StackPos.position = loop;
+			};
+		};
+
+		itemInstanceID = Hlp_GetInstanceID(item);
+
+		//Ignore equipped armor
+		if (invCat == INV_ARMOR) {
+			if ((!copyEquippedArmor) && (armorItemID == itemInstanceID) && (item.Flags & ITEM_ACTIVE_LEGO))
+			{
+				itmSlot += 1;
+				MEM_StackPos.position = loop;
+			};
+		};
+
+		//Ignore equipped items
+		if ((!copyEquippedItems) && (item.Flags & ITEM_ACTIVE_LEGO))
+		{
+			itmSlot += 1;
+			MEM_StackPos.position = loop;
+		};
+
+		//Ignore mission items
+		if ((!copyMissionItems) && (item.Flags & ITEM_MISSION))
+		{
+			itmSlot += 1;
+			MEM_StackPos.position = loop;
+		};
+
+		if (item.flags & ITEM_MULTI) {
+			CreateInvItems(oth, itemInstanceID, amount);
+		} else {
+			CreateInvItem(oth, itemInstanceID);
+		};
+
+		itmSlot += 1;
+		MEM_StackPos.position = loop;
+	};
+};
+
+func void Npc_CopyInventory(var int slfInstance, var int othInstance, var int copyEquippedArmor, var int copyEquippedItems, var int copyMissionItems) {
+	//G1
+	if (MEMINT_SwitchG1G2 (1, 0)) {
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_WEAPON, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_ARMOR, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_RUNE, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_MAGIC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_FOOD, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_POTION, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_DOC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+		Npc_CopyInventoryCategory(slfInstance, othInstance, INV_MISC, copyEquippedArmor, copyEquippedItems, copyMissionItems);
+	} else {
+	//G2A
+		Npc_CopyInventoryCategory(slfInstance, othInstance, 0, copyEquippedArmor, copyEquippedItems, copyMissionItems);
 	};
 };
 

@@ -1,6 +1,6 @@
 /*
- *	Function will return specific instance of dialog option (includes C_Info.important dialogs, which are not listed in Dialog choice box)
- *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
+ *	Function will return pointer to instance of dialogue option (includes C_Info.important dialogs, which are not listed in dialogue choice box)
+ *	Be careful - this can't be used with dialogue choices (Info_AddChoice ...)
  */
 func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int index) {
 	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
@@ -29,38 +29,18 @@ func int oCInfoManager_GetInfo_ByPtr (var int slfPtr, var int othPtr, var int in
 };
 
 func int oCInfoManager_GetInfo (var int slfinstance, var int othinstance, var int index) {
-	//0x00664E50 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNpc *,class oCNpc *,int)
-	const int oCInfoManager__GetInfo_G1 = 6704720;
 
-	//0x00702D60 public: class oCInfo * __thiscall oCInfoManager::GetInfo(class oCNPC *,class oCNPC *,int)
-	const int oCInfoManager__GetInfo_G2 = 7351648;
-
-	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNpc(slfinstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
 	var oCNPC oth; oth = Hlp_GetNpc(othinstance);
 	if (!Hlp_IsValidNpc(oth)) { return 0; };
 
-	var int slfPtr; slfPtr = _@(slf);
-	var int othPtr; othPtr = _@(oth);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(retVal));
-		CALL_IntParam(_@(index));
-		CALL_PtrParam(_@(slfPtr));
-		CALL_PtrParam(_@(othPtr));
-		CALL__thiscall(_@(MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfo_G1, oCInfoManager__GetInfo_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
+	return + oCInfoManager_GetInfo_ByPtr(_@(slf), _@(oth), index);
 };
 
 /*
- *	Function will return specific instance of dialog option (does not include C_Info.important dialogs. Will return only dialog which is listed Dialog choice box)
+ *	Function will return pointer to instance of dialogue option (does not include C_Info.important dialogs. Will return only dialogue which is listed Dialog choice box)
  *	Be careful - this can't be used with dialog choices (Info_AddChoice ...)
  */
 func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr, var int index) {
@@ -90,38 +70,17 @@ func int oCInfoManager_GetInfoUnimportant_ByPtr (var int slfPtr, var int othPtr,
 };
 
 func int oCInfoManager_GetInfoUnimportant (var int slfinstance, var int othinstance, var int index) {
-	//0x00665120 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNpc *,class oCNpc *,int)
-	const int oCInfoManager__GetInfoUnimportant_G1 = 6705440;
-
-	//0x00703030 public: class oCInfo * __thiscall oCInfoManager::GetInfoUnimportant(class oCNPC *,class oCNPC *,int)
-	const int oCInfoManager__GetInfoUnimportant_G2 = 7352368;
-
-	if (!MEM_Game.infoman) { return 0; };
 	var oCNPC slf; slf = Hlp_GetNpc(slfinstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
+
 	var oCNPC oth; oth = Hlp_GetNpc(othinstance);
 	if (!Hlp_IsValidNpc(oth)) { return 0; };
 
-	var int slfPtr; slfPtr = _@(slf);
-	var int othPtr; othPtr = _@(oth);
-
-	var int retVal;
-
-	const int call = 0;
-	if (CALL_Begin(call)) {
-		CALL_PutRetValTo(_@(retVal));
-		CALL_IntParam(_@(index));
-		CALL_PtrParam(_@(slfPtr));
-		CALL_PtrParam(_@(othPtr));
-		CALL__thiscall(_@(MEM_Game.infoman), MEMINT_SwitchG1G2(oCInfoManager__GetInfoUnimportant_G1, oCInfoManager__GetInfoUnimportant_G2));
-		call = CALL_End();
-	};
-
-	return + retVal;
+	return + oCInfoManager_GetInfoUnimportant_ByPtr(_@(slf), _@(oth), index);
 };
 
 /*
- *	Function returns number of dialog instances which are available between slfinstance & othinstance
+ *	Function returns number of dialogue instances which are available between slfinstance & othinstance
  */
 func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 	//0x00664A30 public: int __thiscall oCInfoManager::GetInfoCount(class oCNpc *,class oCNpc *)
@@ -154,7 +113,7 @@ func int oCInfoManager_GetInfoCount (var int slfinstance, var int othinstance) {
 };
 
 /*
- *	Toggles debug informations for dialogs
+ *	Toggles debug informations for dialogues
  */
 func void oCInformationManager_ToggleStatus () {
 	//0x0072B360 public: void __fastcall oCInformationManager::ToggleStatus(void)
@@ -338,7 +297,7 @@ func void zCViewDialogChoice_HighlightSelected () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__HighlightSelected_G1, zCViewDialogChoice__HighlightSelected_G2));
 		call = CALL_End();
 	};
 };
@@ -354,7 +313,7 @@ func void zCViewDialogChoice_ShowSelected () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__ShowSelected_G1, zCViewDialogChoice__ShowSelected_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__ShowSelected_G1, zCViewDialogChoice__ShowSelected_G2));
 		call = CALL_End();
 	};
 };
@@ -371,7 +330,7 @@ func void zCViewDialogChoice_BlitText () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__BlitText_G1, zCViewDialogChoice__BlitText_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__BlitText_G1, zCViewDialogChoice__BlitText_G2));
 		call = CALL_End();
 	};
 };
@@ -388,7 +347,7 @@ func void zCViewDialogChoice_Select (var int index) {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__Select_G1, zCViewDialogChoice__Select_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__Select_G1, zCViewDialogChoice__Select_G2));
 		call = CALL_End();
 	};
 };
@@ -406,7 +365,7 @@ func void zCViewDialogChoice_SelectPrevious () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectPrevious_G1, zCViewDialogChoice__SelectPrevious_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectPrevious_G1, zCViewDialogChoice__SelectPrevious_G2));
 		call = CALL_End();
 	};
 };
@@ -424,7 +383,7 @@ func void zCViewDialogChoice_SelectNext () {
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(null), MEMINT_SwitchG1G2(zCViewDialogChoice__SelectNext_G1, zCViewDialogChoice__SelectNext_G2));
 		call = CALL_End();
 	};
 };
@@ -437,11 +396,11 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 	//0x0068F9B0 public: void __fastcall zCViewDialogChoice::RemoveChoice(int)
 	const int zCViewDialogChoice__RemoveChoice_G2 = 6879664;
 
-	if (!MEM_InformationMan.DlgChoice) { return; };
+	if (!MEM_InformationMan.dlgChoice) { return; };
 
 	const int call = 0;
 	if (CALL_Begin(call)) {
-		CALL__fastcall(_@(MEM_InformationMan.DlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
+		CALL__fastcall(_@(MEM_InformationMan.dlgChoice), _@(index), MEMINT_SwitchG1G2(zCViewDialogChoice__RemoveChoice_G1, zCViewDialogChoice__RemoveChoice_G2));
 		call = CALL_End();
 	};
 };
@@ -508,17 +467,18 @@ func void zCViewDialogChoice_RemoveChoice (var int index) {
 func int NPC_GetInfoInstanceCount (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNPC(slfInstance);
 	if (!Hlp_IsValidNPC(slf)) { return 0; };
-	var int instID; instID = Hlp_GetInstanceID(slf);
 
 	var int count; count = 0;
 
+	var int infoPtr;
 	var oCInfo info;
+
 	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
+	var int instID; instID = Hlp_GetInstanceID(slf);
 
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
-
-	while(infoPtr);
-		ls = _^(infoPtr);
+	while(list);
+		ls = _^(list);
 
 		if (ls.data) {
 			info = _^(ls.data);
@@ -528,7 +488,7 @@ func int NPC_GetInfoInstanceCount (var int slfInstance) {
 			};
 		};
 
-		infoPtr = ls.next;
+		list = ls.next;
 	end;
 
 	return + count;
@@ -540,17 +500,18 @@ func int NPC_GetInfoInstanceCount (var int slfInstance) {
 func int NPC_GetInfoInstanceUntoldCount (var int slfInstance) {
 	var oCNPC slf; slf = Hlp_GetNpc(slfInstance);
 	if (!Hlp_IsValidNpc(slf)) { return 0; };
-	var int instID; instID = Hlp_GetInstanceID(slf);
 
 	var int count; count = 0;
 
+	var int infoPtr;
 	var oCInfo info;
+
 	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
+	var int instID; instID = Hlp_GetInstanceID(slf);
 
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
-
-	while (infoPtr);
-		ls = _^(infoPtr);
+	while(list);
+		ls = _^(list);
 		if (ls.data) {
 			info = _^(ls.data);
 
@@ -561,121 +522,47 @@ func int NPC_GetInfoInstanceUntoldCount (var int slfInstance) {
 			};
 		};
 
-		infoPtr = ls.next;
+		list = ls.next;
 	end;
 
 	return count;
 };
 
-//	Commented out - seems like this cannot be used when NPC is inserted into the world - causes crashes
-
 /*
- *	Function will loop through all dialog instances and count number of dialogues which are assigned to NPC and have trade attribute == TRUE
+ *	Npc_IsTrader
+ *	 - do not use from inside of Npc instance
  */
- /*
-var int InfoMan_TotalCount;
-var int InfoMan_NpcInstanceID;
+func int Npc_IsTrader(var int slfInstance) {
+	var C_NPC slf; slf = Hlp_GetNpc(slfInstance);
+	if (!Hlp_IsValidNpc(slf)) { return FALSE; };
 
-func void NPC_InfoMan_GetTradeCount_Sub (var int node) {
-	var zCListSort list; list = _^(node);
-	if (list.data) {
-		var oCInfo info;
-		info = _^(list.data);
+	if (!MEM_InfoMan.infoList_next) { return FALSE; };
 
-		if ((info.npc == InfoMan_NpcInstanceID) && (info.trade)) {
-			var int i; i;
-			InfoMan_TotalCount += 1;
-		};
-	};
-};
+	var int isTrader; isTrader = FALSE;
 
-func int NPC_GetInfoInstanceTradeCount (var int slfInstance) {
-	//Convert to NPC
-	var oCNPC slf; slf = Hlp_GetNpc(slfInstance);
-	if (!Hlp_IsValidNpc(slf)) { return 0; };
+	var int infoPtr;
 
-	if (!MEM_InfoMan.infoList_next) { return 0; };
-
-	InfoMan_TotalCount = 0;
-	InfoMan_NpcInstanceID = Hlp_GetInstanceID(slf);
-
-	List_ForFS (MEM_InfoMan.infoList_next, NPC_InfoMan_GetTradeCount_Sub);
-
-	return +InfoMan_TotalCount;
-};
-
-func int NPC_GetInfoInstanceTradeCount (var int slfInstance) {
-	//Convert to NPC
-	var oCNPC slf; slf = Hlp_GetNpc(slfInstance);
-	if (!Hlp_IsValidNpc(slf)) { return 0; };
-
-	if (!MEM_InfoMan.infoList_next) { return 0; };
-
-	var int count; count = 0;
+	var zCListSort ls;
+	var int list; list = MEM_InfoMan.infoList_next;
 	var int instID; instID = Hlp_GetInstanceID(slf);
 
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
+	while(list);
+		ls = _^(list);
 
-	var int p;
-
-	p = MEM_StackPos.position;
-
-	var zCListSort list; list = _^(infoPtr);
-
-	if (list.data) {
-
-		var oCInfo info;
-		info = _^(list.data);
-
-		if ((info.npc == instID) && (info.trade)) {
-			//No idea why ... but here I have to use var int i; i; otherwise Gothic crashes
-			var int i; i;
-			count += 1;
-		};
-
-		infoPtr = list.next;
-	};
-
-	if (infoPtr) {
-		MEM_StackPos.position = p;
-	};
-
-	return +count;
-};
-
-func int NPC_IsTrader (var int slfInstance) {
-	MEM_InitAll ();
-
-	//Convert to NPC
-	var oCNPC slf; slf = Hlp_GetNpc(slfInstance);
-	if (!Hlp_IsValidNpc(slf)) { return 0; };
-
-	if (!MEM_InfoMan.infoList_next) { return 0; };
-
-	var int instID; instID = Hlp_GetInstanceID(slf);
-
-	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
-
-	while (infoPtr);
-		var zCListSort list; list = _^(infoPtr);
-
-		if (list.data) {
-			var oCInfo info;
-			info = _^(list.data);
-
-			if ((info.npc == instID) && (info.trade)) {
-				//No idea why ... but here I have to use var int i; i; otherwise Gothic crashes
-				var int i; i;
-				return TRUE;
+		if (ls.data) {
+			var oCInfo info; info = _^(ls.data);
+			if (info.trade) {
+				if (info.npc == instID) {
+					isTrader = TRUE;
+				};
 			};
 		};
 
-		infoPtr = list.next;
+		list = ls.next;
 	end;
 
-	return FALSE;
+	return + isTrader;
 };
-*/
 
 func int InfoManager_GetSelectedInfo () {
 	if (InfoManager_HasFinished()) { return 0; };
@@ -685,6 +572,9 @@ func int InfoManager_GetSelectedInfo () {
 	var zCArray arr; arr = _^(dlgChoice + 172);
 	if (!arr.array) { return 0; };
 
+	if (MEM_InformationMan.mode == INFO_MGR_MODE_IMPORTANT) {
+		return + oCInfoManager_GetInfo_ByPtr(MEM_InformationMan.npc, MEM_InformationMan.player, 0);
+	} else
 	if (MEM_InformationMan.mode == INFO_MGR_MODE_INFO) {
 		return + oCInfoManager_GetInfoUnimportant_ByPtr(MEM_InformationMan.npc, MEM_InformationMan.player, dlg.ChoiceSelected);
 	} else
@@ -1007,6 +897,8 @@ func void Info_InjectChoices (var int infoInstance) {
 
 	var int infoPtr; infoPtr = MEM_InfoMan.infoList_next;
 
+	var int retVal;
+
 	while (infoPtr);
 		list = _^(infoPtr);
 
@@ -1014,11 +906,21 @@ func void Info_InjectChoices (var int infoInstance) {
 			info = _^(list.data);
 			//if (info.npc == info.npc) {
 				if (STR_StartsWith(STR_Upper(info.name), injectName)) {
-					MEM_CallByID(info.information);
+					if ((!info.told) || info.permanent) {
+						msg = ConcatStrings(" - found: ", info.name);
+						MEM_Info(msg);
 
-					injected = TRUE;
-					msg = ConcatStrings(" - found ", info.name);
-					MEM_Info(msg);
+						MEM_CallByID(info.conditions);
+						retVal = MEM_PopIntResult();
+
+						msg = ConcatStrings(" - condition: ", IntToString(retVal));
+						MEM_Info(msg);
+
+						if (retVal) {
+							MEM_CallByID(info.information);
+							injected = TRUE;
+						};
+					};
 				};
 			//};
 		};
@@ -1086,4 +988,16 @@ func int Info_Injectable_GetChoiceCondition (var int infoInstance) {
 	};
 
 	return + isNonZero;
+};
+
+func int InfoManager_GetSelectedInfoInstance()
+{
+	var int infoPtr; infoPtr = InfoManager_GetSelectedInfo();
+
+	if (!infoPtr) {
+		return -1;
+	};
+
+	var oCInfo info; info = _^(infoPtr);
+	return + info._instance;
 };

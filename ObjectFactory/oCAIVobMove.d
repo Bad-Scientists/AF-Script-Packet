@@ -20,7 +20,7 @@ func void oCAIVobMove_Init (var int ai, var int vobPtr, var int ownerVobPtr, var
 
 	const int call = 0;
 	if (CALL_Begin (call)) {
-		CALL_PtrParam (_@ (trafoPtr));	//Direction
+		CALL_PtrParam (_@ (trafoPtr));		//Direction
 
 		CALL_FloatParam (_@ (velocityF));	//Velocity
 		CALL_FloatParam (_@ (angleF));		//Angle

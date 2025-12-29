@@ -1,4 +1,28 @@
-var int _enhancedPickPocketing_StealItemAnyway;
+var int _StealTransferItem_Event;
+
+var int _StealTransferItem_FromNpcPtr;
+var int _StealTransferItem_ToNpcPtr;
+var int _StealTransferItem_ItemPtr;
+
+func void NpcStealTransferItemEvent_AddListener (var func f) {
+	if (_StealTransferItem_Event) {
+		Event_AddOnce(_StealTransferItem_Event, f);
+	};
+};
+
+func void NpcStealTransferItemEvent_RemoveListener (var func f) {
+	if (_StealTransferItem_Event) {
+		Event_Remove(_StealTransferItem_Event, f);
+	};
+};
+
+func void NpcStealTransferItemEvent_Init () {
+	if (!_StealTransferItem_Event) {
+		_StealTransferItem_Event = Event_Create();
+	};
+};
+
+//--
 
 func int oCNpcFocus_GetRange2 () {
 	//0x00635180 public: float __thiscall oCNpcFocus::GetRange2(void)
@@ -154,7 +178,10 @@ func int oCNpc_IsVictimAwareOfTheft (var int npcInstance) {
 
 //-- Check if Npc detected thief (through perceptions, SENSE_SMELL will always detect thief if Npc is within npc.senses_range distance!)
 
-	if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
+	//If Npc has closed eyes... we assume they are not aware of the theft :)
+	if (!oCNpc_IsFaceAniActive(slf, "S_EYESCLOSED")) {
+		if (oCNpc_HasVobDetected (slf, _@ (npc))) { return TRUE; };
+	};
 
 //-- Check game mode - if we are in steal mode - check body state
 
@@ -305,6 +332,8 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 					stealContainer = _^ (stealContainerPtr);
 					owner = _^ (stealContainer.inventory2_owner);
 
+					var int moveItemAnyway; moveItemAnyway = FALSE;
+
 					const int symbID = 0;
 
 					if (!symbID) {
@@ -320,7 +349,13 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 					const int symbID3 = 0;
 
 					if (!symbID3) {
-						symbID3 = MEM_FindParserSymbol ("EnhancedPickPocketing_DoStealItemAnyway");
+						symbID3 = MEM_FindParserSymbol ("C_PP_CanBeStolenWhenCaught");
+					};
+
+					const int symbID4 = 0;
+
+					if (!symbID4) {
+						symbID4 = MEM_FindParserSymbol ("EnhancedPickPocketing_DoStealItemAnyway");
 					};
 
 					//By default ... allow stealing 1 item at a time (TODO: do we want to allow stealing more at once?)
@@ -356,6 +391,15 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 
 								//Re-create list
 								oCStealContainer_CreateList (stealContainerPtr);
+
+								//Event execution
+								if (Hlp_IsValidHandle(_StealTransferItem_Event)) {
+									_StealTransferItem_FromNpcPtr = _@(hero);
+									_StealTransferItem_ToNpcPtr = _@(npc);
+									_StealTransferItem_ItemPtr = itemPtr;
+
+									Event_Execute(_StealTransferItem_Event, STEAL_TRANSFERTONPCINV_G1);
+								};
 							};
 						};
 					} else {
@@ -367,9 +411,18 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 							retVal = MEM_PopIntResult ();
 						};
 
+						if (!retVal) {
+							if (symbID3 != -1) {
+								MEM_PushInstParam(owner);
+								MEM_PushIntParam(itemPtr);
+								MEM_CallByID(symbID3);
+								moveItemAnyway = MEM_PopIntResult();
+							};
+						};
+
 						//Success - move item
 						//Additionaly we allow to move item to player's inventory even on failed attempt (if modder wishes to do so)
-						if ((retVal) || (_enhancedPickPocketing_StealItemAnyway)) {
+						if ((retVal) || (moveItemAnyway)) {
 							if (amount) {
 								//Remove item from NPCs inventory
 								npc = Hlp_GetNpc (owner);
@@ -385,14 +438,23 @@ func int oCItemContainer_HandleKey__EnhancedPickPocketing (var int ptr, var int 
 
 								//Re-create list
 								oCStealContainer_CreateList (stealContainerPtr);
+
+								//Event execution
+								if (Hlp_IsValidHandle(_StealTransferItem_Event)) {
+									_StealTransferItem_FromNpcPtr = _@(npc);
+									_StealTransferItem_ToNpcPtr = _@(hero);
+									_StealTransferItem_ItemPtr = itemPtr;
+
+									Event_Execute(_StealTransferItem_Event, STEAL_TRANSFERTOPLAYERINV_G1);
+								};
 							};
 
-							//Call EnhancedPickPocketing_StealItemAnyway (in case modder wants to update aivar or do some further actions)
-							if (!retVal) {
-								if (symbID3 != -1) {
+							//Call EnhancedPickPocketing_StealItemAnyway (in case modder wants to do some further actions)
+							if (moveItemAnyway) {
+								if (symbID4 != -1) {
 									MEM_PushInstParam (owner);
 									MEM_PushIntParam (itemPtr);
-									MEM_CallByID (symbID3);
+									MEM_CallByID (symbID4);
 								};
 							};
 						};
@@ -467,10 +529,6 @@ func void G1_EnhancedPickPocketing_Init () {
 	NpcInventoryHandleEvent_AddListener (_eventNpcInventoryHandleEvent__EnhancedPickPocketing);
 
 	//-- Load API values / init default values
-
-	_enhancedPickPocketing_StealItemAnyway = API_GetSymbolIntValue ("ENHANCEDPICKPOCKETING_STEALITEMANYWAY", 1);
-
-	//--
 
 	const int once = 0;
 	if (!once) {

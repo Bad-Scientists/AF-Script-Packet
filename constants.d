@@ -17,6 +17,16 @@ const int CHR_SPACE = 32;
 
 //-- Engine constants
 
+/*
+ *	Trade sections
+ */
+
+const int TRADE_SECTION_LEFT_INVENTORY_G1 = 0; //Move to container
+const int TRADE_SECTION_LEFT_CONTAINER_G1 = 1; //Move to inventory
+const int TRADE_SECTION_RIGHT_CONTAINER_G1 = 2; //Move to inventory
+const int TRADE_SECTION_RIGHT_INVENTORY_G1 = 3; //Move to container
+const int TRADE_SECTION_CHOICE_G1 = 4;
+
 //-- Logical key IDs
 
 //Same for G1 & G2 NoTR
@@ -86,6 +96,13 @@ const string ANINAME_S_TELEPORT = "S_TELEPORT";
 const string ANINAME_S_HEASHOOT = "S_HEASHOOT";
 const string ANINAME_T_TELEPORT_2_STAND = "T_TELEPORT_2_STAND";
 const string ANINAME_T_HEASHOOT_2_STAND = "T_HEASHOOT_2_STAND";
+
+const string ANINAME_T_DONTKNOW = "T_DONTKNOW";
+
+//Hero status
+const int oHERO_STATUS_STD = 0;
+const int oHERO_STATUS_THR = 1;
+const int oHERO_STATUS_FGT = 2;
 
 //zCOption dirs
 
@@ -327,6 +344,7 @@ const int NPC_PERC_MAX = 33;
 const int zMDL_ANIEVENT_MAXSTRING = 4;
 const int zMAN_VERS = 12;
 const int zMDL_MAX_ANIS_PARALLEL = 6;
+const int zMDL_MAX_TEX = 4;
 const int zMDL_MAX_MESHLIBS_PARALLEL = 4;
 const int zMDL_VELRING_SIZE = 8;
 const int MAX_ANIHISTORY = 16;
@@ -381,7 +399,10 @@ const int ALPHA_FUNC_TEST = 7;
 
 const int MAX_SPL_LEVEL = 20;
 const int VFX_MAX_POS_SAMPLES = 10;
-const int VFX_NUM_USERSTRINGS = 3;
+
+const int VFX_NUM_USERSTRINGS_G1 = 3;
+const int VFX_NUM_USERSTRINGS_G2 = 5;
+
 const float VFX_LIFESPAN_FOREVER = -1;
 
 const int ITM_STATE_MAX = 4;
